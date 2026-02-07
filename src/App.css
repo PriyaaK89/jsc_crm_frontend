@@ -1,0 +1,50 @@
+*{
+    padding: 0;
+    margin: 0;
+    font-family: 'InterRegular';
+}
+
+@font-face{
+    font-family: 'InterRegular';
+    src: url('../public/fonts/Inter-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+@font-face {
+  font-family: 'Inter-SemiBold';
+  src: url('../public/fonts/Inter-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Inter-Medium';
+  src: url('../public/fonts/Inter-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+.productsTable tbody tr td{
+    color: #6E7079;
+    font-size: 13px;
+    font-family: 'InterRegular';
+    border-bottom: 2px solid #f3f3f3;
+    border-top: 2px solid #f3f3f3;
+    padding: 4px 20px;
+    height: 50px;
+
+}
+.productsTable tbody{
+  border-left: 1px solid #f3f3f3;
+  border-right: 1px solid #f3f3f3;
+}
+
+.productsTable Thead Tr Th{
+  padding: 4px 20px;
+  /* border-top: 1px solid #E1E2E9; */
+  border-bottom: 1px solid #E1E2E9;
+
+}
+.productsTable Thead{
+  height: 54px;
+}

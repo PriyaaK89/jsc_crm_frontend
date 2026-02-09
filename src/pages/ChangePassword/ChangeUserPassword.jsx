@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -17,6 +17,7 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 const ChangePassword = () => {
   const location = useLocation();
   const toast = useToast();
+  const nav = useNavigate()
 
   const userId = location?.state?.userId;
   const mail = location?.state?.email;
@@ -46,6 +47,10 @@ const ChangePassword = () => {
                     status: "success",
                     isClosable: true
                 })
+                setTimeout(()=>{
+
+                  nav("/hr-mgmt/view-employee-list")
+                },1500)
            }
     }catch(error){
         toast({

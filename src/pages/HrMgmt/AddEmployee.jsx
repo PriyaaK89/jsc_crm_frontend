@@ -6,6 +6,7 @@ import { Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormCon
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 
 
+
 const AddEmployee = () => {
     const toast = useToast();
     const [loading, setLoading] = useState(false);
@@ -67,7 +68,7 @@ const handleChange = (e) => {
                         formData.daily_allowance_without_doc,
                     ),
                     hotel_allowance: Number(formData.hotel_allowance),
-
+                    week_off: formData.week_off,
                     total_leaves: Number(formData.total_leaves),
                     authentication_amount: Number(formData.authentication_amount),
                     pf: Number(formData.pf),
@@ -83,14 +84,14 @@ const handleChange = (e) => {
                     isClosable: true,
                 });
 
-                if (response?.data?.must_change_password === 1) {
-                    navigate("/change-password", {
-                        state: {
-                            userId: response?.data?.id,
-                            email: response?.data?.email
-                        }
-                    })
-                }
+               
+                    navigate("/upload-documents", {
+        state: {
+            userId: response?.data?.id,
+            email: response?.data?.email,
+            mustChangePassword: response?.data?.must_change_password,
+        }
+    });
 
                 setFormData({
                     name: "", gender: "", contact_no: "", date_of_birth: "", email: "", password: "",
@@ -220,7 +221,7 @@ const handleChange = (e) => {
 
                         <FormControl>
                             <FormLabel {...lableStyles}>Select Gender</FormLabel>
-                            <Select name="gender" placeholder="Gender" onChange={handleChange}>
+                            <Select  fontSize="13px" color="gray.400" name="gender" placeholder="Gender" onChange={handleChange}>
                                 <option value="MALE">Male</option>
                                 <option value="FEMALE">Female</option>
                                 <option value="OTHER">Other</option>
@@ -256,6 +257,10 @@ const handleChange = (e) => {
                             <FormLabel {...lableStyles}>Address</FormLabel>
                             <Input name="address_line2" placeholder="Address Line 2" onChange={handleChange} />
                         </FormControl>
+                         <FormControl>
+                            <FormLabel {...lableStyles}>Pincode</FormLabel>
+                            <Input name="pincode" maxLength={6} value={formData.pincode || ""} onChange={(e) => handlePincodeChange(e.target.value)} />
+                        </FormControl>
                         <FormControl>
                             <FormLabel {...lableStyles}>Country</FormLabel>
                             <Input name="country" value={formData.country} onChange={handleChange} />
@@ -272,12 +277,10 @@ const handleChange = (e) => {
                             <FormLabel {...lableStyles}>District</FormLabel>
                             <Input name="district" value={formData.district || ""} isReadOnly />
                         </FormControl>
-                        <FormControl>
-                            <FormLabel {...lableStyles}>Pincode</FormLabel>
-                            <Input name="pincode" maxLength={6} value={formData.pincode || ""} onChange={(e) => handlePincodeChange(e.target.value)} />
-                        </FormControl>
-
-                        <Select
+                       
+<FormControl>
+    <FormLabel {...lableStyles}>Select Area</FormLabel>
+                        <Select 
                             placeholder="Select Area"
                             value={formData.area || ""}
                             isDisabled={!areas.length}
@@ -294,7 +297,7 @@ const handleChange = (e) => {
 </option>
                             ))}
                         </Select>
-
+</FormControl>
                     </SimpleGrid>
 
                     {/* PERSONAL INFO */}
@@ -397,6 +400,10 @@ const handleChange = (e) => {
                             <Input name="total_leaves" onChange={handleChange} />
                         </FormControl>
                         <FormControl>
+                            <FormLabel  {...lableStyles}>Headquarter</FormLabel>
+                            <Input name="headquarter" onChange={handleChange} />
+                        </FormControl>
+                        <FormControl>
                             <FormLabel {...lableStyles}>Approver Name</FormLabel>
                             <Input name="approver_name" onChange={handleChange} />
                         </FormControl>
@@ -429,11 +436,6 @@ const handleChange = (e) => {
                         </FormControl>
 
                         <FormControl>
-                            <FormLabel  {...lableStyles}>Headquarter</FormLabel>
-                            <Input name="headquarter" onChange={handleChange} />
-                        </FormControl>
-
-                        <FormControl>
                             <FormLabel  {...lableStyles}>PF Amount</FormLabel>
                             <Input name="pf" onChange={handleChange} />
                         </FormControl>
@@ -444,13 +446,17 @@ const handleChange = (e) => {
                         </FormControl>
                     </SimpleGrid>
 
-                    <Button
+                       <Button
                         colorScheme="blue"
-                        alignSelf="flex-start"
+                        alignSelf="center"
                         isLoading={loading}
                         onClick={handleSubmit}>
                         Create User
                     </Button>
+                  
+                    {/* <DocumentUploadTable/> */}
+
+                 
                 </VStack>
             </Box>
         </>

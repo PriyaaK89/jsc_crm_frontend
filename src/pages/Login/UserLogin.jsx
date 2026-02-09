@@ -38,13 +38,41 @@ function UserLogin() {
           duration: 2000
         })
         navigate("/dashboard"); 
-
+      }
+      if(response?.status === 403){
+        toast({
+          description: response?.data?.message || "Your Id is deactivated, you can't login!",
+          status: 'warning',
+          isClosable: true,
+          duration: 2000
+        })
       }
 
 
-    } catch (error) {
-       console.log(error)
+    }  catch (error) {
+    console.log(error);
+
+    const status = error?.response?.status;
+    const message =
+      error?.response?.data?.message ||
+      "Something went wrong. Please try again.";
+
+    if (status === 403) {
+      toast({
+        description: message || "Your ID is deactivated, you can't login!",
+        status: "warning",
+        isClosable: true,
+        duration: 2000,
+      });
+    } else {
+      toast({
+        description: message,
+        status: "error",
+        isClosable: true,
+        duration: 2000,
+      });
     }
+  }
   };
 
   return (
@@ -92,6 +120,7 @@ function UserLogin() {
                 right="12px"
                 transform="translateY(-50%)"
                 cursor="pointer"
+                zIndex={1}
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

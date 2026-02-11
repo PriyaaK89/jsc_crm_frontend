@@ -48,3 +48,50 @@
 .productsTable Thead{
   height: 54px;
 }
+
+.letter_align{
+      left: 99px;
+    position: absolute;
+    top: 53px;
+    width: 85%;
+}
+.offer_letter_main p{
+  font-size: 14px;
+}
+
+.offer_letter_main div ul li{
+  font-size: 14px;
+}
+
+.pdf-page {
+  width: 210mm;
+  height: 296mm; 
+padding: 40px;
+  box-sizing: border-box;  
+  position: relative;
+  background: white;
+  overflow: hidden;  
+}
+.page-break {
+  /* page-break-before: always; */
+  break-before: page;
+}
+.letter-content{
+  font-size: 14px;
+}
+.watermark_img{
+  position: absolute;
+    opacity: 0.09;
+    left: 205px;
+    top: 400px;
+    width: 350px;
+
+}
+.watermark_img1{
+   position: absolute;
+    opacity: 0.09;
+    left: 205px;
+    top: 380px;
+    width: 350px;
+
+}

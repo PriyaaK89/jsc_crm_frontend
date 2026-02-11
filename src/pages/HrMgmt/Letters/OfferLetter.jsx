@@ -15,6 +15,7 @@ import { useParams } from "react-router-dom";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import OfferLetterPreviewModal from "./OfferLetterPreviewModal";
+import CustomDatePicker from "../../../components/common/CustomDatepicker";
 
 const OfferLetterPage = () => {
   const { id } = useParams();
@@ -25,8 +26,11 @@ const OfferLetterPage = () => {
 
   const [formData, setFormData] = useState({
     salary_norms: "",
+    salary_norms1: "",
     terms_conditions: "",
     sales_target: "",
+    date_of_issue: "",
+    emp_state: ""
   });
 
   /* ===== Fetch Employee ===== */
@@ -36,6 +40,7 @@ const OfferLetterPage = () => {
         `${API_ENDPOINTS.get_emp_details}/${id}`
       );
       setEmployee(res.data.data);
+      console.log(res?.data?.data, "empDetails")
       setLoading(false);
     };
 
@@ -59,11 +64,14 @@ const OfferLetterPage = () => {
       {/* ===== Prefilled Employee Info ===== */}
       <Grid templateColumns="repeat(3, 1fr)" gap={4} mb={6}>
         <Text><b>Name:</b> {employee.name}</Text>
+        <Text><b>Address:</b> {employee?.address_line1} {employee?.address_line2} <br /> {employee?.area} {employee?.city} {employee?.state}{(employee?.pincode)}</Text>
         <Text><b>Email:</b> {employee.email}</Text>
         <Text><b>Contact:</b> {employee.contact_no}</Text>
 
+
         <Text><b>Department:</b> {employee.department_name}</Text>
         <Text><b>Role:</b> {employee.job_role_name}</Text>
+
         <Text>
           <b>DOJ:</b>{" "}
           {new Date(employee.date_of_joining).toLocaleDateString()}
@@ -72,11 +80,28 @@ const OfferLetterPage = () => {
 
       {/* ===== Input Fields ===== */}
       <Grid gap={4}>
+
+        <CustomDatePicker
+          label="Date of Issue"
+          value={formData.date_of_issue}
+          onChange={(e) => setFormData({ ...formData, date_of_issue: e.target.value })}
+          placeholder="Select date of issue"
+        />
+
+        <Input placeholder="Enter State" value={formData?.emp_state} onChange={(e)=>setFormData({...formData, emp_state: e.target.value})}/>
+
         <Input
           placeholder="Salary Norms"
           value={formData.salary_norms}
           onChange={(e) =>
             setFormData({ ...formData, salary_norms: e.target.value })
+          }
+        />
+        <Input
+          placeholder="Salary Norms"
+          value={formData.salary_norms1}
+          onChange={(e) =>
+            setFormData({ ...formData, salary_norms1: e.target.value })
           }
         />
 
@@ -88,14 +113,6 @@ const OfferLetterPage = () => {
           }
         />
 
-        <Textarea
-          placeholder="Terms & Conditions"
-          rows={5}
-          value={formData.terms_conditions}
-          onChange={(e) =>
-            setFormData({ ...formData, terms_conditions: e.target.value })
-          }
-        />
       </Grid>
 
       <Flex justify="flex-end" mt={6}>

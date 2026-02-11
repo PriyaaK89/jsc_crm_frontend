@@ -9,6 +9,7 @@ import EmployeeListLayout from "../components/layout/EmployeeList";
 import UploadEmpDocuments from "../pages/HrMgmt/DocUpload/UploadEmpDocuments";
 import EditEmployeePage from "../components/layout/EditEmployee";
 import OfferLetterLayout from "../components/layout/GenerateLetters/OfferLetterLayout";
+import JoiningLetterLayout from "../components/layout/GenerateLetters/JoiningLetterLayout";
 
 
 
@@ -27,6 +28,7 @@ function App() {
         <Route path="/upload-documents" element={  <UploadEmpDocuments/>}/>
         <Route path="/edit-employee-details/:empId" element={<EditEmployeePage/>}/>
         <Route path="/generate-offer-letter/:id" element={<OfferLetterLayout/>}/>
+        <Route path="/generate-joining-letter/:id" element={<JoiningLetterLayout/>}/>
       </Routes>
     </Router>
   );

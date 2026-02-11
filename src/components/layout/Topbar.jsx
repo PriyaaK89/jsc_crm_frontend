@@ -10,7 +10,7 @@ const Topbar = () => {
       align="center"
       px={6}
       borderBottom="1px solid"
-      borderColor="gray.200"
+      borderColor="gray.200" borderRadius="34px"
     >
       <Text fontWeight="bold" fontSize="lg">Dashboard</Text>
 

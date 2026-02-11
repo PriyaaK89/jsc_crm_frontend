@@ -30,19 +30,41 @@ const AddEmployee = () => {
         pf: "", esi: "",
         approver_name: "",
     });
+    const [empList, setEmpList] = useState([]);
+
+    const fetchEmployeeList = async () => {
+        try {
+            setLoading(true);
+            const response = await API.get(API_ENDPOINTS.GET_USERS, {
+               
+            });
+
+            if (response.status === 200) {
+                setEmpList(response.data.data);
+                console.log(response.data, "EMPLOYEE RESPONSE");
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchEmployeeList();
+    }, []);
 
 
+    const handleChange = (e) => {
+        if (!e || !e.target || !e.target.name) return;
 
-const handleChange = (e) => {
-  if (!e || !e.target || !e.target.name) return;
+        const { name, value } = e.target;
 
-  const { name, value } = e.target;
-
-  setFormData(prev => ({
-    ...prev,
-    [name]: value
-  }));
-};
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
 
     const handleSubmit = async () => {
@@ -84,14 +106,14 @@ const handleChange = (e) => {
                     isClosable: true,
                 });
 
-               
-                    navigate("/upload-documents", {
-        state: {
-            userId: response?.data?.id,
-            email: response?.data?.email,
-            mustChangePassword: response?.data?.must_change_password,
-        }
-    });
+
+                navigate("/upload-documents", {
+                    state: {
+                        userId: response?.data?.id,
+                        email: response?.data?.email,
+                        mustChangePassword: response?.data?.must_change_password,
+                    }
+                });
 
                 setFormData({
                     name: "", gender: "", contact_no: "", date_of_birth: "", email: "", password: "",
@@ -182,14 +204,14 @@ const handleChange = (e) => {
                 }));
 
                 // const areaRes = await API.get(`/areas?district=${district}`);
-                const areaRes = await 
-  API.get(`/areas?pincode=${value}`);
-  
+                const areaRes = await
+                    API.get(`/areas?pincode=${value}`);
+
                 setAreas(areaRes.data.data);
 
             } catch (err) {
-  console.error("Pincode lookup failed", err);
-}
+                console.error("Pincode lookup failed", err);
+            }
         }
     };
 
@@ -216,12 +238,12 @@ const handleChange = (e) => {
                         <FormControl>
                             <FormLabel {...lableStyles} >Name</FormLabel>
                             <Input name="name" placeholder="Enter name" onChange={handleChange} />
-                            
+
                         </FormControl>
 
                         <FormControl>
                             <FormLabel {...lableStyles}>Select Gender</FormLabel>
-                            <Select  fontSize="13px" color="gray.400" name="gender" placeholder="Gender" onChange={handleChange}>
+                            <Select fontSize="13px" color="gray.400" name="gender" placeholder="Gender" onChange={handleChange}>
                                 <option value="MALE">Male</option>
                                 <option value="FEMALE">Female</option>
                                 <option value="OTHER">Other</option>
@@ -257,7 +279,7 @@ const handleChange = (e) => {
                             <FormLabel {...lableStyles}>Address</FormLabel>
                             <Input name="address_line2" placeholder="Address Line 2" onChange={handleChange} />
                         </FormControl>
-                         <FormControl>
+                        <FormControl>
                             <FormLabel {...lableStyles}>Pincode</FormLabel>
                             <Input name="pincode" maxLength={6} value={formData.pincode || ""} onChange={(e) => handlePincodeChange(e.target.value)} />
                         </FormControl>
@@ -277,27 +299,27 @@ const handleChange = (e) => {
                             <FormLabel {...lableStyles}>District</FormLabel>
                             <Input name="district" value={formData.district || ""} isReadOnly />
                         </FormControl>
-                       
-<FormControl>
-    <FormLabel {...lableStyles}>Select Area</FormLabel>
-                        <Select 
-                            placeholder="Select Area"
-                            value={formData.area || ""}
-                            isDisabled={!areas.length}
-                            onChange={(e) =>
-                                setFormData(prev => ({
-                                    ...prev,
-                                    area: e.target.value
-                                }))
-                            }
-                        >
-                            {areas.map((a, index) => (
-                              <option key={index} value={a.officename}>
-  {a.officename} 
-</option>
-                            ))}
-                        </Select>
-</FormControl>
+
+                        <FormControl>
+                            <FormLabel {...lableStyles}>Select Area</FormLabel>
+                            <Select
+                                placeholder="Select Area"
+                                value={formData.area || ""}
+                                isDisabled={!areas.length}
+                                onChange={(e) =>
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        area: e.target.value
+                                    }))
+                                }
+                            >
+                                {areas.map((a, index) => (
+                                    <option key={index} value={a.officename}>
+                                        {a.officename}
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </SimpleGrid>
 
                     {/* PERSONAL INFO */}
@@ -340,10 +362,7 @@ const handleChange = (e) => {
                                 ))}
                             </Select>
                         </FormControl>
-                        {/* <FormControl>
-                            <FormLabel {...lableStyles}>Date of Joining</FormLabel>
-                            <Input type="date" name="date_of_joining" onChange={handleChange} />
-                        </FormControl> */}
+
                         <FormControl>
                             <CustomDatePicker
                                 label="Date of Joining"
@@ -403,9 +422,16 @@ const handleChange = (e) => {
                             <FormLabel  {...lableStyles}>Headquarter</FormLabel>
                             <Input name="headquarter" onChange={handleChange} />
                         </FormControl>
+
                         <FormControl>
                             <FormLabel {...lableStyles}>Approver Name</FormLabel>
-                            <Input name="approver_name" onChange={handleChange} />
+                            <Select name="approver_name" placeholder="Select Approver" onChange={handleChange}>
+                                {empList?.map((emp) => (
+                                    <option key={emp.id} value={emp.id}>
+                                        {emp.name}
+                                    </option>
+                                ))}
+                            </Select>
                         </FormControl>
                     </SimpleGrid>
 
@@ -446,17 +472,17 @@ const handleChange = (e) => {
                         </FormControl>
                     </SimpleGrid>
 
-                       <Button
+                    <Button
                         colorScheme="blue"
                         alignSelf="center"
                         isLoading={loading}
                         onClick={handleSubmit}>
                         Create User
                     </Button>
-                  
+
                     {/* <DocumentUploadTable/> */}
 
-                 
+
                 </VStack>
             </Box>
         </>

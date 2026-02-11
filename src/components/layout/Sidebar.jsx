@@ -33,7 +33,7 @@ const Sidebar = () => {
         CRM
       </Text>
 
-      <VStack spacing={2} align="stretch">
+      <VStack spacing={2} align="stretch" borderRadius="34px">
         {/* Dashboard */}
         <Button {...sidebarButtonStyle} as={NavLink} to='/dashboard'>
           Dashboard
@@ -50,6 +50,7 @@ const Sidebar = () => {
             
             <Button {...sidebarButtonStyle} size="sm" as={NavLink} to="/hr-mgmt/add-employee" > Add Employee </Button>
             <Button {...sidebarButtonStyle} size="sm" as={NavLink} to="/hr-mgmt/view-employee-list" > Employee List </Button>
+            <Button {...sidebarButtonStyle} size="sm" as={NavLink} to="/hr-mgmt/upload-emp-salary">Upload Employee Salary</Button>
             <Button {...sidebarButtonStyle} size="sm" as={NavLink} to="/dept/add-department" > Add Department </Button>
             <Button {...sidebarButtonStyle} size="sm" as={NavLink} to="/roles/add-job-role" > Add Job Role </Button>
           </VStack>

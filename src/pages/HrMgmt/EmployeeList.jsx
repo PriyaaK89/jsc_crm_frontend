@@ -29,13 +29,8 @@ const EmployeeList = () => {
   const fetchEmployeeList = async () => {
     try {
       setLoading(true);
-
       const response = await API.get(API_ENDPOINTS.GET_USERS, {
-        params: {
-          page,
-          limit,
-          search
-        }
+        params: { page, limit, search }
       });
 
       if (response.status === 200) {

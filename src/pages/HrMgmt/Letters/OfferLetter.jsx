@@ -30,7 +30,9 @@ const OfferLetterPage = () => {
     terms_conditions: "",
     sales_target: "",
     date_of_issue: "",
-    emp_state: ""
+    emp_state: "",
+
+
   });
 
   /* ===== Fetch Employee ===== */
@@ -112,6 +114,7 @@ const OfferLetterPage = () => {
             setFormData({ ...formData, sales_target: e.target.value })
           }
         />
+        
 
       </Grid>
 

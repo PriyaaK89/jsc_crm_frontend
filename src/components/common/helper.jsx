@@ -11,3 +11,17 @@ export const formatDate = (dateValue) => {
     year: "numeric",
   });
 };
+
+  export const formatTime = (time) => {
+    if (!time) return "-";
+
+    const [hours, minutes] = time.split(":");
+    const date = new Date();
+    date.setHours(hours, minutes);
+
+    return date.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    });
+  };

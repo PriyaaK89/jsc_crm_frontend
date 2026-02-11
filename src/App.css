@@ -95,3 +95,9 @@ padding: 40px;
     width: 350px;
 
 }
+.chakra-form__label{
+  font-size: 12px !important;
+  color: #686868;
+  margin-bottom: 3px !important;
+}
+

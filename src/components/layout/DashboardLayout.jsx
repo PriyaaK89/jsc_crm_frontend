@@ -14,7 +14,7 @@ const DashboardLayout = ({ children }) => {
 
         <Topbar />
         <Flex flex="1">
-          <Box flex="1" p={6} bg="gray.50">
+          <Box flex="1" p={6}>
             {children}
           </Box>
 

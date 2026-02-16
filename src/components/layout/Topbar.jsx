@@ -6,11 +6,12 @@ const Topbar = () => {
     <Flex
       w="100%"
       h="60px"
-      bg="white"
+      bg="#F5F0FA"
+      color="#33333"
       align="center"
       px={6}
-      borderBottom="1px solid"
-      borderColor="gray.200" borderRadius="34px"
+      // borderBottom="1px solid"
+      // borderColor="gray.200" borderRadius="34px"
     >
       <Text fontWeight="bold" fontSize="lg">Dashboard</Text>
 

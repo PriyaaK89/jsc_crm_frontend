@@ -77,7 +77,7 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
       await API.post(API_ENDPOINTS?.upload_img, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
+ 
       toast({
         status: "success",
         description: "Document uploaded successfully",

@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import UserLogin from "../pages/Login/UserLogin";
 import AddEmpLayout from "../components/layout/AddEmpLayout";
@@ -10,25 +15,44 @@ import UploadEmpDocuments from "../pages/HrMgmt/DocUpload/UploadEmpDocuments";
 import EditEmployeePage from "../components/layout/EditEmployee";
 import OfferLetterLayout from "../components/layout/GenerateLetters/OfferLetterLayout";
 import JoiningLetterLayout from "../components/layout/GenerateLetters/JoiningLetterLayout";
-
-
-
+import ApproveIpUserListLayout from "../components/layout/ApproveIpUserListLayout";
+import EmpAttendaneLayout from "../components/layout/EmpAttendaneLayout";
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<UserLogin/>} />
-        <Route path="/dashboard" element={<Dashboard/>} />
-        <Route path="/hr-mgmt/add-employee" element={<AddEmpLayout/>}/>
-        <Route path="/change-password" element={<ChangePasswordLayout/>}/>
-        <Route path="/dept/add-department" element={<DepartmentLayout/>}/>
-        <Route path="/roles/add-job-role" element={<JobRoleLayout/>}/>
-        <Route path="/hr-mgmt/view-employee-list" element={<EmployeeListLayout/>}/>
-        <Route path="/upload-documents" element={  <UploadEmpDocuments/>}/>
-        <Route path="/edit-employee-details/:empId" element={<EditEmployeePage/>}/>
-        <Route path="/generate-offer-letter/:id" element={<OfferLetterLayout/>}/>
-        <Route path="/generate-joining-letter/:id" element={<JoiningLetterLayout/>}/>
+        <Route path="/login" element={<UserLogin />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/hr-mgmt/add-employee" element={<AddEmpLayout />} />
+        <Route path="/change-password" element={<ChangePasswordLayout />} />
+        <Route path="/dept/add-department" element={<DepartmentLayout />} />
+        <Route path="/roles/add-job-role" element={<JobRoleLayout />} />
+        <Route
+          path="/hr-mgmt/view-employee-list"
+          element={<EmployeeListLayout />}
+        />
+        <Route path="/upload-documents" element={<UploadEmpDocuments />} />
+        <Route
+          path="/edit-employee-details/:empId"
+          element={<EditEmployeePage />}
+        />
+        <Route
+          path="/generate-offer-letter/:id"
+          element={<OfferLetterLayout />}
+        />
+        <Route
+          path="/generate-joining-letter/:id"
+          element={<JoiningLetterLayout />}
+        />
+        <Route
+          path="/approve-ip-user-list"
+          element={<ApproveIpUserListLayout />}
+        />
+        <Route
+          path="/emp-attendance-report"
+          element={<EmpAttendaneLayout/>}
+        />
       </Routes>
     </Router>
   );

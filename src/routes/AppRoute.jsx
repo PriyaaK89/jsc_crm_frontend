@@ -17,25 +17,29 @@ import OfferLetterLayout from "../components/layout/GenerateLetters/OfferLetterL
 import JoiningLetterLayout from "../components/layout/GenerateLetters/JoiningLetterLayout";
 import ApproveIpUserListLayout from "../components/layout/ApproveIpUserListLayout";
 import EmpAttendaneLayout from "../components/layout/EmpAttendaneLayout";
+
 function App() {
   return (
     <Router>
       <Routes>
+        
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<UserLogin />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/hr-mgmt/add-employee" element={<AddEmpLayout />} />
+
         <Route path="/change-password" element={<ChangePasswordLayout />} />
         <Route path="/dept/add-department" element={<DepartmentLayout />} />
         <Route path="/roles/add-job-role" element={<JobRoleLayout />} />
-        <Route
-          path="/hr-mgmt/view-employee-list"
-          element={<EmployeeListLayout />}
-        />
+        
         <Route path="/upload-documents" element={<UploadEmpDocuments />} />
         <Route
           path="/edit-employee-details/:empId"
           element={<EditEmployeePage />}
+        />
+        <Route
+          path="/hr-mgmt/view-employee-list"
+          element={<EmployeeListLayout />}
         />
         <Route
           path="/generate-offer-letter/:id"
@@ -54,6 +58,7 @@ function App() {
           element={<EmpAttendaneLayout/>}
         />
       </Routes>
+
     </Router>
   );
 }

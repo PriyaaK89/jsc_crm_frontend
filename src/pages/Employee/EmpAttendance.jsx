@@ -14,6 +14,11 @@ import {
   Tr,
   Th,
   Td,
+  Card,
+  CardHeader,
+  CardBody,
+  Badge,
+  Heading,
 } from "@chakra-ui/react";
 
 import API from "../../services/api";
@@ -24,13 +29,53 @@ const EmpAttendance = () => {
   const [attendance, setAttendance] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // ✅ Employee Summary Static Data
+  const employeesReport = [
+    {
+      id: 1,
+      name: "John Doe",
+      department: "IT",
+      position: "Software Engineer",
+      salary: 75000,
+      joiningDate: "2022-03-15",
+      status: "Active",
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      department: "HR",
+      position: "HR Manager",
+      salary: 68000,
+      joiningDate: "2021-07-10",
+      status: "Active",
+    },
+    {
+      id: 3,
+      name: "Michael Brown",
+      department: "Finance",
+      position: "Accountant",
+      salary: 62000,
+      joiningDate: "2020-01-20",
+      status: "Inactive",
+    },
+    {
+      id: 4,
+      name: "Emily Davis",
+      department: "Marketing",
+      position: "Marketing Executive",
+      salary: 58000,
+      joiningDate: "2023-05-01",
+      status: "Active",
+    },
+  ];
+
   const [filters, setFilters] = useState({
     userId: "",
     startDate: "",
     endDate: "",
   });
 
-  // ✅ Fetch Users for Username Dropdown
+  // ✅ Fetch Users
   const fetchUsers = async () => {
     try {
       const res = await API.get(API_ENDPOINTS.GET_USERS);
@@ -46,7 +91,7 @@ const EmpAttendance = () => {
     fetchUsers();
   }, []);
 
-  // ✅ Fetch Attendance when View button clicked
+  // ✅ Fetch Attendance
   const handleViewAttendance = async () => {
     if (!filters.userId || !filters.startDate || !filters.endDate) {
       alert("Please select all fields");
@@ -55,16 +100,15 @@ const EmpAttendance = () => {
 
     setLoading(true);
     try {
-     const res = await API.get(
-  `${API_ENDPOINTS.get_Emp_Attendance}/${filters.userId}`,
-  {
-    params: {
-      start_date: filters.startDate,
-      end_date: filters.endDate,
-    },
-  }
-);
-
+      const res = await API.get(
+        `${API_ENDPOINTS.get_Emp_Attendance}/${filters.userId}`,
+        {
+          params: {
+            start_date: filters.startDate,
+            end_date: filters.endDate,
+          },
+        }
+      );
 
       if (res.status === 200) {
         setAttendance(res.data.attendance);
@@ -75,20 +119,66 @@ const EmpAttendance = () => {
       setLoading(false);
     }
   };
-  const fetchEmpAttendanceSummary = async()=>{
-     
-  }
 
   return (
     <Box p={6} bg="white" borderRadius="10px">
+      
+      {/* ================= Employee Summary Section ================= */}
+      <Box mb={10}>
+        <Heading size="lg" mb={6}>
+          Employee Summary Report data
+        </Heading>
+
+        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+          {employeesReport.map((emp) => (
+            <Card
+              key={emp.id}
+              borderRadius="lg"
+              boxShadow="md"
+              border="1px solid"
+              borderColor="gray.200"
+            >
+              <CardHeader>
+                <Text fontSize="lg" fontWeight="bold">
+                  {emp.name}
+                </Text>
+                <Badge
+                  mt={2}
+                  colorScheme={emp.status === "Active" ? "green" : "red"}
+                >
+                  {emp.status}
+                </Badge>
+              </CardHeader>
+
+              <CardBody>
+                <Text>
+                  <strong bg="blue">Department:</strong> {emp.department}
+                </Text>
+                <Text>
+                  <strong>Position:</strong> {emp.position}
+                </Text>
+                <Text>
+                  <strong>Salary:</strong> ₹{emp.salary}
+                </Text>
+                <Text>
+                  <strong>Joining Date:</strong> {emp.joiningDate}
+                </Text>
+              </CardBody>
+            </Card>
+          ))}
+        </SimpleGrid>
+      </Box>
+
+      {/* ================= Attendance Section ================= */}
       <Text fontSize="2xl" fontWeight="bold" mb={6}>
         Attendance List
       </Text>
 
       <VStack spacing={6} align="stretch">
-        {/* 🔽 Filters */}
+        
+        {/* Filters */}
         <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4}>
-          {/* Username Dropdown */}
+          
           <FormControl>
             <FormLabel>User Name</FormLabel>
             <Select
@@ -106,7 +196,6 @@ const EmpAttendance = () => {
             </Select>
           </FormControl>
 
-          {/* Start Date */}
           <FormControl>
             <FormLabel>Start Date</FormLabel>
             <input
@@ -118,7 +207,6 @@ const EmpAttendance = () => {
             />
           </FormControl>
 
-          {/* End Date */}
           <FormControl>
             <FormLabel>End Date</FormLabel>
             <input
@@ -130,7 +218,6 @@ const EmpAttendance = () => {
             />
           </FormControl>
 
-          {/* View Button */}
           <Button
             colorScheme="blue"
             alignSelf="end"
@@ -141,7 +228,7 @@ const EmpAttendance = () => {
           </Button>
         </SimpleGrid>
 
-        {/* 📋 Attendance Table */}
+        {/* Attendance Table */}
         {attendance.length > 0 && (
           <Table variant="simple">
             <Thead>
@@ -159,7 +246,7 @@ const EmpAttendance = () => {
                   <Td>{item.status}</Td>
                   <Td>{item.login_time}</Td>
                   <Td>{item.logout_time}</Td>
-                </Tr>
+                </Tr> 
               ))}
             </Tbody>
           </Table>

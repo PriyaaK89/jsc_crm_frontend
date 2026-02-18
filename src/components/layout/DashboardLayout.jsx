@@ -1,24 +1,46 @@
-// src/components/layout/DashboardLayout.jsx
-import { Flex, Box } from "@chakra-ui/react";
+import {
+  Flex,
+  Box,
+  useDisclosure,
+} from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
+import DesktopTopbar from "./Topbar";
+import MobileTopbar from "./MobileTopbar";
 import RightSidebar from "./RightSidebar";
 
-
 const DashboardLayout = ({ children }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
-    <Flex>
-      <Sidebar />
+    <Flex minH="100vh">
+      {/* Desktop Sidebar */}
+      <Box display={{ base: "none", md: "block" }}>
+        <Sidebar />
+      </Box>
 
-      <Flex direction="column" flex="1" minH="100vh">
+      
 
-        <Topbar />
+      {/* Main Content */}
+      <Flex direction="column" flex="1">
+        {/* Desktop Topbar */}
+        <Box display={{ base: "none", md: "block" }}>
+          <DesktopTopbar />
+        </Box>
+
+        {/* Mobile Topbar */}
+        <Box display={{ base: "block", md: "none" }}>
+          <MobileTopbar />
+        </Box>
+
         <Flex flex="1">
           <Box flex="1" p={6}>
             {children}
           </Box>
 
-          <RightSidebar/>
+          {/* Right Sidebar only for large screens */}
+          <Box display={{ base: "none", lg: "block" }}>
+            <RightSidebar />
+          </Box>
         </Flex>
       </Flex>
     </Flex>

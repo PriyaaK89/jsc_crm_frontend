@@ -1,15 +1,19 @@
-import { Box, VStack, Text, Button, Collapse, Icon } from "@chakra-ui/react";
-import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { useState, useContext } from "react";
 import { NavLink } from "react-router-dom";
+import {
+  Box,
+  VStack,
+  Text,
+  Button,
+  Collapse,
+  Icon,
+} from "@chakra-ui/react";
+import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
-import { FaUserLarge } from "react-icons/fa6";
+import { FaUser } from "react-icons/fa";
 import { FaUserPlus } from "react-icons/fa";
-// import { UserCheck } from "lucide-react";
-
 import {
   RiDashboardLine,
-  RiTeamLine,
   RiUserAddLine,
   RiUser3Line,
   RiFileList3Line,
@@ -33,10 +37,7 @@ const Sidebar = () => {
     borderRadius: "12px",
     fontWeight: "700",
     color: "#333333",
-    _hover: {
-      bg: "#C084FA",
-      color: "black",
-    },
+    _hover: { bg: "#C084FA", color: "black" },
   };
 
   const activeLinkStyle = ({ isActive }) =>
@@ -49,7 +50,8 @@ const Sidebar = () => {
       color="#333333"
       minH="100vh"
       p={4}
-      display={{ base: "none", md: "block" }}
+      // allow display in drawer for mobile
+      display="block"
     >
       <Text fontSize="2xl" fontWeight="bold" mb={8}>
         CRM
@@ -69,7 +71,8 @@ const Sidebar = () => {
 
         {/* HR Management */}
         <Button
-          leftIcon={<FaUserLarge />}
+          leftIcon={<FaUser />}
+
           rightIcon={
             <Icon
               as={openMenu === "users" ? ChevronDownIcon : ChevronRightIcon}
@@ -89,7 +92,7 @@ const Sidebar = () => {
               size="sm"
               as={NavLink}
               to="/hr-mgmt/add-employee"
-              style={activeLinkStyle}
+              style={activeLinkStyle} 
             >
               Add Employee
             </Button>
@@ -115,12 +118,13 @@ const Sidebar = () => {
             >
               Upload Salary
             </Button>
+
             <Button
               leftIcon={<UserCheck />}
-              to="/emp-attendance-report"
               {...sidebarButtonStyle}
-              as={NavLink}
               size="sm"
+              as={NavLink}
+              to="/emp-attendance-report"
               style={activeLinkStyle}
             >
               Attend Report
@@ -133,7 +137,7 @@ const Sidebar = () => {
           leftIcon={<RiUser3Line />}
           rightIcon={
             <Icon
-              as={openMenu === "leads" ? ChevronDownIcon : ChevronRightIcon}
+              // as={openMenu === "leads" ? ChevronDownIcon : ChevronRightIcon}
             />
           }
           {...sidebarButtonStyle}
@@ -148,13 +152,20 @@ const Sidebar = () => {
               leftIcon={<RiUserAddLine />}
               {...sidebarButtonStyle}
               size="sm"
+              as={NavLink}
+              to="/leads/new"
+              // onClick={onClose}
             >
               New Lead
             </Button>
+
             <Button
               leftIcon={<RiFileList3Line />}
               {...sidebarButtonStyle}
               size="sm"
+              as={NavLink}
+              to="/leads/list"
+              // onClick={onClose}
             >
               Lead List
             </Button>
@@ -162,12 +173,24 @@ const Sidebar = () => {
         </Collapse>
 
         {/* Reports */}
-        <Button leftIcon={<RiBarChartLine />} {...sidebarButtonStyle}>
+        <Button
+          leftIcon={<RiBarChartLine />}
+          {...sidebarButtonStyle}
+          as={NavLink}
+          to="/reports"
+          // onClick={onClose}
+        >
           Reports
         </Button>
 
         {/* Settings */}
-        <Button leftIcon={<RiSettings3Line />} {...sidebarButtonStyle}>
+        <Button
+          leftIcon={<RiSettings3Line />}
+          {...sidebarButtonStyle}
+          as={NavLink}
+          to="/settings"
+          // onClick={onClose}
+        >
           Settings
         </Button>
 
@@ -177,7 +200,7 @@ const Sidebar = () => {
             {...sidebarButtonStyle}
             as={NavLink}
             to="/approve-ip-user-list"
-            style={activeLinkStyle}
+            // onClick={onClose}
           >
             IP Request
           </Button>

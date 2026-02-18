@@ -243,7 +243,7 @@ const AddEmployee = () => {
                 
                         </HStack>
                 <Text fontSize="2xl" fontWeight="bold" mb={6}>
-                    Create User
+                    Create User Data
                 </Text>
 
                 <VStack spacing={6} align="stretch">

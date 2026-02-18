@@ -1,21 +1,39 @@
-import { Flex } from "@chakra-ui/react";
 import React from "react";
+import { Flex, Box, useDisclosure } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
+import DesktopTopbar from "./Topbar";
+import MobileTopbar from "./MobileTopbar";
 import EmployeeList from "../../pages/HrMgmt/EmployeeList";
 
-const EmployeeListLayout = ()=>{
-    return(
-        <>
-        <Flex bgColor="#f4f4f4">
-                <Sidebar />
-                <Flex direction="column" minH="100vh" width="78%" margin="1rem auto" gap="1rem">
-                    <Topbar />
-                    <EmployeeList/>
-                </Flex>
-        </Flex>
-        </>
-    )
-}
+const EmployeeListLayout = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure(); // for mobile drawer
 
-export default EmployeeListLayout
+  return (
+    <Flex bgColor="#f4f4f4" minH="100vh">
+      {/* Sidebar for Desktop */}
+      <Box display={{ base: "none", md: "block" }}>
+        <Sidebar />
+      </Box>
+
+      {/* Main Content */}
+      <Flex direction="column" flex="1">
+        {/* Desktop Topbar */}
+        <Box display={{ base: "none", md: "block" }}>
+          <DesktopTopbar />
+        </Box>
+
+        {/* Mobile Topbar */}
+        <Box display={{ base: "block", md: "none" }}>
+          <MobileTopbar onOpen={onOpen} />
+        </Box>
+
+        {/* Page Content */}
+        <Box flex="1" p={6}>
+          <EmployeeList />
+        </Box>
+      </Flex>
+    </Flex>
+  );
+};
+
+export default EmployeeListLayout;

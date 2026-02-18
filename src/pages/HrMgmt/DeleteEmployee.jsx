@@ -9,6 +9,7 @@ import {
   Button,
   Text,
   useToast,
+  Flex
 } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";

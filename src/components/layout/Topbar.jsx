@@ -1,19 +1,20 @@
 import { Flex, Text, Avatar, Spacer, IconButton } from "@chakra-ui/react";
 import { Bell } from "lucide-react";
 
-const Topbar = () => {
+const DesktopTopbar = () => {
   return (
     <Flex
       w="100%"
       h="60px"
       bg="#F5F0FA"
-      color="#33333"
+      color="#333333"
       align="center"
       px={6}
-      // borderBottom="1px solid"
-      // borderColor="gray.200" borderRadius="34px"
+      boxShadow="sm"
     >
-      <Text fontWeight="bold" fontSize="lg">Dashboard</Text>
+      <Text fontWeight="bold" fontSize="lg">
+        Dashboard
+      </Text>
 
       <Spacer />
 
@@ -21,12 +22,12 @@ const Topbar = () => {
         aria-label="Notifications"
         variant="ghost"
         mr={4}
-      >
-        <Bell size={20} />
-      </IconButton>
-      <Avatar name="Rahul Sharma" size="sm"/>
+        icon={<Bell size={20} />}
+      />
+
+      <Avatar name="Rahul Sharma" size="sm" />
     </Flex>
   );
 };
 
-export default Topbar;
+export default DesktopTopbar;

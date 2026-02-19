@@ -28,46 +28,10 @@ const EmpAttendance = () => {
   const [users, setUsers] = useState([]);
   const [attendance, setAttendance] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [empRep, setEmpRep] = useState([]);
 
-  // ✅ Employee Summary Static Data
-  const employeesReport = [
-    {
-      id: 1,
-      name: "John Doe",
-      department: "IT",
-      position: "Software Engineer",
-      salary: 75000,
-      joiningDate: "2022-03-15",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      department: "HR",
-      position: "HR Manager",
-      salary: 68000,
-      joiningDate: "2021-07-10",
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Michael Brown",
-      department: "Finance",
-      position: "Accountant",
-      salary: 62000,
-      joiningDate: "2020-01-20",
-      status: "Inactive",
-    },
-    {
-      id: 4,
-      name: "Emily Davis",
-      department: "Marketing",
-      position: "Marketing Executive",
-      salary: 58000,
-      joiningDate: "2023-05-01",
-      status: "Active",
-    },
-  ];
+ 
+   
 
   const [filters, setFilters] = useState({
     userId: "",
@@ -90,14 +54,23 @@ const EmpAttendance = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
-
-  // ✅ Fetch Attendance
-  const handleViewAttendance = async () => {
-    if (!filters.userId || !filters.startDate || !filters.endDate) {
-      alert("Please select all fields");
-      return;
+  const employeesReport =  async() => {
+     try {
+      const res = await API.get(API_ENDPOINTS.get_Emp_Attendance_Summary);
+      if (res.status === 200) {
+        setEmpRep(res.data.data);
+      }
     }
+      catch (error) {
+            console.log(error);
+      }
+      
+     }
+     useEffect(() => {
+      employeesReport();
+     },[]);
 
+  const handleViewAttendance = async () => {
     setLoading(true);
     try {
       const res = await API.get(
@@ -121,7 +94,7 @@ const EmpAttendance = () => {
   };
 
   return (
-    <Box p={6} bg="white" borderRadius="10px">
+    <Box  p={6} bg="white" borderRadius="10px" boxShadow="md">
       
       {/* ================= Employee Summary Section ================= */}
       <Box mb={10}>
@@ -130,7 +103,7 @@ const EmpAttendance = () => {
         </Heading>
 
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
-          {employeesReport.map((emp) => (
+          {empRep.map((emp) => (
             <Card
               key={emp.id}
               borderRadius="lg"

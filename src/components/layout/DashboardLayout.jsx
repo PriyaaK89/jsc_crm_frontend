@@ -12,7 +12,7 @@ const DashboardLayout = ({ children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Flex minH="100vh">
+    <Flex bg="f4f4f4">
       {/* Desktop Sidebar */}
       <Box display={{ base: "none", md: "block" }}>
         <Sidebar />
@@ -32,8 +32,8 @@ const DashboardLayout = ({ children }) => {
           <MobileTopbar />
         </Box>
 
-        <Flex flex="1">
-          <Box flex="1" p={6}>
+        <Flex flex="1" >
+          <Box flex="1">
             {children}
           </Box>
 

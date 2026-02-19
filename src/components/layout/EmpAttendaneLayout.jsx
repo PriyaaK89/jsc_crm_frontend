@@ -37,7 +37,7 @@ const EmpAttendaneLayout = () => {
          </Box>
 
         {/* Page Content */}
-        <Box flex="1" p={6}>
+        <Box flex="1" px={6} >
            <EmpAttendance />
         </Box>
 

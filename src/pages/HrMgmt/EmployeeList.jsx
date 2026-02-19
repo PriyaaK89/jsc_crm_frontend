@@ -86,7 +86,7 @@ onDeleteModalOpen();
     <>
     <ViewUploadedDocument isOpen={isOpen} onClose={onClose} selectedId={selectedId}/>
     <DeleteEmployeeModel isDeleteModalOpen={isDeleteModalOpen} onDeleteModalClose={onDeleteModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList}/>
-      <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px 0px'>
+      <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='0.75rem' boxShadow="0px 2px 4px rgba(0, 0, 0, 0.1)" w="100%">
         {/* Header */}
         <HStack justifyContent='space-between'>
           <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
@@ -105,7 +105,7 @@ onDeleteModalOpen();
         <Flex justifyContent="space-between" mb={4} alignItems='baseline'>
 
           <Box>
-            <Text color='#45464E' fontSize='13px' fontWeight='500'>Employee List Management</Text>
+            <Text color='#45464E' fontSize='13px' fontWeight='500' >Employee List Management data</Text>
           </Box>
           <Box position='relative' w='40%'>
             <InputGroup justifyContent='end'>
@@ -116,13 +116,16 @@ onDeleteModalOpen();
           </Box></Flex>
 
         {/* Table */}
-        <Box bg="white" borderRadius="md" boxShadow="sm" overflowX="auto" border="1px solid #e5e5e5" >
           {loading ? (
+
             <Flex justify="center" align="center" py={10}>
               <Spinner size="lg" />
             </Flex>
           ) : (
-            <Table variant="striped" colorScheme="gray" size="sm" width="2650px" className="productsTable">
+   <Box  overflowX="auto"
+ 
+>
+              <Table variant="striped" colorScheme="gray" size="sm" minWidth="1200px" className="productsTable">
               <Thead>
                 <Tr>
                   {["Name", "Email", "Department", "Role", "Contact", "City / State", "Salary(Rs.)", "DOJ", "Leaves", "Login", "Logout", "Approver","View Doc", "Action", "Generate Letters"].map((header, index) => (
@@ -250,11 +253,13 @@ onDeleteModalOpen();
               </Tbody>
 
             </Table>
+            </Box>
+
           )}
         </Box>
 
         {/* Pagination */}
-        <Box w="full" p={4}>
+        <Box  p={4}>
           <Flex justify="space-between" align="center">
             {/* Items per page */}
             <Flex align="center" gap="4px">
@@ -312,7 +317,6 @@ onDeleteModalOpen();
           </Flex>
         </Box>
 
-      </Box>
     </>
   )
 }

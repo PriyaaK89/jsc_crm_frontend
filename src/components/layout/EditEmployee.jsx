@@ -7,7 +7,7 @@ import EditEmployee from "../../pages/HrMgmt/EditEmployee";
 const EditEmployeePage = ()=>{
     return(
         <>
-        <Flex>
+        <Flex bg="#f4f4f4">
             <Sidebar />
                 <Flex direction="column" minH="100vh" width="78%" margin="1rem auto" gap="1rem">
                     <Topbar />

@@ -227,7 +227,7 @@ const AddEmployee = () => {
  
     return (
         <>
-            <Box p={6} bg="white" borderRadius="10px">
+            <Box p={6} bg="white" borderRadius="10px" boxShadow="md">
                 <HStack justifyContent='space-between'>
                           <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                             <BreadcrumbItem>
@@ -243,7 +243,7 @@ const AddEmployee = () => {
                 
                         </HStack>
                 <Text fontSize="2xl" fontWeight="bold" mb={6}>
-                    Create User Data
+                    Create User
                 </Text>
 
                 <VStack spacing={6} align="stretch">

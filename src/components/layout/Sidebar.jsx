@@ -46,12 +46,14 @@ const Sidebar = () => {
   return (
     <Box
       w="268px"
-      bg="#F5F0FA"
+      bg="#f4f4f4"
       color="#333333"
       minH="100vh"
       p={4}
-      // allow display in drawer for mobile
-      display="block"
+      boxShadow="md"
+      border="1px solid #e2e8f0"
+       // allow display in drawer for mobile
+      // display="block"
     >
       <Text fontSize="2xl" fontWeight="bold" mb={8}>
         CRM

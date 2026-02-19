@@ -16,7 +16,7 @@ const EmployeeListLayout = () => {
       </Box>
 
       {/* Main Content */}
-      <Flex direction="column" flex="1">
+      <Flex direction="column" flex="1" p={6} mt={4}>
         {/* Desktop Topbar */}
         <Box display={{ base: "none", md: "block" }}>
           <DesktopTopbar />
@@ -24,11 +24,11 @@ const EmployeeListLayout = () => {
 
         {/* Mobile Topbar */}
         <Box display={{ base: "block", md: "none" }}>
-          <MobileTopbar onOpen={onOpen} />
+          <MobileTopbar />
         </Box>
 
         {/* Page Content */}
-        <Box flex="1" p={6}>
+        <Box flex="1"p={6}   >
           <EmployeeList />
         </Box>
       </Flex>

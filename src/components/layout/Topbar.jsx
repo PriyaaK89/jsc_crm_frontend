@@ -6,11 +6,13 @@ const DesktopTopbar = () => {
     <Flex
       w="100%"
       h="60px"
-      bg="#F5F0FA"
+      bg="white"
       color="#333333"
       align="center"
-      px={6}
       boxShadow="sm"
+      borderRadius="34px"
+      mt={6}
+      px={{ base: 4, md: 6 }}
     >
       <Text fontWeight="bold" fontSize="lg">
         Dashboard

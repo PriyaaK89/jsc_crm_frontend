@@ -9,9 +9,15 @@ import {
   Heading,
   useToast,
   VStack,
+  HStack,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink
 } from "@chakra-ui/react";
+
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
+import { GoHomeFill } from "react-icons/go";
 
 
 const CreateDepartment = () => {
@@ -64,6 +70,20 @@ const CreateDepartment = () => {
 
   return (
     <Box w="100%" bg="white" p={6} borderRadius="md" boxShadow="md" >
+      <HStack justifyContent='space-between'>
+                <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href='/dashboard'> <GoHomeFill color="#5570F1"/> </BreadcrumbLink>
+                  </BreadcrumbItem>
+      
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href='hr-mgmt/view-employee-list' color='#8B8D97' fontSize='13px'>Employee List</BreadcrumbLink>
+                  </BreadcrumbItem>
+      
+                </Breadcrumb>
+                {/* <Button backgroundColor='#3E60AA' color='white' fontWeight='400' height='36px' fontSize='14px' borderRadius='12px' _hover={{ backgroundColor: '#5570F1' }}><span style={{ fontSize: '18px', paddingRight: '10px' }}><FaPlus /></span> Create a New Product</Button> */}
+      
+              </HStack> 
       <Heading size="md" textAlign="center" mb={6} fontWeight="600">
         Create Department
       </Heading>

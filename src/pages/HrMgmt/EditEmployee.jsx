@@ -189,7 +189,7 @@ const EditEmployee = () => {
 
     /* ---------------- UI ---------------- */
     return (
-        <Box p={6} bg="white" borderRadius="10px">
+        <Box p={6} bg="white" borderRadius="10px" boxShadow="sm" >
             <Text fontSize="2xl" fontWeight="bold" mb={6}>
                 Edit Employee
             </Text>

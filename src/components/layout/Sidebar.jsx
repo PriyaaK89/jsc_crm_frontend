@@ -1,76 +1,213 @@
-import { Box, VStack, Text, Button, Collapse, Icon,} from "@chakra-ui/react";
-import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { NavLink } from "react-router-dom";
+import {
+  Box,
+  VStack,
+  Text,
+  Button,
+  Collapse,
+  Icon,
+  border,
+} from "@chakra-ui/react";
+import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { AuthContext } from "../../context/AuthContext";
+import { FaUser } from "react-icons/fa";
+import { FaUserPlus } from "react-icons/fa";
+import {
+  RiDashboardLine,
+  RiUserAddLine,
+  RiUser3Line,
+  RiFileList3Line,
+  RiBarChartLine,
+  RiSettings3Line,
+} from "react-icons/ri";
+import { UserCheck } from "lucide-react";
 
 const Sidebar = () => {
   const [openMenu, setOpenMenu] = useState(null);
+  const { auth } = useContext(AuthContext);
+  const role = auth?.user?.role;
 
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
   };
 
   const sidebarButtonStyle = {
-  variant: "ghost",
-  justifyContent: "flex-start",
-  color: "white",
-  _hover: {
-    bg: "white",
-    color: "black",
-  },
-};
+    variant: "ghost",
+    justifyContent: "flex-start",
+    fontWeight: "700",
+    color: "#333333",
+    _hover: { border:"1px solid #d5d5d5", borderRadius: "28px", bg: "transparent" },
+    height:"39px"
+  };
+
+  const activeLinkStyle = ({ isActive }) =>
+    isActive ? { border: "1px solid #d5d5d5", borderRadius: "28px" } : undefined;
 
   return (
     <Box
       w="268px"
-      bg="#114d72"
-      color="white"
-      minH="100vh"
-      p={5}
-      display={{ base: "none", md: "block" }}
+      bg="#f4f4f4"
+      color="#333333"
+      minH="95.6vh"
+      p={4}
+      position="fixed"
+      top={5}
+      left={4}
+      overflow="hidden"
     >
-      <Text fontSize="2xl" fontWeight="bold" mb={10}>
+      <Text fontSize="2xl" fontWeight="bold" mb={8}>
         CRM
       </Text>
 
-      <VStack spacing={2} align="stretch" borderRadius="34px">
+      <VStack spacing={2} align="stretch">
         {/* Dashboard */}
-        <Button {...sidebarButtonStyle} as={NavLink} to='/dashboard'>
+        <Button
+          leftIcon={<RiDashboardLine />}
+          as={NavLink}
+          to="/dashboard"
+          {...sidebarButtonStyle}
+          style={activeLinkStyle}
+        >
           Dashboard
         </Button>
 
-        {/* Users Menu */}
-        <Button {...sidebarButtonStyle} onClick={() => toggleMenu("users")} >
+        {/* HR Management */}
+        <Button
+          leftIcon={<FaUser />}
+
+          rightIcon={
+            <Icon
+              as={openMenu === "users" ? ChevronDownIcon : ChevronRightIcon}
+            />
+          }
+          {...sidebarButtonStyle}
+          onClick={() => toggleMenu("users")}
+        >
           HR Management
-          <Icon as={openMenu === "users" ? ChevronDownIcon : ChevronRightIcon} />
         </Button>
 
         <Collapse in={openMenu === "users"} animateOpacity>
           <VStack pl={6} align="stretch" spacing={1}>
-            
-            <Button {...sidebarButtonStyle} size="sm" as={NavLink} to="/hr-mgmt/add-employee" > Add Employee </Button>
-            <Button {...sidebarButtonStyle} size="sm" as={NavLink} to="/hr-mgmt/view-employee-list" > Employee List </Button>
-            <Button {...sidebarButtonStyle} size="sm" as={NavLink} to="/hr-mgmt/upload-emp-salary">Upload Employee Salary</Button>
-            <Button {...sidebarButtonStyle} size="sm" as={NavLink} to="/dept/add-department" > Add Department </Button>
-            <Button {...sidebarButtonStyle} size="sm" as={NavLink} to="/roles/add-job-role" > Add Job Role </Button>
+            <Button
+              leftIcon={<FaUserPlus />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/hr-mgmt/add-employee"
+              style={activeLinkStyle} 
+            >
+              Add Employee
+            </Button>
+
+            <Button
+              leftIcon={<RiUser3Line />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/hr-mgmt/view-employee-list"
+              style={activeLinkStyle}
+            >
+              Employee List
+            </Button>
+
+            <Button
+              leftIcon={<RiFileList3Line />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/hr-mgmt/upload-emp-salary"
+              style={activeLinkStyle}
+            >
+              Upload Salary
+            </Button>
+
+            <Button
+              leftIcon={<UserCheck />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/emp-attendance-report"
+              style={activeLinkStyle}
+            >
+              Attend Report
+            </Button>
           </VStack>
         </Collapse>
 
-        {/* Leads Menu */}
-        <Button {...sidebarButtonStyle} onClick={() => toggleMenu("leads")}>
+        {/* Leads */}
+        <Button
+          leftIcon={<RiUser3Line />}
+          rightIcon={
+            <Icon
+              // as={openMenu === "leads" ? ChevronDownIcon : ChevronRightIcon}
+            />
+          }
+          {...sidebarButtonStyle}
+          onClick={() => toggleMenu("leads")}
+        >
           Leads
-          <Icon as={openMenu === "leads" ? ChevronDownIcon : ChevronRightIcon} />
         </Button>
 
         <Collapse in={openMenu === "leads"} animateOpacity>
           <VStack pl={6} align="stretch" spacing={1}>
-            <Button {...sidebarButtonStyle} size="sm"> New Lead </Button>
-            <Button {...sidebarButtonStyle} size="sm"> Lead List </Button>
+            <Button
+              leftIcon={<RiUserAddLine />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/leads/new"
+              // onClick={onClose}
+            >
+              New Lead
+            </Button>
+
+            <Button
+              leftIcon={<RiFileList3Line />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/leads/list"
+              // onClick={onClose}
+            >
+              Lead List
+            </Button>
           </VStack>
         </Collapse>
 
-        <Button {...sidebarButtonStyle}> Reports </Button>
-        <Button {...sidebarButtonStyle}> Settings </Button>
+        {/* Reports */}
+        <Button
+          leftIcon={<RiBarChartLine />}
+          {...sidebarButtonStyle}
+          as={NavLink}
+          to="/reports"
+          // onClick={onClose}
+        >
+          Reports
+        </Button>
+
+        {/* Settings */}
+        <Button
+          leftIcon={<RiSettings3Line />}
+          {...sidebarButtonStyle}
+          as={NavLink}
+          to="/settings"
+          // onClick={onClose}
+        >
+          Settings
+        </Button>
+
+        {(role === "ADMIN" || role === "SUPER_ADMIN") && (
+          <Button
+            leftIcon={<RiUserAddLine />}
+            {...sidebarButtonStyle}
+            as={NavLink}
+            to="/approve-ip-user-list"
+            // onClick={onClose}
+          >
+            IP Request
+          </Button>
+        )}
       </VStack>
     </Box>
   );

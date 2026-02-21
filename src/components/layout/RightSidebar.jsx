@@ -5,8 +5,8 @@ const RightSidebar = () => {
   return (
     <Box
       w="250px"
-      bg="gray.50"
-      minH="100vh"
+      bg="white"
+      // minH="100vh"
       p={5}
       display={{ base: "none", lg: "block" }}
     >

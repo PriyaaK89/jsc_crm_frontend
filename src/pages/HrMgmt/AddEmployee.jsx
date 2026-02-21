@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
-import { Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, } from "@chakra-ui/react";
+import { Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, HStack, Breadcrumb,BreadcrumbItem,BreadcrumbLink  } from "@chakra-ui/react";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
+import { GoHomeFill } from "react-icons/go";
 
 
 
@@ -223,10 +224,24 @@ const AddEmployee = () => {
         marginBottom: "3px"
     };
 
-
+ 
     return (
         <>
-            <Box p={6} bg="white" borderRadius="10px">
+            <Box bg="white" borderRadius="10px" >
+                <HStack justifyContent='space-between'>
+                          <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+                            <BreadcrumbItem>
+                              <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                            </BreadcrumbItem>
+                
+                            <BreadcrumbItem>
+                              <BreadcrumbLink href='hr-mgmt/view-employee-list' color='#8B8D97' fontSize='13px'>Employee List</BreadcrumbLink>
+                            </BreadcrumbItem>
+                
+                          </Breadcrumb>
+                          {/* <Button backgroundColor='#3E60AA' color='white' fontWeight='400' height='36px' fontSize='14px' borderRadius='12px' _hover={{ backgroundColor: '#5570F1' }}><span style={{ fontSize: '18px', paddingRight: '10px' }}><FaPlus /></span> Create a New Product</Button> */}
+                
+                        </HStack>
                 <Text fontSize="2xl" fontWeight="bold" mb={6}>
                     Create User
                 </Text>
@@ -234,6 +249,8 @@ const AddEmployee = () => {
                 <VStack spacing={6} align="stretch">
                     {/* BASIC DETAILS */}
                     <Text fontWeight="bold">Basic Details</Text>
+
+
                     <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
                         <FormControl>
                             <FormLabel {...lableStyles} >Name</FormLabel>

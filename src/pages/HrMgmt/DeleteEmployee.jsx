@@ -3,13 +3,13 @@ import {
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
   ModalBody,
   ModalFooter,
   ModalCloseButton,
   Button,
   Text,
   useToast,
+  Flex
 } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
@@ -65,7 +65,14 @@ const DeleteEmployeeModel = ({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Delete Employee</ModalHeader>
+        {/* <ModalHeader>Delete Employee</ModalHeader> */}
+
+        <Flex bg="#E53E3E" color="white" px="16px" py="5px" justify="space-between" >
+         <Text fontWeight="bold">
+          Delete Employee
+         </Text>
+         <ModalCloseButton position="static"/>
+        </Flex>
         <ModalCloseButton />
 
         <ModalBody>
@@ -86,9 +93,11 @@ const DeleteEmployeeModel = ({
             Cancel
           </Button>
           <Button
-            colorScheme="red"
+           bg="#E53E3E"
             onClick={handleDeleteEmployee}
             isLoading={loading}
+            color="white"
+            _hover={{bg:"#dd2c2c"}}
           >
             Delete
           </Button>

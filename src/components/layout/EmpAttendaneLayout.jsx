@@ -1,13 +1,14 @@
 import React from "react";
 import { Flex, Box } from "@chakra-ui/react";
+
 import Sidebar from "./Sidebar";
 import DesktopTopbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
-import EmployeeList from "../../pages/HrMgmt/EmployeeList";
+import EmpAttendance from "../../pages/Employee/EmpAttendance";
 
-const EmployeeListLayout = () => {
+const EmpAttendanceLayout = () => {
   return (
-    <Flex bg="#f4f4f4" minH="100vh">
+    <Flex minH="100vh" bg="#f4f4f4">
 
       {/* Fixed Sidebar */}
       <Box
@@ -26,6 +27,7 @@ const EmployeeListLayout = () => {
         direction="column"
         flex="1"
         ml={{ base: 0, md: "268px" }}
+        
       >
 
         {/* Desktop Topbar */}
@@ -43,34 +45,31 @@ const EmployeeListLayout = () => {
           display={{ base: "block", md: "none" }}
           px={4}
           py={4}
-          mx={3}
         >
           <MobileTopbar />
         </Box>
 
-        {/* Content Section */}
-        <Flex
+        {/* Page Content */}
+        <Box
           flex="1"
           px={{ base: 0, md: 6 }}
-          py={4}
+          py={6}
           overflow="auto"
+          mx={3}
         >
           <Box
-            flex="1"
             bg="white"
+            p={6}
             borderRadius="21px"
             boxShadow="sm"
-            px={4}
-            py={2}
-            mx={3}
           >
-            <EmployeeList />
+            <EmpAttendance />
           </Box>
-        </Flex>
+        </Box>
 
       </Flex>
     </Flex>
   );
 };
 
-export default EmployeeListLayout;
+export default EmpAttendanceLayout;

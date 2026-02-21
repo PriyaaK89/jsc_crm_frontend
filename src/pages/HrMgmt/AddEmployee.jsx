@@ -227,7 +227,7 @@ const AddEmployee = () => {
  
     return (
         <>
-            <Box p={6} bg="white" borderRadius="10px" boxShadow="md">
+            <Box bg="white" borderRadius="10px" >
                 <HStack justifyContent='space-between'>
                           <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                             <BreadcrumbItem>
@@ -249,6 +249,8 @@ const AddEmployee = () => {
                 <VStack spacing={6} align="stretch">
                     {/* BASIC DETAILS */}
                     <Text fontWeight="bold">Basic Details</Text>
+
+
                     <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
                         <FormControl>
                             <FormLabel {...lableStyles} >Name</FormLabel>

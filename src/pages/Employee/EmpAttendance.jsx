@@ -94,10 +94,10 @@ const EmpAttendance = () => {
   };
 
   return (
-    <Box  p={6} bg="white" borderRadius="10px" boxShadow="md">
+    <Box  bg="white" >
       
       {/* ================= Employee Summary Section ================= */}
-      <Box mb={10}>
+      <Box>
         <Heading size="lg" mb={6}>
           Employee Summary Report data
         </Heading>

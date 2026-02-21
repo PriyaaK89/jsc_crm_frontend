@@ -25,7 +25,7 @@ const OfferLetterLayout = () => {
 
         <Flex
           direction="column"
-          minH="100vh"
+          // minH="100vh"
           width="78%"
           margin="1rem auto"
           gap="1rem"

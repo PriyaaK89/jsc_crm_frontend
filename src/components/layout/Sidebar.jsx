@@ -7,6 +7,7 @@ import {
   Button,
   Collapse,
   Icon,
+  border,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
@@ -34,26 +35,26 @@ const Sidebar = () => {
   const sidebarButtonStyle = {
     variant: "ghost",
     justifyContent: "flex-start",
-    borderRadius: "12px",
     fontWeight: "700",
     color: "#333333",
-    _hover: { bg: "#C084FA", color: "black" },
+    _hover: { border:"1px solid #d5d5d5", borderRadius: "28px", bg: "transparent" },
+    height:"39px"
   };
 
   const activeLinkStyle = ({ isActive }) =>
-    isActive ? { backgroundColor: "#C084FA", color: "black" } : undefined;
+    isActive ? { border: "1px solid #d5d5d5", borderRadius: "28px" } : undefined;
 
   return (
     <Box
       w="268px"
       bg="#f4f4f4"
       color="#333333"
-      minH="100vh"
+      minH="95.6vh"
       p={4}
-      boxShadow="md"
-      border="1px solid #e2e8f0"
-       // allow display in drawer for mobile
-      // display="block"
+      position="fixed"
+      top={5}
+      left={4}
+      overflow="hidden"
     >
       <Text fontSize="2xl" fontWeight="bold" mb={8}>
         CRM

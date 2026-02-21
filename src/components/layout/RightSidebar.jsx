@@ -6,7 +6,7 @@ const RightSidebar = () => {
     <Box
       w="250px"
       bg="white"
-      minH="100vh"
+      // minH="100vh"
       p={5}
       display={{ base: "none", lg: "block" }}
     >

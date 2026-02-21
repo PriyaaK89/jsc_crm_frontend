@@ -1,15 +1,70 @@
+import React from "react";
+import { Flex, Box } from "@chakra-ui/react";
+
 import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
-import { Flex } from "@chakra-ui/react";
+import DesktopTopbar from "./Topbar";
+import MobileTopbar from "./MobileTopbar";
 import ApproveIpUserList from "../../pages/ApproveIp/ApproveIpUserList";
 
 const ApproveIpUserListLayout = () => {
   return (
-    <Flex bg="#f4f4f4">
-      <Sidebar />
-      <Flex direction="column" minH="100vh" width="78%" m="1rem auto" gap="1rem">
-        <Topbar />
-        <ApproveIpUserList />
+    <Flex minH="100vh" bg="#f4f4f4">
+
+      {/* Fixed Sidebar */}
+      <Box
+        position="fixed"
+        top="0"
+        left="0"
+        w="268px"
+        h="100vh"
+        display={{ base: "none", md: "block" }}
+      >
+        <Sidebar />
+      </Box>
+
+      {/* Main Content Area */}
+      <Flex
+        direction="column"
+        flex="1"
+        ml={{ base: 0, md: "268px" }}
+        w="100%"
+      >
+
+        {/* Desktop Topbar */}
+        <Box
+          display={{ base: "none", md: "block" }}
+          px={{ base: 4, md: 6 }}
+          pt={4}
+        >
+          <DesktopTopbar />
+        </Box>
+
+        {/* Mobile Topbar */}
+        <Box
+          display={{ base: "block", md: "none" }}
+          px={4}
+          py={4}
+        >
+          <MobileTopbar />
+        </Box>
+
+        {/* Page Content */}
+        <Box
+          flex="1"
+          px={{ base: 4, md: 6 }}
+          py={6}
+          overflow="auto"
+        >
+          <Box
+            bg="white"
+            p={6}
+            borderRadius="21px"
+            boxShadow="sm"
+          >
+            <ApproveIpUserList />
+          </Box>
+        </Box>
+
       </Flex>
     </Flex>
   );

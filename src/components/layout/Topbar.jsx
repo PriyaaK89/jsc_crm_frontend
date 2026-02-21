@@ -11,7 +11,6 @@ const DesktopTopbar = () => {
       align="center"
       boxShadow="sm"
       borderRadius="34px"
-      mt={6}
       px={{ base: 4, md: 6 }}
     >
       <Text fontWeight="bold" fontSize="lg">

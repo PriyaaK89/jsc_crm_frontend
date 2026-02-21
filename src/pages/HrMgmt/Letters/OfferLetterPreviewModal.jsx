@@ -7,7 +7,7 @@ import r_logo from "../../../assets/images/jamidara_logo.png";
 import { formatDate } from "../../../components/common/helper";
 import emailIcon from "../../../assets/images/email.png";
 import webIcon from "../../../assets/images/web.png";
-
+import jsc_stamp from "../../../assets/images/stamp_jsc.png"
 
 const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
 
@@ -82,17 +82,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
 
               <Box width="89%" marginLeft="3rem" className="letter-content">
                 <Image src={r_logo} alt="Round Logo" className="watermark_img" />
-                {/* Title */}
-                <Text
-                  textAlign="center"
-                  fontSize="28px"
-                  fontWeight="bold"
-                  color="#1A365D"
-                  mt="25px"
-                  mb="30px"
-                >
-                  JOB OFFER LETTER
-                </Text>
+                <Text textAlign="center" fontSize="24px" fontWeight="bold" color="#1A365D" mt="25px" mb="30px"> PROVISIONAL OFFER LETTER </Text>
 
                 {/* To Section */}
                 <Box mb="20px">
@@ -102,10 +92,9 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                   </HStack>
                   <Text>{employee?.name}</Text>
                   <Text textTransform="capitalize">{employee?.address_line1}</Text>
-                  <Text>
-                    {employee?.city}, {employee?.state}, {employee?.pincode}
-                  </Text>
+                  <Text>{employee?.city}, {employee?.state}, {employee?.pincode} </Text>
                   <Text>{employee.contact_no}</Text>
+                  <Text>Sub - Employee Provisional Offer Letter</Text>
                 </Box>
 
                 {/* Body */}
@@ -119,8 +108,8 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                     {formData?.emp_state || employee?.state}.
                   </Text>
 
-                  <Text>Area – {employee?.area}</Text>
-                  <Text>H.Q. – {employee?.headquarter}</Text>
+                  <Text>Area – {formData?.area ? formData?.area : employee?.area}</Text>
+                  <Text>H.Q. – {formData?.headquarter? formData?.headquarter : employee?.headquarter}</Text>
 
                   <Text>You will receive salary and benefits as detailed in the Annexure.</Text>
 
@@ -169,37 +158,21 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
               <VStack align="flex-start" spacing={4} width="89%" marginLeft="4rem" className="letter-content">
                 <Image src={r_logo} alt="Round Logo" className="watermark_img1" />
                 <Text textAlign="center" mt="2rem" mb="2rem" width="89%">CONTD:-2</Text>
-                <Text>
-                  After checking the above documents, we will return the originals to you.
-                </Text>
-
-                <Text>
-                  A detailed appointment letter with salary breakup and service conditions
-                  will be issued upon joining.
-                </Text>
-
-                <Text>
-                  Please confirm your acceptance and joining date before the mentioned date,
-                  failing which this offer will stand cancelled.
-                </Text>
-
-                <Text>
-                  Welcome to <strong>Jamidara Seeds Corporation</strong>.
-                </Text>
-
-                <Text fontWeight="bold" mt="10px">
-                  Other Terms
-                </Text>
+                <Text> After checking the above documents, we will return the originals to you. </Text>
+                <Text> We will issue a detailed appointment letter with the salary break up and other service's condition on your joining with us. Please send your acceptance to this offer by indicating your joining date on or before above mentioned date, failing which this offer will stand cancelled. </Text>
+                <Text> Welcome to <strong>Jamidara Seeds Corporation</strong> and look forward to your association & contribution to achieve the organizational objectives.</Text>
+                <Text fontWeight="bold" mt="10px"> Other Terms </Text>
 
                 <Text>
                   As per company norms your salary package is Rs. {employee?.salary} per annum with incentives.
                 </Text>
 
+                <Text fontWeight="bold" textDecoration="underline">Incentive in case you achieve your targets i.e. your target is {formData?.yearly_collection}/ year. You will be responsible to add {formData?.first_new_channel_partner} new distributor in first month and {formData?.second_new_channel_partner} in second month and {formData?.third_new_channel_partner} in third month & {formData?.monthly_collection} individual plus team per month minimum collection deposit in company account from date of joining. </Text>
                 <Text textDecoration="underline" fontWeight="bold">{formData?.salary_norms}</Text>
                 <Text textDecoration="underline" fontWeight="bold">{formData?.salary_norms1}</Text>
 
                 <Text>
-                  Kindly send your salary slip, bank statement and two reference numbers.
+                  Please send your Salary Slip, Current Bank Statement and 2 ref. Mobile Numbers.
                 </Text>
 
                 <Text>{formData?.sales_target}</Text>
@@ -212,6 +185,14 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                     <br />
                     Jamidara Seeds Corporation
                   </Text>
+                  {formData.show_stamp && (
+  <Image
+    src={jsc_stamp}
+    alt="Company Stamp"
+    boxSize="120px"
+    mt={4}
+  />
+)}
                 </Box>
               </VStack>
               <VStack alignItems="flex-start" mt="20rem" spacing="4px" width="81%" ml="-2.5rem">

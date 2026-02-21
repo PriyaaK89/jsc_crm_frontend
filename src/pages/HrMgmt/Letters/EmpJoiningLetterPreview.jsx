@@ -1,67 +1,58 @@
-import {
-  Box,
-  Button,
-  HStack,
-  Image,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalOverlay,
-  Text,
-  VStack,
-  Divider,
-  Flex,
-} from "@chakra-ui/react";
+import { Box, Button, HStack, Image, Modal, ModalBody, ModalContent, ModalOverlay, Text, VStack, Divider, Flex, } from "@chakra-ui/react";
 import React from "react";
 import top_ele from "../../../assets/images/top_left_ele.png";
 import bottom_ele from "../../../assets/images/bottom_right_ele.png";
 import company_logo from "../../../assets/images/logo-removebg-preview.png";
 import r_logo from "../../../assets/images/jamidara_logo.png";
-
 import emailIcon from "../../../assets/images/email.png";
 import webIcon from "../../../assets/images/web.png";
 import { formatDate, formatTime } from "../../../components/common/helper";
 import html2pdf from "html2pdf.js";
+import jsc_stamp from "../../../assets/images/stamp_jsc.png"
 
 const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
-  const basic = Number(formData?.basic) || 0;
-  const houseRent = Number(formData?.house_rent) || 0;
-  const medical = Number(formData?.medical) || 0;
+  const basic = Number(formData.basic) || 0;
+  const houseRent = Number(formData.house_rent) || 0;
+  const medical = Number(formData.medical) || 0;
+  const dearnessAllowance = Number(formData.dearness_allowance) || 0;
+  const otherAllowance = Number(formData.other_allowance) || 0;
 
-  const monthlyGross = basic + houseRent + medical;
+  const monthlyGross =
+    basic + houseRent + medical + dearnessAllowance + otherAllowance;
+
   const annualGross = monthlyGross * 12;
 
   const petrolRate = Number(formData?.petrol_per_km) || 0;
   const maxKm = Number(formData?.max_km) || 0;
+  const minKm = Number(formData?.min_km) || 0;
 
-   const handleDownloadPDF = () => {
-      const element = document.getElementById("joining-letter-preview");
-  
-      html2pdf()
-        .set({
-          margin: 0,
-          filename: `Offer_Letter_${employee?.name}.pdf`,
-          image: { type: "jpeg", quality: 1 },
-          html2canvas: {
-            scale: 2,
-            useCORS: true,
-            scrollY: 0,
-            windowWidth: 1200
-          },
-          jsPDF: {
-            unit: "mm",
-            format: "a4",
-            orientation: "portrait"
-          },
-          pagebreak: { mode: ['css'] }
-        })
-  
-        .from(element)
-        .save();
-  
-    };
+  const handleDownloadPDF = () => {
+    const element = document.getElementById("joining-letter-preview");
+
+    html2pdf()
+      .set({
+        margin: 0,
+        filename: `Offer_Letter_${employee?.name}.pdf`,
+        image: { type: "jpeg", quality: 1 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          scrollY: 0,
+          windowWidth: 1200
+        },
+        jsPDF: {
+          unit: "mm",
+          format: "a4",
+          orientation: "portrait"
+        },
+        pagebreak: { mode: ['css'] }
+      })
+
+      .from(element)
+      .save();
+
+  };
 
   return (
     <>
@@ -72,20 +63,8 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
             <Box id="joining-letter-preview" fontFamily="serif">
               <Box className="pdf-page">
                 {/* Decorative Images */}
-                <Image
-                  src={top_ele}
-                  position="absolute"
-                  top="0"
-                  left="0"
-                  width="175px"
-                />
-                <Image
-                  src={bottom_ele}
-                  position="absolute"
-                  bottom="0"
-                  right="0"
-                  width="175px"
-                />
+                <Image src={top_ele} position="absolute" top="0" left="0" width="175px" />
+                <Image src={bottom_ele} position="absolute" bottom="0" right="0" width="175px" />
 
                 {/* Header */}
                 <VStack spacing={0} align="center" ml="1rem">
@@ -94,9 +73,6 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     <Image src={r_logo} width="120px" />
                   </HStack>
 
-                  {/* <Text fontSize="12px" color="gray.600">
-                             Corpo Add. : P.B. Road, R.N.B. District Haveri, Karnataka
-                           </Text> */}
                   <VStack
                     justifyContent="flex-start"
                     alignItems="flex-start"
@@ -120,19 +96,11 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                 </VStack>
 
                 <Box width="83%" marginLeft="3rem" className="letter-content">
-                  <Image
-                    src={r_logo}
-                    alt="Round Logo"
-                    className="watermark_img"
-                  />
+                  <Image src={r_logo} alt="Round Logo" className="watermark_img" />
                   {/* Title */}
-                  <Text
-                    textAlign="center"
-                    fontSize="22px"
-                    fontWeight="bold"
-                    color="#1A365D"
-                    mt="25px"
-                    mb="30px">
+                  <Text textAlign="center"
+                    fontSize="22px" fontWeight="bold"
+                    color="#1A365D" mt="25px" mb="30px">
                     JOB JOINING LETTER
                   </Text>
 
@@ -410,6 +378,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     </Text>
 
                     <Box border="1px solid black">
+
                       {/* Header Row */}
                       <Flex borderBottom="1px solid black">
                         <Box flex="1" p="10px" borderRight="1px solid black">
@@ -425,8 +394,8 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
                       {/* Basic */}
                       <Flex borderBottom="1px solid black">
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          Basic
+                        <Box flex="1" p="10px" borderRight="1px solid black" fontSize="13px">
+                          Basic (50%)
                         </Box>
                         <Box flex="1" p="10px" borderRight="1px solid black">
                           {basic}/-
@@ -438,8 +407,8 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
                       {/* House Rent */}
                       <Flex borderBottom="1px solid black">
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          House Rent
+                        <Box flex="1" p="10px" borderRight="1px solid black" fontSize="13px">
+                          House Rent (20%)
                         </Box>
                         <Box flex="1" p="10px" borderRight="1px solid black">
                           {houseRent}/-
@@ -451,14 +420,40 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
                       {/* Medical */}
                       <Flex borderBottom="1px solid black">
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          Medical Reimbursement
+                        <Box flex="1" p="10px" borderRight="1px solid black" fontSize="13px">
+                          Medical Reimbursement (10%)
                         </Box>
                         <Box flex="1" p="10px" borderRight="1px solid black">
                           {medical}/-
                         </Box>
                         <Box flex="1" p="10px">
                           {medical * 12}/-
+                        </Box>
+                      </Flex>
+
+                      {/* Dearness Allowance */}
+                      <Flex borderBottom="1px solid black">
+                        <Box flex="1" p="10px" borderRight="1px solid black" fontSize="13px">
+                          Dearness Allowance (10%)
+                        </Box>
+                        <Box flex="1" p="10px" borderRight="1px solid black">
+                          {dearnessAllowance}/-
+                        </Box>
+                        <Box flex="1" p="10px">
+                          {dearnessAllowance * 12}/-
+                        </Box>
+                      </Flex>
+
+                      {/* Other Allowance */}
+                      <Flex borderBottom="1px solid black" fontSize="13px">
+                        <Box flex="1" p="10px" borderRight="1px solid black">
+                          Other Allowance (10%)
+                        </Box>
+                        <Box flex="1" p="10px" borderRight="1px solid black">
+                          {otherAllowance}/-
+                        </Box>
+                        <Box flex="1" p="10px">
+                          {otherAllowance * 12}/-
                         </Box>
                       </Flex>
 
@@ -474,11 +469,11 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                           <b>{annualGross}/-</b>
                         </Box>
                       </Flex>
+
                     </Box>
+
                   </Box>
                   <Box>
-                    <Text fontWeight="bold">  Daily Allowance will be on variable basis. <br />
-                      TRAVELING ALLOWANCE/DAILY ALLOWANCE/OUT STATION BOARDING AND/LODGING(NIGHT HAULT) POLICY.</Text>
 
                   </Box>
                   <Flex border="1px solid black" width="100%">
@@ -489,42 +484,55 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     <Box flex="1" p="6px" borderRight="1px solid black" textAlign='center'>
                       ₹ {petrolRate} or Public Transport
                     </Box>
-
+                    <Box flex="1" p="6px" borderRight="1px solid black" textAlign='center'>
+                      {minKm} K.M. MIN.
+                    </Box>
                     <Box flex="1" p="6px" borderRight="1px solid black" textAlign='center'>
                       {maxKm} K.M. MAX.
                     </Box>
+
 
                   </Flex>
 
                   <Box mt="2rem">
 
-  <Text fontWeight="bold" textDecoration="underline" mb="1rem">
-    Note:
-  </Text>
+                    <Text fontWeight="bold" textDecoration="underline" mb="1rem">
+                      Note:
+                    </Text>
 
-  <VStack align="flex-start" spacing={3} pl="1rem">
+                    <VStack align="flex-start" spacing={3} pl="1rem">
 
-    <Text>
-      1):- In case of boarding (FOOD) Bill are required. Shall be paid up to maximum limits specified.
-    </Text>
+                      <Text>
+                        1):- In case of boarding (FOOD) Bill are required. Shall be paid up to maximum limits specified.
+                      </Text>
 
-    <Text>
-      2):- In case of LODGING (Hotel) claims are settled at actual (or) up to limits specified,{" "}
-      <Text as="span" textDecoration="underline" fontWeight="bold">
-        which ever is less.
-      </Text>{" "}
-      Claims shall not be settled without bills.
-    </Text>
+                      <Text>
+                        2):- In case of LODGING (Hotel) claims are settled at actual (or) up to limits specified,{" "}
+                        <Text as="span" textDecoration="underline" fontWeight="bold">
+                          which ever is less.
+                        </Text>{" "}
+                        Claims shall not be settled without bills.
+                      </Text>
 
-    <Text>
-      3):- In case of TRAVLE claims are settled{" "}
-      <Text as="span" textDecoration="underline" fontWeight="bold">
-        only on submission of counter foils of TRAIN / BUS TICKETS.
-      </Text>
-    </Text>
+                      <Text>
+                        3):- In case of TRAVLE claims are settled{" "}
+                        <Text as="span" textDecoration="underline" fontWeight="bold">
+                          only on submission of counter foils of TRAIN / BUS TICKETS.
+                        </Text>
+                      </Text>
 
-  </VStack>
-</Box>
+                    </VStack>
+                    <VStack alignItems="end">
+                      {formData.show_stamp && (
+                        <Image
+                          src={jsc_stamp}
+                          alt="Company Stamp"
+                          boxSize="120px"
+                        // mt={4}
+                        />
+
+                      )}</VStack>
+                  </Box>
 
 
                 </VStack>

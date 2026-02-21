@@ -25,6 +25,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "Georgia";
+  src: url('../public/fonts/georgia.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
 .productsTable tbody tr td{
     color: #6E7079;
     font-size: 13px;
@@ -64,7 +71,7 @@
   font-size: 14px;
 }
 
-.pdf-page {
+/* .pdf-page {
   width: 210mm;
   height: 296mm; 
 padding: 40px;
@@ -74,9 +81,32 @@ padding: 40px;
   overflow: hidden;  
 }
 .page-break {
-  /* page-break-before: always; */
+  page-break-before: always;
   break-before: page;
+} */
+
+#agre-letter-preview {
+  width: 210mm;
 }
+
+.pdf-page {
+  width: 210mm;
+  height: 296mm;
+  padding: 15mm;
+  box-sizing: border-box;
+  background: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-break {
+  page-break-before: always;
+}
+
+.pdf-page:last-child {
+  page-break-after: auto;
+}
+
 .letter-content{
   font-size: 14px;
 }
@@ -100,5 +130,15 @@ padding: 40px;
   font-size: 12px !important;
   color: #686868;
   margin-bottom: 3px !important;
+}
+.chakra-checkbox__label{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#agre-letter-preview p{
+   font-family: 'Georgia';
+   color: black ;
 }
 

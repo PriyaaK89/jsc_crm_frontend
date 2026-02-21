@@ -1,10 +1,11 @@
-import { Box, Button, Flex, FormControl, FormLabel, Heading, Input, Select, SimpleGrid, Spinner, useDisclosure, VStack } from "@chakra-ui/react";
+import { Box, Button, Checkbox, Flex, FormControl, FormLabel, Heading, Image, Input, Select, SimpleGrid, Spinner, Text, useDisclosure, VStack } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import EmpJoiningLetterPreview from "./EmpJoiningLetterPreview";
 import CustomDatePicker from "../../../components/common/CustomDatepicker";
+import jsc_stamp from "../../../assets/images/stamp_jsc.png"
 
 const EmpJoiningLetter = () => {
     const { id } = useParams();
@@ -13,6 +14,10 @@ const EmpJoiningLetter = () => {
     const [employee, setEmployee] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectEmpId, setSelectedEmpId] = useState('')
+    const yearly_salary = employee?.salary;
+    console.log(yearly_salary, "yearly_salary")
+    const monthly_salary = yearly_salary / 12;
+    console.log(monthly_salary, "monthly_salary")
 
     const [formData, setFormData] = useState({
         area: "",
@@ -26,8 +31,12 @@ const EmpJoiningLetter = () => {
         basic: "",
         house_rent: "",
         medical: "",
-         petrol_per_km: "",
-  max_km: "",
+        dearness_allowance: "",
+        other_allowance: "",
+        petrol_per_km: "",
+        max_km: "",
+        min_km: "",
+        show_stamp: false,
     });
 
     const [empList, setEmpList] = useState([]);
@@ -66,6 +75,21 @@ const EmpJoiningLetter = () => {
 
         fetchEmployee();
     }, [id]);
+    useEffect(() => {
+        if (employee?.salary) {
+            const yearly = Number(employee.salary);
+            const monthly = yearly / 12;
+
+            setFormData((prev) => ({
+                ...prev,
+                basic: (monthly * 0.5).toFixed(0),
+                house_rent: (monthly * 0.2).toFixed(0),
+                medical: (monthly * 0.1).toFixed(0),
+                dearness_allowance: (monthly * 0.1).toFixed(0),
+                other_allowance: (monthly * 0.1).toFixed(0),
+            }));
+        }
+    }, [employee]);
 
     const fetchEmployeeDetails = async (empId) => {
         try {
@@ -106,6 +130,43 @@ const EmpJoiningLetter = () => {
                     Generate Offer Letter
                 </Heading>
 
+                <Box
+                    p={5}
+                    bg="gray.50"
+                    borderRadius="lg"
+                    border="1px solid"
+                    borderColor="gray.200"
+                    mb={8}
+                >
+                    <Heading size="sm" mb={4} color="gray.600">
+                        Employee Information
+                    </Heading>
+
+                    <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+                        <Text><b>Name:</b> {employee.name}</Text>
+                        <Text><b>Email:</b> {employee.email}</Text>
+                        <Text><b>Contact:</b> {employee.contact_no}</Text>
+
+                        <Text><b>Department:</b> {employee.department_name}</Text>
+                        <Text><b>Role:</b> {employee.job_role_name}</Text>
+                        <Text>
+                            <b>DOJ:</b>{" "}
+                            {new Date(employee.date_of_joining).toLocaleDateString()}
+                        </Text>
+
+                        <Text gridColumn="span 3">
+                            <b>Address:</b> {employee?.address_line1} {employee?.address_line2}{employee?.address_line2 ? "," : " "}
+                            {employee?.area}, {employee?.city}, {employee?.state} -{" "}
+                            {employee?.pincode}
+                        </Text>
+                        <Text><b>Salary:</b>{" "}
+                            ₹{Number(employee?.salary).toLocaleString("en-IN", {
+                                maximumFractionDigits: 0,
+                            })}
+                        </Text>
+
+                    </SimpleGrid>
+                </Box>
                 <VStack spacing={6} align="stretch">
                     <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
                         <FormControl>
@@ -176,68 +237,111 @@ const EmpJoiningLetter = () => {
                             onChange={(e) => setFormData({ ...formData, date_of_issue: e.target.value })}
                             placeholder="Select date of issue"
                         />
+                        <FormControl>
+                            <FormLabel>Monthly Gross Salary</FormLabel>
+                            <Input
+                                value={
+                                    employee?.salary
+                                        ? (employee.salary / 12).toFixed(0)
+                                        : ""
+                                }
+                                isReadOnly
+                            />
+                        </FormControl>
 
                         <FormControl>
-  <FormLabel>Basic (Monthly)</FormLabel>
-  <Input
-    type="number"
-    value={formData.basic}
-    onChange={(e) =>
-      setFormData({ ...formData, basic: e.target.value })
-    }
-  />
-</FormControl>
+                            <FormLabel>Basic (Monthly) (50%)</FormLabel>
+                            <Input
+                                type="number"
+                                value={formData.basic}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, basic: e.target.value })
+                                }
+                            />
+                        </FormControl>
 
-<FormControl>
-  <FormLabel>House Rent (Monthly)</FormLabel>
-  <Input
-    type="number"
-    value={formData.house_rent}
-    onChange={(e) =>
-      setFormData({ ...formData, house_rent: e.target.value })
-    }
-  />
-</FormControl>
+                        <FormControl>
+                            <FormLabel>House Rent (Monthly) (20%)</FormLabel>
+                            <Input
+                                type="number"
+                                value={formData.house_rent}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, house_rent: e.target.value })
+                                }
+                            />
+                        </FormControl>
 
-<FormControl>
-  <FormLabel>Medical Reimbursement (Monthly)</FormLabel>
-  <Input
-    type="number"
-    value={formData.medical}
-    onChange={(e) =>
-      setFormData({ ...formData, medical: e.target.value })
-    }
-  />
-</FormControl>
+                        <FormControl>
+                            <FormLabel>Medical Reimbursement (Monthly)(10%)</FormLabel>
+                            <Input
+                                type="number"
+                                value={formData.medical}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, medical: e.target.value })
+                                }
+                            />
+                        </FormControl>
 
-<FormControl>
-  <FormLabel>Petrol Per KM (₹)</FormLabel>
-  <Input
-    type="number"
-    value={formData.petrol_per_km}
-    onChange={(e) =>
-      setFormData({ ...formData, petrol_per_km: e.target.value })
-    }
-  />
-</FormControl>
+                        <FormControl>
+                            <FormLabel>Dearness Allowance (Monthly) (10%)</FormLabel>
+                            <Input
+                                type="number"
+                                value={formData.dearness_allowance}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, dearness_allowance: e.target.value })
+                                }
+                            />
+                        </FormControl>
 
-<FormControl>
-  <FormLabel>Max KM</FormLabel>
-  <Input
-    type="number"
-    value={formData.max_km}
-    onChange={(e) =>
-      setFormData({ ...formData, max_km: e.target.value })
-    }
-  />
-</FormControl>
+                        <FormControl>
+                            <FormLabel>Other Allowance (Monthly) (10%)</FormLabel>
+                            <Input
+                                type="number"
+                                value={formData.other_allowance}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, other_allowance: e.target.value })
+                                }
+                            />
+                        </FormControl>
 
 
+                        <FormControl>
+                            <FormLabel>Petrol Per KM (₹)</FormLabel>
+                            <Input
+                                type="number"
+                                value={formData.petrol_per_km}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, petrol_per_km: e.target.value })
+                                }
+                            />
+                        </FormControl>
 
+                        <FormControl>
+                            <FormLabel>Max KM</FormLabel>
+                            <Input
+                                type="number"
+                                value={formData.max_km}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, max_km: e.target.value })
+                                }
+                            />
+                        </FormControl>
+
+                        <FormControl>
+                            <FormLabel>Min KM</FormLabel>
+                            <Input type="number" value={formData.min_km}
+                                onChange={(e) => setFormData({ ...formData, min_km: e.target.value })} />
+                        </FormControl>
+
+                        <FormControl>
+                            <Checkbox isChecked={formData.show_stamp} onChange={(e) => setFormData({ ...formData, show_stamp: e.target.checked })} >
+                                <Text fontSize="14px"> Show Company Stamp </Text> <Image src={jsc_stamp} width="97px" />
+                            </Checkbox>
+                        </FormControl>
                     </SimpleGrid>
                 </VStack>
                 <VStack>
-                    <Button onClick={onOpen} colorScheme="blue" mt="1rem">Generate Joining Letter</Button>
+                    <Button onClick={onOpen} colorScheme="blue" mt="1rem">Show Preview</Button>
                 </VStack>
 
                 <EmpJoiningLetterPreview isOpen={isOpen} onClose={onClose} employee={employee} formData={formData} />

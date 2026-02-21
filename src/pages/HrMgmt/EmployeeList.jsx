@@ -40,16 +40,10 @@ const EmployeeList = () => {
   const [search, setSearch] = useState("");
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-
   const { onOpen, onClose, isOpen } = useDisclosure();
-  const {
-    isOpen: isDeleteModalOpen,
-    onOpen: onDeleteModalOpen,
-    onClose: onDeleteModalClose,
-  } = useDisclosure();
-
-  const [selectedId, setSelectedId] = useState("");
+  const [selectedId, setSelectedId] = useState('');
   const navigate = useNavigate();
+  const { isOpen: isDeleteModalOpen, onOpen: onDeleteModalOpen, onClose: onDeleteModalClose } = useDisclosure();
 
   const fetchEmployeeList = async () => {
     try {
@@ -94,30 +88,19 @@ const EmployeeList = () => {
   };
 
   const handleDelete = (id) => {
-    setSelectedId(id);
     onDeleteModalOpen();
+    setSelectedId(id)
   };
 
   const handleViewDocs = (id) => {
-    setSelectedId(id);
     onOpen();
   };
 
   return (
     <>
-      <ViewUploadedDocument
-        isOpen={isOpen}
-        onClose={onClose}
-        selectedId={selectedId}
-      />
-      <DeleteEmployeeModel
-        isDeleteModalOpen={isDeleteModalOpen}
-        onDeleteModalClose={onDeleteModalClose}
-        selectedId={selectedId}
-        fetchEmployeeList={fetchEmployeeList}
-      />
-
-      <Box mt="1rem" w="100%">
+      <ViewUploadedDocument isOpen={isOpen} onClose={onClose} selectedId={selectedId} />
+      <DeleteEmployeeModel isDeleteModalOpen={isDeleteModalOpen} onDeleteModalClose={onDeleteModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList} />
+      <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px 0px'>
         {/* Header */}
         <HStack justify="space-between" mb={4}>
           <Breadcrumb>
@@ -127,7 +110,7 @@ const EmployeeList = () => {
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbItem>
-              <BreadcrumbLink>Employee List</BreadcrumbLink>
+              <BreadcrumbLink href='/hr-mgmt/view-employee-list' color='#8B8D97' fontSize='13px'>Employee List</BreadcrumbLink>
             </BreadcrumbItem>
           </Breadcrumb>
 
@@ -156,25 +139,16 @@ const EmployeeList = () => {
             <Table size="sm" minW="1300px" variant="simple">
               <Thead bg="gray.50">
                 <Tr>
-                  {[
-                    "Name",
-                    "Email",
-                    "Department",
-                    "Role",
-                    "Contact",
-                    "City / State",
-                    "Salary",
-                    "DOJ",
-                    "Leaves",
-                    "Login",
-                    "Logout",
-                    "Approver",
-                    "View",
-                    "Actions",
-                    "Letters",
-                  ].map((head, i) => (
-                    <Th key={i} whiteSpace="nowrap">
-                      {head}
+                  {["Name", "Email", "Department", "Role", "Contact", "City / State", "Salary(Rs.)", "DOJ", "Leaves", "Login", "Logout", "Approver", "View Doc", "Action", "Generate Letters"].map((header, index) => (
+                    <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize'
+                      width={header === "Name" ? "7%" : "auto" && header === "Role" ? '11%' : 'auto' && header === "Login" ? "8%" : 'auto'} borderColor='#D9D9D9'
+                    >
+                      <Flex alignItems="center" gap='7px'>
+                        <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular'>
+                          {header}
+                        </Text>
+                        <Img src={sort_icon} alt='sort_icon' />
+                      </Flex>
                     </Th>
                   ))}
                 </Tr>
@@ -206,80 +180,66 @@ const EmployeeList = () => {
                       <Td>{emp.approver_name || "-"}</Td>
 
                       <Td>
-                        <IconButton
-                          icon={<FaEye />}
-                          size="sm"
-                          variant="ghost"
-                          colorScheme="blue"
-                          onClick={() => handleViewDocs(emp.id)}
-                        />
+                        <Tooltip label="View Employee Documents" hasArrow>
+                          <IconButton
+                            icon={<FaEye style={{ width: "21px" }} />}
+                            size="sm"
+                            variant="ghost"
+                            color="blue.600"
+                            _hover={{ bg: "blue.50" }}
+                            aria-label="View Documents"
+                            onClick={() => handleViewDocs(emp?.id)}
+                          />
+                        </Tooltip>
                       </Td>
 
                       <Td>
-                        <Flex gap={2}>
-                          <UpdateEmpStatus
-                            userId={emp.id}
-                            currentStatus={
-                              emp.is_active === 1
-                                ? "activate"
-                                : "deactivate"
-                            }
-                            onSuccess={fetchEmployeeList}
-                          />
+                        <Flex gap="10px" justify="center">
 
-                          <IconButton
-                            icon={<FiEdit2 />}
-                            size="sm"
-                            variant="ghost"
-                            colorScheme="blue"
-                            onClick={() => handleEdit(emp.id)}
-                          />
+                          <UpdateEmpStatus userId={emp.id} currentStatus={emp.is_active === 1 ? "activate" : "deactivate"} onSuccess={fetchEmployeeList} />
 
-                          <IconButton
-                            icon={<FiTrash2 />}
-                            size="sm"
-                            variant="ghost"
-                            colorScheme="red"
-                            onClick={() => handleDelete(emp.id)}
-                          />
+                          <Tooltip label="Edit Employee" hasArrow>
+                            <IconButton
+                              icon={<FiEdit2 />}
+                              size="sm"
+                              variant="ghost"
+                              color="blue.600"
+                              _hover={{ bg: "blue.50" }}
+                              aria-label="Edit"
+                              onClick={() => handleEdit(emp?.id)} />
+                          </Tooltip>
+
+                          <Tooltip label="Delete Employee" hasArrow>
+                            <IconButton
+                              icon={<FiTrash2 />}
+                              size="sm" variant="ghost" color="red.600"
+                              _hover={{ bg: "red.50" }} aria-label="Delete"
+                              onClick={() => handleDelete(emp.id)}/>
+                          </Tooltip>
                         </Flex>
                       </Td>
+                      <Td >
+                        <Flex gap="8px">
+                          <Tooltip label="Generate Offer Letter">
+                            <Button size="xs" colorScheme="blue"
+                              onClick={() => navigate(`/generate-offer-letter/${emp.id}`)}>
+                              Offer
+                            </Button>
+                          </Tooltip>
 
-                      <Td>
-                        <Flex gap={2}>
-                          <Button
-                            size="xs"
-                            colorScheme="blue"
-                            onClick={() =>
-                              navigate(
-                                `/generate-offer-letter/${emp.id}`
-                              )
-                            }
-                          >
-                            Offer
-                          </Button>
-                          <Button
-                            size="xs"
-                            colorScheme="green"
-                            onClick={() =>
-                              navigate(
-                                `/generate-joining-letter/${emp.id}`
-                              )
-                            }
-                          >
-                            Joining
-                          </Button>
-                          <Button
-                            size="xs"
-                            colorScheme="purple"
-                            onClick={() =>
-                              navigate(
-                                `/generate-agreement/${emp.id}`
-                              )
-                            }
-                          >
-                            Agreement
-                          </Button>
+                          <Tooltip label="Generate Joining Letter">
+                            <Button size="xs" colorScheme="green"
+                              onClick={() => navigate(`/generate-joining-letter/${emp.id}`)}>
+                              Joining
+                            </Button>
+                          </Tooltip>
+
+                          <Tooltip label="Generate Agreement">
+                            <Button size="xs" colorScheme="purple"
+                              onClick={() => navigate(`/generate-agreement-letter/${emp.id}`)}>
+                              Agreement
+                            </Button>
+                          </Tooltip>
                         </Flex>
                       </Td>
                     </Tr>

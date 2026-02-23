@@ -9,17 +9,17 @@ const EmployeeListLayout = () => {
   return (
     <Flex bg="#f4f4f4" minH="100vh">
 
-      {/* Fixed Sidebar */}
-      <Box
+      {/* Fixed Sidebar */} 
+       <Box
         position="fixed"
         top="0"
         left="0"
         w="268px"
         h="100vh"
         display={{ base: "none", md: "block" }}
-      >
+      > 
         <Sidebar />
-      </Box>
+       </Box> 
 
       {/* Main Content Area */}
       <Flex

@@ -24,6 +24,7 @@ import {
   Tooltip,
   Tr,
   useDisclosure,
+  Image 
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import { FiSearch, FiEdit2, FiTrash2 } from "react-icons/fi";
@@ -136,8 +137,8 @@ const EmployeeList = () => {
           </Flex>
         ) : (
           <Box overflowX="auto">
-            <Table size="sm" minW="1300px" variant="simple">
-              <Thead bg="gray.50">
+            <Table size="sm" minW="1700px" variant="simple">
+              <Thead bg="gray.50" >
                 <Tr>
                   {["Name", "Email", "Department", "Role", "Contact", "City / State", "Salary(Rs.)", "DOJ", "Leaves", "Login", "Logout", "Approver", "View Doc", "Action", "Generate Letters"].map((header, index) => (
                     <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize'
@@ -147,7 +148,7 @@ const EmployeeList = () => {
                         <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular'>
                           {header}
                         </Text>
-                        <Img src={sort_icon} alt='sort_icon' />
+                        {/* <Image  src={sort_icon} alt='sort_icon' /> */}
                       </Flex>
                     </Th>
                   ))}

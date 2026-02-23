@@ -1,3 +1,4 @@
+// EmpAttendanceLayout.js
 import React from "react";
 import { Flex, Box } from "@chakra-ui/react";
 
@@ -27,7 +28,7 @@ const EmpAttendanceLayout = () => {
         direction="column"
         flex="1"
         ml={{ base: 0, md: "268px" }}
-        
+        h="100vh" // full height of viewport
       >
 
         {/* Desktop Topbar */}
@@ -36,6 +37,7 @@ const EmpAttendanceLayout = () => {
           px={{ base: 4, md: 6 }}
           pt={4}
           mx={3}
+          flexShrink={0}
         >
           <DesktopTopbar />
         </Box>
@@ -45,6 +47,7 @@ const EmpAttendanceLayout = () => {
           display={{ base: "block", md: "none" }}
           px={4}
           py={4}
+          flexShrink={0}
         >
           <MobileTopbar />
         </Box>
@@ -54,8 +57,8 @@ const EmpAttendanceLayout = () => {
           flex="1"
           px={{ base: 0, md: 6 }}
           py={6}
-          overflow="auto"
           mx={3}
+          overflow="visible"  // remove scroll
         >
           <Box
             bg="white"

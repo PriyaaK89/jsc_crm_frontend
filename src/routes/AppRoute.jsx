@@ -17,10 +17,15 @@ import OfferLetterLayout from "../components/layout/GenerateLetters/OfferLetterL
 import JoiningLetterLayout from "../components/layout/GenerateLetters/JoiningLetterLayout";
 import ApproveIpUserListLayout from "../components/layout/ApproveIpUserListLayout";
 import EmpAttendaneLayout from "../components/layout/EmpAttendaneLayout";
+import CreateStockGroupLayout from "../components/layout/CreateStockGroupLayout";
+import ViewStockGroupLayout from "../components/layout/ViewStockGroupLayout";
+import DeleteStockGroupLayout from "../components/layout/DeleteStockGroupLayout";
+import  CreateStockCategoryLayout from "../components/layout/CreateStockCategoryLayout";
+import ViewStockCategoryLayout from "../components/layout/ViewStockCategoryLayout";
 
 function App() {
   return (
-    <Router>
+    <Router>  
       <Routes>
         
         <Route path="/" element={<Navigate to="/login" replace />} />
@@ -57,7 +62,27 @@ function App() {
           path="/emp-attendance-report"
           element={<EmpAttendaneLayout/>}
         />
-      </Routes>
+        <Route
+          path="/inventory/create-stock-group"
+          element={<CreateStockGroupLayout/>}
+      />
+<Route
+          path="/inventory/view-stock-group"
+          element={<ViewStockGroupLayout/>}
+      />
+      <Route
+          path="/inventory/delete-stock-group"
+          element={<DeleteStockGroupLayout/>}
+      />
+      <Route
+          path="/inventory/create-stock-category"
+          element={<CreateStockCategoryLayout/>}
+      />
+      <Route
+          path="/inventory/view-stock-category"
+          element={<ViewStockCategoryLayout/>}
+      />
+             </Routes>
 
     </Router>
   );

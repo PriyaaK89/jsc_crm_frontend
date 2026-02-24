@@ -32,6 +32,7 @@ const Sidebar = () => {
     setOpenMenu(openMenu === menu ? null : menu);
   };
 
+
   const sidebarButtonStyle = {
     variant: "ghost",
     justifyContent: "flex-start",
@@ -88,6 +89,60 @@ const Sidebar = () => {
         </Button>
 
         <Collapse in={openMenu === "users"} animateOpacity>
+          <VStack pl={6} align="stretch" spacing={1}>
+            <Button
+              leftIcon={<FaUserPlus />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/hr-mgmt/add-employee"
+              style={activeLinkStyle} 
+            >
+              Add Employee
+            </Button>
+
+            <Button
+              leftIcon={<RiUser3Line />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/hr-mgmt/view-employee-list"
+              style={activeLinkStyle}
+            >
+              Employee List
+            </Button>
+
+            <Button
+              leftIcon={<RiFileList3Line />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/hr-mgmt/upload-emp-salary"
+              style={activeLinkStyle}
+            >
+              Upload Salary
+            </Button>
+
+            <Button
+              leftIcon={<UserCheck />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/emp-attendance-report"
+              style={activeLinkStyle}
+            >
+              Attend Report
+            </Button>
+          </VStack>
+        </Collapse>
+
+      {/* business department */}
+         <Button {...sidebarButtonStyle} onClick={() => toggleMenu("business")} >
+          Business Development
+          <Icon as={openMenu === "business" ? ChevronDownIcon : ChevronRightIcon} />
+        </Button>
+
+        <Collapse in={openMenu === "business"} animateOpacity>
           <VStack pl={6} align="stretch" spacing={1}>
             <Button
               leftIcon={<FaUserPlus />}

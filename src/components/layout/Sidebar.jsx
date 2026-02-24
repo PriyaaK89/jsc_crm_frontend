@@ -15,6 +15,7 @@ import { MdInventory, MdAddBox, MdViewList, MdDelete } from "react-icons/md";
 import { MdCategory } from "react-icons/md";
 import { MdAddCircleOutline } from "react-icons/md";
 
+
 import {
   RiDashboardLine,
   RiUserAddLine,
@@ -28,7 +29,10 @@ import { UserCheck } from "lucide-react";
 const Sidebar = () => {
   const [openMenu, setOpenMenu] = useState(null);
   const { auth } = useContext(AuthContext);
+  console.log(auth, "auth");
   const role = auth?.user?.role;
+  console.log(role, "role");
+  console.log("SIDEBAR COMPONENT RENDERED");
 
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
@@ -186,33 +190,35 @@ const Sidebar = () => {
         </Button>
 
         {/* Inventory Master */}
-        <Button
-          leftIcon={<MdInventory size={20} />}
-          rightIcon={
-            <Icon
-              as={openMenu === "inventory" ? ChevronDownIcon : ChevronRightIcon}
-            />
-          }
-          {...sidebarButtonStyle}
-          onClick={() => toggleMenu("inventory")}
-        >
-          Inventory Master
-        </Button>
+      {(role === "ADMIN" || role === "SUPER_ADMIN") && (
+  <>
+    <Button
+      leftIcon={<MdInventory size={20} />}
+      rightIcon={
+        <Icon
+          as={openMenu === "inventory" ? ChevronDownIcon : ChevronRightIcon}
+        />
+      }
+      {...sidebarButtonStyle}
+      onClick={() => toggleMenu("inventory")}
+    >
+      Inventory Master
+    </Button>
 
-        <Collapse in={openMenu === "inventory"} animateOpacity>
-          <VStack pl={6} align="stretch" spacing={1}>
-            <Button
-              leftIcon={<MdAddBox size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/inventory/create-stock-group"
-              style={activeLinkStyle}
-            >
-              Create Stock Group
-            </Button>
-
-            <Button
+    <Collapse in={openMenu === "inventory"} animateOpacity>
+      <VStack pl={6} align="stretch" spacing={1}>
+         <Button 
+         leftIcon={<MdAddBox size={18}/>}
+         {...sidebarButtonStyle}
+         size="sm"
+         as={NavLink}
+                       to="/inventory/create-stock-group"
+                       style={activeLinkStyle}
+         >
+         
+                         Create Stock Group
+         </Button>
+           <Button
               leftIcon={<MdViewList size={18} />}
               {...sidebarButtonStyle}
               size="sm"
@@ -222,7 +228,6 @@ const Sidebar = () => {
             >
               View Stock Group
             </Button>
-
             <Button
               leftIcon={<MdDelete size={18} />}
               {...sidebarButtonStyle}
@@ -243,7 +248,7 @@ const Sidebar = () => {
             >
               Create Stock Category
             </Button>
-              <Button
+       <Button
               leftIcon={<MdAddCircleOutline size={18} />}
               {...sidebarButtonStyle}
               size="sm"
@@ -253,8 +258,11 @@ const Sidebar = () => {
             >
               View Stock Category
             </Button>
-          </VStack>
-        </Collapse>
+      </VStack>
+    </Collapse>
+  </>
+)}
+
 
         {/* Settings */}
         <Button

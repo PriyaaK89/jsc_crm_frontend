@@ -8,16 +8,37 @@ import {
   SimpleGrid,
   VStack,
   Button,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  HStack,
 } from "@chakra-ui/react";
 import React from "react";
+import { GoHomeFill } from "react-icons/go";
 import { Form } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 
 const CreateStockGroup = () => {
   return (
-          <>
+    <Box bg="white" px={6} py={4}>
+     {/* Top Section */}
+     <HStack justifyContent="space-between" mb={6}>
+
+           <Breadcrumb color="#8B8D97">
+           <BreadcrumbItem>
+           <BreadcrumbLink as={Link} href="/dashboard"><GoHomeFill color="#5570F1"/></BreadcrumbLink>
+           </BreadcrumbItem>
+           <BreadcrumbItem>
+            <BreadcrumbLink isCurrentPage>Create Stock Group</BreadcrumbLink>
+           </BreadcrumbItem>
+           </Breadcrumb>
+                </HStack>
+   {/* Form Section */}
+   <Box maxW="90%" mx="auto">
 
       <VStack spacing={4} align="stretch">
-        <Text fontSize="2xl" fontWeight="bold">
+        <Text fontSize="lg" color="#4d4d4d" fontWeight="bold">
           Create Stock Group
         </Text>
 
@@ -48,12 +69,18 @@ const CreateStockGroup = () => {
             <Input type="number" />
           </FormControl>
         </SimpleGrid>
+        {/* Button Right Align */}
+        <Box textAlign="right">
+            <Button colorScheme="blue" px={8}>
 
-        <Button colorScheme="blue" width="fit-content" mx="auto">
           Create Stock Group
         </Button>
+        </Box>
+            
       </VStack>
-      </>
+      </Box>
+          </Box>
+
   );
 };
 

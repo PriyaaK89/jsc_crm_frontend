@@ -1,60 +1,55 @@
-import React from "react";
-import { Box, Flex } from "@chakra-ui/react";
-import Sidebar from "./Sidebar";
-import DesktopTopbar from "./Topbar";
-import MobileTopbar from "./MobileTopbar";
-import ViewStockCategory from "../../pages/InventoryMaster/ViewStockCategory";
+import { FormControl, SimpleGrid, HStack,VStack, Box, Text, FormLabel, Button,
+  Breadcrumb,BreadcrumbItem,BreadcrumbLink, Select,Input } from '@chakra-ui/react'
+import React from 'react';
+import { GoHomeFill } from "react-icons/go";
+import { Link } from "react-router-dom";
 
-const ViewStockCategoryLayout = () => {
+
+const ViewStockCategory = () => {
   return (
-    <Flex bg="#f4f4f4" minH="100vh">
-      {/* Fixed Sidebar */}
-      <Box
-        position="fixed"
-        top="0"
-        left="0"
-        w="268px"
-        h="100vh"
-        display={{ base: "none", md: "block" }}
-      >
-        <Sidebar />
-      </Box>
+    <Box bg="white" px={6} py={4}>
+       {/* Top Section */}
+           <HStack justifyContent="space-between" mb={6}>
+      
+                 <Breadcrumb color="#8B8D97">
+                 <BreadcrumbItem>
+                 <BreadcrumbLink as={Link} href="/dashboard"><GoHomeFill color="#5570F1"/></BreadcrumbLink>
+                 </BreadcrumbItem>
+                 <BreadcrumbItem>
+                  <BreadcrumbLink isCurrentPage>Create Stock Group</BreadcrumbLink>
+                 </BreadcrumbItem>
+                 </Breadcrumb>
+                      </HStack>
+                      <Box maxW="90%" mx="auto">
 
-      {/* Main Content Area */}
-      <Flex direction="column" flex="1" ml={{ base: 0, md: "268px" }}>
-        {/* Desktop Topbar */}
-        <Box
-          display={{ base: "none", md: "block" }}
-          px={{ base: 4, md: 6 }}
-          pt={4}
-          mx={3}
-        >
-          <DesktopTopbar />
-        </Box>
+      <VStack spacing={4} align="stretch">
+        <Text fontSize="lg" color="#4d4d4d" fontWeight="bold">
+          Create Stock Category
+        </Text>
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} width="100%">
+          <FormControl isRequired>
+            <FormLabel>Name</FormLabel>
+            <Input type="text"  />
+          </FormControl>
+          <FormControl>
+            <FormLabel isRequired>Select Stock Group</FormLabel>
+            <Select placeholder="Select Stock Name">
+              <option value="group1">Stock Group 1</option>
+              <option value="group2">Stock Group 2</option>
+            </Select>
 
-        {/* Mobile Topbar */}
-        <Box display={{ base: "block", md: "none" }} px={4} py={4} mx={3}>
-          <MobileTopbar />
-        </Box>
+          </FormControl>
+        </SimpleGrid>
+        <Box textAlign="right">
 
-        {/* Content Section */}
-        <Flex flex="1" px={{ base: 0, md: 6 }} py={4} overflow="auto">
-          {/* Main Content Full Width */}
-          <Box
-            flex="1"
-            bg="white"
-            borderRadius="21px"
-            boxShadow="sm"
-            px={4}
-            py={2}
-            mx={3}
-          >
-            <ViewStockCategory />
-          </Box>
-        </Flex>
-      </Flex>
-    </Flex>
-  );
-};
+        <Button  colorScheme="blue" px={8}>Create</Button>
+              </Box>
 
-export default ViewStockCategoryLayout;
+      </VStack>
+                            </Box>
+
+    </Box>
+  )
+}
+
+export default ViewStockCategory

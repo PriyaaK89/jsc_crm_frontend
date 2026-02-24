@@ -25,6 +25,7 @@ import ViewStockCategoryLayout from "../components/layout/ViewStockCategoryLayou
 
 function App() {
   return (
+    
     <Router>  
       <Routes>
         

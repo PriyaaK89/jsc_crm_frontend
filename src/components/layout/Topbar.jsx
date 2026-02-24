@@ -12,7 +12,7 @@ import { AuthContext } from "../../context/AuthContext";
 
 
 
-const Topbar = () => {
+const Topbar= () => {
   const toast = useToast()
   const {auth} = useContext(AuthContext)
   
@@ -65,9 +65,9 @@ const Topbar = () => {
       <Popover placement="bottom-end" backdropFilter="blur(10px)" bg="rgba(255, 255, 255, 0.8)">
         <PopoverTrigger>
           <Avatar
-            name="Rahul Sharma"
+            name=''
             size="sm"
-            cursor="pointer"
+            cursor="pointer" 
           />
         </PopoverTrigger>
 
@@ -126,4 +126,4 @@ const Topbar = () => {
   );
 };
 
-export default DesktopTopbar;
+export default Topbar;

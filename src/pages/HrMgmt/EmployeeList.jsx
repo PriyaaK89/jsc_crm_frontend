@@ -24,6 +24,7 @@ import {
   Tooltip,
   Tr,
   useDisclosure,
+
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import { FiSearch, FiEdit2, FiTrash2 } from "react-icons/fi";
@@ -147,7 +148,7 @@ const EmployeeList = () => {
                         <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular'>
                           {header}
                         </Text>
-                        <Img src={sort_icon} alt='sort_icon' />
+                        {/* <Img src={sort_icon} alt='sort_icon' /> */}
                       </Flex>
                     </Th>
                   ))}

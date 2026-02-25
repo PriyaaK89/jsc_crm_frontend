@@ -30,6 +30,7 @@ import ViewStockGroupLayout from "../components/layout/ViewStockGroupLayout";
 import DeleteStockGroupLayout from "../components/layout/DeleteStockGroupLayout";
 import  CreateStockCategoryLayout from "../components/layout/CreateStockCategoryLayout";
 import ViewStockCategoryLayout from "../components/layout/ViewStockCategoryLayout";
+import UploadSalarySlipLayout from "../components/layout/UploadSalarySlipLayout";
 
 function App() {
   return (

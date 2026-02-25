@@ -10,8 +10,6 @@ import {
 } from "@chakra-ui/react";
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
-import { FaUser } from "react-icons/fa";
-import { FaUserPlus } from "react-icons/fa";
 import { HiUserGroup } from "react-icons/hi";
 import { MdAssignmentInd } from "react-icons/md";
 import {FaUserTie} from 'react-icons/fa';
@@ -19,6 +17,10 @@ import { FaBullseye   } from "react-icons/fa";
 import { MdCorporateFare } from "react-icons/md";
 import { HiOfficeBuilding } from "react-icons/hi";
 import { FaChartLine } from "react-icons/fa";
+import { FaUser,FaUserPlus } from "react-icons/fa";
+import { MdInventory, MdAddBox, MdViewList, MdDelete } from "react-icons/md";
+import { MdCategory } from "react-icons/md";
+import { MdAddCircleOutline } from "react-icons/md";
 
 import {
   RiDashboardLine,

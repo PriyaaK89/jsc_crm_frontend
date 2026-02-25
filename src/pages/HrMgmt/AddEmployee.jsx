@@ -227,7 +227,7 @@ const AddEmployee = () => {
  
     return (
         <>
-            <Box bg="white" borderRadius="10px" >
+            <Box bg="white" borderRadius="10px" px={6} py={4} >
                 <HStack justifyContent='space-between'>
                           <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                             <BreadcrumbItem>

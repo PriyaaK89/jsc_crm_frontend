@@ -1,25 +1,24 @@
 import React from "react";
-import { Flex, Box } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
 import DesktopTopbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
-import EmployeeList from "../../pages/HrMgmt/EmployeeList";
-
-const EmployeeListLayout = () => {
+import DeleteStockGroup from "../../pages/InventoryMaster/DeleteStockGroup";
+const DeleteStockGroupLayout = () => {
   return (
     <Flex bg="#f4f4f4" minH="100vh">
-
-      {/* Fixed Sidebar */} 
-       <Box
+      
+      {/* Fixed Sidebar */}
+      <Box
         position="fixed"
         top="0"
         left="0"
         w="268px"
         h="100vh"
         display={{ base: "none", md: "block" }}
-      > 
+      >
         <Sidebar />
-       </Box> 
+      </Box>
 
       {/* Main Content Area */}
       <Flex
@@ -27,13 +26,13 @@ const EmployeeListLayout = () => {
         flex="1"
         ml={{ base: 0, md: "268px" }}
       >
-
+        
         {/* Desktop Topbar */}
         <Box
           display={{ base: "none", md: "block" }}
           px={{ base: 4, md: 6 }}
           pt={4}
-          mx={3}
+          mx={3}   
         >
           <DesktopTopbar />
         </Box>
@@ -55,22 +54,24 @@ const EmployeeListLayout = () => {
           py={4}
           overflow="auto"
         >
-          <Box
+          
+          {/* Main Content Full Width */}
+          <Box        
             flex="1"
             bg="white"
             borderRadius="21px"
             boxShadow="sm"
             px={4}
             py={2}
-            mx={3}
+            mx={3} 
           >
-            <EmployeeList />
+            <DeleteStockGroup />
           </Box>
-        </Flex>
 
+        </Flex>
       </Flex>
     </Flex>
   );
 };
 
-export default EmployeeListLayout;
+export default DeleteStockGroupLayout;

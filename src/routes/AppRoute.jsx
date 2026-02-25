@@ -25,12 +25,17 @@ import AssignTargetFALayout from "../components/layout/AssignTargetFALayout";
 import CreateCompanyLayout from '../components/layout/CreateCompanyLayout';
 import ApproveIpUserListLayout from "../components/layout/ApproveIpUserListLayout";
 import EmpAttendaneLayout from "../components/layout/EmpAttendaneLayout";
-import UploadSalarySlipLayout from '../components/layout/UploadSalarySlipLayout'
-
+import CreateStockGroupLayout from "../components/layout/CreateStockGroupLayout";
+import ViewStockGroupLayout from "../components/layout/ViewStockGroupLayout";
+import DeleteStockGroupLayout from "../components/layout/DeleteStockGroupLayout";
+import  CreateStockCategoryLayout from "../components/layout/CreateStockCategoryLayout";
+import ViewStockCategoryLayout from "../components/layout/ViewStockCategoryLayout";
+import UploadSalarySlipLayout from "../components/layout/UploadSalarySlipLayout";
 
 function App() {
   return (
-    <Router>
+    
+    <Router>  
       <Routes>
         
         <Route path="/" element={<Navigate to="/login" replace />} />
@@ -63,8 +68,28 @@ function App() {
           path="/emp-attendance-report"
           element={<EmpAttendaneLayout/>}
         />
-      
-      </Routes> 
+        <Route
+          path="/inventory/create-stock-group"
+          element={<CreateStockGroupLayout/>}
+      />
+<Route
+          path="/inventory/view-stock-group"
+          element={<ViewStockGroupLayout/>}
+      />
+      <Route
+          path="/inventory/delete-stock-group"
+          element={<DeleteStockGroupLayout/>}
+      />
+      <Route
+          path="/inventory/create-stock-category"
+          element={<CreateStockCategoryLayout/>}
+      />
+      <Route
+          path="/inventory/view-stock-category"
+          element={<ViewStockCategoryLayout/>}
+      />
+             </Routes>
+
     </Router>
   );
 }

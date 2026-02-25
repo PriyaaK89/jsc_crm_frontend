@@ -7,12 +7,9 @@ import {
   Button,
   Collapse,
   Icon,
-  border,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
-import { FaUser } from "react-icons/fa";
-import { FaUserPlus } from "react-icons/fa";
 import { HiUserGroup } from "react-icons/hi";
 import { MdAssignmentInd } from "react-icons/md";
 import {FaUserTie} from 'react-icons/fa';
@@ -20,6 +17,10 @@ import { FaBullseye   } from "react-icons/fa";
 import { MdCorporateFare } from "react-icons/md";
 import { HiOfficeBuilding } from "react-icons/hi";
 import { FaChartLine } from "react-icons/fa";
+import { FaUser,FaUserPlus } from "react-icons/fa";
+import { MdInventory, MdAddBox, MdViewList, MdDelete } from "react-icons/md";
+import { MdCategory } from "react-icons/md";
+import { MdAddCircleOutline } from "react-icons/md";
 
 import {
   RiDashboardLine,
@@ -34,7 +35,10 @@ import { UserCheck } from "lucide-react";
 const Sidebar = () => {
   const [openMenu, setOpenMenu] = useState(null);
   const { auth } = useContext(AuthContext);
+  console.log(auth, "auth");
   const role = auth?.user?.role;
+  console.log(role, "role");
+  console.log("SIDEBAR COMPONENT RENDERED");
 
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
@@ -46,12 +50,18 @@ const Sidebar = () => {
     justifyContent: "flex-start",
     fontWeight: "700",
     color: "#333333",
-    _hover: { border:"1px solid #d5d5d5", borderRadius: "28px", bg: "transparent" },
-    height:"39px"
+    _hover: {
+      border: "1px solid #d5d5d5",
+      borderRadius: "28px",
+      bg: "transparent",
+    },
+    height: "39px",
   };
 
   const activeLinkStyle = ({ isActive }) =>
-    isActive ? { border: "1px solid #d5d5d5", borderRadius: "28px" } : undefined;
+    isActive
+      ? { border: "1px solid #d5d5d5", borderRadius: "28px" }
+      : undefined;
 
   return (
     <Box
@@ -84,7 +94,6 @@ const Sidebar = () => {
         {/* HR Management */}
         <Button
           leftIcon={<FaUser />}
-
           rightIcon={
             <Icon
               as={openMenu === "users" ? ChevronDownIcon : ChevronRightIcon}
@@ -104,7 +113,7 @@ const Sidebar = () => {
               size="sm"
               as={NavLink}
               to="/hr-mgmt/add-employee"
-              style={activeLinkStyle} 
+              style={activeLinkStyle}
             >
               Add Employee
             </Button>
@@ -251,11 +260,6 @@ const Sidebar = () => {
         {/* Leads */}
         <Button
           leftIcon={<RiUser3Line />}
-          rightIcon={
-            <Icon
-              // as={openMenu === "leads" ? ChevronDownIcon : ChevronRightIcon}
-            />
-          }
           {...sidebarButtonStyle}
           onClick={() => toggleMenu("leads")}
         >
@@ -270,7 +274,6 @@ const Sidebar = () => {
               size="sm"
               as={NavLink}
               to="/leads/new"
-              // onClick={onClose}
             >
               New Lead
             </Button>
@@ -281,7 +284,6 @@ const Sidebar = () => {
               size="sm"
               as={NavLink}
               to="/leads/list"
-              // onClick={onClose}
             >
               Lead List
             </Button>
@@ -294,10 +296,84 @@ const Sidebar = () => {
           {...sidebarButtonStyle}
           as={NavLink}
           to="/reports"
-          // onClick={onClose}
         >
           Reports
         </Button>
+
+        {/* Inventory Master */}
+      {(role === "ADMIN" || role === "SUPER_ADMIN") && (
+  <>
+    <Button
+      leftIcon={<MdInventory size={20} />}
+      rightIcon={
+        <Icon
+          as={openMenu === "inventory" ? ChevronDownIcon : ChevronRightIcon}
+        />
+      }
+      {...sidebarButtonStyle}
+      onClick={() => toggleMenu("inventory")}
+    >
+      Inventory Master
+    </Button>
+
+    <Collapse in={openMenu === "inventory"} animateOpacity>
+      <VStack pl={6} align="stretch" spacing={1}>
+         <Button 
+         leftIcon={<MdAddBox size={18}/>}
+         {...sidebarButtonStyle}
+         size="sm"
+         as={NavLink}
+                       to="/inventory/create-stock-group"
+                       style={activeLinkStyle}
+         >
+         
+                         Create Stock Group
+         </Button>
+           <Button
+              leftIcon={<MdViewList size={18} />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/inventory/view-stock-group"
+              style={activeLinkStyle}
+            >
+              View Stock Group
+            </Button>
+            <Button
+              leftIcon={<MdDelete size={18} />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/inventory/delete-stock-group"
+              style={activeLinkStyle}
+            >
+              Delete Stock Group
+            </Button>
+            <Button
+              leftIcon={<MdCategory size={18} />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/inventory/create-stock-category"
+              style={activeLinkStyle}
+            >
+              Create Stock Category
+            </Button>
+       <Button
+              leftIcon={<MdAddCircleOutline size={18} />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/inventory/view-stock-category"
+              style={activeLinkStyle}
+            >
+              View Stock Category
+            </Button>
+      </VStack>
+    </Collapse>
+  </>
+)}
+
 
         {/* Settings */}
         <Button
@@ -305,18 +381,17 @@ const Sidebar = () => {
           {...sidebarButtonStyle}
           as={NavLink}
           to="/settings"
-          // onClick={onClose}
         >
           Settings
         </Button>
 
+        {/* IP Requests for Admins */}
         {(role === "ADMIN" || role === "SUPER_ADMIN") && (
           <Button
             leftIcon={<RiUserAddLine />}
             {...sidebarButtonStyle}
             as={NavLink}
             to="/approve-ip-user-list"
-            // onClick={onClose}
           >
             IP Request
           </Button>

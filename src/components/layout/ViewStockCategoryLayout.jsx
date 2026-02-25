@@ -1,33 +1,27 @@
 import React from "react";
-import { Flex, Box } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
 import DesktopTopbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
-import EmployeeList from "../../pages/HrMgmt/EmployeeList";
+import ViewStockCategory from "../../pages/InventoryMaster/ViewStockCategory";
 
-const EmployeeListLayout = () => {
+const ViewStockCategoryLayout = () => {
   return (
     <Flex bg="#f4f4f4" minH="100vh">
-
-      {/* Fixed Sidebar */} 
-       <Box
+      {/* Fixed Sidebar */}
+      <Box
         position="fixed"
         top="0"
         left="0"
         w="268px"
         h="100vh"
         display={{ base: "none", md: "block" }}
-      > 
+      >
         <Sidebar />
-       </Box> 
+      </Box>
 
       {/* Main Content Area */}
-      <Flex
-        direction="column"
-        flex="1"
-        ml={{ base: 0, md: "268px" }}
-      >
-
+      <Flex direction="column" flex="1" ml={{ base: 0, md: "268px" }}>
         {/* Desktop Topbar */}
         <Box
           display={{ base: "none", md: "block" }}
@@ -39,22 +33,13 @@ const EmployeeListLayout = () => {
         </Box>
 
         {/* Mobile Topbar */}
-        <Box
-          display={{ base: "block", md: "none" }}
-          px={4}
-          py={4}
-          mx={3}
-        >
+        <Box display={{ base: "block", md: "none" }} px={4} py={4} mx={3}>
           <MobileTopbar />
         </Box>
 
         {/* Content Section */}
-        <Flex
-          flex="1"
-          px={{ base: 0, md: 6 }}
-          py={4}
-          overflow="auto"
-        >
+        <Flex flex="1" px={{ base: 0, md: 6 }} py={4} overflow="auto">
+          {/* Main Content Full Width */}
           <Box
             flex="1"
             bg="white"
@@ -64,13 +49,12 @@ const EmployeeListLayout = () => {
             py={2}
             mx={3}
           >
-            <EmployeeList />
+            <ViewStockCategory />
           </Box>
         </Flex>
-
       </Flex>
     </Flex>
   );
 };
 
-export default EmployeeListLayout;
+export default ViewStockCategoryLayout;

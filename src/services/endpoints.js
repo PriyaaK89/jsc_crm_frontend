@@ -19,5 +19,6 @@ export const API_ENDPOINTS = {
   get_ip_requests: `auth/get-ip-requests`,
   approve_ip: `auth/approve-ip`,
   get_Emp_Attendance: `/attendance/daywise`,
-  get_Emp_Attendance_Summary:  `attendance/monthly-summary`
+  get_Emp_Attendance_Summary:  `attendance/monthly-summary`,
+  upload_salary_slip:`upload-emp-salary`
 };

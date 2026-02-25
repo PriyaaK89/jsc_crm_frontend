@@ -13,6 +13,14 @@ import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { FaUser } from "react-icons/fa";
 import { FaUserPlus } from "react-icons/fa";
+import { HiUserGroup } from "react-icons/hi";
+import { MdAssignmentInd } from "react-icons/md";
+import {FaUserTie} from 'react-icons/fa';
+import { FaBullseye   } from "react-icons/fa";
+import { MdCorporateFare } from "react-icons/md";
+import { HiOfficeBuilding } from "react-icons/hi";
+import { FaChartLine } from "react-icons/fa";
+
 import {
   RiDashboardLine,
   RiUserAddLine,
@@ -31,6 +39,7 @@ const Sidebar = () => {
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
   };
+
 
   const sidebarButtonStyle = {
     variant: "ghost",
@@ -90,7 +99,7 @@ const Sidebar = () => {
         <Collapse in={openMenu === "users"} animateOpacity>
           <VStack pl={6} align="stretch" spacing={1}>
             <Button
-              leftIcon={<FaUserPlus />}
+              leftIcon={<FaUserPlus  />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -116,7 +125,8 @@ const Sidebar = () => {
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
-              to="/hr-mgmt/upload-emp-salary"
+              to={`/hr-mgmt/upload-emp-salary`}
+              
               style={activeLinkStyle}
             >
               Upload Salary
@@ -134,6 +144,109 @@ const Sidebar = () => {
             </Button>
           </VStack>
         </Collapse>
+
+      {/* business department */}
+         <Button {...sidebarButtonStyle} onClick={() => toggleMenu("business")} leftIcon={<FaChartLine/>}>
+          
+          Business Development
+          <Icon as={openMenu === "business" ? ChevronDownIcon : ChevronRightIcon} />
+        </Button>
+
+        <Collapse in={openMenu === "business"} animateOpacity>
+          <VStack pl={6} align="stretch" spacing={1}>
+            <Button
+              leftIcon={<FaUserPlus />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/Business-dev/create-team"
+              style={activeLinkStyle} 
+            >
+             Create Team
+            </Button>
+
+            <Button
+              leftIcon={<HiUserGroup />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/Business-devt/create-sub-team"
+              style={activeLinkStyle}
+            >
+              Create Sub Team
+            </Button>
+
+            <Button
+              leftIcon={<MdAssignmentInd  />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/Business-devt/assign-target-rsm"
+              style={activeLinkStyle}
+            >
+             Assign Target RSM
+            </Button>
+
+            <Button
+              leftIcon={<FaUserTie  />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/Business-devt/assign-target-tsm"
+              style={activeLinkStyle}
+            >
+             Assign Target TSM
+            </Button>
+             <Button
+              leftIcon={<FaBullseye  />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/Business-devt/assign-target-sm"
+              style={activeLinkStyle}
+            >
+             Assign Target SM
+            </Button>
+             <Button
+              leftIcon={<UserCheck />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/Business-devt/assign-target-fa"
+              style={activeLinkStyle}
+            >
+             Assign Target FA
+            </Button>
+          </VStack>
+        </Collapse>
+
+
+        {/* ..company master  */}
+          <Button {...sidebarButtonStyle} onClick={() => toggleMenu("company-master")}  leftIcon={<MdCorporateFare />} >
+         Company Master
+          <Icon as={openMenu === "company-master" ? ChevronDownIcon : ChevronRightIcon} />
+        </Button>
+
+        <Collapse in={openMenu === "company-master"} animateOpacity>
+          <VStack pl={6} align="stretch" spacing={1}>
+            <Button
+              leftIcon={<HiOfficeBuilding  />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/company-master/create-company"
+              style={activeLinkStyle} 
+            >
+             Create Company
+            </Button>
+
+           
+
+           
+          </VStack>
+        </Collapse>
+
+
 
         {/* Leads */}
         <Button

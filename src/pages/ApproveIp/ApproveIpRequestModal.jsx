@@ -9,6 +9,8 @@ import {
   Button,
   Text,
   useToast,
+  Flex,
+  
 } from "@chakra-ui/react";
 
 import API from "../../services/api";
@@ -55,7 +57,11 @@ const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalCloseButton />
+        <Flex justify="space-between" align="center" bg="blue" color="white">
+          <Text>Approve User Request</Text>
+             <ModalCloseButton />
+
+        </Flex>
         <ModalBody>
           <Text>Are you sure you want to approve this IP?</Text>
         </ModalBody>

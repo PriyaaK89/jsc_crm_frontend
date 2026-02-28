@@ -3,6 +3,7 @@
     margin: 0;
     font-family: 'InterRegular';
     overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 @font-face{

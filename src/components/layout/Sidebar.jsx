@@ -68,12 +68,9 @@ const Sidebar = () => {
       w="268px"
       bg="#f4f4f4"
       color="#333333"
-      minH="95.6vh"
       p={4}
-      position="fixed"
-      top={5}
-      left={4}
       overflow="hidden"
+      h="100vh"
     >
       <Text fontSize="2xl" fontWeight="bold" mb={8}>
         CRM
@@ -374,7 +371,7 @@ const Sidebar = () => {
   </>
 )}
 
-
+{/* order vochor */}
         {/* Settings */}
         <Button
           leftIcon={<RiSettings3Line />}

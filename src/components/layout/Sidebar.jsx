@@ -148,7 +148,12 @@ const Sidebar = () => {
             >
               Attend Report
             </Button>
+            <Button {...sidebarButtonStyle} size="sm"
+              as={NavLink} to="/hr-mgmt/track-employee" style={activeLinkStyle}>
+              Track Employee
+            </Button>
           </VStack>
+        
         </Collapse>
 
       {/* business department */}

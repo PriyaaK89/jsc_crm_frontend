@@ -31,6 +31,7 @@ import DeleteStockGroupLayout from "../components/layout/DeleteStockGroupLayout"
 import  CreateStockCategoryLayout from "../components/layout/CreateStockCategoryLayout";
 import ViewStockCategoryLayout from "../components/layout/ViewStockCategoryLayout";
 import UploadSalarySlipLayout from "../components/layout/UploadSalarySlipLayout";
+import TrackEmpLayout from "../components/layout/TrackEmpLayout";
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function App() {
        <Route path='/Business-devt/assign-target-sm' element={<AssignTargetSMLayout/>}/>
        <Route path='/Business-devt/assign-target-fa' element={<AssignTargetFALayout/>}/>
        <Route path='company-master/create-company' element={<CreateCompanyLayout/>}/>
+       <Route path='/hr-mgmt/track-employee' element={<TrackEmpLayout/>}/>
       
        <Route
           path="/approve-ip-user-list"

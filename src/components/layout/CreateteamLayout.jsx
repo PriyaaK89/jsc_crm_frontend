@@ -55,7 +55,6 @@ const CreateTeamLayout = ()=>{
                  flex="1"
                  px={{ base: 0, md: 6 }}
                  py={6}
-                 overflow="auto"
                  mx={3}
                >
                  <Box

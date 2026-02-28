@@ -20,5 +20,6 @@ export const API_ENDPOINTS = {
   approve_ip: `auth/approve-ip`,
   get_Emp_Attendance: `/attendance/daywise`,
   get_Emp_Attendance_Summary:  `attendance/monthly-summary`,
-  upload_salary_slip:`upload-emp-salary`
+  upload_salary_slip:`upload-emp-salary`,
+  get_attendance_images: `get-attendance-images`
 };

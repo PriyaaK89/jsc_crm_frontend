@@ -5,7 +5,7 @@ import DashboardLayout from "../../components/layout/DashboardLayout";
 const Dashboard = () => {
   return (
     <DashboardLayout > 
-      <SimpleGrid  bg="white"  columns={{ base: 1, md: 3 }}  spacing={6}>
+      <SimpleGrid  bg="white"  columns={{ base: 1, md: 3 }}  spacing={6} mt={4}>
         <Box bg="blue.100" p={4} borderRadius="md">
           <Text fontWeight="bold">Total Users</Text>
           <Text fontSize="2xl">120</Text>
@@ -22,6 +22,7 @@ const Dashboard = () => {
 
       {/* Additional content like tables, charts can go here */}
     </DashboardLayout>
+
   );
 };
 

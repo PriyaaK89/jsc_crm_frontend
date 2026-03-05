@@ -23,12 +23,17 @@ import {
   Flex,
   Img,
   useDisclosure,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  HStack
 } from "@chakra-ui/react";
 
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import sort_icon from "../../assets/sort.svg";
 import EmployeeImageModal from "./EmployeeImageModal";
+import { GoHomeFill } from "react-icons/go";
 
 const EmpAttendance = () => {
   const [users, setUsers] = useState([]);
@@ -165,12 +170,27 @@ const EmpAttendance = () => {
     <>
       <EmployeeImageModal isOpen={isOpen} onClose={onClose} selectedUserId={selectedUserId} selectedDate={selectedDate} />
       <Box bg="white" p={6} borderRadius="md">
-        <Box mb={5}>
+         <HStack justifyContent="space-between" flexWrap="wrap">
+                  <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+                    <BreadcrumbItem>
+                      <BreadcrumbLink href="/dashboard">
+                        <GoHomeFill color="#5570F1" />
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+        
+                    <BreadcrumbItem isCurrentPage>
+                      <BreadcrumbLink fontSize="13px">
+                      Attendace Report
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                  </Breadcrumb>
+                </HStack>
+        
+                <Text fontSize="lg" fontWeight="bold" mb={6}>
+                Attendace Report
+                </Text>
 
-        <Heading size="md">
-          Employee Summary & Attendance
-        </Heading>
-            </Box>
+       
 
         <VStack spacing={6} align="stretch">
           {/* Filters */}
@@ -223,10 +243,12 @@ const EmpAttendance = () => {
               View
             </Button>
           </SimpleGrid>
+                  </VStack>
+
 
           {/* Summary Cards */}
           {empRep.length > 0 && (
-            <SimpleGrid columns={{ base: 1, md: 5 }} spacing={6}>
+            <SimpleGrid columns={{ base: 1, md: 5 }} spacing={6} mt={4}>
               {empRep.map((emp, index) => (
                 <Fragment key={index}>
                   <Card>
@@ -377,7 +399,6 @@ const EmpAttendance = () => {
             ) : ""
             }
           </Box>
-        </VStack>
       </Box>
     </>
 

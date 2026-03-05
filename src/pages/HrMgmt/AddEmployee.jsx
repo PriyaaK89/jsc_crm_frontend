@@ -274,8 +274,9 @@ const AddEmployee = () => {
         borderRadius="10px"
         px={{ base: 4, md: 6 }}
         py={4}
-        maxW="1200px"
-        mx="auto"
+        // maxW="1200px"
+        // mx="auto"
+        overflow="hidden"
       >
         <HStack justifyContent="space-between">
           <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
@@ -306,8 +307,8 @@ const AddEmployee = () => {
           <Text fontWeight="bold">Basic Details</Text>
 
           <SimpleGrid columns={{ base: 1, md: 2, lg:3 }} spacing={4}>
-            <FormControl>
-              <FormLabel {...lableStyles}>Name</FormLabel>
+            <FormControl isRequired>
+              <FormLabel {...lableStyles} >Name</FormLabel>
               <Input
                 name="name"
                 placeholder="Enter name"
@@ -315,7 +316,7 @@ const AddEmployee = () => {
               />
             </FormControl>
 
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Select Gender</FormLabel>
               <Select
                 fontSize="13px"
@@ -329,7 +330,7 @@ const AddEmployee = () => {
                 <option value="OTHER">Other</option>
               </Select>
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Contact No.</FormLabel>
               <Input
                 name="contact_no"
@@ -345,7 +346,7 @@ const AddEmployee = () => {
                             onChange={handleChange}
                             placeholder="Select date of Birth"
                         /> */}
-             <FormControl>
+             <FormControl isRequired>
   <FormLabel>Date of Birth</FormLabel>
   <Input
     type="date"
@@ -355,7 +356,7 @@ const AddEmployee = () => {
   />
 </FormControl>
 
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Email</FormLabel>
               <Input
                 name="email"
@@ -368,7 +369,7 @@ const AddEmployee = () => {
           {/* ADDRESS */}
           <Text fontWeight="bold">Address</Text>
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Address</FormLabel>
               <Input
                 name="address_line1"
@@ -376,7 +377,7 @@ const AddEmployee = () => {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Address</FormLabel>
               <Input
                 name="address_line2"
@@ -384,7 +385,7 @@ const AddEmployee = () => {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Pincode</FormLabel>
               <Input
                 name="pincode"
@@ -393,7 +394,7 @@ const AddEmployee = () => {
                 onChange={(e) => handlePincodeChange(e.target.value)}
               />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Country</FormLabel>
               <Input
                 name="country"
@@ -401,15 +402,15 @@ const AddEmployee = () => {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>State</FormLabel>
               <Input name="state" value={formData.state || ""} isReadOnly />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>City</FormLabel>
               <Input name="city" value={formData.city || ""} isReadOnly />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>District</FormLabel>
               <Input
                 name="district"
@@ -418,7 +419,7 @@ const AddEmployee = () => {
               />
             </FormControl>
 
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Select Area</FormLabel>
               <Select
                 placeholder="Select Area"
@@ -443,7 +444,7 @@ const AddEmployee = () => {
           {/* PERSONAL INFO */}
           <Text fontWeight="bold">Personal Info</Text>
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Father's Name</FormLabel>
               <Input
                 name="father_name"
@@ -451,7 +452,7 @@ const AddEmployee = () => {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Pan Number</FormLabel>
               <Input
                 name="pan_number"
@@ -459,7 +460,7 @@ const AddEmployee = () => {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Aadhar No.</FormLabel>
               <Input
                 name="aadhar_no"
@@ -467,7 +468,7 @@ const AddEmployee = () => {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Blood Group</FormLabel>
               <Input
                 name="blood_group"
@@ -480,7 +481,7 @@ const AddEmployee = () => {
           {/* JOB DETAILS */}
           <Text fontWeight="bold">Job Details</Text>
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Department Name</FormLabel>
               <Select
                 placeholder="Select Department"
@@ -498,7 +499,7 @@ const AddEmployee = () => {
               </Select>
             </FormControl>
 
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Job Role Name</FormLabel>
               <Select
                 placeholder="Select Job Role"
@@ -518,7 +519,7 @@ const AddEmployee = () => {
               </Select>
             </FormControl>
 
-            <FormControl>
+            <FormControl isRequired>
               <CustomDatePicker
                 label="Date of Joining"
                 name="date_of_joining"
@@ -526,8 +527,8 @@ const AddEmployee = () => {
                 onChange={handleChange}
                 placeholder="Select date of joining"
               />
-            </FormControl>
-            <FormControl>
+            </FormControl >
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Salary</FormLabel>
               <Input
                 name="salary"
@@ -536,7 +537,7 @@ const AddEmployee = () => {
               />
             </FormControl>
 
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>
                 Travelling Allowance Per K.M.
               </FormLabel>
@@ -547,7 +548,7 @@ const AddEmployee = () => {
               />
             </FormControl>
 
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>
                 Avg. Travelling Per Day (In K.M.)
               </FormLabel>
@@ -557,7 +558,7 @@ const AddEmployee = () => {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>City Allowance (Per K.M.)</FormLabel>
               <Input
                 name="city_allowance_per_km"
@@ -565,7 +566,7 @@ const AddEmployee = () => {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Daily Allowance (with DOC)</FormLabel>
               <Input
                 name="daily_allowance_with_doc"
@@ -583,7 +584,7 @@ const AddEmployee = () => {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Hotel Allowance</FormLabel>
               <Input
                 name="hotel_allowance"
@@ -591,7 +592,7 @@ const AddEmployee = () => {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Select Week Off</FormLabel>
               <Select
                 name="week_off"
@@ -610,16 +611,16 @@ const AddEmployee = () => {
                 <option value="Sunday">Sunday</option>
               </Select>
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Total Leaves</FormLabel>
               <Input name="total_leaves" onChange={handleChange} />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel {...lableStyles}>Headquarter</FormLabel>
               <Input name="headquarter" onChange={handleChange} />
             </FormControl>
 
-            <FormControl>
+            <FormControl isRequired> 
               <FormLabel {...lableStyles}>Approver Name</FormLabel>
               <Select
                 name="approver_name"
@@ -680,6 +681,8 @@ const AddEmployee = () => {
           >
             Create User
           </Button>
+          
+
 
           {/* <DocumentUploadTable/> */}
         </VStack>

@@ -11,7 +11,7 @@ import ChangePasswordLayout from "../components/layout/ChangePasswordLayout";
 import DepartmentLayout from "../components/layout/AddDepartmentLayout";
 import JobRoleLayout from "../components/layout/AddJobRoleLayout";
 import EmployeeListLayout from "../components/layout/EmployeeList";
-import UploadEmpDocuments from "../pages/HrMgmt/DocUpload/UploadEmpDocuments";
+import UploadEmpDocumentsLayout from "../components/layout/UploadEmpDocumentsLayout";
 import EditEmployeePage from "../components/layout/EditEmployee";
 import OfferLetterLayout from "../components/layout/GenerateLetters/OfferLetterLayout";
 import JoiningLetterLayout from "../components/layout/GenerateLetters/JoiningLetterLayout";
@@ -25,12 +25,13 @@ import AssignTargetFALayout from "../components/layout/AssignTargetFALayout";
 import CreateCompanyLayout from '../components/layout/CreateCompanyLayout';
 import ApproveIpUserListLayout from "../components/layout/ApproveIpUserListLayout";
 import EmpAttendaneLayout from "../components/layout/EmpAttendaneLayout";
-import CreateStockGroupLayout from "../components/layout/CreateStockGroupLayout";
-import ViewStockGroupLayout from "../components/layout/ViewStockGroupLayout";
-import DeleteStockGroupLayout from "../components/layout/DeleteStockGroupLayout";
-import  CreateStockCategoryLayout from "../components/layout/CreateStockCategoryLayout";
-import ViewStockCategoryLayout from "../components/layout/ViewStockCategoryLayout";
-import UploadSalarySlipLayout from "../components/layout/UploadSalarySlipLayout";
+import UploadSalarySlipLayout from '../components/layout/UploadSalarySlipLayout';
+import CreateGroupLayout from '../components/layout/AccountingMasterLayout/CreateGroupLayout';
+import ViewGroupLayout from '../components/layout/AccountingMasterLayout/ViewGroupLayout';
+import DeleteGroupLayout from '../components/layout/AccountingMasterLayout/DeleteGroupLayout';
+import CreateLedgerLayout from '../components/layout/AccountingMasterLayout/CreateLedgerLayout';
+import ViewLedgerLayout from "../components/layout/AccountingMasterLayout/ViewLedgerLayout";
+import EmployeeSalaryReportLayout from "../components/layout/EmployeeSalaryReportLayout";
 
 function App() {
   return (
@@ -47,7 +48,8 @@ function App() {
         <Route path="/roles/add-job-role" element={<JobRoleLayout/>}/>
         <Route path="/hr-mgmt/view-employee-list" element={<EmployeeListLayout/>}/>
         <Route path='/hr-mgmt/upload-emp-salary' element={<UploadSalarySlipLayout/>}/>
-        <Route path="/upload-documents" element={  <UploadEmpDocuments/>}/>
+        <Route path='/emp-salary-report' element={<EmployeeSalaryReportLayout/>}/>
+        <Route path="/upload-documents" element={  <UploadEmpDocumentsLayout/>}/>
         <Route path="/edit-employee-details/:empId" element={<EditEmployeePage/>}/>
         <Route path="/generate-offer-letter/:id" element={<OfferLetterLayout/>}/>
         <Route path="/generate-joining-letter/:id" element={<JoiningLetterLayout/>}/>
@@ -59,37 +61,14 @@ function App() {
        <Route path='/Business-devt/assign-target-sm' element={<AssignTargetSMLayout/>}/>
        <Route path='/Business-devt/assign-target-fa' element={<AssignTargetFALayout/>}/>
        <Route path='company-master/create-company' element={<CreateCompanyLayout/>}/>
-      
-       <Route
-          path="/approve-ip-user-list"
-          element={<ApproveIpUserListLayout />}
-        />
-        <Route
-          path="/emp-attendance-report"
-          element={<EmpAttendaneLayout/>}
-        />
-        <Route
-          path="/inventory/create-stock-group"
-          element={<CreateStockGroupLayout/>}
-      />
-<Route
-          path="/inventory/view-stock-group"
-          element={<ViewStockGroupLayout/>}
-      />
-      <Route
-          path="/inventory/delete-stock-group"
-          element={<DeleteStockGroupLayout/>}
-      />
-      <Route
-          path="/inventory/create-stock-category"
-          element={<CreateStockCategoryLayout/>}
-      />
-      <Route
-          path="/inventory/view-stock-category"
-          element={<ViewStockCategoryLayout/>}
-      />
-             </Routes>
-
+       <Route path="/approve-ip-user-list" element={<ApproveIpUserListLayout />}/>
+        <Route path="/emp-attendance-report" element={<EmpAttendaneLayout/>}/>
+        <Route path='/accounting-master/create-group' element={<CreateGroupLayout/>}/>
+        <Route path='/accounting-master/view-group' element={<ViewGroupLayout/>}/>
+        <Route path='/accounting-master/delete-group'   element={<DeleteGroupLayout/>}/>
+        <Route path='/accounting-master/create-ledger' element={<CreateLedgerLayout/>}/>
+        <Route path='/accounting-master/view-ledger' element={<ViewLedgerLayout/>}/>
+      </Routes> 
     </Router>
   );
 }

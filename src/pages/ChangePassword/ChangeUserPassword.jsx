@@ -7,7 +7,7 @@ import {
   FormLabel,
   Input,
   Heading,
-  VStack,
+  SimpleGrid,
   useToast,
 } from "@chakra-ui/react";
 import API from "../../services/api";
@@ -67,7 +67,7 @@ const ChangePassword = () => {
 
   return (
     <Box
-      minH="100vh"
+
       display="flex"
       alignItems="flex-start"
       justifyContent="center" >
@@ -75,14 +75,13 @@ const ChangePassword = () => {
         bg="white"
         p={8}
         rounded="md"
-        shadow="lg"
         w="100%"
       >
-        <Heading size="md" textAlign="center" mb={6}>
+        <Heading size="md" textAlign="center" mb={6}  lineHeight="1.4">
           Change Password
         </Heading>
 
-        <VStack spacing={4}>
+       <SimpleGrid columns={{ base: 1, md: 1 }} spacing={5}>
           <FormControl>
             <FormLabel>Email</FormLabel>
             <Input
@@ -102,17 +101,16 @@ const ChangePassword = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </FormControl>
+           </SimpleGrid>
 
-          <Button
-            colorScheme="blue"
-            w="100%"
-            mt={4}
-            onClick={handleChangePassword}
-          >
-            Change Password
-          </Button>
 
-        </VStack>
+
+ <Box textAlign="center" mt={8}>
+            <Button w={{ base: "100%", md: "200px" }} colorScheme="blue"  onClick={handleChangePassword}> Change Password</Button>
+          </Box>
+      
+
+       
       </Box>
     </Box>
   );

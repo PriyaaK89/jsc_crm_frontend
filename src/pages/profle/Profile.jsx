@@ -7,7 +7,6 @@ import { AuthContext } from "../../context/AuthContext";
 import { useParams } from "react-router-dom";
 
 
-
 const Profile = () => {
     const {empId} = useParams();
     console.log("Employee ID from URL:", empId);
@@ -35,9 +34,7 @@ const Profile = () => {
   columns={{ base: 1, md: 2 }}
   spacing={{ base: 4, md: 6 }}
   mt={4}
-  alignItems="stretch"
-  
->
+  alignItems="stretch">
                     <PersonalInfoCard />
                     <ContactInfoCard />
                     </SimpleGrid>

@@ -14,13 +14,12 @@ import { HiUserGroup } from "react-icons/hi";
 import { MdAssignmentInd } from "react-icons/md";
 import {FaUserTie} from 'react-icons/fa';
 import { FaBullseye   } from "react-icons/fa";
-import { MdCorporateFare } from "react-icons/md";
+import { MdCorporateFare,MdGroupAdd  } from "react-icons/md";
 import { HiOfficeBuilding } from "react-icons/hi";
-import { FaChartLine } from "react-icons/fa";
-import { FaUser,FaUserPlus } from "react-icons/fa";
-import { MdInventory, MdAddBox, MdViewList, MdDelete } from "react-icons/md";
-import { MdCategory } from "react-icons/md";
-import { MdAddCircleOutline } from "react-icons/md";
+import { FaChartLine,FaCalculator,FaWallet,FaList,FaTrash,FaFileInvoiceDollar,FaBookOpen,FaMoneyCheckAlt,
+  FaFileInvoice } from "react-icons/fa";
+  import { FaEdit,FaStore } from "react-icons/fa";
+  import { Receipt,CalendarCheck  } from "lucide-react";
 
 import {
   RiDashboardLine,
@@ -138,11 +137,11 @@ const Sidebar = () => {
               
               style={activeLinkStyle}
             >
-              Upload Salary
+              Upload Salary Slip
             </Button>
 
             <Button
-              leftIcon={<UserCheck />}
+              leftIcon={<CalendarCheck />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -151,11 +150,24 @@ const Sidebar = () => {
             >
               Attend Report
             </Button>
+
+              <Button
+              leftIcon={<Receipt/>}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/emp-salary-report"
+              style={activeLinkStyle}
+            >
+              Salary Report
+            </Button>
+
+
           </VStack>
         </Collapse>
 
       {/* business department */}
-         <Button {...sidebarButtonStyle} onClick={() => toggleMenu("business")} leftIcon={<FaChartLine/>}>
+         <Button {...sidebarButtonStyle} onClick={() => toggleMenu("business")} leftIcon={<FaChartLine />}>
           
           Business Development
           <Icon as={openMenu === "business" ? ChevronDownIcon : ChevronRightIcon} />
@@ -225,6 +237,121 @@ const Sidebar = () => {
               style={activeLinkStyle}
             >
              Assign Target FA
+            </Button>
+          </VStack>
+        </Collapse>
+     {/*accounting master department  */}
+
+   <Button {...sidebarButtonStyle} onClick={() => toggleMenu("accounting-master")} leftIcon={<FaWallet/>}>
+          
+          Accounting  Master
+          <Icon as={openMenu === "accounting-master" ? ChevronDownIcon : ChevronRightIcon} />
+        </Button>
+
+        <Collapse in={openMenu === "accounting-master"} animateOpacity>
+          <VStack pl={6} align="stretch" spacing={1}>
+            <Button
+              leftIcon={<MdGroupAdd  />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/accounting-master/create-group"
+              style={activeLinkStyle} 
+            >
+             Create Group 
+            </Button>
+
+            <Button
+              leftIcon={<FaList  />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/accounting-master/view-group"
+              style={activeLinkStyle}
+            >
+              View Group
+            </Button>
+
+            <Button
+              leftIcon={<FaTrash   />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/accounting-master/delete-group"
+              style={activeLinkStyle}
+            >
+           Delete Group 
+            </Button>
+
+            <Button
+              leftIcon={<FaFileInvoiceDollar/>}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/accounting-master/create-ledger"
+              style={activeLinkStyle}
+            >
+            Create Ledger
+            </Button>
+             <Button
+              leftIcon={<FaFileInvoice  />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/accounting-master/view-ledger"
+              style={activeLinkStyle}
+            >
+            View Ledger
+            </Button>
+             <Button
+              leftIcon={<FaMoneyCheckAlt />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/accounting-master/create-voucher"
+              style={activeLinkStyle}
+            >
+            Create Voucher 
+            </Button>
+            <Button
+              leftIcon={<FaFileInvoice   />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/accounting-master/view-voucher"
+              style={activeLinkStyle}
+            >
+           View Voucher
+            </Button>
+            <Button
+              leftIcon={< FaTrash/>}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/accounting-master/delete-voucher"
+              style={activeLinkStyle}
+            >
+         Delete Voucher
+            </Button>
+            <Button
+              leftIcon={<FaEdit />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/accounting-master/edit-ledger-assignment"
+              style={activeLinkStyle}
+            >
+            Edit Ledger Assignment
+            </Button>
+            <Button
+              leftIcon={<FaStore  />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/accounting-master/retail-assignment"
+              style={activeLinkStyle}
+            >
+            Retail Assignment
             </Button>
           </VStack>
         </Collapse>

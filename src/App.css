@@ -3,6 +3,7 @@
     margin: 0;
     font-family: 'InterRegular';
     overflow-x: hidden;
+    
 }
 
 @font-face{
@@ -141,4 +142,5 @@ padding: 40px;
    font-family: 'Georgia';
    color: black ;
 }
+
 

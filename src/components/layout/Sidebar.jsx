@@ -20,6 +20,8 @@ import { FaChartLine,FaCalculator,FaWallet,FaList,FaTrash,FaFileInvoiceDollar,Fa
   FaFileInvoice } from "react-icons/fa";
   import { FaEdit,FaStore } from "react-icons/fa";
   import { Receipt,CalendarCheck  } from "lucide-react";
+  import { HiOutlinePrinter } from "react-icons/hi";
+  import { Printer, Barcode } from "lucide-react";
 
 import {
   RiDashboardLine,
@@ -30,6 +32,12 @@ import {
   RiSettings3Line,
 } from "react-icons/ri";
 import { UserCheck } from "lucide-react";
+import { FaUser,FaUserPlus } from "react-icons/fa";
+import { MdInventory, MdAddBox, MdViewList, MdDelete } from "react-icons/md";
+import { MdCategory } from "react-icons/md";
+import { MdAddCircleOutline } from "react-icons/md";
+import { BsUpcScan } from "react-icons/bs";
+import { Ticket } from "lucide-react";
 
 const Sidebar = () => {
   const [openMenu, setOpenMenu] = useState(null);
@@ -81,7 +89,7 @@ const Sidebar = () => {
       <VStack spacing={2} align="stretch">
         {/* Dashboard */}
         <Button
-          leftIcon={<RiDashboardLine />}
+          leftIcon={<RiDashboardLine size={20} />}
           as={NavLink}
           to="/dashboard"
           {...sidebarButtonStyle}
@@ -92,7 +100,7 @@ const Sidebar = () => {
 
         {/* HR Management */}
         <Button
-          leftIcon={<FaUser />}
+          leftIcon={<FaUser size={20} />}
           rightIcon={
             <Icon
               as={openMenu === "users" ? ChevronDownIcon : ChevronRightIcon}
@@ -107,7 +115,7 @@ const Sidebar = () => {
         <Collapse in={openMenu === "users"} animateOpacity>
           <VStack pl={6} align="stretch" spacing={1}>
             <Button
-              leftIcon={<FaUserPlus  />}
+              leftIcon={<FaUserPlus size={18} />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -118,7 +126,7 @@ const Sidebar = () => {
             </Button>
 
             <Button
-              leftIcon={<RiUser3Line />}
+              leftIcon={<RiUser3Line  size={18}/>}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -129,7 +137,7 @@ const Sidebar = () => {
             </Button>
 
             <Button
-              leftIcon={<RiFileList3Line />}
+              leftIcon={<RiFileList3Line  size={18}/>}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -141,7 +149,7 @@ const Sidebar = () => {
             </Button>
 
             <Button
-              leftIcon={<CalendarCheck />}
+              leftIcon={<CalendarCheck  size={18}/>}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -152,7 +160,7 @@ const Sidebar = () => {
             </Button>
 
               <Button
-              leftIcon={<Receipt/>}
+              leftIcon={<Receipt size={18}/>}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -167,7 +175,7 @@ const Sidebar = () => {
         </Collapse>
 
       {/* business department */}
-         <Button {...sidebarButtonStyle} onClick={() => toggleMenu("business")} leftIcon={<FaChartLine />}>
+         <Button {...sidebarButtonStyle} onClick={() => toggleMenu("business")} leftIcon={<FaChartLine size={20}/>}>
           
           Business Development
           <Icon as={openMenu === "business" ? ChevronDownIcon : ChevronRightIcon} />
@@ -176,7 +184,7 @@ const Sidebar = () => {
         <Collapse in={openMenu === "business"} animateOpacity>
           <VStack pl={6} align="stretch" spacing={1}>
             <Button
-              leftIcon={<FaUserPlus />}
+              leftIcon={<FaUserPlus size={18}/>}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -187,7 +195,7 @@ const Sidebar = () => {
             </Button>
 
             <Button
-              leftIcon={<HiUserGroup />}
+              leftIcon={<HiUserGroup size={18}/>}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -198,7 +206,7 @@ const Sidebar = () => {
             </Button>
 
             <Button
-              leftIcon={<MdAssignmentInd  />}
+              leftIcon={<MdAssignmentInd size={18}  />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -209,7 +217,7 @@ const Sidebar = () => {
             </Button>
 
             <Button
-              leftIcon={<FaUserTie  />}
+              leftIcon={<FaUserTie  size={18}/>}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -219,7 +227,7 @@ const Sidebar = () => {
              Assign Target TSM
             </Button>
              <Button
-              leftIcon={<FaBullseye  />}
+              leftIcon={<FaBullseye size={18} />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -229,7 +237,7 @@ const Sidebar = () => {
              Assign Target SM
             </Button>
              <Button
-              leftIcon={<UserCheck />}
+              leftIcon={<UserCheck size={18}/>}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -242,7 +250,7 @@ const Sidebar = () => {
         </Collapse>
      {/*accounting master department  */}
 
-   <Button {...sidebarButtonStyle} onClick={() => toggleMenu("accounting-master")} leftIcon={<FaWallet/>}>
+   <Button {...sidebarButtonStyle} onClick={() => toggleMenu("accounting-master")} leftIcon={<FaWallet size={20}/>}>
           
           Accounting  Master
           <Icon as={openMenu === "accounting-master" ? ChevronDownIcon : ChevronRightIcon} />
@@ -251,7 +259,7 @@ const Sidebar = () => {
         <Collapse in={openMenu === "accounting-master"} animateOpacity>
           <VStack pl={6} align="stretch" spacing={1}>
             <Button
-              leftIcon={<MdGroupAdd  />}
+              leftIcon={<MdGroupAdd size={18} />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -262,7 +270,7 @@ const Sidebar = () => {
             </Button>
 
             <Button
-              leftIcon={<FaList  />}
+              leftIcon={<FaList size={18} />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -273,7 +281,7 @@ const Sidebar = () => {
             </Button>
 
             <Button
-              leftIcon={<FaTrash   />}
+              leftIcon={<FaTrash  size={18} />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -284,7 +292,7 @@ const Sidebar = () => {
             </Button>
 
             <Button
-              leftIcon={<FaFileInvoiceDollar/>}
+              leftIcon={<FaFileInvoiceDollar size={18}/>}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -294,7 +302,7 @@ const Sidebar = () => {
             Create Ledger
             </Button>
              <Button
-              leftIcon={<FaFileInvoice  />}
+              leftIcon={<FaFileInvoice size={18}  />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -303,8 +311,20 @@ const Sidebar = () => {
             >
             View Ledger
             </Button>
+            <Button
+              leftIcon={<FaTrash  size={18}/>}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/accounting-master/delete-ledger"
+              style={activeLinkStyle}
+            >
+            Delete Ledger
+            </Button>
+
+
              <Button
-              leftIcon={<FaMoneyCheckAlt />}
+              leftIcon={<FaMoneyCheckAlt size={18}/>}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -314,7 +334,7 @@ const Sidebar = () => {
             Create Voucher 
             </Button>
             <Button
-              leftIcon={<FaFileInvoice   />}
+              leftIcon={<FaFileInvoice size={18}  />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -324,7 +344,7 @@ const Sidebar = () => {
            View Voucher
             </Button>
             <Button
-              leftIcon={< FaTrash/>}
+              leftIcon={< FaTrash size={18}/>}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -334,7 +354,7 @@ const Sidebar = () => {
          Delete Voucher
             </Button>
             <Button
-              leftIcon={<FaEdit />}
+              leftIcon={<FaEdit size={18}/>}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -344,7 +364,7 @@ const Sidebar = () => {
             Edit Ledger Assignment
             </Button>
             <Button
-              leftIcon={<FaStore  />}
+              leftIcon={<FaStore  size={18}/>}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -358,7 +378,7 @@ const Sidebar = () => {
 
 
         {/* ..company master  */}
-          <Button {...sidebarButtonStyle} onClick={() => toggleMenu("company-master")}  leftIcon={<MdCorporateFare />} >
+          <Button {...sidebarButtonStyle} onClick={() => toggleMenu("company-master")}  leftIcon={<MdCorporateFare  size={20}/>} >
          Company Master
           <Icon as={openMenu === "company-master" ? ChevronDownIcon : ChevronRightIcon} />
         </Button>
@@ -366,7 +386,7 @@ const Sidebar = () => {
         <Collapse in={openMenu === "company-master"} animateOpacity>
           <VStack pl={6} align="stretch" spacing={1}>
             <Button
-              leftIcon={<HiOfficeBuilding  />}
+              leftIcon={<HiOfficeBuilding  size={18} />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -386,7 +406,7 @@ const Sidebar = () => {
 
         {/* Leads */}
         <Button
-          leftIcon={<RiUser3Line />}
+          leftIcon={<RiUser3Line size={20} />}
           {...sidebarButtonStyle}
           onClick={() => toggleMenu("leads")}
         >
@@ -396,7 +416,7 @@ const Sidebar = () => {
         <Collapse in={openMenu === "leads"} animateOpacity>
           <VStack pl={6} align="stretch" spacing={1}>
             <Button
-              leftIcon={<RiUserAddLine />}
+              leftIcon={<RiUserAddLine size={18} />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -406,7 +426,7 @@ const Sidebar = () => {
             </Button>
 
             <Button
-              leftIcon={<RiFileList3Line />}
+              leftIcon={<RiFileList3Line size={18} />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -419,7 +439,7 @@ const Sidebar = () => {
 
         {/* Reports */}
         <Button
-          leftIcon={<RiBarChartLine />}
+          leftIcon={<RiBarChartLine size={18} />}
           {...sidebarButtonStyle}
           as={NavLink}
           to="/reports"
@@ -500,11 +520,49 @@ const Sidebar = () => {
     </Collapse>
   </>
 )}
+{/* print mgmt */}
+ <Button
+      leftIcon={<HiOutlinePrinter size={20} />}
+      rightIcon={
+        <Icon
+          as={openMenu === "print_mgmt" ? ChevronDownIcon : ChevronRightIcon}
+        />
+      }
+      {...sidebarButtonStyle}
+      onClick={() => toggleMenu("print_mgmt")}
+    >
+      Print MGMT 
+    </Button>
+
+    <Collapse in={openMenu === "print_mgmt"} animateOpacity>
+      <VStack pl={6} align="stretch" spacing={1}>
+         <Button 
+         leftIcon={<BsUpcScan size={18}/>}
+         {...sidebarButtonStyle}
+         size="sm"
+         as={NavLink}
+                       to="/print/mgmt/shipping_lable_printer"
+                       style={activeLinkStyle}
+         > Shipping lable printer
+         </Button>
+           <Button
+              leftIcon={<Ticket size={18} />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/print/mgmt/truthful_labelprint"
+              style={activeLinkStyle}
+            >
+             TruthFull Label Print
+            </Button>   
+      </VStack>
+    </Collapse>
+
 
 
         {/* Settings */}
         <Button
-          leftIcon={<RiSettings3Line />}
+          leftIcon={<RiSettings3Line size={18}/>}
           {...sidebarButtonStyle}
           as={NavLink}
           to="/settings"

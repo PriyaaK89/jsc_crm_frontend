@@ -30,6 +30,7 @@ const Profile = () => {
                       {/* <Button backgroundColor='#3E60AA' color='white' fontWeight='400' height='36px' fontSize='14px' borderRadius='12px' _hover={{ backgroundColor: '#5570F1' }}><span style={{ fontSize: '18px', paddingRight: '10px' }}><FaPlus /></span> Create a New Product</Button> */}
             
                     </HStack>
+                          
                 <SimpleGrid
   columns={{ base: 1, md: 2 }}
   spacing={{ base: 4, md: 6 }}

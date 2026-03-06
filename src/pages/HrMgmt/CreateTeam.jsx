@@ -60,15 +60,6 @@ const CreateTeam = () => {
                 </Box>
               </Box>
 
-
-
-
-
-
-
-
-
-
     );
 }   
 export default CreateTeam;

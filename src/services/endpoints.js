@@ -22,5 +22,6 @@ export const API_ENDPOINTS = {
   get_Emp_Attendance_Summary:  `attendance/monthly-summary`,
   upload_salary_slip:`upload-emp-salary`,
   get_attendance_images: `get-attendance-images`,
+   get_daily_salary_report:`daily-salary-range`,
   get_emp_route: `get-route`
 };

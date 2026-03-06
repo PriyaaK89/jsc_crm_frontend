@@ -4,10 +4,11 @@ import Topbar from './Topbar';
 import { Flex,Box } from '@chakra-ui/react';
 import DesktopTopbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
-import ChangePassword from "../../pages/ChangePassword/ChangeUserPassword";
+import EmpSalaryReport from '../../pages/Employee/EmpSalaryReport';
 
 
-const ChangePasswordLayout = ()=>{
+
+const EmployeeSalaryReportLayout = ()=>{
     return(
         <>
         <Flex minH="100vh" bg="#f4f4f4">
@@ -65,7 +66,7 @@ const ChangePasswordLayout = ()=>{
                          borderRadius="21px"
                          boxShadow="sm"
                        >
-                       <ChangePassword/>
+                       <EmpSalaryReport/>
                        </Box>
                      </Box>
              
@@ -77,4 +78,4 @@ const ChangePasswordLayout = ()=>{
     )
 }
 
-export default ChangePasswordLayout
+export default EmployeeSalaryReportLayout

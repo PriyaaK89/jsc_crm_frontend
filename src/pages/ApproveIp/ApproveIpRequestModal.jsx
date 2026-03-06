@@ -3,6 +3,7 @@ import {
   Modal,
   ModalOverlay,
   ModalContent,
+  ModalHeader,
   ModalBody,
   ModalFooter,
   ModalCloseButton,
@@ -21,14 +22,8 @@ const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
   const approveIp = async () => {
     setLoading(true);
     try {
-      //  Approve the IP
       await API.post(`${API_ENDPOINTS.approve_ip}/${userId}`);
 
-      //  Fetch the updated IP requests
-      const response = await API.get(API_ENDPOINTS.get_ip_requests);
-      console.log("Updated IP Requests:", response.data);
-
-      
       toast({
         title: "IP approved successfully.",
         status: "success",
@@ -36,9 +31,9 @@ const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
         isClosable: true,
       });
 
-      onClose(); // close modal
+      onClose();
+      refreshData && refreshData();
     } catch (error) {
-      console.log(error);
       toast({
         title: "Failed to approve IP.",
         description: error.message || "Something went wrong.",
@@ -52,21 +47,42 @@ const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
-      <ModalContent>
-        <ModalCloseButton />
-        <ModalBody>
+      <ModalContent borderRadius="12px">
+
+        {/* ✅ Proper Header */}
+        <ModalHeader
+          bg="blue.500"
+          color="white"
+          borderTopRadius="12px"
+        >
+          Approve User Request
+        </ModalHeader>
+
+        <ModalCloseButton color="white" />
+
+        <ModalBody py={6}>
           <Text>Are you sure you want to approve this IP?</Text>
         </ModalBody>
+
         <ModalFooter>
           <Button variant="outline" mr={3} onClick={onClose}>
             Cancel
           </Button>
-          <Button colorScheme="blue" onClick={approveIp} isLoading={loading}>
+
+          {/* ✅ Same Color as Header */}
+          <Button
+            bg="blue.500"
+            color="white"
+            _hover={{ bg: "blue.600" }}
+            onClick={approveIp}
+            isLoading={loading}
+          >
             Approve
           </Button>
         </ModalFooter>
+
       </ModalContent>
     </Modal>
   );

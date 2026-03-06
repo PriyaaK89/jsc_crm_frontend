@@ -14,7 +14,7 @@ const CreateTeam = () => {
     };
 
     return (
-    <Box w="100%" bg="white" p={6} borderRadius="lg" >
+    <Box w="100%" >
                 <HStack justifyContent='space-between'>
                       <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                         <BreadcrumbItem>
@@ -30,11 +30,13 @@ const CreateTeam = () => {
             
                     </HStack>
                 
-       
+         <Box>
+
                 <Heading size="md" textAlign="center" mb={6}>
                   Create Business Developement Team
                 </Heading>
-          
+                   </Box>
+
                 <Box as="form" >
                   <VStack spacing={5}>
                     <FormControl isRequired>

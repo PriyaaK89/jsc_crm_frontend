@@ -144,8 +144,8 @@ const handleSubmit = async () => {
   }
 };
   return (
-    <Box bg="white" borderRadius="10px" p={6}>
-      <HStack justifyContent="space-between">
+    <Box bg="white" borderRadius="21px" p={{base:4,md:8}} maxW="1200px" mx="auto">
+      <HStack justifyContent="space-between" flexWrap="wrap">
         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
           <BreadcrumbItem>
             <BreadcrumbLink href="/dashboard">
@@ -175,8 +175,10 @@ const handleSubmit = async () => {
       </Text>
 
       <VStack spacing={6} align="stretch">
-        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-
+        <SimpleGrid
+  columns={{ base: 1, sm: 2, md: 3 }}
+  spacing={{ base: 4, md: 6 }}
+>
           {/* Employee */}
           <FormControl isRequired>
             <FormLabel {...labelStyles}>Employee Name</FormLabel>
@@ -214,6 +216,7 @@ const handleSubmit = async () => {
               type="file"
               accept=".pdf,.jpg,.png"
               onChange={handleFileChange}
+              p={1}
             />
           </FormControl>
 

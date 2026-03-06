@@ -7,7 +7,7 @@ import EmployeeList from "../../pages/HrMgmt/EmployeeList";
 
 const EmployeeListLayout = () => {
   return (
-    <Flex bg="#f4f4f4" minH="100vh">
+    <Flex bg="#f4f4f4" h="100vh" overflow="hidden">
 
       {/* Fixed Sidebar */} 
        <Box
@@ -15,7 +15,6 @@ const EmployeeListLayout = () => {
         top="0"
         left="0"
         w="268px"
-        h="100vh"
         display={{ base: "none", md: "block" }}
       > 
         <Sidebar />
@@ -41,32 +40,31 @@ const EmployeeListLayout = () => {
         {/* Mobile Topbar */}
         <Box
           display={{ base: "block", md: "none" }}
-          px={4}
-          py={4}
-          mx={3}
+          position="fixed"
+          top="0"
+          w="100%"
+          zIndex="10"
+          
         >
           <MobileTopbar />
         </Box>
 
         {/* Content Section */}
-        <Flex
-          flex="1"
-          px={{ base: 0, md: 6 }}
-          py={4}
-          overflow="auto"
-        >
+       
           <Box
-            flex="1"
-            bg="white"
-            borderRadius="21px"
-            boxShadow="sm"
-            px={4}
-            py={2}
-            mx={3}
-          >
-            <EmployeeList />
+                      flex="1"
+                      p={{ base: 3, md: 6 }}
+                      pt={{ base: "70px", md: 4 }}
+                      overflowY="auto"
+                    >
+                      <Box
+                        bg="white"
+                        borderRadius="20px"
+                        boxShadow="sm"
+                      >
+                        <EmployeeList />
+                      </Box>
           </Box>
-        </Flex>
 
       </Flex>
     </Flex>

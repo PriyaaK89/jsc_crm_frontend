@@ -12,16 +12,19 @@ import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
 import { MdAssignmentInd } from "react-icons/md";
-import {FaUserTie} from 'react-icons/fa';
-import { FaBullseye   } from "react-icons/fa";
-import { MdCorporateFare,MdGroupAdd  } from "react-icons/md";
+import { FaUserTie } from 'react-icons/fa';
+import { FaBullseye } from "react-icons/fa";
+import { MdCorporateFare } from "react-icons/md";
 import { HiOfficeBuilding } from "react-icons/hi";
-import { FaChartLine,FaCalculator,FaWallet,FaList,FaTrash,FaFileInvoiceDollar,FaBookOpen,FaMoneyCheckAlt,
-  FaFileInvoice } from "react-icons/fa";
-  import { FaEdit,FaStore } from "react-icons/fa";
-  import { Receipt,CalendarCheck  } from "lucide-react";
-  import { HiOutlinePrinter } from "react-icons/hi";
-  import { Printer, Barcode } from "lucide-react";
+import { FaChartLine } from "react-icons/fa";
+import { FaUser, FaUserPlus } from "react-icons/fa";
+import { MdInventory, MdAddBox, MdViewList, MdDelete } from "react-icons/md";
+import { MdCategory } from "react-icons/md";
+import { MdAddCircleOutline } from "react-icons/md";
+import { FaFileInvoice } from "react-icons/fa";
+import { FiMapPin } from "react-icons/fi";
+import { FaClipboardList } from "react-icons/fa";
+
 
 import {
   RiDashboardLine,
@@ -75,12 +78,9 @@ const Sidebar = () => {
       w="268px"
       bg="#f4f4f4"
       color="#333333"
-      minH="95.6vh"
       p={4}
-      position="fixed"
-      top={5}
-      left={4}
       overflow="hidden"
+      h="100vh"
     >
       <Text fontSize="2xl" fontWeight="bold" mb={8}>
         CRM
@@ -115,7 +115,7 @@ const Sidebar = () => {
         <Collapse in={openMenu === "users"} animateOpacity>
           <VStack pl={6} align="stretch" spacing={1}>
             <Button
-              leftIcon={<FaUserPlus size={18} />}
+              leftIcon={<FaUserPlus />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
@@ -142,41 +142,35 @@ const Sidebar = () => {
               size="sm"
               as={NavLink}
               to={`/hr-mgmt/upload-emp-salary`}
-              
+
               style={activeLinkStyle}
             >
               Upload Salary Slip
             </Button>
 
             <Button
-              leftIcon={<CalendarCheck  size={18}/>}
+              leftIcon={<FaClipboardList />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
               to="/emp-attendance-report"
               style={activeLinkStyle}
             >
-              Attend Report
+              Attendace Report
             </Button>
-
-              <Button
-              leftIcon={<Receipt size={18}/>}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/emp-salary-report"
-              style={activeLinkStyle}
-            >
-              Salary Report
+            <Button
+              leftIcon={<FiMapPin />}
+              {...sidebarButtonStyle} size="sm"
+              as={NavLink} to="/hr-mgmt/track-employee" style={activeLinkStyle}>
+              Track Employee
             </Button>
-
-
           </VStack>
+
         </Collapse>
 
-      {/* business department */}
-         <Button {...sidebarButtonStyle} onClick={() => toggleMenu("business")} leftIcon={<FaChartLine size={20}/>}>
-          
+        {/* business department */}
+        <Button {...sidebarButtonStyle} onClick={() => toggleMenu("business")} leftIcon={<FaChartLine />}>
+
           Business Development
           <Icon as={openMenu === "business" ? ChevronDownIcon : ChevronRightIcon} />
         </Button>
@@ -189,9 +183,9 @@ const Sidebar = () => {
               size="sm"
               as={NavLink}
               to="/Business-dev/create-team"
-              style={activeLinkStyle} 
+              style={activeLinkStyle}
             >
-             Create Team
+              Create Team
             </Button>
 
             <Button
@@ -206,45 +200,45 @@ const Sidebar = () => {
             </Button>
 
             <Button
-              leftIcon={<MdAssignmentInd size={18}  />}
+              leftIcon={<MdAssignmentInd />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
               to="/Business-devt/assign-target-rsm"
               style={activeLinkStyle}
             >
-             Assign Target RSM
+              Assign Target RSM
             </Button>
 
             <Button
-              leftIcon={<FaUserTie  size={18}/>}
+              leftIcon={<FaUserTie />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
               to="/Business-devt/assign-target-tsm"
               style={activeLinkStyle}
             >
-             Assign Target TSM
+              Assign Target TSM
             </Button>
-             <Button
-              leftIcon={<FaBullseye size={18} />}
+            <Button
+              leftIcon={<FaBullseye />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
               to="/Business-devt/assign-target-sm"
               style={activeLinkStyle}
             >
-             Assign Target SM
+              Assign Target SM
             </Button>
-             <Button
-              leftIcon={<UserCheck size={18}/>}
+            <Button
+              leftIcon={<UserCheck />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
               to="/Business-devt/assign-target-fa"
               style={activeLinkStyle}
             >
-             Assign Target FA
+              Assign Target FA
             </Button>
           </VStack>
         </Collapse>
@@ -378,27 +372,27 @@ const Sidebar = () => {
 
 
         {/* ..company master  */}
-          <Button {...sidebarButtonStyle} onClick={() => toggleMenu("company-master")}  leftIcon={<MdCorporateFare  size={20}/>} >
-         Company Master
+        <Button {...sidebarButtonStyle} onClick={() => toggleMenu("company-master")} leftIcon={<MdCorporateFare />} >
+          Company Master
           <Icon as={openMenu === "company-master" ? ChevronDownIcon : ChevronRightIcon} />
         </Button>
 
         <Collapse in={openMenu === "company-master"} animateOpacity>
           <VStack pl={6} align="stretch" spacing={1}>
             <Button
-              leftIcon={<HiOfficeBuilding  size={18} />}
+              leftIcon={<HiOfficeBuilding />}
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
               to="/company-master/create-company"
-              style={activeLinkStyle} 
+              style={activeLinkStyle}
             >
-             Create Company
+              Create Company
             </Button>
 
-           
 
-           
+
+
           </VStack>
         </Collapse>
 
@@ -448,117 +442,111 @@ const Sidebar = () => {
         </Button>
 
         {/* Inventory Master */}
-      {(role === "ADMIN" || role === "SUPER_ADMIN") && (
-  <>
-    <Button
-      leftIcon={<MdInventory size={20} />}
-      rightIcon={
-        <Icon
-          as={openMenu === "inventory" ? ChevronDownIcon : ChevronRightIcon}
-        />
-      }
-      {...sidebarButtonStyle}
-      onClick={() => toggleMenu("inventory")}
-    >
-      Inventory Master
-    </Button>
-
-    <Collapse in={openMenu === "inventory"} animateOpacity>
-      <VStack pl={6} align="stretch" spacing={1}>
-         <Button 
-         leftIcon={<MdAddBox size={18}/>}
-         {...sidebarButtonStyle}
-         size="sm"
-         as={NavLink}
-                       to="/inventory/create-stock-group"
-                       style={activeLinkStyle}
-         >
-         
-                         Create Stock Group
-         </Button>
-           <Button
-              leftIcon={<MdViewList size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/inventory/view-stock-group"
-              style={activeLinkStyle}
-            >
-              View Stock Group
-            </Button>
+        {(role === "ADMIN" || role === "SUPER_ADMIN") && (
+          <>
             <Button
-              leftIcon={<MdDelete size={18} />}
+              leftIcon={<MdInventory size={20} />}
+              rightIcon={
+                <Icon
+                  as={openMenu === "inventory" ? ChevronDownIcon : ChevronRightIcon}
+                />
+              }
               {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/inventory/delete-stock-group"
-              style={activeLinkStyle}
+              onClick={() => toggleMenu("inventory")}
             >
-              Delete Stock Group
+              Inventory Master
             </Button>
+
+            <Collapse in={openMenu === "inventory"} animateOpacity>
+              <VStack pl={6} align="stretch" spacing={1}>
+                <Button
+                  leftIcon={<MdAddBox size={18} />}
+                  {...sidebarButtonStyle}
+                  size="sm"
+                  as={NavLink}
+                  to="/inventory/create-stock-group"
+                  style={activeLinkStyle}
+                >
+
+                  Create Stock Group
+                </Button>
+                <Button
+                  leftIcon={<MdViewList size={18} />}
+                  {...sidebarButtonStyle}
+                  size="sm"
+                  as={NavLink}
+                  to="/inventory/view-stock-group"
+                  style={activeLinkStyle}
+                >
+                  View Stock Group
+                </Button>
+                <Button
+                  leftIcon={<MdDelete size={18} />}
+                  {...sidebarButtonStyle}
+                  size="sm"
+                  as={NavLink}
+                  to="/inventory/delete-stock-group"
+                  style={activeLinkStyle}
+                >
+                  Delete Stock Group
+                </Button>
+                <Button
+                  leftIcon={<MdCategory size={18} />}
+                  {...sidebarButtonStyle}
+                  size="sm"
+                  as={NavLink}
+                  to="/inventory/create-stock-category"
+                  style={activeLinkStyle}
+                >
+                  Create Stock Category
+                </Button>
+                <Button
+                  leftIcon={<MdAddCircleOutline size={18} />}
+                  {...sidebarButtonStyle}
+                  size="sm"
+                  as={NavLink}
+                  to="/inventory/view-stock-category"
+                  style={activeLinkStyle}
+                >
+                  View Stock Category
+                </Button>
+              </VStack>
+            </Collapse>
+          </>
+        )}
+
+        {/* Order Vochor */}
+        <Button
+          leftIcon={<FaFileInvoice />}
+          rightIcon={
+            <Icon
+              as={
+                openMenu === "order-vochor"
+                  ? ChevronDownIcon
+                  : ChevronRightIcon
+              }
+            />
+          }
+          {...sidebarButtonStyle}
+          onClick={() => toggleMenu("order-vochor")}
+        >
+          Order Vochor
+        </Button>
+
+        <Collapse in={openMenu === "order-vochor"} animateOpacity>
+          <VStack pl={6} align="stretch" spacing={1}>
             <Button
-              leftIcon={<MdCategory size={18} />}
-              {...sidebarButtonStyle}
+              leftIcon={<FiMapPin />}
               size="sm"
               as={NavLink}
-              to="/inventory/create-stock-category"
+              to="/order-vochor/payment"
+              {...sidebarButtonStyle}
               style={activeLinkStyle}
             >
-              Create Stock Category
+              Payment
             </Button>
-       <Button
-              leftIcon={<MdAddCircleOutline size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/inventory/view-stock-category"
-              style={activeLinkStyle}
-            >
-              View Stock Category
-            </Button>
-      </VStack>
-    </Collapse>
-  </>
-)}
-{/* print mgmt */}
- <Button
-      leftIcon={<HiOutlinePrinter size={20} />}
-      rightIcon={
-        <Icon
-          as={openMenu === "print_mgmt" ? ChevronDownIcon : ChevronRightIcon}
-        />
-      }
-      {...sidebarButtonStyle}
-      onClick={() => toggleMenu("print_mgmt")}
-    >
-      Print MGMT 
-    </Button>
-
-    <Collapse in={openMenu === "print_mgmt"} animateOpacity>
-      <VStack pl={6} align="stretch" spacing={1}>
-         <Button 
-         leftIcon={<BsUpcScan size={18}/>}
-         {...sidebarButtonStyle}
-         size="sm"
-         as={NavLink}
-                       to="/print/mgmt/shipping_lable_printer"
-                       style={activeLinkStyle}
-         > Shipping lable printer
-         </Button>
-           <Button
-              leftIcon={<Ticket size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/print/mgmt/truthful_labelprint"
-              style={activeLinkStyle}
-            >
-             TruthFull Label Print
-            </Button>   
-      </VStack>
-    </Collapse>
-
-
+          </VStack>
+        </Collapse>
 
         {/* Settings */}
         <Button

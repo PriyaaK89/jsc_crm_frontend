@@ -2,11 +2,11 @@ import { Center, Flex ,Box} from "@chakra-ui/react";
 import React from "react";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-import Createteam from "../../pages/HrMgmt/CreateTeam";
 import DesktopTopbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
+import Payment from "../../pages/Order Vochar/Payment";
 
-const CreateTeamLayout = ()=>{
+const PaymentLayout = ()=>{
     return(
         <>
          <Flex minH="100vh" bg="#f4f4f4">
@@ -63,7 +63,7 @@ const CreateTeamLayout = ()=>{
                    borderRadius="21px"
                    boxShadow="sm"
                  >
-                   <Createteam/>
+                   <Payment/>
                  </Box>
                </Box>
        
@@ -73,4 +73,4 @@ const CreateTeamLayout = ()=>{
     )
 }
 
-export default CreateTeamLayout
+export default PaymentLayout

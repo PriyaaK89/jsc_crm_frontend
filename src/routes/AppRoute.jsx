@@ -25,7 +25,6 @@ import AssignTargetFALayout from "../components/layout/AssignTargetFALayout";
 import CreateCompanyLayout from "../components/layout/CreateCompanyLayout";
 import ApproveIpUserListLayout from "../components/layout/ApproveIpUserListLayout";
 import EmpAttendaneLayout from "../components/layout/EmpAttendaneLayout";
-import UploadSalarySlipLayout from '../components/layout/UploadSalarySlipLayout';
 import CreateGroupLayout from '../components/layout/AccountingMasterLayout/CreateGroupLayout';
 import ViewGroupLayout from '../components/layout/AccountingMasterLayout/ViewGroupLayout';
 import DeleteGroupLayout from '../components/layout/AccountingMasterLayout/DeleteGroupLayout';
@@ -45,7 +44,10 @@ import CreateStockCategoryLayout from "../components/layout/CreateStockCategoryL
 import ViewStockCategoryLayout from "../components/layout/ViewStockCategoryLayout";
 import UploadSalarySlipLayout from "../components/layout/UploadSalarySlipLayout";
 import TrackEmpLayout from "../components/layout/TrackEmpLayout";
+import UploadEmpDocuments from '../pages/HrMgmt/DocUpload/UploadEmpDocuments';
 import PaymentLayout from "../components/layout/PaymentLayout";
+import PrintShippingLablePrinterLayout from '../components/layout/Print MGMT/PrintShippingLablePrinterLayout';
+import PrintTruthfulLablePrintLayout from '../components/layout/Print MGMT/PrintTruthfulLablePrintLayout';
 
 function App() {
   return (
@@ -67,6 +69,7 @@ function App() {
           element={<UploadSalarySlipLayout />}
         />
         <Route path="/upload-documents" element={<UploadEmpDocuments />} />
+         <Route path='/emp-salary-report' element={<EmployeeSalaryReportLayout/>}/>
         <Route
           path="/edit-employee-details/:empId"
           element={<EditEmployeePage />}
@@ -80,6 +83,23 @@ function App() {
           element={<JoiningLetterLayout />}
         />
         <Route path="/dashboard/profile/:empId" element={<ProfileLayout />} />
+        <Route path="/approve-ip-user-list" element={<ApproveIpUserListLayout />}/>
+        <Route path="/emp-attendance-report" element={<EmpAttendaneLayout/>}/>
+        <Route path='/accounting-master/create-group' element={<CreateGroupLayout/>}/>
+        <Route path='/accounting-master/view-group' element={<ViewGroupLayout/>}/>
+        <Route path='/accounting-master/delete-group'   element={<DeleteGroupLayout/>}/>
+        <Route path='/accounting-master/create-ledger' element={<CreateLedgerLayout/>}/>
+        <Route path='/accounting-master/view-ledger' element={<ViewLedgerLayout/>}/>
+        <Route path='/accounting-master/delete-ledger' element={<DeleteLedgerLayout/>}/>
+        <Route path='/accounting-master/create-voucher' element={<CreateVoucherLayout/>}/>
+        <Route path='/accounting-master/view-voucher' element={<ViewVoucherLayout/>}/>
+        <Route path='/accounting-master/delete-voucher' element={<DeleteVoucherLayout/>}/>
+        <Route path='/accounting-master/edit-ledger-assignment' element={<EditLedgerAssignmentLayout/>}/>
+        <Route path='/accounting-master/retail-assignment' element={<RetailerAssignmentLayout/>}/>
+        {/* print mgmt */}
+        <Route path='/print/mgmt/shipping_lable_printer' element={<PrintShippingLablePrinterLayout/>}/>
+        <Route path='/print/mgmt/truthful_labelprint' element={<PrintTruthfulLablePrintLayout/>}/>
+        {/*  */}
         <Route
           path="/Business-dev/create-team"
           element={<CreateTeamLayout />}

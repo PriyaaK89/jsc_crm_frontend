@@ -14,7 +14,7 @@ import { HiUserGroup } from "react-icons/hi";
 import { MdAssignmentInd } from "react-icons/md";
 import { FaUserTie } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
-import { MdCorporateFare } from "react-icons/md";
+import { MdCorporateFare,MdGroupAdd } from "react-icons/md";
 import { HiOfficeBuilding } from "react-icons/hi";
 import { FaChartLine } from "react-icons/fa";
 import { FaUser, FaUserPlus } from "react-icons/fa";
@@ -23,7 +23,11 @@ import { MdCategory } from "react-icons/md";
 import { MdAddCircleOutline } from "react-icons/md";
 import { FaFileInvoice } from "react-icons/fa";
 import { FiMapPin } from "react-icons/fi";
-import { FaClipboardList } from "react-icons/fa";
+import { FaClipboardList,FaCalculator,FaWallet,FaList,FaTrash,FaFileInvoiceDollar,FaBookOpen,FaMoneyCheckAlt} from "react-icons/fa";
+  import { FaEdit,FaStore } from "react-icons/fa";
+  import { Receipt,CalendarCheck  } from "lucide-react";
+  import { HiOutlinePrinter } from "react-icons/hi";
+  import { Printer, Barcode } from "lucide-react";
 
 
 import {
@@ -35,10 +39,6 @@ import {
   RiSettings3Line,
 } from "react-icons/ri";
 import { UserCheck } from "lucide-react";
-import { FaUser,FaUserPlus } from "react-icons/fa";
-import { MdInventory, MdAddBox, MdViewList, MdDelete } from "react-icons/md";
-import { MdCategory } from "react-icons/md";
-import { MdAddCircleOutline } from "react-icons/md";
 import { BsUpcScan } from "react-icons/bs";
 import { Ticket } from "lucide-react";
 
@@ -159,6 +159,19 @@ const Sidebar = () => {
               Attendace Report
             </Button>
             <Button
+              leftIcon={<Receipt size={18}/>}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/emp-salary-report"
+              style={activeLinkStyle}
+            >
+              Salary Report
+            </Button>
+
+
+
+            <Button
               leftIcon={<FiMapPin />}
               {...sidebarButtonStyle} size="sm"
               as={NavLink} to="/hr-mgmt/track-employee" style={activeLinkStyle}>
@@ -242,9 +255,10 @@ const Sidebar = () => {
             </Button>
           </VStack>
         </Collapse>
-     {/*accounting master department  */}
 
-   <Button {...sidebarButtonStyle} onClick={() => toggleMenu("accounting-master")} leftIcon={<FaWallet size={20}/>}>
+{/* acounting master  */}
+
+        <Button {...sidebarButtonStyle} onClick={() => toggleMenu("accounting-master")} leftIcon={<FaWallet size={20}/>}>
           
           Accounting  Master
           <Icon as={openMenu === "accounting-master" ? ChevronDownIcon : ChevronRightIcon} />
@@ -369,8 +383,7 @@ const Sidebar = () => {
             </Button>
           </VStack>
         </Collapse>
-
-
+ 
         {/* ..company master  */}
         <Button {...sidebarButtonStyle} onClick={() => toggleMenu("company-master")} leftIcon={<MdCorporateFare />} >
           Company Master
@@ -547,6 +560,46 @@ const Sidebar = () => {
             </Button>
           </VStack>
         </Collapse>
+
+        {/* print  */}
+        {/* print mgmt */}
+ <Button
+      leftIcon={<HiOutlinePrinter size={20} />}
+      rightIcon={
+        <Icon
+          as={openMenu === "print_mgmt" ? ChevronDownIcon : ChevronRightIcon}
+        />
+      }
+      {...sidebarButtonStyle}
+      onClick={() => toggleMenu("print_mgmt")}
+    >
+      Print MGMT 
+    </Button>
+
+    <Collapse in={openMenu === "print_mgmt"} animateOpacity>
+      <VStack pl={6} align="stretch" spacing={1}>
+         <Button 
+         leftIcon={<BsUpcScan size={18}/>}
+         {...sidebarButtonStyle}
+         size="sm"
+         as={NavLink}
+                       to="/print/mgmt/shipping_lable_printer"
+                       style={activeLinkStyle}
+         > Shipping lable printer
+         </Button>
+           <Button
+              leftIcon={<Ticket size={18} />}
+              {...sidebarButtonStyle}
+              size="sm"
+              as={NavLink}
+              to="/print/mgmt/truthful_labelprint"
+              style={activeLinkStyle}
+            >
+             TruthFull Label Print
+            </Button>   
+      </VStack>
+    </Collapse>
+
 
         {/* Settings */}
         <Button

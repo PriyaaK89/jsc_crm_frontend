@@ -48,6 +48,7 @@ import UploadEmpDocuments from '../pages/HrMgmt/DocUpload/UploadEmpDocuments';
 import PaymentLayout from "../components/layout/PaymentLayout";
 import PrintShippingLablePrinterLayout from '../components/layout/Print MGMT/PrintShippingLablePrinterLayout';
 import PrintTruthfulLablePrintLayout from '../components/layout/Print MGMT/PrintTruthfulLablePrintLayout';
+import AgreementLetterLayout from "../components/layout/GenerateLetters/AgreementLetterLayout";
 
 function App() {
   return (
@@ -82,6 +83,7 @@ function App() {
           path="/generate-joining-letter/:id"
           element={<JoiningLetterLayout />}
         />
+        <Route path="/generate-agreement/:id" element={<AgreementLetterLayout/>}/>
         <Route path="/dashboard/profile/:empId" element={<ProfileLayout />} />
         <Route path="/approve-ip-user-list" element={<ApproveIpUserListLayout />}/>
         <Route path="/emp-attendance-report" element={<EmpAttendaneLayout/>}/>

@@ -14,9 +14,10 @@ const EmpJoiningLetter = () => {
     const [employee, setEmployee] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectEmpId, setSelectedEmpId] = useState('')
-    const yearly_salary = employee?.salary;
-    console.log(yearly_salary, "yearly_salary")
-    const monthly_salary = yearly_salary / 12;
+
+    const yearly_salary = employee?.salary || 0;
+const monthly_salary = yearly_salary / 12;
+    
     console.log(monthly_salary, "monthly_salary")
 
     const [formData, setFormData] = useState({
@@ -121,6 +122,9 @@ const EmpJoiningLetter = () => {
             </Flex>
         );
     }
+    if (!employee) {
+  return null;
+}
 
 
     return (
@@ -143,15 +147,15 @@ const EmpJoiningLetter = () => {
                     </Heading>
 
                     <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-                        <Text><b>Name:</b> {employee.name}</Text>
-                        <Text><b>Email:</b> {employee.email}</Text>
-                        <Text><b>Contact:</b> {employee.contact_no}</Text>
+                        <Text><b>Name:</b> {employee?.name}</Text>
+                        <Text><b>Email:</b> {employee?.email}</Text>
+                        <Text><b>Contact:</b> {employee?.contact_no}</Text>
 
-                        <Text><b>Department:</b> {employee.department_name}</Text>
-                        <Text><b>Role:</b> {employee.job_role_name}</Text>
+                        <Text><b>Department:</b> {employee?.department_name}</Text>
+                        <Text><b>Role:</b> {employee?.job_role_name}</Text>
                         <Text>
                             <b>DOJ:</b>{" "}
-                            {new Date(employee.date_of_joining).toLocaleDateString()}
+                            {new Date(employee?.date_of_joining).toLocaleDateString()}
                         </Text>
 
                         <Text gridColumn="span 3">
@@ -160,9 +164,12 @@ const EmpJoiningLetter = () => {
                             {employee?.pincode}
                         </Text>
                         <Text><b>Salary:</b>{" "}
-                            ₹{Number(employee?.salary).toLocaleString("en-IN", {
-                                maximumFractionDigits: 0,
-                            })}
+                      
+                         ₹{employee?.salary
+  ? Number(employee.salary).toLocaleString("en-IN", {
+      maximumFractionDigits: 0,
+    })
+  : ""}
                         </Text>
 
                     </SimpleGrid>

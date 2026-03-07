@@ -22,16 +22,15 @@ import { AuthContext } from "../../context/AuthContext";
 
 const Topbar = () => {
   const toast = useToast();
-  const { auth } = useContext(AuthContext);
+  const { auth,logoutUser } = useContext(AuthContext);
 
   const logout = () => {
-    // Remove token
-    localStorage.removeItem("token");
 
+    logoutUser();
     // Show toast
     toast({
       title: "Logged out",
-      description: "You are logged out successfully 👋",
+      description: "You are logged out successfully.",
       status: "success",
       duration: 2000,
       isClosable: true,

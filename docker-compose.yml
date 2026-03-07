@@ -12,3 +12,15 @@ services:
     env_file:
       - .env
     restart: unless-stopped
+
+  frontend_new:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_BASE_URL: ${VITE_BASE_URL}
+    ports:
+      - "3006:80"
+    env_file:
+      - .env
+    restart: unless-stopped

@@ -1,36 +1,102 @@
-import { Box, Button, Divider, Heading, HStack, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Divider, Heading, HStack, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, useToast, VStack } from "@chakra-ui/react";
 import html2pdf from "html2pdf.js";
 import React from "react";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png"
+import API from "../../../services/api";
+import { API_ENDPOINTS } from "../../../services/endpoints";
 
 const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, probationDays }) => {
 
-    const handleDownloadPDF = () => {
+    // const handleDownloadAgreementPDF = () => {
+    //     const element = document.getElementById("agre-letter-preview");
+
+    //     html2pdf()
+    //         .set({
+    //             margin: 0,
+    //             filename: `Agreement_Letter_${employee?.name}.pdf`,
+    //             image: { type: "jpeg", quality: 1 },
+    //             html2canvas: { scale: 2, useCORS: true, scrollY: 0},
+    //             jsPDF: { unit: "mm", format: "a4", orientation: "portrait"},
+    //             pagebreak: { mode: ['css', 'legacy']}
+    //         })
+    //         .from(element)
+    //         .save();
+    // };
+
+    const toast = useToast();
+    const handleDownloadAgreementPDF = async () => {
         const element = document.getElementById("agre-letter-preview");
 
-        html2pdf()
-            .set({
-                margin: 0,
-                filename: `Agreement_Letter_${employee?.name}.pdf`,
-                image: { type: "jpeg", quality: 1 },
-                html2canvas: {
-                    scale: 2,
-                    useCORS: true,
-                    scrollY: 0
-                },
-                jsPDF: {
-                    unit: "mm",
-                    format: "a4",
-                    orientation: "portrait"
-                },
-                pagebreak: {
-                    mode: ['css', 'legacy']
-                }
-            })
-            .from(element)
-            .save();
+        const options = {
+            margin: 0,
+            filename: `Agreement_Letter_${employee?.name}.pdf`,
+            image: { type: "jpeg", quality: 1 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                scrollY: 0,
+                windowWidth: 1200
+            },
+            jsPDF: {
+                unit: "mm",
+                format: "a4",
+                orientation: "portrait"
+            },
+            pagebreak: { mode: ["css", "legacy"] }
+        };
 
+        try {
 
+            const worker = html2pdf().set(options).from(element);
+
+            // Generate PDF blob
+            const pdfBlob = await worker.outputPdf("blob");
+
+            const url = URL.createObjectURL(pdfBlob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `Agreement_Letter_${employee?.name}.pdf`;
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            const formData = new FormData();
+
+            formData.append(
+                "file", pdfBlob, `Agreement_Letter_${employee?.name}.pdf`
+            );
+
+            formData.append("employee_id", employee?.id);
+            formData.append("employee_name", employee?.name);
+            formData.append("document_type", "agreement_letter");
+
+          const res = await API.post(
+                API_ENDPOINTS.upload_emp_letters,
+                formData,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
+
+            console.log("Agreement letter uploaded successfully");
+            if (res?.status === 200) {
+                toast({
+                    description: "Agreement Letter Uploaded Successfully!" || res?.data?.message,
+                    duration: 2000,
+                    status: "success"
+                })
+            }
+
+        } catch (error) {
+            toast({
+                description: error?.response?.data?.message || "Something went wrong, Please try again!",
+                status: "error",
+                duration: 2000,
+                isClosable: true,
+                position: "top-right"
+            });
+            console.error("Agreement PDF generation/upload error:", error);
+        }o
     };
 
     const formatDateLong = (value) => {
@@ -391,7 +457,7 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
 
                                         </Box>
                                     </VStack>
-                                                                        <Box>
+                                    <Box>
                                         <Text textAlign="center" fontSize="12px" color="#a8b9d2 !important" mt={formData?.jsc_stamp ? "0rem" : "6rem"}>11</Text>
                                     </Box>
                                 </Box>
@@ -399,7 +465,7 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
                         </Box>
                     </ModalBody>
                     <ModalFooter>
-                        <Button colorScheme="blue" onClick={handleDownloadPDF}>
+                        <Button colorScheme="blue" onClick={handleDownloadAgreementPDF}>
                             Download PDF
                         </Button>
                     </ModalFooter>

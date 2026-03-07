@@ -9,6 +9,8 @@ import webIcon from "../../../assets/images/web.png";
 import { formatDate, formatTime } from "../../../components/common/helper";
 import html2pdf from "html2pdf.js";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png"
+import API from "../../../services/api";
+import { API_ENDPOINTS } from "../../../services/endpoints";
 
 const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
@@ -27,34 +29,196 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
   const maxKm = Number(formData?.max_km) || 0;
   const minKm = Number(formData?.min_km) || 0;
 
-  const handleDownloadPDF = () => {
-    const element = document.getElementById("joining-letter-preview");
+  // const handleDownloadPDF = () => {
+  //   const element = document.getElementById("joining-letter-preview");
 
-    html2pdf()
-      .set({
-        margin: 0,
-        filename: `Offer_Letter_${employee?.name}.pdf`,
-        image: { type: "jpeg", quality: 1 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          scrollY: 0,
-          windowWidth: 1200
-        },
-        jsPDF: {
-          unit: "mm",
-          format: "a4",
-          orientation: "portrait"
-        },
-        pagebreak: { mode: ['css'] }
-      })
+  //   html2pdf()
+  //     .set({
+  //       margin: 0,
+  //       filename: `Offer_Letter_${employee?.name}.pdf`,
+  //       image: { type: "jpeg", quality: 1 },
+  //       html2canvas: {
+  //         scale: 2,
+  //         useCORS: true,
+  //         scrollY: 0,
+  //         windowWidth: 1200
+  //       },
+  //       jsPDF: {
+  //         unit: "mm",
+  //         format: "a4",
+  //         orientation: "portrait"
+  //       },
+  //       pagebreak: { mode: ['css'] }
+  //     })
 
-      .from(element)
-      .save();
+  //     .from(element)
+  //     .save();
 
+  // };
+
+
+//   const handleDownloadPDF = async () => {
+//   const element = document.getElementById("joining-letter-preview");
+//   const options = {
+//     margin: 0,
+//     filename: `Joining_Letter_${employee?.name}.pdf`,
+//     image: { type: "jpeg", quality: 1 },
+//     html2canvas: {
+//       scale: 2,
+//       useCORS: true,
+//       scrollY: 0,
+//       windowWidth: 1200
+//     },
+//     jsPDF: {
+//       unit: "mm",
+//       format: "a4",
+//       orientation: "portrait"
+//     },
+//     pagebreak: { mode: ["css"] }
+//   };
+
+//   try {
+
+//     const worker = html2pdf().set(options).from(element);
+
+//     // Generate PDF Blob
+//     const pdfBlob = await worker.outputPdf("blob");
+
+//     // ================= DOWNLOAD =================
+
+//     const url = URL.createObjectURL(pdfBlob);
+
+//     const link = document.createElement("a");
+//     link.href = url;
+//     link.download = `Joining_Letter_${employee?.name}.pdf`;
+
+//     document.body.appendChild(link);
+//     link.click();
+//     document.body.removeChild(link);
+
+//     // ================= UPLOAD =================
+
+//     const formData = new FormData();
+
+//     formData.append(
+//       "file",
+//       pdfBlob,
+//       `Joining_Letter_${employee?.name}.pdf`
+//     );
+
+//     formData.append("employee_id", employee?.id);
+//     formData.append("employee_name", employee?.name);
+//     formData.append("document_type", "joining_letter");
+
+//     await API.post(
+//       API_ENDPOINTS?.upload_emp_letters,
+//       formData
+//     );
+
+//     console.log("Joining letter uploaded successfully");
+
+//   } catch (error) {
+
+//     console.error("PDF generation/upload error:", error);
+
+//   }
+
+// };
+
+const handleDownloadJoiningPDF = async () => {
+
+  const element = document.getElementById("joining-letter-preview");
+
+  const options = {
+    margin: 0,
+    filename: `Joining_Letter_${employee?.name}.pdf`,
+    image: { type: "jpeg", quality: 1 },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      scrollY: 0,
+      windowWidth: 1200
+    },
+    jsPDF: {
+      unit: "mm",
+      format: "a4",
+      orientation: "portrait"
+    }
   };
 
-  return (
+  try {
+
+    const worker = html2pdf().set(options).from(element);
+
+    // generate PDF instance
+    const pdf = await worker.toPdf().get("pdf");
+
+    // convert to blob
+    const pdfBlob = pdf.output("blob");
+
+    // ================= DOWNLOAD =================
+
+    const url = URL.createObjectURL(pdfBlob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Joining_Letter_${employee?.name}.pdf`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // ================= UPLOAD =================
+
+    const formData = new FormData();
+
+    const file = new File(
+      [pdfBlob],
+      `Joining_Letter_${employee?.name}.pdf`,
+      { type: "application/pdf" }
+    );
+
+    formData.append("file", file);
+    formData.append("employee_id", employee?.id);
+    formData.append("employee_name", employee?.name);
+    formData.append("document_type", "joining_letter");
+
+  const res = await API.post(
+      API_ENDPOINTS.upload_emp_letters,
+      formData,
+       {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  }
+    );
+
+     if(res?.status === 200){
+  toast({
+    description:  "Joining Letter Uploaded Successfully!" || res?.data?.message,
+    duration: 2000,
+    status: "success"
+  })
+}
+
+    console.log("Joining letter uploaded successfully");
+
+  } catch (error) {
+ toast({
+  description:
+    error?.response?.data?.message ||
+    "Something went wrong, Please try again!",
+  status: "error",
+  duration: 2000,
+  isClosable: true,
+  position: "top-right"
+});
+    console.error("PDF generation/upload error:", error);
+  }
+
+};
+
+return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="5xl">
         <ModalOverlay />
@@ -570,7 +734,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
               </Box>
             </Box>
             <VStack mb='1rem'>
-              <Button colorScheme="blue" onClick={handleDownloadPDF}>Download Joining Letter</Button>
+              <Button colorScheme="blue" onClick={handleDownloadJoiningPDF}>Download Joining Letter</Button>
             </VStack>
           </ModalBody>
         </ModalContent>

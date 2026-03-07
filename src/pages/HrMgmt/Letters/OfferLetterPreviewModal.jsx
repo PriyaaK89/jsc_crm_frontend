@@ -1,4 +1,4 @@
-import { Box, Button, HStack, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, VStack, Divider, Flex } from "@chakra-ui/react";
+import { Box, Button, HStack, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, VStack, Divider, Flex, useToast } from "@chakra-ui/react";
 import html2pdf from "html2pdf.js";
 import top_ele from "../../../assets/images/top_left_ele.png";
 import bottom_ele from "../../../assets/images/bottom_right_ele.png";
@@ -8,35 +8,124 @@ import { formatDate } from "../../../components/common/helper";
 import emailIcon from "../../../assets/images/email.png";
 import webIcon from "../../../assets/images/web.png";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png"
+import axios from "axios";
+import API from "../../../services/api";
+import { API_ENDPOINTS } from "../../../services/endpoints";
 
 const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
 
-  const handleDownloadPDF = () => {
-    const element = document.getElementById("offer-letter-preview");
+  const toast = useToast()
 
-    html2pdf()
-      .set({
-        margin: 0,
-        filename: `Offer_Letter_${employee?.name}.pdf`,
-        image: { type: "jpeg", quality: 1 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          scrollY: 0,
-          windowWidth: 1200
-        },
-        jsPDF: {
-          unit: "mm",
-          format: "a4",
-          orientation: "portrait"
-        },
-        pagebreak: { mode: ['css'] }
-      })
+  // const handleDownloadPDF = () => {
+  //   const element = document.getElementById("offer-letter-preview");
 
-      .from(element)
-      .save();
+  //   html2pdf()
+  //     .set({
+  //       margin: 0,
+  //       filename: `Offer_Letter_${employee?.name}.pdf`,
+  //       image: { type: "jpeg", quality: 1 },
+  //       html2canvas: {
+  //         scale: 2,
+  //         useCORS: true,
+  //         scrollY: 0,
+  //         windowWidth: 1200
+  //       },
+  //       jsPDF: {
+  //         unit: "mm",
+  //         format: "a4",
+  //         orientation: "portrait"
+  //       },
+  //       pagebreak: { mode: ['css'] }
+  //     })
 
+  //     .from(element)
+  //     .save();
+
+  // };
+
+  const handleDownloadPDF = async () => {
+
+  const element = document.getElementById("offer-letter-preview");
+
+  const options = {
+    margin: 0,
+    filename: `Offer_Letter_${employee?.name}.pdf`,
+    image: { type: "jpeg", quality: 1 },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      scrollY: 0,
+      windowWidth: 1200
+    },
+    jsPDF: {
+      unit: "mm",
+      format: "a4",
+      orientation: "portrait"
+    },
+    pagebreak: { mode: ["css"] }
   };
+
+  try {
+
+    const worker = html2pdf().set(options).from(element);
+
+    // Generate PDF blob
+    const pdfBlob = await worker.outputPdf("blob");
+
+    // ================= DOWNLOAD (CURRENT BEHAVIOR) =================
+    const url = URL.createObjectURL(pdfBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Offer_Letter_${employee?.name}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // ================= UPLOAD TO BACKEND =================
+
+    const formData = new FormData();
+
+    formData.append(
+  "file",
+  pdfBlob,
+  `Offer_Letter_${employee?.name}.pdf`
+);
+
+    formData.append("type", "employee_letters");
+    formData.append("employee_id", employee?.id);
+    formData.append("employee_name", employee?.name);
+    formData.append("document_type", "offer_letter");
+
+  const res =  await API.post(
+      API_ENDPOINTS?.upload_emp_letters,
+      formData,
+       {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  }
+    );
+   if(res?.status === 200){
+  toast({
+    description: "Offer Letter Uploaded Successfully!" || res?.data?.message,
+    duration: 2000,
+    status: "success"
+  })
+}
+    console.log("PDF uploaded successfully");
+  } catch (error) {
+    console.error("PDF generation/upload error:", error);
+  toast({
+  description:
+    error?.response?.data?.message ||
+    "Something went wrong, Please try again!",
+  status: "error",
+  duration: 2000,
+  isClosable: true,
+  position: "top-right"
+});
+  }
+};
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="5xl">
@@ -48,36 +137,23 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
             {/* ================= PAGE 1 ================= */}
             <Box className="pdf-page" >
 
-              {/* Decorative Images */}
-              <Image
-                src={top_ele}
-                position="absolute"
-                top="0"
-                left="0"
-                width="175px"
-              />
+              <Image src={top_ele} position="absolute" top="0" left="0" width="175px"/>
 
-              <Image
-                src={bottom_ele}
-                position="absolute"
-                bottom="0"
-                right="0"
-                width="175px"
-              />
+              <Image src={bottom_ele} position="absolute" bottom="0" right="0" width="175px" />
 
               {/* Header */}
               <VStack spacing={0} align="center" ml="1rem">
                 <HStack spacing={4} alignItems="baseline" mb="4px">
-                  <Image src={company_logo} width="260px" />
-                  <Image src={r_logo} width="120px" />
+                  <Image src={company_logo} width="250px" />
+                  <Image src={r_logo} width="110px" />
                 </HStack>
 
                 {/* <Text fontSize="12px" color="gray.600">
         Corpo Add. : P.B. Road, R.N.B. District Haveri, Karnataka
       </Text> */}
-                <Text fontSize="12px" color="green.800">North zone Office Add.-73 GANESH NAGAR-2, MURLIPURA JAIPUR, REG.OFFICE-105, NEMI CHAND MARKET ALWAR</Text>
+                <Text mt="16px" fontSize="11px" color="green.800">North zone Office Add.-73 GANESH NAGAR-2, MURLIPURA JAIPUR, REG.OFFICE-105, NEMI CHAND MARKET, ALWAR</Text>
 
-                <Divider borderColor="blue.600" borderWidth="2px" w="92%" mt="1rem" />
+                <Divider borderColor="blue.600" borderWidth="2px" w="92%" mt="10px" />
               </VStack>
 
               <Box width="89%" marginLeft="3rem" className="letter-content">
@@ -195,7 +271,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
 )}
                 </Box>
               </VStack>
-              <VStack alignItems="flex-start" mt="20rem" spacing="4px" width="81%" ml="-2.5rem">
+              <VStack alignItems="flex-start" mt="16rem" spacing="4px" width="81%" ml="-2.5rem">
                 <Divider borderColor="blue.600" borderWidth="1px" w="100%" mt="1rem" />
                 <Divider borderColor="blue.300" borderWidth="2px" w="90%" mt="0px" />
                 <Flex ml="1rem" gap="1rem" mt="2px">

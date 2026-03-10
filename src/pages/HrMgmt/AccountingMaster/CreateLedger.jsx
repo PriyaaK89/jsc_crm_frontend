@@ -1,5 +1,5 @@
 import { Flex, FormControl,FormLabel,Input } from "@chakra-ui/react";
-import { Select } from '@chakra-ui/react'
+import { Select,Text } from '@chakra-ui/react'
 import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack,VStack,Heading,Button,SimpleGrid} from "@chakra-ui/react";
 import React, { useState } from "react";
 import { GoHomeFill } from "react-icons/go";
@@ -47,7 +47,7 @@ const CreateLedger = () => {
 
 
     return (
-    <Box w="100%" bg="white" p={6} borderRadius="lg" >
+    <Box w="100%" bg="white"  borderRadius="lg" >
                 <HStack justifyContent='space-between'>
                       <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                         <BreadcrumbItem>
@@ -60,8 +60,11 @@ const CreateLedger = () => {
                       </Breadcrumb>
                     </HStack>
                 
-       
-                <Heading size="lg" textAlign="center" mb={6} lineHeight="1.5">  Create Ledger</Heading>
+        <Text fontSize="2xl" fontWeight="bold" mb={6}>
+          Create Ledger
+                    
+               </Text> 
+                
                 <Box as="form" >
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
                     

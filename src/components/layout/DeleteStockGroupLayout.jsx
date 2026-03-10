@@ -63,7 +63,7 @@ const DeleteStockGroupLayout = () => {
             boxShadow="sm"
             px={4}
             py={2}
-            mx={3} 
+            mx={3}  mt="75px"
           >
             <DeleteStockGroup />
           </Box>

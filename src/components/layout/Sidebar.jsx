@@ -1,13 +1,4 @@
-import { useState, useContext } from "react";
-import { NavLink } from "react-router-dom";
-import {
-  Box,
-  VStack,
-  Text,
-  Button,
-  Collapse,
-  Icon,
-} from "@chakra-ui/react";
+import {Box,VStack,Text,Button,Collapse,Icon, Image } from "@chakra-ui/react";
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
@@ -20,48 +11,34 @@ import { FaChartLine } from "react-icons/fa";
 import { FaUser, FaUserPlus } from "react-icons/fa";
 import { MdInventory, MdAddBox, MdViewList, MdDelete } from "react-icons/md";
 import { MdCategory } from "react-icons/md";
-import { MdAddCircleOutline } from "react-icons/md";
+import { MdAddCircleOutline,MdAccountTree   } from "react-icons/md";
 import { FaFileInvoice } from "react-icons/fa";
 import { FiMapPin } from "react-icons/fi";
-import { FaClipboardList, FaCalculator, FaWallet, FaList, FaTrash, FaFileInvoiceDollar, FaBookOpen, FaMoneyCheckAlt } from "react-icons/fa";
-import { FaEdit, FaStore } from "react-icons/fa";
-import { Receipt, CalendarCheck } from "lucide-react";
-import { HiOutlinePrinter } from "react-icons/hi";
-import { Printer, Barcode } from "lucide-react";
-import { BsCreditCard2Front } from "react-icons/bs";
-import { BiPurchaseTagAlt } from "react-icons/bi";
-import { FaMoneyBillWave } from "react-icons/fa";
-import { FaShoppingCart } from "react-icons/fa";
-import { FaReceipt } from "react-icons/fa";
-
-
-
-
-
-import {
-  RiDashboardLine,
-  RiUserAddLine,
-  RiUser3Line,
-  RiFileList3Line,
-  RiBarChartLine,
-  RiSettings3Line,
-} from "react-icons/ri";
+import { FaClipboardList,FaCalculator,FaWallet,FaList,FaTrash,FaFileInvoiceDollar,FaBookOpen,FaMoneyCheckAlt} from "react-icons/fa";
+  import { FaEdit,FaStore } from "react-icons/fa";
+  import { Receipt,CalendarCheck  } from "lucide-react";
+  import { HiOutlinePrinter } from "react-icons/hi";
+  import { Printer, Barcode } from "lucide-react";
+import {RiDashboardLine,RiUserAddLine,RiUser3Line,RiFileList3Line,RiBarChartLine,RiSettings3Line,} from "react-icons/ri";
 import { UserCheck } from "lucide-react";
 import { BsUpcScan } from "react-icons/bs";
 import { Ticket } from "lucide-react";
+import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg'
+import { useState, useContext, useEffect ,memo } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 
-const Sidebar = () => {
-  const [openMenu, setOpenMenu] = useState(null);
+
+
+const Newsidebar = () => {
+  const location = useLocation();
   const { auth } = useContext(AuthContext);
-  console.log(auth, "auth");
   const role = auth?.user?.role;
-  console.log(role, "role");
-  console.log("SIDEBAR COMPONENT RENDERED");
+
+  const [openMenu, setOpenMenu] = useState(null);
 
   const toggleMenu = (menu) => {
-    setOpenMenu(openMenu === menu ? null : menu);
+    setOpenMenu((prev) => (prev === menu ? null : menu));
   };
-
 
   const sidebarButtonStyle = {
     variant: "ghost",
@@ -69,614 +46,248 @@ const Sidebar = () => {
     fontWeight: "700",
     color: "#333333",
     _hover: {
-      border: "1px solid #d5d5d5",
+      bg: "gray.100",
       borderRadius: "28px",
-      bg: "transparent",
     },
     height: "39px",
   };
 
+  const activeStyle = {
+    background: "#f3f4f6",
+    borderRadius: "28px" ,
+    fontWeight: "bold",
+  };
+
   const activeLinkStyle = ({ isActive }) =>
-    isActive
-      ? { border: "1px solid #d5d5d5", borderRadius: "28px" }
-      : undefined;
+    isActive ? activeStyle : undefined;
+
+  const menuSections = [
+    {
+      label: "Dashboard",
+      path: "/dashboard",
+      icon: RiDashboardLine,
+    },
+
+    {
+      label: "HR Management",
+      key: "users",
+      icon: FaUser,
+      children: [
+        {label: "Add Employee", path: "/hr-mgmt/add-employee",icon: FaUserPlus},
+        {label: "Employee List", path: "/hr-mgmt/view-employee-list",icon: RiUser3Line,},
+        {label: "Create Job Role", path: "/hr-mgmt/roles/add-job-role",icon: HiUserGroup,},
+        {label: "Create Department",path: "/hr-mgmt/dept/add-department",icon: MdAccountTree,},
+        {label:"Upload Salary Slip",path:'/hr-mgmt/upload-emp-salary',icon: RiFileList3Line,}
+      ],},
+
+    {
+      label: "Business Development",
+      key: "business",
+      icon: FaChartLine,
+      children: [
+        {label: "Create Team",path: "/Business-dev/create-team",icon: FaUserPlus, },
+        {label: "Create Sub Team",path: "/Business-devt/create-sub-team",icon: HiUserGroup,},
+        { label: "Assign Target RSM", path: "/Business-devt/assign-target-rsm",  icon: MdAssignmentInd,},
+        {label:"Assign Target TSM", path:"/Business-devt/assign-target-tsm",icon:FaUserTie,},
+        {label:"Assign Target SM",path:"/Business-devt/assign-target-sm",icon:FaBullseye,},
+        {label:"Assign Target FA", path:"/Business-devt/assign-target-fa",icon:UserCheck ,}
+      ],
+    },
+    {
+      label: "Accounting  Master",
+      key: "accounting-master",
+      icon: FaWallet,
+      children: [
+        {label:"Create Group", path:"/accounting-master/create-group",icon:MdGroupAdd},
+        {label:"View Group",path:"/accounting-master/view-group",icon:FaList},
+        {label:"Delete Group",path:"/accounting-master/delete-group",icon:FaTrash},
+        {label:"Create Ledger",path:"/accounting-master/create-ledger", icon:FaFileInvoiceDollar},
+        {label:"View Ledger",path:"/accounting-master/view-ledger", icon:FaFileInvoice},
+        {label:"Delete Ledger",path:"/accounting-master/delete-ledger", icon:FaTrash},
+        {label:"Create Voucher",path:"/accounting-master/create-vouche", icon:FaMoneyCheckAlt},
+        {label:"View Voucher", path:"/accounting-master/view-voucher", icon:FaFileInvoice },
+        {label:"Delete Voucher",path:"/accounting-master/delete-voucher", icon:FaTrash},
+        {label:"Edit Ledger Assignment",path:"/accounting-master/edit-ledger-assignment",  icon:FaEdit },
+        {label:"Retail Assignment" ,path:"/accounting-master/retail-assignment", icon:FaStore },
+      ] },
+      {
+          label: "Comapny Master",
+      key: "company-master",
+      icon: MdCorporateFare,
+      children: [
+        {label:"Create Company",path:"/company-master/create-company",icon:HiOfficeBuilding},
+         
+
+      ]
+      },
+      {
+        label:"Leads",key:"leads",icon:RiUser3Line,
+        children:[
+          {label:"New Lead",path:"/leads/new",icon:RiUserAddLine},
+          {label:"Lead List",path:"/leads/list",icon:RiFileList3Line}
+        ]
+      },{
+          label:"Reports",key:"Reports",icon:RiBarChartLine,path:"/reports"
+      },{
+        label:"Inventory Master",key:"inventory",icon:MdInventory,
+        children:[
+          {label:"Create Stock Group",path:"/inventory/create-stock-group",icon:MdAddBox},
+          {label:"View Stock Group",path:"/inventory/view-stock-group",icon:MdViewList},
+          {label:"Delete Stock Group",path:"/inventory/delete-stock-group",icon:MdDelete},
+          {label:"Create Stock Category",path:"/inventory/create-stock-category",icon:MdCategory},
+          {label:"View Stock Category",path:"/inventory/view-stock-category",icon:MdAddCircleOutline},
+         
+        ]
+      },{
+        label:"Order Vochor",key:"order-vochor",icon:FaFileInvoice,
+         children:[
+              
+          {label:"Payment",path:"/order-vochor/paymen",icon:FiMapPin}
+         ]
+      },{
+        label:"Print MGMT",key:"print_mgmt",icon:HiOutlinePrinter,
+        children:[
+          {label:"Shipping label printer",path:"/print/mgmt/shipping_lable_printer",icon:BsUpcScan},
+          {label:"TruthFull Label Print",path:"/print/mgmt/truthful_labelprint",icon:Ticket}
+        ]},{
+          label:"Settings",path:"/settings",icon:RiSettings3Line,
+        },{label:"IP Request",path:"/approve-ip-user-list",icon:RiUserAddLine}
+  ];
+
+useEffect(() => {
+  const path = location.pathname;
+
+  const menuMap = {
+    "/hr-mgmt": "users",
+    "/Business-dev": "business",
+    "/Business-devt": "business",
+    "/accounting-master": "accounting-master",
+    "/company-master": "company-master",
+    "/leads": "leads",
+    "/inventory": "inventory",
+    "/order-vochor": "order-vochor",
+    "/print/mgmt": "print_mgmt"
+  };
+
+  for (const route in menuMap) {
+    if (path.startsWith(route)) {
+      setOpenMenu(menuMap[route]);
+      break;
+    }
+  }
+
+}, [location.pathname]);
 
   return (
     <Box
       w="268px"
-      bg="#f4f4f4"
+      bg="#FFFFFF"
       color="#333333"
       p={4}
-      overflow="hidden"
+  borderRight="1px solid #e5e7eb"
+    borderColor="gray.200"
+      overflowY="auto"
       h="100vh"
+     sx={{
+    scrollbarWidth: "none",      
+    msOverflowStyle: "none",       
+    "&::-webkit-scrollbar": {
+      display: "none",             
+    },
+  }}
     >
-      <Text fontSize="2xl" fontWeight="bold" mb={8}>
-        CRM
-      </Text>
+      {/* Logo */}
+      <Box borderBottom="1px solid #e5e7eb" pb={3} pl={6} mb={5}>
+        <Image src={logo} alt="Company Logo" h="45px" />
+      </Box>
 
       <VStack spacing={2} align="stretch">
-        {/* Dashboard */}
-        <Button
-          leftIcon={<RiDashboardLine size={20} />}
-          as={NavLink}
-          to="/dashboard"
-          {...sidebarButtonStyle}
-          style={activeLinkStyle}
-        >
-          Dashboard
-        </Button>
+        {menuSections.map((menu, index) => {
+          const IconComponent = menu.icon;
 
-        {/* HR Management */}
-        <Button
-          leftIcon={<FaUser size={20} />}
-          rightIcon={
-            <Icon
-              as={openMenu === "users" ? ChevronDownIcon : ChevronRightIcon}
-            />
+          // NORMAL MENU
+          if (!menu.children) {
+            return (
+              <Button
+                key={index}
+                leftIcon={<IconComponent />}
+                as={NavLink}
+                to={menu.path}
+                {...sidebarButtonStyle}
+                style={activeLinkStyle}
+              >
+                {menu.label}
+              </Button>
+            );
           }
-          {...sidebarButtonStyle}
-          onClick={() => toggleMenu("users")}
-        >
-          HR Management
-        </Button>
 
-        <Collapse in={openMenu === "users"} animateOpacity>
-          <VStack pl={6} align="stretch" spacing={1}>
-            <Button
-              leftIcon={<FaUserPlus />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/hr-mgmt/add-employee"
-              style={activeLinkStyle}
-            >
-              Add Employee
-            </Button>
+          // ⭐ CHECK IF ANY CHILD ROUTE IS ACTIVE
+          const parentActive = menu.children.some((child) =>
+            location.pathname.startsWith(child.path)
+          );
 
-            <Button
-              leftIcon={<RiUser3Line size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/hr-mgmt/view-employee-list"
-              style={activeLinkStyle}
-            >
-              Employee List
-            </Button>
+          return (
+            <Box key={index}>
+              <Button
+                leftIcon={<IconComponent />}
+                rightIcon={
+                  <Icon
+                    as={
+                      openMenu === menu.key
+                        ? ChevronDownIcon
+                        : ChevronRightIcon
+                    }
+                  />
+                }
+                {...sidebarButtonStyle}
+                onClick={() => toggleMenu(menu.key)}
+                style={parentActive ? activeStyle : undefined} // ⭐ APPLY STYLE
+              >
+                {menu.label}
+              </Button>
 
-            <Button
-              leftIcon={<RiFileList3Line size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to={`/hr-mgmt/upload-emp-salary`}
-
-              style={activeLinkStyle}
-            >
-              Upload Salary Slip
-            </Button>
-
-            <Button
-              leftIcon={<FaClipboardList />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/emp-attendance-report"
-              style={activeLinkStyle}
-            >
-              Attendace Report
-            </Button>
-            <Button
-              leftIcon={<Receipt size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/emp-salary-report"
-              style={activeLinkStyle}
-            >
-              Salary Report
-            </Button>
-
-
-
-            <Button
-              leftIcon={<FiMapPin />}
-              {...sidebarButtonStyle} size="sm"
-              as={NavLink} to="/hr-mgmt/track-employee" style={activeLinkStyle}>
-              Track Employee
-            </Button>
-          </VStack>
-
-        </Collapse>
-
-        {/* business department */}
-        <Button {...sidebarButtonStyle} onClick={() => toggleMenu("business")} leftIcon={<FaChartLine />}>
-
-          Business Development
-          <Icon as={openMenu === "business" ? ChevronDownIcon : ChevronRightIcon} />
-        </Button>
-
-        <Collapse in={openMenu === "business"} animateOpacity>
-          <VStack pl={6} align="stretch" spacing={1}>
-            <Button
-              leftIcon={<FaUserPlus size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/Business-dev/create-team"
-              style={activeLinkStyle}
-            >
-              Create Team
-            </Button>
-
-            <Button
-              leftIcon={<HiUserGroup size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/Business-devt/create-sub-team"
-              style={activeLinkStyle}
-            >
-              Create Sub Team
-            </Button>
-
-            <Button
-              leftIcon={<MdAssignmentInd />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/Business-devt/assign-target-rsm"
-              style={activeLinkStyle}
-            >
-              Assign Target RSM
-            </Button>
-
-            <Button
-              leftIcon={<FaUserTie />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/Business-devt/assign-target-tsm"
-              style={activeLinkStyle}
-            >
-              Assign Target TSM
-            </Button>
-            <Button
-              leftIcon={<FaBullseye />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/Business-devt/assign-target-sm"
-              style={activeLinkStyle}
-            >
-              Assign Target SM
-            </Button>
-            <Button
-              leftIcon={<UserCheck />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/Business-devt/assign-target-fa"
-              style={activeLinkStyle}
-            >
-              Assign Target FA
-            </Button>
-          </VStack>
-        </Collapse>
-
-        {/* acounting master  */}
-
-        <Button {...sidebarButtonStyle} onClick={() => toggleMenu("accounting-master")} leftIcon={<FaWallet size={20} />}>
-
-          Accounting  Master
-          <Icon as={openMenu === "accounting-master" ? ChevronDownIcon : ChevronRightIcon} />
-        </Button>
-
-        <Collapse in={openMenu === "accounting-master"} animateOpacity>
-          <VStack pl={6} align="stretch" spacing={1}>
-            <Button
-              leftIcon={<MdGroupAdd size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/accounting-master/create-group"
-              style={activeLinkStyle}
-            >
-              Create Group
-            </Button>
-
-            <Button
-              leftIcon={<FaList size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/accounting-master/view-group"
-              style={activeLinkStyle}
-            >
-              View Group
-            </Button>
-
-            <Button
-              leftIcon={<FaTrash size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/accounting-master/delete-group"
-              style={activeLinkStyle}
-            >
-              Delete Group
-            </Button>
-
-            <Button
-              leftIcon={<FaFileInvoiceDollar size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/accounting-master/create-ledger"
-              style={activeLinkStyle}
-            >
-              Create Ledger
-            </Button>
-            <Button
-              leftIcon={<FaFileInvoice size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/accounting-master/view-ledger"
-              style={activeLinkStyle}
-            >
-              View Ledger
-            </Button>
-            <Button
-              leftIcon={<FaTrash size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/accounting-master/delete-ledger"
-              style={activeLinkStyle}
-            >
-              Delete Ledger
-            </Button>
-
-
-            <Button
-              leftIcon={<FaMoneyCheckAlt size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/accounting-master/create-voucher"
-              style={activeLinkStyle}
-            >
-              Create Voucher
-            </Button>
-            <Button
-              leftIcon={<FaFileInvoice size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/accounting-master/view-voucher"
-              style={activeLinkStyle}
-            >
-              View Voucher
-            </Button>
-            <Button
-              leftIcon={< FaTrash size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/accounting-master/delete-voucher"
-              style={activeLinkStyle}
-            >
-              Delete Voucher
-            </Button>
-            <Button
-              leftIcon={<FaEdit size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/accounting-master/edit-ledger-assignment"
-              style={activeLinkStyle}
-            >
-              Edit Ledger Assignment
-            </Button>
-            <Button
-              leftIcon={<FaStore size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/accounting-master/retail-assignment"
-              style={activeLinkStyle}
-            >
-              Retail Assignment
-            </Button>
-          </VStack>
-        </Collapse>
-
-        {/* ..company master  */}
-        <Button {...sidebarButtonStyle} onClick={() => toggleMenu("company-master")} leftIcon={<MdCorporateFare />} >
-          Company Master
-          <Icon as={openMenu === "company-master" ? ChevronDownIcon : ChevronRightIcon} />
-        </Button>
-
-        <Collapse in={openMenu === "company-master"} animateOpacity>
-          <VStack pl={6} align="stretch" spacing={1}>
-            <Button
-              leftIcon={<HiOfficeBuilding />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/company-master/create-company"
-              style={activeLinkStyle}
-            >
-              Create Company
-            </Button>
-
-
-
-
-          </VStack>
-        </Collapse>
-
-
-
-        {/* Leads */}
-        <Button
-          leftIcon={<RiUser3Line size={20} />}
-          {...sidebarButtonStyle}
-          onClick={() => toggleMenu("leads")}
-        >
-          Leads
-        </Button>
-
-        <Collapse in={openMenu === "leads"} animateOpacity>
-          <VStack pl={6} align="stretch" spacing={1}>
-            <Button
-              leftIcon={<RiUserAddLine size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/leads/new"
-            >
-              New Lead
-            </Button>
-
-            <Button
-              leftIcon={<RiFileList3Line size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/leads/list"
-            >
-              Lead List
-            </Button>
-          </VStack>
-        </Collapse>
-
-        {/* Reports */}
-        <Button
-          leftIcon={<RiBarChartLine size={18} />}
-          {...sidebarButtonStyle}
-          as={NavLink}
-          to="/reports"
-        >
-          Reports
-        </Button>
-
-        {/* Inventory Master */}
-        {(role === "ADMIN" || role === "SUPER_ADMIN") && (
-          <>
-            <Button
-              leftIcon={<MdInventory size={20} />}
-              rightIcon={
-                <Icon
-                  as={openMenu === "inventory" ? ChevronDownIcon : ChevronRightIcon}
-                />
-              }
-              {...sidebarButtonStyle}
-              onClick={() => toggleMenu("inventory")}
-            >
-              Inventory Master
-            </Button>
-
-            <Collapse in={openMenu === "inventory"} animateOpacity>
-              <VStack pl={6} align="stretch" spacing={1}>
-                <Button
-                  leftIcon={<MdAddBox size={18} />}
-                  {...sidebarButtonStyle}
-                  size="sm"
-                  as={NavLink}
-                  to="/inventory/create-stock-group"
-                  style={activeLinkStyle}
-                >
-
-                  Create Stock Group
-                </Button>
-                <Button
-                  leftIcon={<MdViewList size={18} />}
-                  {...sidebarButtonStyle}
-                  size="sm"
-                  as={NavLink}
-                  to="/inventory/view-stock-group"
-                  style={activeLinkStyle}
-                >
-                  View Stock Group
-                </Button>
-                <Button
-                  leftIcon={<MdDelete size={18} />}
-                  {...sidebarButtonStyle}
-                  size="sm"
-                  as={NavLink}
-                  to="/inventory/delete-stock-group"
-                  style={activeLinkStyle}
-                >
-                  Delete Stock Group
-                </Button>
-                <Button
-                  leftIcon={<MdCategory size={18} />}
-                  {...sidebarButtonStyle}
-                  size="sm"
-                  as={NavLink}
-                  to="/inventory/create-stock-category"
-                  style={activeLinkStyle}
-                >
-                  Create Stock Category
-                </Button>
-                <Button
-                  leftIcon={<MdAddCircleOutline size={18} />}
-                  {...sidebarButtonStyle}
-                  size="sm"
-                  as={NavLink}
-                  to="/inventory/view-stock-category"
-                  style={activeLinkStyle}
-                >
-                  View Stock Category
-                </Button>
-              </VStack>
-            </Collapse>
-          </>
-        )}
-
-        {/* Order Vochor */}
-        <Button
-          leftIcon={<FaFileInvoice />}
-          rightIcon={
-            <Icon
-              as={
-                openMenu === "order-vochor"
-                  ? ChevronDownIcon
-                  : ChevronRightIcon
-              }
-            />
-          }
-          {...sidebarButtonStyle}
-          onClick={() => toggleMenu("order-vochor")}
-        >
-          Order Vochor
-        </Button>
-
-        <Collapse in={openMenu === "order-vochor"} animateOpacity>
-          <VStack pl={6} align="stretch" spacing={1}>
-            <Button
-              leftIcon={<FiMapPin />}
-              size="sm"
-              as={NavLink}
-              to="/order-vochor/payment"
-              {...sidebarButtonStyle}
-              style={activeLinkStyle}
-            >
-              Payment
-            </Button>
-            <Button
-              leftIcon={<BiPurchaseTagAlt />}
-              size="sm"
-              as={NavLink}
-              to="/order-vochor/purchase"
-              {...sidebarButtonStyle}
-              style={activeLinkStyle}>
-              Purchase
-            </Button>
-            <Button
-              leftIcon={< FaShoppingCart />}
-              size="sm"
-              as={NavLink}
-              to="/order-vochor/sales"
-              {...sidebarButtonStyle}
-              style={activeLinkStyle}
-            >
-              Sales
-            </Button>
-            <Button
-              leftIcon={< FaReceipt />}
-              size="sm"
-              as={NavLink}
-              to="/order-vochor/receipt"
-              {...sidebarButtonStyle}
-              style={activeLinkStyle}
-            >
-              Receipt
-            </Button>
-
-
-            <Button
-              leftIcon={<BsCreditCard2Front />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/order-vochor/credit"
-              style={activeLinkStyle}
-            >
-              Credit
-            </Button>
-            <Button
-              leftIcon={<FaMoneyBillWave />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/order-vochor/debit"
-              style={activeLinkStyle}
-            >
-              Debit
-            </Button>
-          </VStack>
-        </Collapse>
-
-        {/* print  */}
-        {/* print mgmt */}
-        <Button
-          leftIcon={<HiOutlinePrinter size={20} />}
-          rightIcon={
-            <Icon
-              as={openMenu === "print_mgmt" ? ChevronDownIcon : ChevronRightIcon}
-            />
-          }
-          {...sidebarButtonStyle}
-          onClick={() => toggleMenu("print_mgmt")}
-        >
-          Print MGMT
-        </Button>
-
-        <Collapse in={openMenu === "print_mgmt"} animateOpacity>
-          <VStack pl={6} align="stretch" spacing={1}>
-            <Button
-              leftIcon={<BsUpcScan size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/print/mgmt/shipping_lable_printer"
-              style={activeLinkStyle}
-            > Shipping lable printer
-            </Button>
-            <Button
-              leftIcon={<Ticket size={18} />}
-              {...sidebarButtonStyle}
-              size="sm"
-              as={NavLink}
-              to="/print/mgmt/truthful_labelprint"
-              style={activeLinkStyle}
-            >
-              TruthFull Label Print
-            </Button>
-          </VStack>
-        </Collapse>
-
+              <Collapse in={openMenu === menu.key}>
+                <VStack pl={6} align="stretch" spacing={1} mt={3}>
+                  {menu.children.map((item, i) => {
+                    const ChildIcon = item.icon;
+                    return (
+                      <Button
+                        key={i}
+                        leftIcon={<ChildIcon />}
+                        size="sm"
+                        as={NavLink}
+                        to={item.path}
+                        {...sidebarButtonStyle}
+                        style={activeLinkStyle}
+                      >
+                        {item.label}
+                      </Button>
+                    );
+                  })}
+                </VStack>
+              </Collapse>
+            </Box>
+          );
+        })}
 
         {/* Settings */}
         <Button
-          leftIcon={<RiSettings3Line size={18} />}
+          leftIcon={<RiSettings3Line />}
           {...sidebarButtonStyle}
           as={NavLink}
           to="/settings"
+          style={activeLinkStyle}
         >
           Settings
         </Button>
 
-        {/* IP Requests for Admins */}
         {(role === "ADMIN" || role === "SUPER_ADMIN") && (
           <Button
             leftIcon={<RiUserAddLine />}
             {...sidebarButtonStyle}
             as={NavLink}
             to="/approve-ip-user-list"
+            style={activeLinkStyle}
           >
             IP Request
           </Button>
@@ -686,4 +297,7 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default memo(Newsidebar);
+
+
+

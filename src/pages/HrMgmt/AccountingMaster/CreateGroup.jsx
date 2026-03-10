@@ -1,4 +1,4 @@
-import { Flex, FormControl,FormLabel,Input } from "@chakra-ui/react";
+import { Flex, FormControl,FormLabel,Input,Text } from "@chakra-ui/react";
 import { Select } from '@chakra-ui/react'
 import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack,VStack,Heading,Button,SimpleGrid} from "@chakra-ui/react";
 
@@ -34,10 +34,10 @@ const CreateGroup = () => {
                     </HStack>
                 
        
-                <Heading size="lg" textAlign="center" mb={6}>
-                  Create Group
-                </Heading>
-          
+                
+ <Text fontSize="2xl" fontWeight="bold" mb={6}>
+             Create Group
+        </Text>          
                 <Box as="form" >
                  
                      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>

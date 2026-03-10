@@ -1,5 +1,6 @@
-import { Box, Button, HStack, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, VStack, Divider, Flex, useToast } from "@chakra-ui/react";
-import html2pdf from "html2pdf.js";
+import { Box, Button, HStack, Image,CloseButton, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, VStack, Divider, Flex, useToast } from "@chakra-ui/react";
+import { toJpeg } from "html-to-image";
+import jsPDF from "jspdf";
 import top_ele from "../../../assets/images/top_left_ele.png";
 import bottom_ele from "../../../assets/images/bottom_right_ele.png";
 import company_logo from "../../../assets/images/logo-removebg-preview.png";
@@ -12,67 +13,41 @@ import axios from "axios";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 
+
 const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
+   const handleClose = () => {
+    onClose(true);
+  };
 
   const toast = useToast()
 
-  // const handleDownloadPDF = () => {
-  //   const element = document.getElementById("offer-letter-preview");
-
-  //   html2pdf()
-  //     .set({
-  //       margin: 0,
-  //       filename: `Offer_Letter_${employee?.name}.pdf`,
-  //       image: { type: "jpeg", quality: 1 },
-  //       html2canvas: {
-  //         scale: 2,
-  //         useCORS: true,
-  //         scrollY: 0,
-  //         windowWidth: 1200
-  //       },
-  //       jsPDF: {
-  //         unit: "mm",
-  //         format: "a4",
-  //         orientation: "portrait"
-  //       },
-  //       pagebreak: { mode: ['css'] }
-  //     })
-
-  //     .from(element)
-  //     .save();
-
-  // };
-
-  const handleDownloadPDF = async () => {
-
-  const element = document.getElementById("offer-letter-preview");
-
-  const options = {
-    margin: 0,
-    filename: `Offer_Letter_${employee?.name}.pdf`,
-    image: { type: "jpeg", quality: 1 },
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      scrollY: 0,
-      windowWidth: 1200
-    },
-    jsPDF: {
-      unit: "mm",
-      format: "a4",
-      orientation: "portrait"
-    },
-    pagebreak: { mode: ["css"] }
-  };
-
+const handleDownloadPDF = async () => {
   try {
+    const pages = document.querySelectorAll(".pdf-page");
+    const pdf = new jsPDF("p", "mm", "a4");
 
-    const worker = html2pdf().set(options).from(element);
+    for (let i = 0; i < pages.length; i++) {
+      const page = pages[i];
 
-    // Generate PDF blob
-    const pdfBlob = await worker.outputPdf("blob");
+      const dataUrl = await toJpeg(page, {
+        quality: 0.75,
+        pixelRatio: 1.5,
+        cacheBust: true
+      });
 
-    // ================= DOWNLOAD (CURRENT BEHAVIOR) =================
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const pdfWidth = 210;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      if (i > 0) {
+        pdf.addPage();
+      }
+
+      pdf.addImage(dataUrl, "JPEG", 0, 0, pdfWidth, pdfHeight);
+    }
+
+    const pdfBlob = pdf.output("blob");
+
     const url = URL.createObjectURL(pdfBlob);
     const link = document.createElement("a");
     link.href = url;
@@ -81,61 +56,73 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
     link.click();
     document.body.removeChild(link);
 
-    // ================= UPLOAD TO BACKEND =================
+    const formDataObj = new FormData();
 
-    const formData = new FormData();
-
-    formData.append(
-  "file",
-  pdfBlob,
-  `Offer_Letter_${employee?.name}.pdf`
-);
-
-    formData.append("type", "employee_letters");
-    formData.append("employee_id", employee?.id);
-    formData.append("employee_name", employee?.name);
-    formData.append("document_type", "offer_letter");
-
-  const res =  await API.post(
-      API_ENDPOINTS?.upload_emp_letters,
-      formData,
-       {
-    headers: {
-      "Content-Type": "multipart/form-data"
-    }
-  }
+    formDataObj.append(
+      "file",
+      pdfBlob,
+      `Offer_Letter_${employee?.name}.pdf`
     );
-   if(res?.status === 200){
+
+    formDataObj.append("type", "employee_letters");
+    formDataObj.append("employee_id", employee?.id);
+    formDataObj.append("employee_name", employee?.name);
+    formDataObj.append("document_type", "offer_letter");
+    formDataObj.append("email", employee?.email);
+    formDataObj.append("phone", employee?.contact_no);
+
+    if (pdfBlob.size > 5 * 1024 * 1024) {
   toast({
-    description: "Offer Letter Uploaded Successfully!" || res?.data?.message,
-    duration: 2000,
-    status: "success"
-  })
+    description: "PDF too large. Please reduce content.",
+    status: "error",
+  });
+  return;
 }
-    console.log("PDF uploaded successfully");
+    const res = await API.post(
+      API_ENDPOINTS?.upload_emp_letters,
+      formDataObj,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }
+    );
+
+    if (res?.status === 200) {
+      toast({
+        description:
+          "Offer Letter Uploaded Successfully!" || res?.data?.message,
+        duration: 2000,
+        status: "success"
+      });
+    }
+
   } catch (error) {
     console.error("PDF generation/upload error:", error);
-  toast({
-  description:
-    error?.response?.data?.message ||
-    "Something went wrong, Please try again!",
-  status: "error",
-  duration: 2000,
-  isClosable: true,
-  position: "top-right"
-});
+
+    toast({
+      description:
+        error?.response?.data?.message ||
+        "Something went wrong, Please try again!",
+      status: "error",
+      duration: 2000,
+      isClosable: true,
+      position: "top-right"
+    });
   }
 };
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="5xl">
       <ModalOverlay />
       <ModalContent maxW="791px">
         <ModalBody p="0">
+                      <Flex justifyContent="flex-end" m={2} ><CloseButton bg="#d3d2d2"p={5}    onClick={handleClose} /></Flex>
+          
           <Box id="offer-letter-preview" fontFamily="serif">
 
             {/* ================= PAGE 1 ================= */}
             <Box className="pdf-page" >
+               <Box className="pdf-inner">
 
               <Image src={top_ele} position="absolute" top="0" left="0" width="175px"/>
 
@@ -208,12 +195,13 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                   </Box>
                 </VStack>
               </Box>
+              </Box>
             </Box>
 
 
             {/* ================= PAGE 2 ================= */}
             <Box className="pdf-page page-break">
-
+ <Box className="pdf-inner">
               {/* Decorative Images */}
               <Image
                 src={top_ele}
@@ -262,16 +250,10 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                     Jamidara Seeds Corporation
                   </Text>
                   {formData.show_stamp && (
-  <Image
-    src={jsc_stamp}
-    alt="Company Stamp"
-    boxSize="120px"
-    mt={4}
-  />
-)}
+                <Image src={jsc_stamp} alt="Company Stamp" boxSize="120px" mt={4} />)}
                 </Box>
               </VStack>
-              <VStack alignItems="flex-start" mt="16rem" spacing="4px" width="81%" ml="-2.5rem">
+              <VStack alignItems="flex-start" mt="10rem" spacing="4px" width="81%" ml="-2.5rem">
                 <Divider borderColor="blue.600" borderWidth="1px" w="100%" mt="1rem" />
                 <Divider borderColor="blue.300" borderWidth="2px" w="90%" mt="0px" />
                 <Flex ml="1rem" gap="1rem" mt="2px">
@@ -280,15 +262,16 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                 </Flex>
               </VStack>
             </Box>
-
+</Box>
           </Box>
 
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="blue" onClick={handleDownloadPDF}>
-            Download PDF
-          </Button>
+          <Flex p={1} justifyContent="center" borderTop="1px" borderColor="#bdbcbc" w="100%" pt={3}>
+                        <Button colorScheme="gray" onClick={handleClose} >Close</Button>
+                        <Button colorScheme="blue" onClick={handleDownloadPDF} ml={5}>Download Joining Letter</Button>
+                      </Flex>
         </ModalFooter>
       </ModalContent>
     </Modal>

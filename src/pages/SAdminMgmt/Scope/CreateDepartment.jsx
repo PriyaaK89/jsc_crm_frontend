@@ -69,7 +69,7 @@ const CreateDepartment = () => {
 
 
   return (
-    <Box w="100%" bg="white" p={6} borderRadius="md" boxShadow="md" >
+    <Box w="100%" bg="white" p={6} borderRadius="md">
       <HStack justifyContent='space-between'>
                 <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                   <BreadcrumbItem>
@@ -77,7 +77,7 @@ const CreateDepartment = () => {
                   </BreadcrumbItem>
       
                   <BreadcrumbItem>
-                    <BreadcrumbLink href='hr-mgmt/view-employee-list' color='#8B8D97' fontSize='13px'>Employee List</BreadcrumbLink>
+                    <BreadcrumbLink href='hr-mgmt/view-employee-list' color='#8B8D97' fontSize='13px'>Create Department</BreadcrumbLink>
                   </BreadcrumbItem>
       
                 </Breadcrumb>

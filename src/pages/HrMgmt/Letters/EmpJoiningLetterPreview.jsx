@@ -7,12 +7,19 @@ import r_logo from "../../../assets/images/jamidara_logo.png";
 import emailIcon from "../../../assets/images/email.png";
 import webIcon from "../../../assets/images/web.png";
 import { formatDate, formatTime } from "../../../components/common/helper";
-import html2pdf from "html2pdf.js";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png"
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
+import { CloseButton } from "@chakra-ui/react";
+import { toJpeg } from "html-to-image";
+import jsPDF from "jspdf";
+import { useToast } from "@chakra-ui/react";
 
 const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
+ 
+  const handleClose = () => {
+    onClose(true);
+  };
 
   const basic = Number(formData.basic) || 0;
   const houseRent = Number(formData.house_rent) || 0;
@@ -125,38 +132,36 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
 // };
 
-const handleDownloadJoiningPDF = async () => {
-
-  const element = document.getElementById("joining-letter-preview");
-
-  const options = {
-    margin: 0,
-    filename: `Joining_Letter_${employee?.name}.pdf`,
-    image: { type: "jpeg", quality: 1 },
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      scrollY: 0,
-      windowWidth: 1200
-    },
-    jsPDF: {
-      unit: "mm",
-      format: "a4",
-      orientation: "portrait"
-    }
-  };
-
+const toast = useToast();
+ const handleDownloadJoiningPDF = async () => {
   try {
+    const pages = document.querySelectorAll(".pdf-page");
+    const pdf = new jsPDF("p", "mm", "a4");
 
-    const worker = html2pdf().set(options).from(element);
+    for (let i = 0; i < pages.length; i++) {
 
-    // generate PDF instance
-    const pdf = await worker.toPdf().get("pdf");
+      const page = pages[i];
 
-    // convert to blob
+      const dataUrl = await toJpeg(page, {
+        quality: 0.75,
+        pixelRatio: 1.5,
+        cacheBust: true
+      });
+
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const pdfWidth = 210;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      if (i > 0) {
+        pdf.addPage();
+      }
+
+      pdf.addImage(dataUrl, "JPEG", 0, 0, pdfWidth, pdfHeight);
+    }
+
     const pdfBlob = pdf.output("blob");
 
-    // ================= DOWNLOAD =================
+    // DOWNLOAD
 
     const url = URL.createObjectURL(pdfBlob);
 
@@ -168,63 +173,73 @@ const handleDownloadJoiningPDF = async () => {
     link.click();
     document.body.removeChild(link);
 
-    // ================= UPLOAD =================
+    // UPLOAD
 
-    const formData = new FormData();
+    const formDataObj = new FormData();
 
-    const file = new File(
-      [pdfBlob],
-      `Joining_Letter_${employee?.name}.pdf`,
-      { type: "application/pdf" }
+    formDataObj.append(
+      "file",
+      pdfBlob,
+      `Joining_Letter_${employee?.name}.pdf`
     );
 
-    formData.append("file", file);
-    formData.append("employee_id", employee?.id);
-    formData.append("employee_name", employee?.name);
-    formData.append("document_type", "joining_letter");
+    formDataObj.append("type", "employee_letters");
+    formDataObj.append("employee_id", employee?.id);
+    formDataObj.append("employee_name", employee?.name);
+    formDataObj.append("document_type", "joining_letter");
+    formDataObj.append("email", employee?.email);
+    formDataObj.append("phone", employee?.contact_no);
 
-  const res = await API.post(
-      API_ENDPOINTS.upload_emp_letters,
-      formData,
-       {
-    headers: {
-      "Content-Type": "multipart/form-data"
+    if (pdfBlob.size > 5 * 1024 * 1024) {
+      toast({
+        description: "PDF too large. Please reduce content.",
+        status: "error",
+      });
+      return;
     }
-  }
+
+    const res = await API.post(
+      API_ENDPOINTS?.upload_emp_letters,
+      formDataObj,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }
     );
 
-     if(res?.status === 200){
-  toast({
-    description:  "Joining Letter Uploaded Successfully!" || res?.data?.message,
-    duration: 2000,
-    status: "success"
-  })
-}
-
-    console.log("Joining letter uploaded successfully");
+    if (res?.status === 200) {
+      toast({
+        description:
+          "Joining Letter Uploaded Successfully!" || res?.data?.message,
+        duration: 2000,
+        status: "success"
+      });
+    }
 
   } catch (error) {
- toast({
-  description:
-    error?.response?.data?.message ||
-    "Something went wrong, Please try again!",
-  status: "error",
-  duration: 2000,
-  isClosable: true,
-  position: "top-right"
-});
+
     console.error("PDF generation/upload error:", error);
+
+    toast({
+      description:
+        error?.response?.data?.message ||
+        "Something went wrong, Please try again!",
+      status: "error",
+      duration: 2000,
+      isClosable: true,
+      position: "top-right"
+    });
   }
-
 };
-
 return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="5xl">
         <ModalOverlay />
         <ModalContent maxW="791px">
           <ModalBody p="0">
-            <Box id="joining-letter-preview" fontFamily="serif">
+            <Flex justifyContent="flex-end" m={2} ><CloseButton bg="#d3d2d2"p={5}    onClick={handleClose} /></Flex>
+            <Box id="joining-letter-preview" fontFamily="serif" borderTop="1px" borderColor="gray.300">
               <Box className="pdf-page">
                 {/* Decorative Images */}
                 <Image src={top_ele} position="absolute" top="0" left="0" width="175px" />
@@ -541,7 +556,7 @@ return (
                       Fixed Annual Compensation For - <b>{employee?.name}</b>
                     </Text>
 
-                    <Box border="1px solid black">
+                    <Box border="1px solid black"  overflow="hidden">
 
                       {/* Header Row */}
                       <Flex borderBottom="1px solid black">
@@ -609,7 +624,7 @@ return (
                       </Flex>
 
                       {/* Other Allowance */}
-                      <Flex borderBottom="1px solid black" fontSize="13px">
+                      <Flex borderBottom="1px solid black" fontSize="13px" overflow="hidden">
                         <Box flex="1" p="10px" borderRight="1px solid black">
                           Other Allowance (10%)
                         </Box>
@@ -640,7 +655,7 @@ return (
                   <Box>
 
                   </Box>
-                  <Flex border="1px solid black" width="100%">
+                  <Flex border="1px solid black" width="100%" overflow="hidden">
                     <Box flex="1" p="6px" borderRight="1px solid black" fontWeight="bold" textAlign='center'>
                       PETROL PER / K.M.
                     </Box>
@@ -733,9 +748,10 @@ return (
                 </VStack>
               </Box>
             </Box>
-            <VStack mb='1rem'>
-              <Button colorScheme="blue" onClick={handleDownloadJoiningPDF}>Download Joining Letter</Button>
-            </VStack>
+            <Flex p={1} justifyContent="center" borderTop="1px" borderColor="#bdbcbc">
+              <Button colorScheme="gray" onClick={handleClose} >Close</Button>
+              <Button colorScheme="blue" onClick={handleDownloadJoiningPDF} ml={5}>Download Joining Letter</Button>
+            </Flex>
           </ModalBody>
         </ModalContent>
       </Modal>

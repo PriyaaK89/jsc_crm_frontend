@@ -3,6 +3,7 @@ import Sidebar from "./Sidebar";
 import DesktopTopbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import RightSidebar from "./RightSidebar";
+import Newsidebar from "./Sidebar";
 
 
 const DashboardLayout = ({ children }) => {
@@ -16,7 +17,8 @@ const DashboardLayout = ({ children }) => {
         position="fixed"
         display={{ base: "none", md: "block" }}
       >
-        <Sidebar />
+        {/* <Sidebar /> */}
+        <Newsidebar/>
       </Box>
 
       {/* Main Area */}
@@ -28,7 +30,7 @@ const DashboardLayout = ({ children }) => {
         {/* Desktop Topbar */}
         <Box
           display={{ base: "none", md: "block" }}
-          p={4}
+          p={4} mt={{base:"175px",md:"65px"}}
         >
           <DesktopTopbar />
         </Box>
@@ -70,7 +72,7 @@ const DashboardLayout = ({ children }) => {
               bg="white"
               borderRadius="20px"
               p={4}
-              boxShadow="sm"
+              boxShadow="sm" 
             >
               <RightSidebar />
             </Box>

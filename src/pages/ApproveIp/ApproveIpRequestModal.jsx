@@ -16,7 +16,7 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 
 const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
-  const toast = useToast();
+  // const toast = useToast();
   const [loading, setLoading] = React.useState(false);
 
   const approveIp = async () => {
@@ -55,12 +55,12 @@ const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
         <ModalHeader
           bg="blue.500"
           color="white"
-          borderTopRadius="12px"
+         borderTopRadius="12px" p={7}
         >
           Approve User Request
         </ModalHeader>
 
-        <ModalCloseButton color="white" />
+        <ModalCloseButton color="white"  p={5} size="lg"/>
 
         <ModalBody py={6}>
           <Text>Are you sure you want to approve this IP?</Text>
@@ -72,15 +72,19 @@ const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
           </Button>
 
           {/* ✅ Same Color as Header */}
-          <Button
-            bg="blue.500"
-            color="white"
-            _hover={{ bg: "blue.600" }}
-            onClick={approveIp}
-            isLoading={loading}
-          >
-            Approve
-          </Button>
+         <Button
+         overflow="hidden"
+  bg="blue.500"
+
+  color="white"    
+  _hover={{ bg: "blue.600" }}
+  onClick={approveIp}
+  isLoading={loading}
+  loadingText="Approving..."
+  
+>
+  Approve
+</Button>
         </ModalFooter>
 
       </ModalContent>

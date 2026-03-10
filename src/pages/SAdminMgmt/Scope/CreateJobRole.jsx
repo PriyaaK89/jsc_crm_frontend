@@ -80,7 +80,7 @@ const CreateJobRole = () => {
   }, []);
 
   return (
-    <Box w="100%" bg="white" p={6} borderRadius="md" boxShadow="md">
+    <Box w="100%" bg="white" p={6} >
      <HStack justifyContent='space-between'>
                <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                  <BreadcrumbItem>

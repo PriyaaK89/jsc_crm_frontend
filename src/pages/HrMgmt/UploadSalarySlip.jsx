@@ -37,6 +37,8 @@ const UploadSalarySlip = () => {
     fontSize: "12px",
     color: "#686868",
     marginBottom: "3px"
+    
+
   };
 
   // 🔹 Fetch Employees
@@ -144,7 +146,7 @@ const handleSubmit = async () => {
   }
 };
   return (
-    <Box bg="white" borderRadius="21px" p={{base:4,md:8}} maxW="1200px" mx="auto">
+    <Box bg="white" borderRadius="lg" p={6} >
       <HStack justifyContent="space-between" flexWrap="wrap">
         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
           <BreadcrumbItem>
@@ -170,7 +172,7 @@ const handleSubmit = async () => {
         </Breadcrumb>
       </HStack>
 
-      <Text fontSize="2xl" fontWeight="bold" mb={6}>
+      <Text fontSize="lg" fontWeight="bold" mb={6}>
         Upload Salary Slip
       </Text>
 

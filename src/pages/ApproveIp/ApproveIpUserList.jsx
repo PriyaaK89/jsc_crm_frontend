@@ -15,7 +15,8 @@ import {
   useDisclosure,
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink
+  BreadcrumbLink,
+  Center
 } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
@@ -54,7 +55,7 @@ const ApproveIpUserList = () => {
 
   return (
     <>
-      <ApproveIpRequestModal
+      <ApproveIpRequestModal 
         isOpen={isOpen}
         onClose={onClose}
         userId={userId}
@@ -84,9 +85,10 @@ const ApproveIpUserList = () => {
         </Text>
 
         {loading ? (
-          <Flex justify="center" align="center" py={8}>
+          // <Flex justify="center" align="center" py={8}>
+<Center>
             <Spinner size="md" />
-          </Flex>
+</Center>
         ) : (
           <Table
           className="productsTable"
@@ -126,7 +128,7 @@ const ApproveIpUserList = () => {
                     <Td>
                       <Button
                         size="xs"
-                        height="22px"
+                       
                         fontSize="11px"
                         borderRadius="4px"
                         colorScheme="blue"
@@ -141,6 +143,7 @@ const ApproveIpUserList = () => {
             </Tbody>
           </Table>
         )}
+      
       </Box>
     </>
   );

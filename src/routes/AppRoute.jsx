@@ -48,6 +48,8 @@ import ReceiptLayout from "../components/layout/ReceiptLayout";
 import SalesLayout from "../components/layout/SalesLayout";
 import CreditLayout from "../components/layout/CreditLayout";
 import DebitLayout from "../components/layout/DebitLayout"; 
+import ESignSuccess from "../components/redirection-pages/esign-success";
+import ESignError from "../components/redirection-pages/esign-error";
 
 
 function App() {
@@ -164,6 +166,8 @@ function App() {
         <Route path="/order-vochor/receipt" element={<ReceiptLayout />} />
         <Route path="/order-vochor/credit" element={<CreditLayout />} />
         <Route path="/order-vochor/debit" element={<DebitLayout />} />
+        <Route path="/esign-success" element={<ESignSuccess/>} />
+        <Route path="/esign-error" element={<ESignError />} />  
         
       </Routes>
     </Router>

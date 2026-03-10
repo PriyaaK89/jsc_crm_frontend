@@ -24,5 +24,7 @@ export const API_ENDPOINTS = {
   get_attendance_images: `get-attendance-images`,
    get_daily_salary_report:`daily-salary-range`,
   get_emp_route: `get-route`,
-  upload_emp_letters: `employee-letter`
+  upload_emp_letters: `employee-letter`,
+  get_emp_docs: `get-employee-documents`,
+  send_esign: "/documents/send-esign"
 };

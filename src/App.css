@@ -97,7 +97,15 @@ padding: 40px;
   box-sizing: border-box;
   background: white;
   position: relative;
-  overflow: hidden;
+
+}
+#offer-letter-preview {
+  width: 210mm;
+  overflow: visible;
+}
+.pdf-inner{
+  width:100%;
+  height:auto;
 }
 
 .page-break {
@@ -110,6 +118,8 @@ padding: 40px;
 
 .letter-content{
   font-size: 14px;
+ line-height: 1.7;
+  word-break: break-word;
 }
 .watermark_img{
   position: absolute;

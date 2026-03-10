@@ -2,7 +2,7 @@ import {Box,VStack,Text,Button,Collapse,Icon, Image } from "@chakra-ui/react";
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
-import { MdAssignmentInd } from "react-icons/md";
+import { MdAssignmentInd, MdOutlineTrackChanges } from "react-icons/md";
 import { FaUserTie } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
 import { MdCorporateFare, MdGroupAdd } from "react-icons/md";
@@ -82,7 +82,9 @@ const Newsidebar = () => {
         {label: "Employee List", path: "/hr-mgmt/view-employee-list",icon: RiUser3Line,},
         {label: "Create Job Role", path: "/hr-mgmt/roles/add-job-role",icon: HiUserGroup,},
         {label: "Create Department",path: "/hr-mgmt/dept/add-department",icon: MdAccountTree,},
-        {label:"Upload Salary Slip",path:'/hr-mgmt/upload-emp-salary',icon: RiFileList3Line,}
+        {label:"Upload Salary Slip",path:'/hr-mgmt/upload-emp-salary',icon: RiFileList3Line,},
+        {label:"Track Employee",path:'/hr-mgmt/track-employee',icon: MdOutlineTrackChanges,},
+
       ],},
 
     {
@@ -230,7 +232,7 @@ useEffect(() => {
             );
           }
 
-          // ⭐ CHECK IF ANY CHILD ROUTE IS ACTIVE
+          //  CHECK IF ANY CHILD ROUTE IS ACTIVE
           const parentActive = menu.children.some((child) =>
             location.pathname.startsWith(child.path)
           );
@@ -290,17 +292,7 @@ useEffect(() => {
           Settings
         </Button>
 
-        {(role === "ADMIN" || role === "SUPER_ADMIN") && (
-          <Button
-            leftIcon={<RiUserAddLine />}
-            {...sidebarButtonStyle}
-            as={NavLink}
-            to="/approve-ip-user-list"
-            style={activeLinkStyle}
-          >
-            IP Request
-          </Button>
-        )}
+       
       </VStack>
     </Box>
   );

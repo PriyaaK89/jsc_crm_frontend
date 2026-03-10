@@ -67,15 +67,15 @@ const DeleteEmployeeModel = ({
       <ModalContent>
         {/* <ModalHeader>Delete Employee</ModalHeader> */}
 
-        <Flex bg="#E53E3E" color="white" px="16px" py="5px" justify="space-between" >
+        <Flex bg="#E53E3E" color="white" p={4} justify="space-between"  size="xl">
          <Text fontWeight="bold">
           Delete Employee
          </Text>
-         <ModalCloseButton position="static"/>
+         <ModalCloseButton position="static" size="md"/>
         </Flex>
-        <ModalCloseButton />
+       
 
-        <ModalBody>
+        <ModalBody mt={4}>
           <Text>
             Are you sure you want to{" "}
             <b style={{ color: "red" }}>delete</b> this employee?

@@ -55,7 +55,7 @@ const EmpAttendanceLayout = () => {
           px={{ base: 0, md: 6 }}
           py={6}
           mx={3}
-          overflow="visible"  // remove scroll
+          overflow="visible"   mt="75px" // remove scroll
         >
             <EmpAttendance />
           </Box>

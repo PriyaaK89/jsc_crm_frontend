@@ -59,7 +59,7 @@ const MobileTopbar = () => {
       {/* 🔹 Topbar */}
       <Flex
         w="100%"
-        h="60px"
+        h="75px"
         bg="#F5F0FA"
         align="center"
         px={4}

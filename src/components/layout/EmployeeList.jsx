@@ -60,7 +60,7 @@ const EmployeeListLayout = () => {
                       <Box
                         bg="white"
                         borderRadius="20px"
-                        boxShadow="sm"
+                        boxShadow="sm"   mt="75px"
                       >
                         <EmployeeList />
                       </Box>

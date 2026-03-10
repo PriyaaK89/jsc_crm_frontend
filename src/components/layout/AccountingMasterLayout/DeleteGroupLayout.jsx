@@ -63,6 +63,7 @@ function DeleteGroupLayout() {
                    p={6}
                    borderRadius="21px"
                    boxShadow="sm"
+                   mt="75px"
                  >
                <DeleteGroup/>
                  </Box>

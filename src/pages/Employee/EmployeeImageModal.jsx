@@ -125,7 +125,7 @@ const EmployeeImageModal = ({
     <Modal isOpen={isOpen} onClose={onClose} size="4xl" isCentered>
       <ModalOverlay />
       <ModalContent borderRadius="xl">
-        <ModalHeader fontWeight="600">
+        <ModalHeader fontWeight="600" p={6}>
           Employee Attendance Images
         </ModalHeader>
         <ModalCloseButton />

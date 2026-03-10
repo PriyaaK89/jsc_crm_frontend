@@ -15,33 +15,32 @@ import {
   Textarea,
   Button,
   Flex,
-  Divider
+  Divider,Text
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 
 function CreateVoucher() {
  const [selectedOption, setSelectedOption] = useState("");
   return (
-    <Box p={6}  minH="100vh">
+    <Box   minH="100vh">
 
       {/* 🔹 Breadcrumb */}
-      <HStack justify="space-between" mb={4}>
-        <Breadcrumb fontSize="sm">
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">
-              <GoHomeFill />
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink>Create Voucher</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-      </HStack>
+       <HStack justifyContent='space-between'>
+                            <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+                              <BreadcrumbItem>
+                                <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                              </BreadcrumbItem>
+                  
+                              <BreadcrumbItem>
+                                <BreadcrumbLink href='/accounting-master/create-ledger' color='#8B8D97' fontSize='13px'>Create Voucher</BreadcrumbLink>
+                              </BreadcrumbItem>
+                            </Breadcrumb>
+                          </HStack>
 
       {/* 🔹 Page Title */}
-      <Heading size="lg" textAlign="center" mb={6} >
-        Create Voucher
-      </Heading>
+       <Text fontSize="2xl" fontWeight="bold" mb={6}>
+                Create Voucher
+              </Text> 
 
     
       <Box  p={6} borderRadius="xl" boxShadow="sm">

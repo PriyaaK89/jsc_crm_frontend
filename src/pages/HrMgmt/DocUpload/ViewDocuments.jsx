@@ -99,13 +99,14 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
     <Modal isOpen={isOpen} onClose={onClose} size="4xl" isCentered scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent borderRadius="14px">
-        <ModalHeader>Uploaded Documents</ModalHeader>
-        <ModalCloseButton />
+        <ModalHeader bg="#f4f4f4" p={7} textAlign="center">Uploaded Documents</ModalHeader>
+        <ModalCloseButton size="lg" />
 
         <ModalBody pb={6}>
           {userName && (
             <>
-              <Text fontSize="lg" fontWeight="600" mb={4}>
+              <Text fontSize="lg" fontWeight="600" mb={4} mt={4}>
+                UserName:
                 {userName}
               </Text>
               <Divider mb={6} />

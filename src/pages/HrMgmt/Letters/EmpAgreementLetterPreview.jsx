@@ -1,12 +1,18 @@
-import { Box, Button, Divider, Heading, HStack, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, useToast, VStack } from "@chakra-ui/react";
-import html2pdf from "html2pdf.js";
+import { Box, Button, Divider, Heading, HStack,Flex, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, useToast, VStack } from "@chakra-ui/react";
+import { toJpeg } from "html-to-image";
+import jsPDF from "jspdf";
 import React from "react";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png"
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
+import { CloseButton } from "@chakra-ui/react";
 
 const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, probationDays }) => {
 
+
+     const handleClose = () => {
+    onClose(true);
+  };
     // const handleDownloadAgreementPDF = () => {
     //     const element = document.getElementById("agre-letter-preview");
 
@@ -24,80 +30,95 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
     // };
 
     const toast = useToast();
-    const handleDownloadAgreementPDF = async () => {
-        const element = document.getElementById("agre-letter-preview");
+   const handleDownloadAgreementPDF = async () => {
+  try {
 
-        const options = {
-            margin: 0,
-            filename: `Agreement_Letter_${employee?.name}.pdf`,
-            image: { type: "jpeg", quality: 1 },
-            html2canvas: {
-                scale: 2,
-                useCORS: true,
-                scrollY: 0,
-                windowWidth: 1200
-            },
-            jsPDF: {
-                unit: "mm",
-                format: "a4",
-                orientation: "portrait"
-            },
-            pagebreak: { mode: ["css", "legacy"] }
-        };
+    const pages = document.querySelectorAll(".pdf-page");
+    const pdf = new jsPDF("p", "mm", "a4");
 
-        try {
+    for (let i = 0; i < pages.length; i++) {
 
-            const worker = html2pdf().set(options).from(element);
+      const page = pages[i];
 
-            // Generate PDF blob
-            const pdfBlob = await worker.outputPdf("blob");
+      const dataUrl = await toJpeg(page, {
+        quality: 0.9,
+        pixelRatio: 2,
+        cacheBust: true
+      });
 
-            const url = URL.createObjectURL(pdfBlob);
+      const imgProps = pdf.getImageProperties(dataUrl);
 
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `Agreement_Letter_${employee?.name}.pdf`;
+      const pdfWidth = 210;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+      if (i > 0) {
+        pdf.addPage();
+      }
 
-            const formData = new FormData();
+      pdf.addImage(dataUrl, "JPEG", 0, 0, pdfWidth, pdfHeight);
+    }
 
-            formData.append(
-                "file", pdfBlob, `Agreement_Letter_${employee?.name}.pdf`
-            );
+    const pdfBlob = pdf.output("blob");
 
-            formData.append("employee_id", employee?.id);
-            formData.append("employee_name", employee?.name);
-            formData.append("document_type", "agreement_letter");
+    // Download
 
-          const res = await API.post(
-                API_ENDPOINTS.upload_emp_letters,
-                formData,
-                { headers: { "Content-Type": "multipart/form-data" } }
-            );
+    const url = URL.createObjectURL(pdfBlob);
 
-            console.log("Agreement letter uploaded successfully");
-            if (res?.status === 200) {
-                toast({
-                    description: "Agreement Letter Uploaded Successfully!" || res?.data?.message,
-                    duration: 2000,
-                    status: "success"
-                })
-            }
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Agreement_Letter_${employee?.name}.pdf`;
 
-        } catch (error) {
-            toast({
-                description: error?.response?.data?.message || "Something went wrong, Please try again!",
-                status: "error",
-                duration: 2000,
-                isClosable: true,
-                position: "top-right"
-            });
-            console.error("Agreement PDF generation/upload error:", error);
-        }o
-    };
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Upload
+
+    const uploadFormData = new FormData();
+
+    uploadFormData.append(
+      "file",
+      pdfBlob,
+      `Agreement_Letter_${employee?.name}.pdf`
+    );
+
+    uploadFormData.append("employee_id", employee?.id);
+    uploadFormData.append("employee_name", employee?.name);
+    uploadFormData.append("document_type", "agreement_letter");
+
+    const res = await API.post(
+      API_ENDPOINTS.upload_emp_letters,
+      uploadFormData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }
+    );
+
+    if (res?.status === 200) {
+      toast({
+        description: "Agreement Letter Uploaded Successfully!",
+        duration: 2000,
+        status: "success"
+      });
+    }
+
+  } catch (error) {
+
+    console.error("Agreement PDF generation/upload error:", error);
+
+    toast({
+      description:
+        error?.response?.data?.message ||
+        "Something went wrong, Please try again!",
+      status: "error",
+      duration: 2000,
+      isClosable: true,
+      position: "top-right"
+    });
+  }
+};
 
     const formatDateLong = (value) => {
         if (!value) return "";
@@ -119,6 +140,8 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
                     bg="white"
                     boxShadow="none">
                     <ModalBody p={0}>
+                                   <Flex justifyContent="flex-end" m={4} ><CloseButton bg="#d3d2d2"p={3}  onClick={handleClose} /></Flex>
+                        
                         <Box id="agre-letter-preview" fontFamily="Georgia">
                             <VStack spacing={0}>
                                 <Box className="pdf-page" textAlign="justify" >
@@ -129,14 +152,14 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
                                         w="92%"
                                         mt="2rem" mb="1rem" />
                                     <Text textAlign="center" wordSpacing="1px">This EMPLOYMENT AGREEMENT (Hereinafter, the “Agreement”) is entered into on this <br /> {formatDateLong(formData?.date_of_issue)}</Text>
-                                    <VStack gap="1.5rem" alignItems="center">
+                                    <VStack gap="1.5rem" alignItems="center" >
                                         <Text fontWeight="600" mt="2rem">BY AND BETWEEN</Text>
-                                        <Text> <strong style={{ textDecoration: "underline" }}>JAMIDARA SEEDS CORPORATION</strong>, - FORM A UNDER SECTION 58 OF THE INDIAN PARTNER-SHIP ACT.1932 having its registered office at_ <strong style={{ textDecoration: "underline" }}>105,NEMI CHAND MARKET ALWAR RAJ.</strong>(hereinafter referred to as the “Company” or “Employer”, which expression shall, unless repugnant to the meaning or context hereof, be deemed to include all permitted successors and assigns), </Text>
+                                        <Text overflow="hidden"> <strong style={{ textDecoration: "underline" }}>JAMIDARA SEEDS CORPORATION</strong>, - FORM A UNDER SECTION 58 OF THE INDIAN PARTNER-SHIP ACT.1932 having its registered office at_ <strong style={{ textDecoration: "underline" }}>105,NEMI CHAND MARKET ALWAR RAJ.</strong>(hereinafter referred to as the “Company” or “Employer”, which expression shall, unless repugnant to the meaning or context hereof, be deemed to include all permitted successors and assigns), </Text>
                                         <Text fontWeight="600">AND</Text>
-                                        <Text><strong style={{ textDecoration: "underline" }}>{employee?.name} son/of  {employee?.father_name}, aged {age} years </strong> and residing at <strong style={{ textDecoration: "underline" }}> S/0 {employee?.father_name}, {employee?.address_line1}, {employee?.area}, DIST.- {employee?.district} - {employee?.pincode} ({employee?.state})</strong> (Hereinafter referred to as the "Employee", which expression shall, unless repugnant to the meaning or context hereof, be deemed to include all permitted successors and assigns). </Text>
+                                        <Text overflow="hidden"><strong style={{ textDecoration: "underline" }}>{employee?.name} son/of  {employee?.father_name}, aged {age} years </strong> and residing at <strong style={{ textDecoration: "underline" }}> S/0 {employee?.father_name}, {employee?.address_line1}, {employee?.area}, DIST.- {employee?.district} - {employee?.pincode} ({employee?.state})</strong> (Hereinafter referred to as the "Employee", which expression shall, unless repugnant to the meaning or context hereof, be deemed to include all permitted successors and assigns). </Text>
 
-                                        <Text><strong>WHEREAS,</strong> the parties hereto desire to enter into this Agreement to define and set forth the terms and conditions of the employment of the Employee by the Company;</Text>
-                                        <Text><strong>NOW, THEREFORE,</strong> in consideration of the mutual covenants and agreements set forth below, it is hereby covenanted and agreed by the Company and the Employee as follows:</Text>
+                                        <Text overflow="hidden"><strong>WHEREAS,</strong> the parties hereto desire to enter into this Agreement to define and set forth the terms and conditions of the employment of the Employee by the Company;</Text>
+                                        <Text overflow="hidden"><strong>NOW, THEREFORE,</strong> in consideration of the mutual covenants and agreements set forth below, it is hereby covenanted and agreed by the Company and the Employee as follows:</Text>
                                     </VStack>
                                     <Box>
                                         <Text textAlign="center" fontSize="12px" color="#a8b9d2 !important" mt="6rem">1</Text>
@@ -144,28 +167,28 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
                                 </Box>
                                 <Box className="pdf-page page-break">
                                     <VStack width="95%" margin="auto" gap="1rem">
-                                        <Box mt="4rem">
-                                            <Box>
+                                        <Box mt="4rem" overflow="hidden">
+                                            <Box overflow="hidden">
                                                 <Text fontSize="24px" fontWeight="bold" mb="1rem">1.	Interpretation</Text>
                                                 <Text fontSize="15px">In this agreement the following terms shall have the following meanings:</Text>
                                             </Box>
-                                            <HStack alignItems="baseline" mb="1.2rem">
+                                            <HStack alignItems="baseline" mb="1.2rem" overflow="hidden">
                                                 <Text width="34%">a)  “Confidential  Information”</Text>
                                                 <Text textAlign="justify" width="100%" fontSize="15px">Any trade secret or other information which is confidential or commercially sensitive and which is not in the public domain (other than through the wrongful disclosure by the Employee) and which belongs to any Group Company (whether stored or recorded in documentary or electronic form) and which (without limitation) relates to the business methods, management systems, marketing plans, strategic plans, finances, new or maturing business opportunities, marketing activities, processes, inventions, designs or similar of any Group Company, or to which any Group Company owes a duty of confidentiality to any third party and including in particular [insert specific named items of Confidential Information];</Text>
                                             </HStack>
-                                            <HStack alignItems="baseline" mb="1.2rem">
+                                            <HStack alignItems="baseline" mb="1.2rem" overflow="hidden">
                                                 <Text width="34%">b) “The Employment”</Text>
                                                 <Text textAlign="justify" width="100%" fontSize="15px">The employment of the Employee by the Company in accordance with the terms of this agreement;</Text>
                                             </HStack>
-                                            <HStack alignItems="baseline" mb="1.2rem">
+                                            <HStack alignItems="baseline" mb="1.2rem" overflow="hidden">
                                                 <Text width="34%">c) “Group Company”</Text>
                                                 <Text textAlign="justify" width="100%" fontSize="15px">The Company, any company of which it is a Subsidiary (being a holding company of the Company) and any Subsidiaries of the Company or any holding company, from time to time;</Text>
                                             </HStack>
-                                            <HStack alignItems="baseline" mb="1.2rem">
+                                            <HStack alignItems="baseline" mb="1.2rem" overflow="hidden">
                                                 <Text width="34%">d) “Subsidiary”</Text>
                                                 <Text textAlign="justify" width="100%" fontSize="15px">A company as defined in section 1159 of the Companies Act 2006;</Text>
                                             </HStack>
-                                            <HStack alignItems="baseline" mb="1.2rem">
+                                            <HStack alignItems="baseline" mb="1.2rem" overflow="hidden">
                                                 <Text width="34%">e) “Termination Date”</Text>
                                                 <Text textAlign="justify" width="100%" fontSize="15px">The date on which the Employment ceases.</Text>
                                             </HStack>
@@ -465,9 +488,11 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
                         </Box>
                     </ModalBody>
                     <ModalFooter>
-                        <Button colorScheme="blue" onClick={handleDownloadAgreementPDF}>
-                            Download PDF
-                        </Button>
+                          <Flex p={1} justifyContent="center" borderTop="1px" borderColor="#bdbcbc" w="100%">
+                                                <Button colorScheme="gray" onClick={handleClose} >Close</Button>
+                                                <Button colorScheme="blue" onClick={handleDownloadAgreementPDF} ml={5}>Download PDF</Button>
+                                              </Flex>
+                                 
                     </ModalFooter>
                 </ModalContent>
             </Modal>

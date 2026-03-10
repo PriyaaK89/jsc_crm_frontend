@@ -29,7 +29,7 @@ import { useState } from "react";
 import jsPDF from "jspdf";
 import QRCode from "qrcode";
 import JsBarcode from "jsbarcode";
-import autoTable from "jspdf-autotable";
+// import autoTable from "jspdf-autotable";
 import logo from "../../assets/images/jamidaraBIllLogo.jpeg";
 const ShippingLablePrinter = () => {
 
@@ -150,10 +150,10 @@ doc.addImage(qrImage, "PNG", 5, 118, 25, 25);
 doc.text("BARCODE", 40, 115);
 doc.addImage(barcodeImage, "PNG", 35, 118, 55, 18);
 
-const pdfBlob = doc.output("blob");
-const url = URL.createObjectURL(pdfBlob);
+const pdfBlob = doc.output("dataurlstring");
+    setPdfUrl(pdfBlob);
 
-setPdfUrl(url);
+
 };
 
   return (
@@ -274,7 +274,7 @@ setPdfUrl(url);
 
       {/* PREVIEW MODAL */}
 
-      <Modal isOpen={isOpen} onClose={onClose} size="3xl">
+      <Modal isOpen={isOpen} onClose={onClose} size="md">
 
         <ModalOverlay />
 
@@ -300,24 +300,14 @@ setPdfUrl(url);
 
 </ModalBody>
 
-          <ModalFooter>
+          <ModalFooter  justifyContent="center">
 
-            <Button
-  colorScheme="green"
-  mr={3}
-  onClick={() => {
-    const link = document.createElement("a");
-    link.href = pdfUrl;
-    link.download = "shipping_label.pdf";
-    link.click();
-  }}
->
-  Download PDF
-</Button>
 
-            <Button onClick={onClose}>
-              Close
-            </Button>
+             <Button colorScheme="green" onClick={() => { const link = document.createElement("a"); link.href = pdfUrl; link.download = "truthful_label.pdf"; link.click(); }} > Download </Button>
+            
+                        <Button onClick={onClose} ml={2}>
+                          Close
+                        </Button>
 
           </ModalFooter>
 

@@ -1,9 +1,4 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import {BrowserRouter as Router,Routes,Route,Navigate,} from "react-router-dom";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import UserLogin from "../pages/Login/UserLogin";
 import AddEmpLayout from "../components/layout/AddEmpLayout";
@@ -15,6 +10,7 @@ import UploadEmpDocumentsLayout from "../components/layout/UploadEmpDocumentsLay
 import EditEmployeePage from "../components/layout/EditEmployee";
 import OfferLetterLayout from "../components/layout/GenerateLetters/OfferLetterLayout";
 import JoiningLetterLayout from "../components/layout/GenerateLetters/JoiningLetterLayout";
+import AgreementLetterLayout from '../components/layout/GenerateLetters/AgreementLetterLayout';
 import ProfileLayout from "../components/layout/ProfileLayout";
 import CreateTeamLayout from "../components/layout/CreateteamLayout";
 import CreateSubTeamLayout from "../components/layout/CreateSubTeamLayout";
@@ -44,16 +40,16 @@ import CreateStockCategoryLayout from "../components/layout/CreateStockCategoryL
 import ViewStockCategoryLayout from "../components/layout/ViewStockCategoryLayout";
 import UploadSalarySlipLayout from "../components/layout/UploadSalarySlipLayout";
 import TrackEmpLayout from "../components/layout/TrackEmpLayout";
-import UploadEmpDocuments from '../pages/HrMgmt/DocUpload/UploadEmpDocuments';
 import PaymentLayout from "../components/layout/PaymentLayout";
 import PrintShippingLablePrinterLayout from '../components/layout/Print MGMT/PrintShippingLablePrinterLayout';
 import PrintTruthfulLablePrintLayout from '../components/layout/Print MGMT/PrintTruthfulLablePrintLayout';
-import AgreementLetterLayout from "../components/layout/GenerateLetters/AgreementLetterLayout";
 import PurchaseLayout from "../components/layout/PurchaseLayout";
 import ReceiptLayout from "../components/layout/ReceiptLayout";
 import SalesLayout from "../components/layout/SalesLayout";
 import CreditLayout from "../components/layout/CreditLayout";
-import DebitLayout from "../components/layout/DebitLayout";
+import DebitLayout from "../components/layout/DebitLayout"; 
+
+
 function App() {
   return (
     <Router>
@@ -63,8 +59,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/hr-mgmt/add-employee" element={<AddEmpLayout />} />
         <Route path="/change-password" element={<ChangePasswordLayout />} />
-        <Route path="/dept/add-department" element={<DepartmentLayout />} />
-        <Route path="/roles/add-job-role" element={<JobRoleLayout />} />
+        <Route path="/hr-mgmt/dept/add-department" element={<DepartmentLayout />} />
+        <Route path="/hr-mgmt/roles/add-job-role" element={<JobRoleLayout />} />
         <Route
           path="/hr-mgmt/view-employee-list"
           element={<EmployeeListLayout />}
@@ -73,8 +69,8 @@ function App() {
           path="/hr-mgmt/upload-emp-salary"
           element={<UploadSalarySlipLayout />}
         />
-        <Route path="/upload-documents" element={<UploadEmpDocuments />} />
-         <Route path='/emp-salary-report' element={<EmployeeSalaryReportLayout/>}/>
+        <Route path="/upload-documents" element={<UploadEmpDocumentsLayout />} />
+         <Route path='/hr-mgmt/emp-salary-report' element={<EmployeeSalaryReportLayout/>}/>
         <Route
           path="/edit-employee-details/:empId"
           element={<EditEmployeePage />}
@@ -83,6 +79,7 @@ function App() {
           path="/generate-offer-letter/:id"
           element={<OfferLetterLayout />}
         />
+        <Route path="/generate-agreement/:id" element={<AgreementLetterLayout/>}/>
         <Route
           path="/generate-joining-letter/:id"
           element={<JoiningLetterLayout />}
@@ -90,7 +87,7 @@ function App() {
         <Route path="/generate-agreement/:id" element={<AgreementLetterLayout/>}/>
         <Route path="/dashboard/profile/:empId" element={<ProfileLayout />} />
         <Route path="/approve-ip-user-list" element={<ApproveIpUserListLayout />}/>
-        <Route path="/emp-attendance-report" element={<EmpAttendaneLayout/>}/>
+        <Route path="/hr-mgmt/emp-attendance-report" element={<EmpAttendaneLayout/>}/>
         <Route path='/accounting-master/create-group' element={<CreateGroupLayout/>}/>
         <Route path='/accounting-master/view-group' element={<ViewGroupLayout/>}/>
         <Route path='/accounting-master/delete-group'   element={<DeleteGroupLayout/>}/>
@@ -167,6 +164,7 @@ function App() {
         <Route path="/order-vochor/receipt" element={<ReceiptLayout />} />
         <Route path="/order-vochor/credit" element={<CreditLayout />} />
         <Route path="/order-vochor/debit" element={<DebitLayout />} />
+        
       </Routes>
     </Router>
   );

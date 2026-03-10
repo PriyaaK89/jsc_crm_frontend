@@ -107,7 +107,7 @@ const TrackEmployee = () => {
     <div>
       <h2>Employee Route Tracking</h2>
 
-      <select onChange={(e) => setSelectedUser(e.target.value)}>
+      <select onChange={(e) => setSelectedUser(e.target.value)} border="1px solid gray.200">
         <option value="">Select Employee</option>
         {users.map((user) => (
           <option key={user.id} value={user.id}>

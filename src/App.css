@@ -143,4 +143,18 @@ padding: 40px;
    color: black ;
 }
 
+  
+.chakra-heading{
+ line-height: 2.2 !important;
+}
 
+.css-1ebyn6{
+    line-height: 2 !important;
+}
+
+.chakra-modal__header {
+  line-height: 0 !important;
+}
+body {
+  overflow-x: hidden;
+}

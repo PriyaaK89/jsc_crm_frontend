@@ -64,7 +64,7 @@ function ViewLedgerLayout() {
                    bg="white"
                    p={6}
                    borderRadius="21px"
-                   boxShadow="sm">
+                   boxShadow="sm" mt="75px">
              <ViewLedger/>
                  </Box>
                </Box>

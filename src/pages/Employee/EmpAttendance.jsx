@@ -248,12 +248,12 @@ const EmpAttendance = () => {
 
           {/* Summary Cards */}
           {empRep.length > 0 && (
-            <SimpleGrid columns={{ base: 1, md: 5 }} spacing={6} mt={4}>
+            <SimpleGrid columns={{ base: 1, md: 5 }} spacing={6} mt={5} mb={5} >
               {empRep.map((emp, index) => (
                 <Fragment key={index}>
-                  <Card>
+                  <Card border="1px solid" borderColor="gray.300">
                     <CardHeader bg="green.100">
-                      <Heading size="sm" textAlign="center">
+                      <Heading size="sm" textAlign="center" lineHeight="1.4">
                         Full Days
                       </Heading>
                     </CardHeader>
@@ -262,9 +262,9 @@ const EmpAttendance = () => {
                     </CardBody>
                   </Card>
 
-                  <Card>
+                  <Card   border="1px solid" borderColor="gray.300">
                     <CardHeader bg="yellow.100">
-                      <Heading size="sm" textAlign="center">
+                      <Heading size="sm" textAlign="center" lineHeight="1.4">
                         Half Days
                       </Heading>
                     </CardHeader>
@@ -273,9 +273,9 @@ const EmpAttendance = () => {
                     </CardBody>
                   </Card>
 
-                  <Card>
+                  <Card  border="1px solid" borderColor="gray.300">
                     <CardHeader bg="red.100">
-                      <Heading size="sm" textAlign="center">
+                      <Heading size="sm" textAlign="center" lineHeight="1.4">
                         Absent Days
                       </Heading>
                     </CardHeader>
@@ -284,9 +284,9 @@ const EmpAttendance = () => {
                     </CardBody>
                   </Card>
 
-                  <Card>
+                  <Card  border="1px solid" borderColor="gray.300">
                     <CardHeader bg="blue.100">
-                      <Heading size="sm" textAlign="center">
+                      <Heading size="sm" textAlign="center" lineHeight="1.4">
                         Leave Days
                       </Heading>
                     </CardHeader>
@@ -295,9 +295,9 @@ const EmpAttendance = () => {
                     </CardBody>
                   </Card>
 
-                  <Card>
+                  <Card  border="1px solid" borderColor="gray.300">
                     <CardHeader bg="purple.100">
-                      <Heading size="sm" textAlign="center">
+                      <Heading size="sm" textAlign="center" lineHeight="1.4">
                         Total Work Days
                       </Heading>
                     </CardHeader>
@@ -313,19 +313,22 @@ const EmpAttendance = () => {
           )}
 
           {/* Attendance Table */}
-          <Box
+          
+          <Box 
             bg="white"
             borderRadius="md"
-            boxShadow="sm"
             overflowX="auto"
-            border="1px solid #e5e5e5"
+          
+            
           >
             {loading ? (
               <Flex justify="center" align="center" py={10}>
                 <Spinner size="lg" />
               </Flex>
             ) : attendance.length > 0 ? (
-              <Table
+              <Table 
+              border="1px solid" borderColor="gray.300"
+               borderRadius="md"
                 variant="striped"
                 colorScheme="gray"
                 size="sm"

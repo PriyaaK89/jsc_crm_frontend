@@ -2,6 +2,8 @@ import {
   Box,
   Text,
   Avatar,
+  AvatarBadge,
+  AvatarGroup,
   Flex,
   Divider,
   useToast,
@@ -91,7 +93,7 @@ const PersonalInfoCard = () => {
       <Text fontSize={{ base: "md", md: "lg" }} fontWeight="bold">
         Personal Information
       </Text>
-      <EditIcon boxSize={5} color="#5570F1" cursor="pointer" />
+      <EditIcon boxSize={5} color="#5570F1" cursor="pointer"  />
     </Flex>
 
     <Divider my={3} />
@@ -104,7 +106,15 @@ const PersonalInfoCard = () => {
       mb={4}
       minW="0"   
     >
-      <Avatar size="xl" name={employeeDetails?.name}  />
+      <Avatar
+  size="xl"
+  name={employeeDetails?.name}
+  sx={{
+    "& span": {
+      lineHeight: "3",
+    },
+  }}
+/>
 
       <Box textAlign={{ base: "center", md: "left" }} minW="0">
         <Text fontWeight="bold" fontSize="md">

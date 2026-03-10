@@ -64,6 +64,7 @@ function EditLedgerAssignmentLayout() {
                    p={6}
                    borderRadius="21px"
                    boxShadow="sm"
+                   mt="75px"
                  >
                <EditLedgerAssignment/>
                  </Box>

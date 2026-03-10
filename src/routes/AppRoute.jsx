@@ -49,7 +49,11 @@ import PaymentLayout from "../components/layout/PaymentLayout";
 import PrintShippingLablePrinterLayout from '../components/layout/Print MGMT/PrintShippingLablePrinterLayout';
 import PrintTruthfulLablePrintLayout from '../components/layout/Print MGMT/PrintTruthfulLablePrintLayout';
 import AgreementLetterLayout from "../components/layout/GenerateLetters/AgreementLetterLayout";
-
+import PurchaseLayout from "../components/layout/PurchaseLayout";
+import ReceiptLayout from "../components/layout/ReceiptLayout";
+import SalesLayout from "../components/layout/SalesLayout";
+import CreditLayout from "../components/layout/CreditLayout";
+import DebitLayout from "../components/layout/DebitLayout";
 function App() {
   return (
     <Router>
@@ -158,6 +162,11 @@ function App() {
           element={<ViewStockCategoryLayout />}
         />
         <Route path="/order-vochor/payment" element={<PaymentLayout />} />
+        <Route path="/order-vochor/purchase" element={<PurchaseLayout />} />
+        <Route path="/order-vochor/sales" element={<SalesLayout />} />
+        <Route path="/order-vochor/receipt" element={<ReceiptLayout />} />
+        <Route path="/order-vochor/credit" element={<CreditLayout />} />
+        <Route path="/order-vochor/debit" element={<DebitLayout />} />
       </Routes>
     </Router>
   );

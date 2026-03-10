@@ -23,6 +23,11 @@ import {RiDashboardLine,RiUserAddLine,RiUser3Line,RiFileList3Line,RiBarChartLine
 import { UserCheck } from "lucide-react";
 import { BsUpcScan } from "react-icons/bs";
 import { Ticket } from "lucide-react";
+import { BsCreditCard2Front } from "react-icons/bs";
+import { BiPurchaseTagAlt } from "react-icons/bi";
+import { FaMoneyBillWave } from "react-icons/fa";
+import { FaShoppingCart } from "react-icons/fa";
+import { FaReceipt } from "react-icons/fa";
 import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg'
 import { useState, useContext, useEffect ,memo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
@@ -141,8 +146,12 @@ const Newsidebar = () => {
       },{
         label:"Order Vochor",key:"order-vochor",icon:FaFileInvoice,
          children:[
-              
-          {label:"Payment",path:"/order-vochor/paymen",icon:FiMapPin}
+          {label:"Payment",path:"/order-vochor/payment",icon:FiMapPin},
+          {label:"Purchase",path:"/order-vochor/purchase",icon:BiPurchaseTagAlt},
+          {label:"Sales",path:"/order-vochor/sales",icon:FaShoppingCart},
+          {label:"Receipt",path:"/order-vochor/receipt",icon:FaReceipt},
+          {label:"Credit",path:"/order-vochor/credit",icon:BsCreditCard2Front},
+          {label:"Debit",path:"/order-vochor/debit",icon:FaMoneyBillWave},
          ]
       },{
         label:"Print MGMT",key:"print_mgmt",icon:HiOutlinePrinter,

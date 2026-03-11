@@ -61,6 +61,7 @@ const DashboardLayout = ({ children }) => {
               borderRadius="20px"
               p={4}
               boxShadow="sm"
+              mt={{base:"20px",md:0}}
             >
               {children}
             </Box>

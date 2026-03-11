@@ -54,7 +54,7 @@ const EmployeeListLayout = () => {
           <Box
                       flex="1"
                       p={{ base: 3, md: 6 }}
-                      pt={{ base: "70px", md: 4 }}
+                      pt={4}
                       overflowY="auto"
                     >
                       <Box

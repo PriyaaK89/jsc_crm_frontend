@@ -17,7 +17,7 @@ function CreateGroupLayout() {
                position="fixed"
                top="0"
                left="0"
-               w="268px"
+               w="280px"
                h="100vh"
                display={{ base: "none", md: "block" }}
              >

@@ -19,7 +19,7 @@ import { Link } from "react-router-dom";
 
 const CreateStockCategory = () => {
   return (
-    <Box bg="white" px={6} py={4}> 
+    <Box bg="white" px={6} py={4} > 
       
       {/* Top Section */}
       <HStack justifyContent="space-between" mb={6}>

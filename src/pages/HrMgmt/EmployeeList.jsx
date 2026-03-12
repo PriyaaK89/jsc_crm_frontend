@@ -135,11 +135,11 @@ const EmployeeList = () => {
               <Thead>
                 <Tr>
                   {["Name", "Email", "Department", "Role", "Contact", "City / State", "Salary(Rs.)", "DOJ", "Leaves", "Login", "Logout", "Approver", "View Doc", "Action", "Generate Letters"].map((header, index) => (
-                    <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize'
+                    <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize' 
                       width={header === "Name" ? "7%" : "auto" && header === "Role" ? '11%' : 'auto' && header === "Login" ? "8%" : 'auto'} borderColor='#D9D9D9'
                     >
                       <Flex alignItems="center" gap='7px'>
-                        <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular'>
+                        <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' overflow="hidden">
                           {header}
                         </Text>
                         <Img src={sort_icon} alt='sort_icon' />

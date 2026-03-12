@@ -13,7 +13,7 @@ const UploadSalarySlipLayout = () => {
        position = "fixed"
        top="0"
        left="0"
-        w="268px"
+        w="280px"
         display={{ base: "none", md: "block" }}
       >
         <Sidebar />

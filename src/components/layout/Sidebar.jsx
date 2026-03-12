@@ -3,10 +3,11 @@ import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
 import { MdAssignmentInd, MdOutlineTrackChanges } from "react-icons/md";
+import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
 import { FaUserTie } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
 import { MdCorporateFare, MdGroupAdd } from "react-icons/md";
-import { HiOfficeBuilding } from "react-icons/hi";
+import { HiOfficeBuilding ,HiOutlineDocumentReport} from "react-icons/hi";
 import { FaChartLine } from "react-icons/fa";
 import { FaUser, FaUserPlus } from "react-icons/fa";
 import { MdInventory, MdAddBox, MdViewList, MdDelete } from "react-icons/md";
@@ -16,11 +17,11 @@ import { FaFileInvoice } from "react-icons/fa";
 import { FiMapPin } from "react-icons/fi";
 import { FaClipboardList,FaCalculator,FaWallet,FaList,FaTrash,FaFileInvoiceDollar,FaBookOpen,FaMoneyCheckAlt} from "react-icons/fa";
   import { FaEdit,FaStore } from "react-icons/fa";
-  import { Receipt,CalendarCheck  } from "lucide-react";
+  import { Receipt,CalendarCheck,BellRing,Handshake,BookText,Clock,FileSpreadsheet,BarChart3 } from "lucide-react";
   import { HiOutlinePrinter } from "react-icons/hi";
   import { Printer, Barcode } from "lucide-react";
 import {RiDashboardLine,RiUserAddLine,RiUser3Line,RiFileList3Line,RiBarChartLine,RiSettings3Line,} from "react-icons/ri";
-import { UserCheck } from "lucide-react";
+import { UserCheck,DollarSign,Package } from "lucide-react";
 import { BsUpcScan } from "react-icons/bs";
 import { Ticket } from "lucide-react";
 import { BsCreditCard2Front } from "react-icons/bs";
@@ -83,7 +84,7 @@ const Newsidebar = () => {
         {label: "Create Job Role", path: "/hr-mgmt/roles/add-job-role",icon: HiUserGroup,},
         {label: "Create Department",path: "/hr-mgmt/dept/add-department",icon: MdAccountTree,},
         {label:"Upload Salary Slip",path:'/hr-mgmt/upload-emp-salary',icon: RiFileList3Line,},
-        {label:"Track Employee",path:'/hr-mgmt/track-employee',icon: MdOutlineTrackChanges,},
+       
 
       ],},
 
@@ -134,7 +135,32 @@ const Newsidebar = () => {
           {label:"Lead List",path:"/leads/list",icon:RiFileList3Line}
         ]
       },{
-          label:"Reports",key:"Reports",icon:RiBarChartLine,path:"/reports"
+          label:"Reports",key:"Reports",icon:RiBarChartLine,path:"/report",
+          children:[
+            {label:"Attendance Report",path:"/report/emp-attendance-report",icon:CalendarCheck},
+            {label:"Scheduling & Alert Report",path:"/report/scheduling-alert-report",icon:BellRing },
+            {label:"Party Transaction Report",path:"/report/party-transaction-report",icon:Handshake},
+            {label:"Get Employee Expense Report",path:"/report/get-emp-expense-report",icon:Receipt},
+            {label:"Party Ledger Report",path:"/report/party-ledger-report",icon:BookText},
+            {label:"Credit Days Reminder Report",path:"/report/credit-days-reminder-report",icon:Clock},
+            {label:"Employee Balance Sheet",path:"/report/emp-balance-sheet",icon:FileSpreadsheet},
+            {label:"Interest Report",path:"/report/interest-report",icon:BarChart3},
+            {label:"Salary Report",path:"/report/emp-salary-report",icon:DollarSign},
+            {label:"Product Report",path:"/report/product-report",icon:Package},
+            {label:"Item Stock Report",path:"/report/item-stock-report",icon:Package},
+            {label:"Track Employee",path:"/report/track-employee",icon:FiMapPin},
+            {label:"Employee Visit Report",path:"/report/emp-visit-report",icon:HiOutlineDocumentReport},
+            {label:"Employee Distributor Details",path:"/report/emp-distributor-details",icon:MdPeople},
+            {label:"Super Cash Bill Report",path:"/report/supercash-bill-report",icon:MdReceiptLong},
+            {label:"P & L Report",path:"/report/psl-report",icon:MdAssessment},
+            {label:"Fright Report",path:"/report/fright-report",icon:MdLocalShipping},
+            {label:"Transport Fright Report",path:"/report/transport-fright-report",icon:MdDirectionsBus},
+            {label:"Item P & L Report",path:"/report/item-psl-report",icon:MdInventory},
+            {label:"manufacturing Report",path:"/report/manufacturing-report",icon:MdFactory},
+            {label:"Stock Transfer Report",path:"/report/stock-transfer-report",icon:MdSwapHoriz},
+            {label:"Pending Collection Report",path:"/report/pending-collection-report",icon:MdPendingActions},
+            {label:"Employee Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
+          ]
       },{
         label:"Inventory Master",key:"inventory",icon:MdInventory,
         children:[
@@ -162,7 +188,7 @@ const Newsidebar = () => {
           {label:"TruthFull Label Print",path:"/print/mgmt/truthful_labelprint",icon:Ticket}
         ]},{
           label:"Settings",path:"/settings",icon:RiSettings3Line,
-        },{label:"IP Request",path:"/approve-ip-user-list",icon:RiUserAddLine}
+        },
   ];
 
 useEffect(() => {
@@ -175,6 +201,7 @@ useEffect(() => {
     "/accounting-master": "accounting-master",
     "/company-master": "company-master",
     "/leads": "leads",
+    "/report":"Reports",
     "/inventory": "inventory",
     "/order-vochor": "order-vochor",
     "/print/mgmt": "print_mgmt"
@@ -191,10 +218,10 @@ useEffect(() => {
 
   return (
     <Box
-      w="268px"
+      w="280px"
       bg="#FFFFFF"
       color="#333333"
-      p={4}
+     
   borderRight="1px solid #e5e7eb"
     borderColor="gray.200"
       overflowY="auto"
@@ -208,11 +235,11 @@ useEffect(() => {
   }}
     >
       {/* Logo */}
-      <Box borderBottom="1px solid #e5e7eb" pb={3} pl={6} mb={5}>
-        <Image src={logo} alt="Company Logo" h="45px" />
+      <Box borderBottom="1px solid #e5e7eb" bg="#FFFF" position="fixed" zIndex="9999" w="100%" >
+        <Image src={logo} alt="Company Logo" h="74px" w="224px"/>
       </Box>
 
-      <VStack spacing={2} align="stretch">
+      <VStack spacing={2} align="stretch" mt="75px"  p={4}>
         {menuSections.map((menu, index) => {
           const IconComponent = menu.icon;
 
@@ -264,12 +291,20 @@ useEffect(() => {
                     return (
                       <Button
                         key={i}
-                        leftIcon={<ChildIcon />}
+                        leftIcon={<ChildIcon size={17}/>}
                         size="sm"
                         as={NavLink}
                         to={item.path}
                         {...sidebarButtonStyle}
                         style={activeLinkStyle}
+                        overflowX="auto"
+                         sx={{
+    scrollbarWidth: "none",      
+    msOverflowStyle: "none",       
+    "&::-webkit-scrollbar": {
+      display: "none",             
+    },
+  }}
                       >
                         {item.label}
                       </Button>
@@ -281,18 +316,19 @@ useEffect(() => {
           );
         })}
 
-        {/* Settings */}
-        <Button
-          leftIcon={<RiSettings3Line />}
-          {...sidebarButtonStyle}
-          as={NavLink}
-          to="/settings"
-          style={activeLinkStyle}
-        >
-          Settings
-        </Button>
-
        
+{/* ip request  */}
+        {(role === "ADMIN" || role === "SUPER_ADMIN") && (
+          <Button
+            leftIcon={<RiUserAddLine />}
+            {...sidebarButtonStyle}
+            as={NavLink}
+            to="/approve-ip-user-list"
+            style={activeLinkStyle}
+          >
+            IP Request
+          </Button>
+        )}
       </VStack>
     </Box>
   );

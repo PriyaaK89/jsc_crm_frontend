@@ -14,6 +14,9 @@ import {
   useToast,
   Divider,
 } from "@chakra-ui/react";
+import React, { useState } from "react";
+import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
+import {  HStack } from "@chakra-ui/react";
 import { Bell } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
@@ -21,6 +24,19 @@ import { AuthContext } from "../../context/AuthContext";
 // import { toast } from "react-toastify";
 
 const Topbar = () => {
+  // full screen function 
+  const [full, setFull] = useState(false);
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setFull(true);
+    } else {
+      document.exitFullscreen();
+      setFull(false);
+    }
+  };
+
+
   const toast = useToast();
   const { auth,logoutUser } = useContext(AuthContext);
 
@@ -47,8 +63,8 @@ const Topbar = () => {
     <Flex
    position="fixed"
   top="0"
-  left="268px"
-  w="calc(100% - 268px)"
+  left="280px"
+  w="calc(100% - 280px)"
   boxSizing="border-box"
   overflow="hidden"
   h="75px"
@@ -65,6 +81,20 @@ const Topbar = () => {
       </Text>
 
       <Spacer />
+       <Button mr={2}
+      leftIcon={full ? <MdFullscreen size={20} /> : <MdFullscreenExit size={20} />}
+      onClick={toggleFullScreen}
+      
+      borderRadius="30px"
+      pl={1}
+      p={2}
+  bg="transparent"
+  _hover={{ bg: "gray.100" }}
+  _active={{ bg: "gray.200" }}
+      
+    >
+      
+    </Button>
 
       <IconButton aria-label="Notifications" variant="ghost" mr={4} icon={<Bell size={20} />}>
        

@@ -9,11 +9,11 @@ import Newsidebar from "./Sidebar";
 const DashboardLayout = ({ children }) => {
 
   return (
-    <Flex bg="#f4f4f4" height="100vh" overflow="hidden">
+    <Flex bg="#f4f4f4" height="100vh" overflow="hidden" >
       
       {/* Desktop Sidebar */}
       <Box
-        w="268px"
+        w="280px"
         position="fixed"
         display={{ base: "none", md: "block" }}
       >
@@ -73,7 +73,7 @@ const DashboardLayout = ({ children }) => {
               bg="white"
               borderRadius="20px"
               p={4}
-              boxShadow="sm" 
+              boxShadow="sm"  
             >
               <RightSidebar />
             </Box>

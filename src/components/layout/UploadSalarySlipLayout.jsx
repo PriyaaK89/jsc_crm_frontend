@@ -13,7 +13,7 @@ const UploadSalarySlipLayout = () => {
        position = "fixed"
        top="0"
        left="0"
-        w="268px"
+        w="280px"
         display={{ base: "none", md: "block" }}
       >
         <Sidebar />
@@ -49,8 +49,8 @@ const UploadSalarySlipLayout = () => {
         {/* Content */}
         <Box
           flex="1"
-          p={{ base: 3, md: 6 }}
-          pt={{ base: "70px", md: 4 }}
+          px={{ base: 3, md: 6 }}
+          pt={4}
           overflowY="auto"
         >
           <Box

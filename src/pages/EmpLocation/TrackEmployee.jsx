@@ -1,6 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import API from "../../services/api";
+import {
+  Box,
+  Heading,
+  Select,
+  Input,
+  Button,
+  HStack,
+  VStack
+} from "@chakra-ui/react";
 
 const TrackEmployee = () => {
   const mapRef = useRef(null);
@@ -104,30 +113,53 @@ const TrackEmployee = () => {
   };
 
   return (
-    <div>
-      <h2>Employee Route Tracking</h2>
+   <Box >
+      <VStack align="start" spacing={6}>
 
-      <select onChange={(e) => setSelectedUser(e.target.value)} border="1px solid gray.200">
-        <option value="">Select Employee</option>
-        {users.map((user) => (
-          <option key={user.id} value={user.id}>
-            {user.name}
-          </option>
-        ))}
-      </select>
+        <Heading size="md">Employee Route Tracking</Heading>
 
-      <input
-        type="date"
-        onChange={(e) => setSelectedDate(e.target.value)}
-      />
+        <HStack spacing={4}>
 
-      <button onClick={fetchRoute}>Show Route</button>
+          <Select
+            placeholder="Select Employee"
+            value={selectedUser}
+            onChange={(e) => setSelectedUser(e.target.value)}
+            width="250px"
+          >
+            {users.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.name}
+              </option>
+            ))}
+          </Select>
 
-      <div
-        id="map"
-        style={{ width: "100%", height: "500px", marginTop: "20px" }}
-      ></div>
-    </div>
+          <Input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            width="200px"
+          />
+
+          <Button
+            colorScheme="blue"
+            onClick={fetchRoute}
+          >
+            Show Route
+          </Button>
+
+        </HStack>
+
+        <Box
+          id="map"
+          w="100%"
+          h="500px"
+          borderRadius="lg"
+          border="1px solid"
+          borderColor="gray.200"
+        />
+
+      </VStack>
+    </Box>
   );
 };
 

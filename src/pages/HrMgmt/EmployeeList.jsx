@@ -26,7 +26,7 @@ const EmployeeList = () => {
   const [selectedId, setSelectedId] = useState('');
   const navigate = useNavigate();
   const { isOpen: isDeleteModalOpen, onOpen: onDeleteModalOpen, onClose: onDeleteModalClose } = useDisclosure();
-  const { isOpen: isVerifyModelOpen, onOpen: onVerifyModalOpen, onClose: onVerifyModalClose } = useDisclosure();
+  const {isOpen: isVerifyModelOpen, onOpen: onVerifyModalOpen, onClose: onVerifyModalClose} = useDisclosure();
 
   const fetchEmployeeList = async () => {
     try {
@@ -85,14 +85,14 @@ const EmployeeList = () => {
     setSelectedId(id)
   }
 
-  const handleVerifyModal = (id) => {
+  const handleVerifyModal = (id)=>{
     onVerifyModalOpen();
     setSelectedId(id)
   }
   return (
     <>
-
-      <VerifyDocumentModel isVerifyModelOpen={isVerifyModelOpen} onVerifyModalClose={onVerifyModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList} />
+  
+    <VerifyDocumentModel isVerifyModelOpen={isVerifyModelOpen} onVerifyModalClose={onVerifyModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList}/>
       <ViewUploadedDocument isOpen={isOpen} onClose={onClose} selectedId={selectedId} />
       <DeleteEmployeeModel isDeleteModalOpen={isDeleteModalOpen} onDeleteModalClose={onDeleteModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList} />
       <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px 0px'>
@@ -118,15 +118,7 @@ const EmployeeList = () => {
           </Box>
           <Box position='relative' w='40%'>
             <InputGroup justifyContent='end'>
-              <Box
-                position="absolute"
-                top="10px"
-                right="16px"
-                display={{ base: "none", md: "block" }}
-              >
-                <FiSearch fontSize="20px" color="#8C8C91" />
-              </Box>
-
+              <FiSearch fontSize='20px' style={{ color: '#8C8C91', position: 'absolute', top: '10px', right: '16px' }} />
               <Input placeholder="Search by Employee Name" border='1px solid #CFD3D4' borderRadius='32px' _placeholder={{ fontSize: '16px', color: '#8C8C91' }} boxShadow='0px 2px 2px #e5e5e5'
                 value={search} onChange={(e) => setSearch(e.target.value)} />
             </InputGroup>
@@ -143,11 +135,11 @@ const EmployeeList = () => {
               <Thead>
                 <Tr>
                   {["Name", "Email", "Department", "Role", "Contact", "City / State", "Salary(Rs.)", "DOJ", "Leaves", "Login", "Logout", "Approver", "View Doc", "Action", "Generate Letters"].map((header, index) => (
-                    <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize'
+                    <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize' 
                       width={header === "Name" ? "7%" : "auto" && header === "Role" ? '11%' : 'auto' && header === "Login" ? "8%" : 'auto'} borderColor='#D9D9D9'
                     >
                       <Flex alignItems="center" gap='7px'>
-                        <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular'>
+                        <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' overflow="hidden">
                           {header}
                         </Text>
                         <Img src={sort_icon} alt='sort_icon' />
@@ -238,7 +230,7 @@ const EmployeeList = () => {
                           </Tooltip>
 
                           <Tooltip label="Verify Documents">
-                            <Button size="xs" colorScheme="yellow" onClick={() => handleVerifyModal(emp?.id)}>
+                            <Button size="xs" colorScheme="yellow" onClick={()=>handleVerifyModal(emp?.id)}>
                               Verify Documents
                             </Button>
                           </Tooltip>

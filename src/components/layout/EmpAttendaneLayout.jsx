@@ -42,9 +42,6 @@ const EmpAttendanceLayout = () => {
         {/* Mobile Topbar */}
         <Box
           display={{ base: "block", md: "none" }}
-          px={4}
-          py={4}
-          flexShrink={0}
         >
           <MobileTopbar />
         </Box>
@@ -53,7 +50,7 @@ const EmpAttendanceLayout = () => {
         <Box
           flex="1"
           px={{ base: 0, md: 6 }}
-          py={6}
+          pt={4}
           mx={3}
           overflow="visible"   mt="75px" // remove scroll
         >

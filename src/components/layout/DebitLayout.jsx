@@ -15,7 +15,7 @@ const DebitLayout = () => {
                    position="fixed"
                    top="0"
                    left="0"
-                   w="268px"
+                   w="280px"
                    display={{ base: "none", md: "block" }}
                  >
                    <Sidebar />
@@ -59,7 +59,7 @@ const DebitLayout = () => {
                        bg="white"
                        p={6}
                        borderRadius="21px"
-                       boxShadow="sm"
+                       boxShadow="sm" mt="75px"
                      >
                        <Debit/>
                      </Box>

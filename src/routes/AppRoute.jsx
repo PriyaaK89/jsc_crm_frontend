@@ -20,7 +20,6 @@ import AssignTargetSMLayout from "../components/layout/AssignTargetSMLayout";
 import AssignTargetFALayout from "../components/layout/AssignTargetFALayout";
 import CreateCompanyLayout from "../components/layout/CreateCompanyLayout";
 import ApproveIpUserListLayout from "../components/layout/ApproveIpUserListLayout";
-import EmpAttendaneLayout from "../components/layout/EmpAttendaneLayout";
 import CreateGroupLayout from '../components/layout/AccountingMasterLayout/CreateGroupLayout';
 import ViewGroupLayout from '../components/layout/AccountingMasterLayout/ViewGroupLayout';
 import DeleteGroupLayout from '../components/layout/AccountingMasterLayout/DeleteGroupLayout';
@@ -32,14 +31,12 @@ import ViewVoucherLayout from '../components/layout/AccountingMasterLayout/ViewV
 import DeleteVoucherLayout from '../components/layout/AccountingMasterLayout/DeleteVoucherLayout';
 import EditLedgerAssignmentLayout from '../components/layout/AccountingMasterLayout/EditLedgerAssignmentLayout';
 import RetailerAssignmentLayout from '../components/layout/AccountingMasterLayout/RetailerAssignmentLayout';
-import EmployeeSalaryReportLayout from "../components/layout/EmployeeSalaryReportLayout";
 import CreateStockGroupLayout from "../components/layout/CreateStockGroupLayout";
 import ViewStockGroupLayout from "../components/layout/ViewStockGroupLayout";
 import DeleteStockGroupLayout from "../components/layout/DeleteStockGroupLayout";
 import CreateStockCategoryLayout from "../components/layout/CreateStockCategoryLayout";
 import ViewStockCategoryLayout from "../components/layout/ViewStockCategoryLayout";
 import UploadSalarySlipLayout from "../components/layout/UploadSalarySlipLayout";
-import TrackEmpLayout from "../components/layout/TrackEmpLayout";
 import PaymentLayout from "../components/layout/PaymentLayout";
 import PrintShippingLablePrinterLayout from '../components/layout/Print MGMT/PrintShippingLablePrinterLayout';
 import PrintTruthfulLablePrintLayout from '../components/layout/Print MGMT/PrintTruthfulLablePrintLayout';
@@ -50,6 +47,31 @@ import CreditLayout from "../components/layout/CreditLayout";
 import DebitLayout from "../components/layout/DebitLayout"; 
 import ESignSuccess from "../components/redirection-pages/esign-success";
 import ESignError from "../components/redirection-pages/esign-error";
+
+
+import EmpAttendanceLayout from "../components/layout/Reports/EmpAttendaneLayout";
+import SchedulingAlertsReportLayout from "../components/layout/Reports/Scheduling&AlertReportLayout";
+import PartyTransactionReportLayout from '../components/layout/Reports/PartyTransactionReportLayout';
+import GetEmployeeExpenseReportLayout from '../components/layout/Reports/GetEmployeeExpenseReportLayout';
+import PartyLedgerReportLayout from "../components/layout/Reports/PartyLedgerReportLayout";
+import CreditDaysReminderReportLayout from '../components/layout/Reports/CreditDaysReminderReportLayout';
+import EmployeeBalanceSheetLayout from '../components/layout/Reports/EmployeeBalanceSheetLayout';
+import InterestReportLayout from '../components/layout/Reports/InterestReportLayout';
+import EmployeeSalaryReportLayout from "../components/layout/Reports/EmployeeSalaryReportLayout";
+import ProductReportLayout from '../components/layout/Reports/ProductReportLayout';
+import ItemStockReportLayout from '../components/layout/Reports/ItemStockReportLayout';
+import EmployeeVisitReportLayout from '../components/layout/Reports/EmployeeVisitReportLayout';
+import EmployeeDistributorLayout from '../components/layout/Reports/EmployeeDistributorLayout';
+import SupercashBillReportLayout from '../components/layout/Reports/SupercashBillReportLayout';
+import PsLReportLayout from "../components/layout/Reports/P&LReportLayout";
+import FrightReportLayout from '../components/layout/Reports/FrightReportLayout';
+import TransportFrightReportLayout from '../components/layout/Reports/TransportFrightReportLayout';
+import ItemPsLReportLayout from '../components/layout/Reports/ItemP&LReportLayout';
+import  ManufacturingReportLayout from "../components/layout/Reports/ManufacturingReportLayout";
+import StockTransferReportLayout from "../components/layout/Reports/StockTransferReportLayout";
+import PendingCollectionReportLayout from "../components/layout/Reports/PendingCollectionReportLayout";
+import EmpPerformanceReportLayout from "../components/layout/Reports/EmpPerformanceReportLayout";
+import TrackEmpLayout from "../components/layout/Reports/TrackEmpLayout";
 
 
 function App() {
@@ -89,7 +111,7 @@ function App() {
         <Route path="/generate-agreement/:id" element={<AgreementLetterLayout/>}/>
         <Route path="/dashboard/profile/:empId" element={<ProfileLayout />} />
         <Route path="/approve-ip-user-list" element={<ApproveIpUserListLayout />}/>
-        <Route path="/hr-mgmt/emp-attendance-report" element={<EmpAttendaneLayout/>}/>
+
         <Route path='/accounting-master/create-group' element={<CreateGroupLayout/>}/>
         <Route path='/accounting-master/view-group' element={<ViewGroupLayout/>}/>
         <Route path='/accounting-master/delete-group'   element={<DeleteGroupLayout/>}/>
@@ -133,13 +155,13 @@ function App() {
           path="company-master/create-company"
           element={<CreateCompanyLayout />}
         />
-        <Route path="/hr-mgmt/track-employee" element={<TrackEmpLayout />} />
+   
 
         <Route
           path="/approve-ip-user-list"
           element={<ApproveIpUserListLayout />}
         />
-        <Route path="/emp-attendance-report" element={<EmpAttendaneLayout />} />
+   
         <Route
           path="/inventory/create-stock-group"
           element={<CreateStockGroupLayout />}
@@ -169,6 +191,33 @@ function App() {
         <Route path="/esign-success" element={<ESignSuccess/>} />
         <Route path="/esign-error" element={<ESignError />} />  
         
+
+
+        {/* reports */}
+         <Route path="/report/emp-attendance-report" element={<EmpAttendanceLayout/>}/>
+         <Route path="/report/scheduling-alert-report" element={<SchedulingAlertsReportLayout/>}/>
+         <Route path="/report/party-transaction-report" element={<PartyTransactionReportLayout/>}/>
+         <Route path="/report/get-emp-expense-report" element={<GetEmployeeExpenseReportLayout/>}/>
+         <Route path="/report/party-ledger-report" element={<PartyLedgerReportLayout/>}/>
+         <Route path="/report/credit-days-reminder-report" element={<CreditDaysReminderReportLayout/>}/>
+         <Route path="/report/emp-balance-sheet" element={<EmployeeBalanceSheetLayout/>}/>
+         <Route path="/report/interest-report" element={<InterestReportLayout/>}/>
+         <Route path='/report/emp-salary-report' element={<EmployeeSalaryReportLayout/>}/>
+         <Route path="/report/product-report" element={<ProductReportLayout/>}/>
+         <Route path="/report/item-stock-report" element={<ItemStockReportLayout/>}/>
+         <Route path="/report/emp-visit-report" element={<EmployeeVisitReportLayout/>}/>
+         <Route path="/report/emp-distributor-details" element={<EmployeeDistributorLayout/>}/>
+         <Route path="/report/supercash-bill-report" element={<SupercashBillReportLayout/>}/>
+         <Route path="/report/psl-report" element={<PsLReportLayout/>}/>
+         <Route path="/report/fright-report" element={<FrightReportLayout/>}/>
+         <Route path="/report/transport-fright-report" element={<TransportFrightReportLayout/>}/>
+         <Route path="/report/item-psl-report" element={<ItemPsLReportLayout/>}/>
+         <Route path="/report/manufacturing-report" element={<ManufacturingReportLayout/>}/>
+         <Route path="/report/stock-transfer-report" element={<StockTransferReportLayout/>}/>
+         <Route path="/report/pending-collection-report" element={<PendingCollectionReportLayout/>}/>
+         <Route path="/report/emp-performance-report" element={<EmpPerformanceReportLayout/>}/>
+           <Route path="/report/track-employee" element={<TrackEmpLayout />} />
+      
       </Routes>
     </Router>
   );

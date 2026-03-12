@@ -69,7 +69,7 @@ const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
 
         <ModalCloseButton color="white"  p={5} size={{base:"md",md:"lg"}}/>
 
-        <ModalBody py={6}>
+        <ModalBody py={6} >
           <Text fontSize={{base:"12px",md:"20px"}}>Are you sure you want to approve this IP?</Text>
         </ModalBody>
 

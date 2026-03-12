@@ -99,7 +99,7 @@ useEffect(() => {
 
   return (
     <Box
-      w="268px"
+      w="280px"
       bg="#FFFFFF"
       color="#333333"
       p={4}

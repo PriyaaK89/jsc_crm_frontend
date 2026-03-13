@@ -30,35 +30,14 @@ const CustomDatePicker = ({
 
       <Popover placement="bottom-start">
         <PopoverTrigger>
-          <Input
-            readOnly
-            value={formatDate(value)}
-            placeholder={placeholder}
-            fontSize="12px"
-            cursor="pointer"
-            _placeholder={{
-              fontSize: "12px",
-              color: "gray.400",
-            }}
-            onClick={() => hiddenDateRef.current?.showPicker()}
-          />
+          <Input readOnly value={formatDate(value)} placeholder={placeholder}
+            fontSize="12px" cursor="pointer" _placeholder={{ fontSize: "12px", color: "gray.400",}}
+            onClick={() => hiddenDateRef.current?.showPicker()}/>
         </PopoverTrigger>
 
         <PopoverContent w="auto">
           <PopoverBody p={2}>
-            <Input
-              ref={hiddenDateRef}
-              type="date"
-              value={value}
-              onChange={(e) =>
-                onChange({
-                  target: {
-                    name,
-                    value: e.target.value,
-                  },
-                })
-              }
-            />
+            <Input ref={hiddenDateRef} type="date" value={value || ""} onChange={(e) => onChange(e.target.value)}/>
           </PopoverBody>
         </PopoverContent>
       </Popover>

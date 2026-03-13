@@ -236,7 +236,7 @@ return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="5xl">
         <ModalOverlay />
-        <ModalContent maxW="791px">
+        <ModalContent maxW="794px">
           <ModalBody p="0">
             <Flex justifyContent="flex-end" m={2} ><CloseButton bg="#d3d2d2"p={5}    onClick={handleClose} /></Flex>
             <Box id="joining-letter-preview" fontFamily="serif" borderTop="1px" borderColor="gray.300">
@@ -274,12 +274,12 @@ return (
                   />
                 </VStack>
 
-                <Box width="83%" marginLeft="3rem" className="letter-content">
+                <Box width="83%" marginLeft="2.75rem" className="letter-content">
                   <Image src={r_logo} alt="Round Logo" className="watermark_img" />
                   {/* Title */}
                   <Text textAlign="center"
                     fontSize="22px" fontWeight="bold"
-                    color="#1A365D" mt="25px" mb="30px">
+                    color="#1A365D" mt="24px" mb="24px">
                     JOB JOINING LETTER
                   </Text>
 
@@ -302,7 +302,7 @@ return (
                   {/* Body */}
                   <VStack align="flex-start" spacing={3}>
                     <Text>Dear {employee?.name},</Text>
-                    <Text>
+                    <Text >
                       Further to the interview you had with us and subsequent to
                       your joining the company we have pleasure in offering you
                       appointment as {" "}
@@ -332,9 +332,7 @@ return (
                       <Text fontSize="14px" textAlign="justify">
                         Your services may be transferred to other divisions / locations or associates
                         of our company, existing or to be formed in future or to any of our group
-                        companies and you will abide by the company’s rules and regulations that may
-                        be in force at the time of your appointment and also those that may be
-                        promulgated from time to time thereafter.
+                      
                       </Text>
                     </HStack>
 
@@ -375,6 +373,13 @@ return (
                   <Text textAlign="center" mt="2rem" mb="2rem" width="84%">
                     CONTD:-2
                   </Text>
+
+                                        <Text fontSize="14px" textAlign="justify">
+                  
+                        companies and you will abide by the company’s rules and regulations that may
+                        be in force at the time of your appointment and also those that may be
+                        promulgated from time to time thereafter.
+                      </Text>
 
                   <HStack align="flex-start">
                     <Text fontWeight="bold">b.</Text>
@@ -443,22 +448,7 @@ return (
                     may be terminated in accordance with law.
                   </Text>
 
-                  <Text fontSize="14px" textAlign="justify">
-                    You will also be subject at all times to the service rules and regulations of
-                    the company applicable to employees of your status as are in force at present
-                    or shall come into force from time to time.
-                  </Text>
-
-                  <Text fontSize="14px" textAlign="justify">
-                    You are forbidden to make any unauthorized disclosure of any official
-                    information pertaining to the company’s operations or its employees while in
-                    service or even thereafter. You shall have to sign a confidentiality agreement
-                    to this effect after joining the company.
-                  </Text>
-
-                  <Text>Your date of birth as confirmed by you is {formatDate(employee?.date_of_birth)} and
-                    you will retire on attaining the age of 58 years. The company, however, reserves the right
-                    to modify and amend the retirement policy and age.</Text>
+                 
                 </VStack>
               </Box>
 
@@ -481,6 +471,25 @@ return (
                   <Text textAlign="center" mt="2rem" mb="2rem" width="84%">
                     CONTD:-3
                   </Text>
+
+                  <VStack>
+                     <Text fontSize="14px" textAlign="justify">
+                    You will also be subject at all times to the service rules and regulations of
+                    the company applicable to employees of your status as are in force at present
+                    or shall come into force from time to time.
+                  </Text>
+
+                  <Text fontSize="14px" textAlign="justify">
+                    You are forbidden to make any unauthorized disclosure of any official
+                    information pertaining to the company’s operations or its employees while in
+                    service or even thereafter. You shall have to sign a confidentiality agreement
+                    to this effect after joining the company.
+                  </Text>
+
+                  <Text>Your date of birth as confirmed by you is {formatDate(employee?.date_of_birth)} and
+                    you will retire on attaining the age of 58 years. The company, however, reserves the right
+                    to modify and amend the retirement policy and age.</Text>
+                  </VStack>
 
                   <HStack align="flex-start">
 
@@ -506,22 +515,7 @@ return (
                       No other allowances will be applicable other than your salary Anx. For travelling expenses you will be informed separately as per the norms of the company.
                     </Text>
                   </HStack>
-                  <Text>Please acknowledge and return us the duplicate copy of this letter in token of your acceptance of the above terms and condition of employment. <br />
-                    I wish you a successful tenure in the company and advise you to be devoted and sincere in your duties.
-                  </Text>
-                  <Text mt="30px" fontWeight="bold">
-                    HR Department,
-                    <br />
-                    Jamidara Seeds Corporation
-                  </Text>
-
-                  <VStack spacing={0} alignItems="flex-start">
-                    <Text>{formData?.appoint_under_name}</Text>
-                    <Text>{formData?.job_role_name},{formData?.appointer_state}</Text>
-                  </VStack>
-
-
-
+                 
                 </VStack>
 
               </Box>
@@ -542,10 +536,25 @@ return (
                     className="watermark_img1"
                   />
                   <Text textAlign="center" mt="2rem" mb="2rem" width="84%">
-                    CONTD:-3
+                    CONTD:-4
                   </Text>
 
+                    <VStack  align="flex-start">
+                       <Text>Please acknowledge and return us the duplicate copy of this letter in token of your acceptance of the above terms and condition of employment. <br />
+                    I wish you a successful tenure in the company and advise you to be devoted and sincere in your duties.
+                  </Text>
+                  <Text mt="30px" fontWeight="bold">
+                    HR Department,
+                    <br />
+                    Jamidara Seeds Corporation
+                  </Text>
 
+                  <VStack spacing={0} alignItems="flex-start">
+                    <Text>{formData?.appoint_under_name}</Text>
+                    <Text>{formData?.job_role_name},{formData?.appointer_state}</Text>
+                  </VStack>
+
+                    </VStack>
 
                   <Box mt="0rem" width="100%">
                     <Text fontSize="20px" fontWeight="bold" textAlign="center" mb="12px">
@@ -669,80 +678,65 @@ return (
                     <Box flex="1" p="6px" borderRight="1px solid black" textAlign='center'>
                       {maxKm} K.M. MAX.
                     </Box>
-
-
                   </Flex>
+                </VStack>
+              </Box>
 
+              <Box className="pdf-page page-break">
+                {/* Decorative Images */}
+                <Image src={top_ele} position="absolute" top="0" left="0" width="175px" />
+                <Image src={bottom_ele} position="absolute" bottom="0" right="0" width="175px" />
+
+                <VStack
+                  align="flex-start"
+                  spacing={4}
+                  width="83%"
+                  marginLeft="3.8rem"
+                  className="letter-content">
+                  <Image
+                    src={r_logo}
+                    alt="Round Logo"
+                    className="watermark_img1"
+                  />
+                  <Text textAlign="center" mt="2rem" mb="2rem" width="84%">
+                    CONTD:-5
+                  </Text>
                   <Box mt="2rem">
 
-                    <Text fontWeight="bold" textDecoration="underline" mb="1rem">
-                      Note:
-                    </Text>
+                    <Text fontWeight="bold" textDecoration="underline" mb="1rem"> Note: </Text>
 
                     <VStack align="flex-start" spacing={3} pl="1rem">
 
+                      <Text>  1):- In case of boarding (FOOD) Bill are required. Shall be paid up to maximum limits specified. </Text>
+                      <Text> 2):- In case of LODGING (Hotel) claims are settled at actual (or) up to limits specified,{" "}
+                        <Text as="span" textDecoration="underline" fontWeight="bold">  which ever is less. </Text>{" "}
+                        Claims shall not be settled without bills.</Text>
                       <Text>
-                        1):- In case of boarding (FOOD) Bill are required. Shall be paid up to maximum limits specified.
-                      </Text>
-
-                      <Text>
-                        2):- In case of LODGING (Hotel) claims are settled at actual (or) up to limits specified,{" "}
-                        <Text as="span" textDecoration="underline" fontWeight="bold">
-                          which ever is less.
-                        </Text>{" "}
-                        Claims shall not be settled without bills.
-                      </Text>
-
-                      <Text>
-                        3):- In case of TRAVLE claims are settled{" "}
-                        <Text as="span" textDecoration="underline" fontWeight="bold">
-                          only on submission of counter foils of TRAIN / BUS TICKETS.
-                        </Text>
+                        3):- In case of TRAVLE claims are settled{" "} <Text as="span" textDecoration="underline" fontWeight="bold">
+                          only on submission of counter foils of TRAIN / BUS TICKETS. </Text>
                       </Text>
 
                     </VStack>
                     <VStack alignItems="end">
                       {formData.show_stamp && (
-                        <Image
-                          src={jsc_stamp}
-                          alt="Company Stamp"
-                          boxSize="120px"
-                        // mt={4}
-                        />
-
-                      )}</VStack>
+                        <Image src={jsc_stamp} alt="Company Stamp"  boxSize="120px"/> )}
+                      </VStack>
                   </Box>
-
-
                 </VStack>
-                <VStack
-                  alignItems="flex-start"
-                  mt="20rem"
-                  spacing="4px"
-                  width="81%"
-                  ml="-2.5rem" position="absolute" bottom="75px">
-                  <Divider
-                    borderColor="blue.600"
-                    borderWidth="1px"
-                    w="100%"
-                    mt="1rem"
-                  />
-                  <Divider
-                    borderColor="blue.300"
-                    borderWidth="2px"
-                    w="90%"
-                    mt="0px"
-                  />
+                <VStack alignItems="flex-start" mt="20rem" spacing="4px" width="81%"
+                  position="absolute" bottom="75px" left="0px">
+                  <Divider borderColor="blue.600" borderWidth="1px" w="100%"  mt="1rem" />
+                  <Divider borderColor="blue.300" borderWidth="2px" w="90%" mt="0px"/>
                   <Flex ml="1rem" gap="1rem" mt="2px">
                     <Flex alignItems="center" gap="8px">
                       <Image src={emailIcon} width="24px" mt="12px" />
-                      <Text fontSize="14px">
+                      <Text fontSize="14px" mt="12px">
                         jamidaraseedscorporation@gmail.com
                       </Text>
                     </Flex>
                     <Flex alignItems="center" gap="8px">
                       <Image src={webIcon} width="24px" mt="12px" />
-                      <Text fontSize="14px">www.jamidaraseeds.com</Text>
+                      <Text fontSize="14px" mt="12px">www.jamidaraseeds.com</Text>
                     </Flex>
                   </Flex>
                 </VStack>

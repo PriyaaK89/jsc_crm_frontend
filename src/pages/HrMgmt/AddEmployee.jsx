@@ -20,6 +20,7 @@ import {
 } from "@chakra-ui/react";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import { GoHomeFill } from "react-icons/go";
+import { FormErrorMessage } from "@chakra-ui/react";
 
 const AddEmployee = () => {
   const toast = useToast();
@@ -28,7 +29,63 @@ const AddEmployee = () => {
   const [jobRole, setJobRole] = useState([]);
   const navigate = useNavigate();
 
+  const [error, setError] = useState({
+    name: "",
+    gender: "",
+    date_of_birth: "",
+    email: "",
+    contact_no: "",
+    address_line1: "",
+    area: "",
+    pincode: "",
+    father_name: "",
+    department_id: "",
+    job_role_id: "",
+    date_of_joining: "",
+    travelling_allowance_per_km: "",
+    travelling_allowance_per_day: "",
+    avg_travel_km_per_day: "",
+    daily_allowance_with_doc: "",
+    city_allowance_per_km: "",
+    hotel_allowance: "",
+    salary: "",
+    week_off: "",
+    total_leaves: "",
+    headquarter: "",
+    approver_name: "",
+    aadhar_no: "",
+    pan_number: "",
+  });
+
+
+
   const [areas, setAreas] = useState([]);
+  const requiredFields = [
+    "name",
+    "gender",
+    "email",
+    "contact_no",
+    "date_of_birth",
+    "address_line1",
+    "pincode",
+    "area",
+    "father_name",
+    "department_id",
+    "job_role_id",
+    "date_of_joining",
+    "date_of_joining",
+    "travelling_allowance_per_km",
+    "travelling_allowance_per_km",
+    "avg_travel_km_per_day",
+    "city_allowance_per_km",
+    "daily_allowance_with_doc",
+    "hotel_allowance",
+    "salary",
+    "week_off",
+    "total_leaves",
+    "headquarter",
+    "approver_name",
+  ];
 
   const [formData, setFormData] = useState({
     name: "",
@@ -43,6 +100,7 @@ const AddEmployee = () => {
     state: "",
     city: "",
     district: "",
+    area: "",
     pincode: "",
     father_name: "",
     pan_number: "",
@@ -55,6 +113,7 @@ const AddEmployee = () => {
     week_off: "",
 
     travelling_allowance_per_km: "",
+    travelling_per_day: "",
     avg_travel_km_per_day: "",
     city_allowance_per_km: "",
     daily_allowance_with_doc: "",
@@ -71,6 +130,19 @@ const AddEmployee = () => {
     approver_name: "",
   });
   const [empList, setEmpList] = useState([]);
+
+  const validateRequiredFields = () => {
+    let newErrors = {};
+
+    requiredFields.forEach((field) => {
+      if (!formData[field]) {
+        newErrors[field] = "This field is required";
+      }
+    });
+
+    return newErrors;
+  };
+
 
   const fetchEmployeeList = async () => {
     try {
@@ -101,9 +173,50 @@ const AddEmployee = () => {
       ...prev,
       [name]: value,
     }));
+
+    setError((prev) => ({
+      ...prev,
+      [name]: "",
+    }))
   };
 
   const handleSubmit = async () => {
+    const requiredFieldErrors = validateRequiredFields();
+
+    const emailError = validateEmail(formData.email);
+    const contactError = validateContact(formData.contact_no);
+    const aadharError = validateAadhar(formData.aadhar_no);
+    const panError = validatePan(formData.pan_number);
+
+    const newError = {
+      ...requiredFieldErrors,
+      email: emailError,
+      contact_no: contactError,
+      aadhar_no: aadharError,
+      pan_number: panError,
+    };
+
+    setError(newError);
+
+    if (Object.values(newError).some((err) => err)) {
+
+      toast({
+        title: "Validation Error",
+        description:
+          newError.email ||
+          newError.contact_no ||
+          newError.aadhar_no ||
+          newError.pan_number ||
+          newError.date_of_joining ||
+          "Please fill all required fields",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -197,7 +310,6 @@ const AddEmployee = () => {
       console.log("Department fetch error", error);
     }
   };
-
   useEffect(() => {
     fetchDepartmentList();
   }, []);
@@ -215,10 +327,60 @@ const AddEmployee = () => {
     }
   };
 
-  useEffect(() => {
-    fetchRoleList();
-  }, []);
+  const validateEmail = (email) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i;
 
+    if (!email) {
+      return "Email is required";
+    }
+
+    if (!regex.test(email)) {
+      return "Invalid email address";
+    }
+
+    return null;
+  };
+
+  const validateContact = (contact) => {
+    const regex = /^[0-9]{10}$/;
+
+    if (!contact) {
+      return "Contact number is required";
+    }
+
+    if (!regex.test(contact)) {
+      return "Contact number must be 10 digits";
+    }
+
+    return null;
+  };
+  const validateAadhar = (aadhar) => {
+    const regex = /^[0-9]{12}$/;
+
+    if (!aadhar) {
+      return "Aadhar number is required";
+    }
+
+    if (!regex.test(aadhar)) {
+      return "Aadhar number must be 12 digits";
+    }
+
+    return null;
+  };
+
+  const validatePan = (pan) => {
+    const regex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+    if (!pan) {
+      return "PAN number is required";
+    }
+
+    if (!regex.test(pan)) {
+      return "Invalid PAN number format";
+    }
+
+    return null;
+  };
   const handleDepartmentChange = (e) => {
     const deptId = e.target.value;
 
@@ -306,17 +468,18 @@ const AddEmployee = () => {
           {/* BASIC DETAILS */}
           <Text fontWeight="bold">Basic Details</Text>
 
-          <SimpleGrid columns={{ base: 1, md: 2, lg:3 }} spacing={4}>
-            <FormControl isRequired>
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+            <FormControl isRequired isInvalid={error.name}>
               <FormLabel {...lableStyles} >Name</FormLabel>
               <Input
                 name="name"
                 placeholder="Enter name"
                 onChange={handleChange}
               />
+              <FormErrorMessage>{error.name}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.gender}>
               <FormLabel {...lableStyles}>Select Gender</FormLabel>
               <Select
                 fontSize="13px"
@@ -329,14 +492,28 @@ const AddEmployee = () => {
                 <option value="FEMALE">Female</option>
                 <option value="OTHER">Other</option>
               </Select>
+              <FormErrorMessage>{error.gender}</FormErrorMessage>
             </FormControl>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.contact_no}>
               <FormLabel {...lableStyles}>Contact No.</FormLabel>
               <Input
                 name="contact_no"
                 placeholder="Enter your Contact No"
-                onChange={handleChange}
+                maxLength={10}
+                value={formData.contact_no}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "");
+                  if (value.length <= 10) {
+                    setFormData((prev) => ({
+                      ...prev, contact_no: value,
+                    }))
+                    setError((prev)=>({
+                      ...prev, contact_no: "",
+                    }))
+                  }
+                }}
               />
+              <FormErrorMessage>{error.contact_no}</FormErrorMessage>
             </FormControl>
 
             {/* <CustomDatePicker
@@ -346,38 +523,51 @@ const AddEmployee = () => {
                             onChange={handleChange}
                             placeholder="Select date of Birth"
                         /> */}
-             <FormControl isRequired>
-  <FormLabel>Date of Birth</FormLabel>
-  <Input
-    type="date"
-    name="date_of_birth"
-    value={formData.date_of_birth}
-    onChange={handleChange}
-  />
-</FormControl>
+            <FormControl isRequired isInvalid={error.date_of_birth}>
+              <FormLabel>Date of Birth</FormLabel>
+              <Input
+                type="date"
+                name="date_of_birth"
+                value={formData.date_of_birth}
+                onChange={handleChange}
+              />
+              <FormErrorMessage>{error.date_of_birth}</FormErrorMessage>
+            </FormControl>
 
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.email}>
               <FormLabel {...lableStyles}>Email</FormLabel>
               <Input
                 name="email"
                 placeholder="Enter Email"
-                onChange={handleChange}
+                value={formData.email}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setFormData((prev) => ({
+                    ...prev, email: value,
+                  }))
+                  setError((prev)=>({
+                    ...prev,
+                    email: ""
+                  }))
+                }}
               />
+              <FormErrorMessage>{error.email}</FormErrorMessage>
             </FormControl>
           </SimpleGrid>
 
           {/* ADDRESS */}
           <Text fontWeight="bold">Address</Text>
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.address_line1}>
               <FormLabel {...lableStyles}>Address</FormLabel>
               <Input
                 name="address_line1"
                 placeholder="Address Line 1"
                 onChange={handleChange}
               />
+              <FormErrorMessage>{error.address_line1}</FormErrorMessage>
             </FormControl>
-            <FormControl isRequired>
+            <FormControl>
               <FormLabel {...lableStyles}>Address</FormLabel>
               <Input
                 name="address_line2"
@@ -385,16 +575,17 @@ const AddEmployee = () => {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.pincode}>
               <FormLabel {...lableStyles}>Pincode</FormLabel>
               <Input
                 name="pincode"
                 maxLength={6}
-                value={formData.pincode || ""}
+                value={formData.pincode}
                 onChange={(e) => handlePincodeChange(e.target.value)}
               />
+              <FormErrorMessage>{error.pincode}</FormErrorMessage>
             </FormControl>
-            <FormControl isRequired>
+            <FormControl>
               <FormLabel {...lableStyles}>Country</FormLabel>
               <Input
                 name="country"
@@ -402,15 +593,15 @@ const AddEmployee = () => {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControl isRequired>
+            <FormControl >
               <FormLabel {...lableStyles}>State</FormLabel>
               <Input name="state" value={formData.state || ""} isReadOnly />
             </FormControl>
-            <FormControl isRequired>
+            <FormControl>
               <FormLabel {...lableStyles}>City</FormLabel>
               <Input name="city" value={formData.city || ""} isReadOnly />
             </FormControl>
-            <FormControl isRequired>
+            <FormControl>
               <FormLabel {...lableStyles}>District</FormLabel>
               <Input
                 name="district"
@@ -419,11 +610,11 @@ const AddEmployee = () => {
               />
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.area}>
               <FormLabel {...lableStyles}>Select Area</FormLabel>
               <Select
                 placeholder="Select Area"
-                value={formData.area || ""}
+                value={formData.area}
                 isDisabled={!areas.length}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -438,50 +629,92 @@ const AddEmployee = () => {
                   </option>
                 ))}
               </Select>
+              <FormErrorMessage>{error.area}</FormErrorMessage>
             </FormControl>
           </SimpleGrid>
 
           {/* PERSONAL INFO */}
           <Text fontWeight="bold">Personal Info</Text>
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.father_name}>
               <FormLabel {...lableStyles}>Father's Name</FormLabel>
               <Input
                 name="father_name"
                 placeholder="Father Name"
                 onChange={handleChange}
               />
+              <FormErrorMessage>{error.father_name}</FormErrorMessage>
             </FormControl>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.pan_number}>
               <FormLabel {...lableStyles}>Pan Number</FormLabel>
               <Input
                 name="pan_number"
                 placeholder="PAN Number"
-                onChange={handleChange}
+                maxLength={10}
+                value={formData.pan_number}
+                onChange={(e) => {
+                  const value = e.target.value
+                    .toUpperCase()
+                    .replace(/[^A-Z0-9]/g, "");
+
+                  if (value.length <= 10) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      pan_number: value,
+                    }));
+                    setError((prev) => ({
+                      ...prev,
+                      pan_number: "",
+                    }))
+                  }
+                }}
               />
+              <FormErrorMessage>{error.pan_number}</FormErrorMessage>
             </FormControl>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.aadhar_no}>
               <FormLabel {...lableStyles}>Aadhar No.</FormLabel>
               <Input
                 name="aadhar_no"
                 placeholder="Aadhar No"
-                onChange={handleChange}
+                maxLength={12}
+                value={formData.aadhar_no}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, ""); // Remove non-digit characters
+                  if (value.length <= 12) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      aadhar_no: value,
+                    }));
+                    setError((prev) => ({
+                      ...prev,
+                      aadhar_no: "",
+                    }))
+                  }
+                }}
               />
+              <FormErrorMessage>{error.aadhar_no}</FormErrorMessage>
+
             </FormControl>
-            <FormControl isRequired>
+            <FormControl >
               <FormLabel {...lableStyles}>Blood Group</FormLabel>
-              <Input
-                name="blood_group"
-                placeholder="Blood Group"
-                onChange={handleChange}
-              />
+              <Select name="blood_group" placeholder="Select Blood Group" onChange={handleChange}>
+                <option value="">Select Blood Group</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </Select>
             </FormControl>
           </SimpleGrid>
 
           {/* JOB DETAILS */}
           <Text fontWeight="bold">Job Details</Text>
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.department_id}>
               <FormLabel {...lableStyles}>Department Name</FormLabel>
               <Select
                 placeholder="Select Department"
@@ -497,9 +730,10 @@ const AddEmployee = () => {
                   </option>
                 ))}
               </Select>
+              <FormErrorMessage>{error.department_id}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.job_role_id}>
               <FormLabel {...lableStyles}>Job Role Name</FormLabel>
               <Select
                 placeholder="Select Job Role"
@@ -517,9 +751,10 @@ const AddEmployee = () => {
                   </option>
                 ))}
               </Select>
+              <FormErrorMessage>{error.job_role_id}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.date_of_joining}>
               <CustomDatePicker
                 label="Date of Joining"
                 name="date_of_joining"
@@ -527,17 +762,19 @@ const AddEmployee = () => {
                 onChange={handleChange}
                 placeholder="Select date of joining"
               />
-            </FormControl >
-            <FormControl isRequired>
+              <FormErrorMessage>{error.date_of_joining}</FormErrorMessage>
+            </ FormControl>
+            <FormControl isRequired isInvalid={error.salary}>
               <FormLabel {...lableStyles}>Salary</FormLabel>
               <Input
                 name="salary"
                 placeholder="Salary"
                 onChange={handleChange}
               />
+              <FormErrorMessage>{error.salary}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.travelling_allowance_per_km}>
               <FormLabel {...lableStyles}>
                 Travelling Allowance Per K.M.
               </FormLabel>
@@ -546,9 +783,10 @@ const AddEmployee = () => {
                 placeholder="Travelling Allowance (per km)"
                 onChange={handleChange}
               />
+              <FormErrorMessage>{error.travelling_allowance_per_km}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.avg_travel_km_per_day} >
               <FormLabel {...lableStyles}>
                 Avg. Travelling Per Day (In K.M.)
               </FormLabel>
@@ -557,22 +795,25 @@ const AddEmployee = () => {
                 placeholder="Avg Travel / Day (km)"
                 onChange={handleChange}
               />
+              <FormErrorMessage>{error.avg_travel_km_per_day}</FormErrorMessage>
             </FormControl>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.city_allowance_per_km}>
               <FormLabel {...lableStyles}>City Allowance (Per K.M.)</FormLabel>
               <Input
                 name="city_allowance_per_km"
                 placeholder="City Allowance (per km)"
                 onChange={handleChange}
               />
+              <FormErrorMessage>{error.city_allowance_per_km}</FormErrorMessage>
             </FormControl>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.daily_allowance_with_doc}>
               <FormLabel {...lableStyles}>Daily Allowance (with DOC)</FormLabel>
               <Input
                 name="daily_allowance_with_doc"
                 placeholder="Daily Allowance (with doc)"
                 onChange={handleChange}
               />
+              <FormErrorMessage>{error.daily_allowance_with_doc}</FormErrorMessage>
             </FormControl>
             <FormControl>
               <FormLabel {...lableStyles}>
@@ -584,15 +825,16 @@ const AddEmployee = () => {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.hotel_allowance}>
               <FormLabel {...lableStyles}>Hotel Allowance</FormLabel>
               <Input
                 name="hotel_allowance"
                 placeholder="Hotel Allowance"
                 onChange={handleChange}
               />
+              <FormErrorMessage>{error.hotel_allowance}</FormErrorMessage>
             </FormControl>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.week_off}>
               <FormLabel {...lableStyles}>Select Week Off</FormLabel>
               <Select
                 name="week_off"
@@ -610,17 +852,20 @@ const AddEmployee = () => {
                 <option value="Saturday">Saturday</option>
                 <option value="Sunday">Sunday</option>
               </Select>
+              <FormErrorMessage>{error.week_off}</FormErrorMessage>
             </FormControl>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.total_leaves}>
               <FormLabel {...lableStyles}>Total Leaves</FormLabel>
               <Input name="total_leaves" onChange={handleChange} />
+              <FormErrorMessage>{error.total_leaves}</FormErrorMessage>
             </FormControl>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={error.headquarter}>
               <FormLabel {...lableStyles}>Headquarter</FormLabel>
               <Input name="headquarter" onChange={handleChange} />
+              <FormErrorMessage>{error.headquarter}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isRequired> 
+            <FormControl isRequired isInvalid={error.approver_name}>
               <FormLabel {...lableStyles}>Approver Name</FormLabel>
               <Select
                 name="approver_name"
@@ -628,11 +873,12 @@ const AddEmployee = () => {
                 onChange={handleChange}
               >
                 {empList?.map((emp) => (
-                  <option key={emp.id} value={emp.id}>
+                  <option key={emp.id} value={emp.name}>
                     {emp.name}
                   </option>
                 ))}
               </Select>
+              <FormErrorMessage>{error.approver_name}</FormErrorMessage>
             </FormControl>
           </SimpleGrid>
 
@@ -681,7 +927,7 @@ const AddEmployee = () => {
           >
             Create User
           </Button>
-          
+
 
 
           {/* <DocumentUploadTable/> */}

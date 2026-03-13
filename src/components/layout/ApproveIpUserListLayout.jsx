@@ -15,8 +15,7 @@ const ApproveIpUserListLayout = () => {
         position="fixed"
         top="0"
         left="0"
-        w="280px"
-        h="100vh"
+        w="268px"
         display={{ base: "none", md: "block" }}
       >
         <Sidebar />
@@ -42,8 +41,6 @@ const ApproveIpUserListLayout = () => {
         {/* Mobile Topbar */}
         <Box
           display={{ base: "block", md: "none" }}
-          px={4}
-          py={4}
         >
           <MobileTopbar />
         </Box>
@@ -51,15 +48,14 @@ const ApproveIpUserListLayout = () => {
         {/* Page Content */}
         <Box
           flex="1"
-          px={{ base: 4, md: 6 }}
           py={6}
-          overflow="auto"
+          px={4}
         >
           <Box
             bg="white"
-            p={6}
             borderRadius="21px"
-            boxShadow="sm"  mt="75px"
+            boxShadow="sm" 
+            mt="75px"
           >
             <ApproveIpUserList />
           </Box>

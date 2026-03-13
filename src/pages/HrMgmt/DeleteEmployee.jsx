@@ -64,10 +64,10 @@ const DeleteEmployeeModel = ({
       isCentered
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent mx="12px">
         {/* <ModalHeader>Delete Employee</ModalHeader> */}
 
-        <Flex bg="#E53E3E" color="white" p={4} justify="space-between"  size="xl">
+        <Flex bg="#E53E3E" color="white" py={2} px={4} justify="space-between" alignItems="center"  size="xl">
          <Text fontWeight="bold">
           Delete Employee
          </Text>
@@ -76,7 +76,7 @@ const DeleteEmployeeModel = ({
        
 
         <ModalBody mt={4}>
-          <Text>
+          <Text fontSize={{base:"12px",md:"14px"}}>
             Are you sure you want to{" "}
             <b style={{ color: "red" }}>delete</b> this employee?
             <br />
@@ -89,11 +89,13 @@ const DeleteEmployeeModel = ({
             variant="outline"
             mr={3}
             onClick={onDeleteModalClose}
+            fontSize={{base:"12px",md:"14px"}}
           >
             Cancel
           </Button>
           <Button
            bg="#E53E3E"
+           fontSize={{base:"12px",md:"14px"}}
             onClick={handleDeleteEmployee}
             isLoading={loading}
             color="white"

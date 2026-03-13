@@ -16,13 +16,15 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 
 const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
-  // const toast = useToast();
+  const toast = useToast();
   const [loading, setLoading] = React.useState(false);
 
   const approveIp = async () => {
     setLoading(true);
     try {
-      await API.post(`${API_ENDPOINTS.approve_ip}/${userId}`);
+     const response = await API.post(`${API_ENDPOINTS.approve_ip}/${userId}`);
+     if(response.status === 200){
+
 
       toast({
         title: "IP approved successfully.",
@@ -33,7 +35,10 @@ const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
 
       onClose();
       refreshData && refreshData();
-    } catch (error) {
+    }
+  }
+
+    catch (error) {
       toast({
         title: "Failed to approve IP.",
         description: error.message || "Something went wrong.",
@@ -49,25 +54,27 @@ const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
-      <ModalContent borderRadius="12px">
+
+      <ModalContent borderRadius="12px" mx="10px">
 
         {/* ✅ Proper Header */}
         <ModalHeader
           bg="blue.500"
           color="white"
          borderTopRadius="12px" p={7}
+         fontSize={{base:"15px",md:"2xl"}}
         >
           Approve User Request
         </ModalHeader>
 
-        <ModalCloseButton color="white"  p={5} size="lg"/>
+        <ModalCloseButton color="white"  p={5} size={{base:"md",md:"lg"}}/>
 
-        <ModalBody py={6}>
-          <Text>Are you sure you want to approve this IP?</Text>
+        <ModalBody py={6} >
+          <Text fontSize={{base:"12px",md:"20px"}}>Are you sure you want to approve this IP?</Text>
         </ModalBody>
 
         <ModalFooter>
-          <Button variant="outline" mr={3} onClick={onClose}>
+          <Button variant="outline" size={{base:"sm",md:"lg"}} mr={3} onClick={onClose}>
             Cancel
           </Button>
 
@@ -75,7 +82,7 @@ const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
          <Button
          overflow="hidden"
   bg="blue.500"
-
+  size={{base:"sm",md:"lg"}}
   color="white"    
   _hover={{ bg: "blue.600" }}
   onClick={approveIp}
@@ -88,6 +95,7 @@ const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
         </ModalFooter>
 
       </ModalContent>
+
     </Modal>
   );
 };

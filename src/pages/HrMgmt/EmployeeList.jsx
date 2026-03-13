@@ -125,18 +125,27 @@ const EmployeeList = () => {
           </Box></Flex>
 
         {/* Table */}
-        <Box bg="white" borderRadius="md" boxShadow="sm" overflowX="auto" border="1px solid #e5e5e5" >
+        <Box bg="white" borderRadius="md" boxShadow="sm"  border="1px solid #e5e5e5" width="100%" >
           {loading ? (
             <Flex justify="center" align="center" py={10}>
               <Spinner size="lg" />
             </Flex>
           ) : (
-            <Table variant="striped" colorScheme="gray" size="sm" width="2650px" className="productsTable">
+            <Box overflowX="auto" px={1} maxW="100vw">
+                    <Box overflowX="auto" whiteSpace="nowrap" sx={{
+                        "&::-webkit-scrollbar": { width: "8px", height: '8px' },
+                        "&::-webkit-scrollbar-thumb": {
+                            width: "8px", backgroundColor: "#7A7A7A", borderRadius: "4px",
+                        },
+                        "&::-webkit-scrollbar-track": {
+                            background: "#E8E8E8", borderRadius: "4px",},
+                    }}>
+            <Table variant="striped" colorScheme="gray" size="sm" minW="3950px" className="productsTable">
               <Thead>
                 <Tr>
                   {["Name", "Email", "Department", "Role", "Contact", "City / State", "Salary(Rs.)", "DOJ", "Leaves", "Login", "Logout", "Approver", "View Doc", "Action", "Generate Letters"].map((header, index) => (
                     <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize' 
-                      width={header === "Name" ? "7%" : "auto" && header === "Role" ? '11%' : 'auto' && header === "Login" ? "8%" : 'auto'} borderColor='#D9D9D9'
+                      width={header === "Name" ? "3%" : "auto" && header === "Email" ? "5%" : "auto" && header === "Role" ? '8%' : 'auto' && header === "Generate Letters" ? "20%" : 'auto'} borderColor='#D9D9D9'
                     >
                       <Flex alignItems="center" gap='7px'>
                         <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' overflow="hidden">
@@ -246,7 +255,7 @@ const EmployeeList = () => {
                 )}
               </Tbody>
 
-            </Table>
+            </Table></Box></Box>
           )}
         </Box>
 

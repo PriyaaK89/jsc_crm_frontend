@@ -9,16 +9,16 @@ const EmployeeListLayout = () => {
   return (
     <Flex bg="#f4f4f4" h="100vh" overflow="hidden">
 
-      {/* Fixed Sidebar */} 
-       <Box
+      {/* Fixed Sidebar */}
+      <Box
         position="fixed"
         top="0"
         left="0"
         w="280px"
         display={{ base: "none", md: "block" }}
-      > 
+      >
         <Sidebar />
-       </Box> 
+      </Box>
 
       {/* Main Content Area */}
       <Flex
@@ -32,8 +32,7 @@ const EmployeeListLayout = () => {
           display={{ base: "none", md: "block" }}
           px={{ base: 4, md: 6 }}
           pt={4}
-          mx={3}
-        >
+          mx={3}>
           <DesktopTopbar />
         </Box>
 
@@ -43,28 +42,15 @@ const EmployeeListLayout = () => {
           position="fixed"
           top="0"
           w="100%"
-          zIndex="10"
-          
-        >
+          zIndex="10">
           <MobileTopbar />
         </Box>
 
-        {/* Content Section */}
-       
-          <Box
-                      flex="1"
-                      p={{ base: 3, md: 6 }}
-                      pt={4}
-                      overflowY="auto"
-                    >
-                      <Box
-                        bg="white"
-                        borderRadius="20px"
-                        boxShadow="sm"   mt="75px"
-                      >
-                        <EmployeeList />
-                      </Box>
+        <Box flex="1" p={{ base: 3, md: 6 }} pt={4} overflowY="auto">
+          <Box bg="white" borderRadius="20px" boxShadow="sm" mt="75px">
+            <EmployeeList />
           </Box>
+        </Box>
 
       </Flex>
     </Flex>

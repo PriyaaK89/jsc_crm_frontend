@@ -57,7 +57,8 @@ const UploadSalarySlipLayout = () => {
             bg="white"
             borderRadius="20px"
             boxShadow="sm"
-            p={{ base: 3, md: 3 }}  mt="75px" 
+            p={3}  mt="75px" 
+            mb={5}
           >
             <UploadSalarySlip />
           </Box>

@@ -11,7 +11,7 @@ const ApproveIpUserListLayout = () => {
     <Flex minH="100vh" bg="#f4f4f4">
 
       {/* Fixed Sidebar */}
-      <Box
+      <Box 
         position="fixed"
         top="0"
         left="0"
@@ -56,6 +56,7 @@ const ApproveIpUserListLayout = () => {
             borderRadius="21px"
             boxShadow="sm" 
             mt="75px"
+            mb={5}
           >
             <ApproveIpUserList />
           </Box>

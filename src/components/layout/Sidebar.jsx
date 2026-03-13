@@ -236,7 +236,7 @@ useEffect(() => {
     >
       {/* Logo */}
       <Box borderBottom="1px solid #e5e7eb" bg="#FFFF" position="fixed" zIndex="9999" w="100%" >
-        <Image src={logo} alt="Company Logo" h="74px" w="224px"/>
+        <Image src={logo} alt="Company Logo" h="74px" w="224px" pl='2.5rem'/>
       </Box>
 
       <VStack spacing={2} align="stretch" mt="75px"  p={4}>

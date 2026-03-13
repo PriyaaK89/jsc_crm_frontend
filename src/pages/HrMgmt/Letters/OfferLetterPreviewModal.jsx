@@ -247,7 +247,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                       <Image src={jsc_stamp} alt="Company Stamp" boxSize="120px" mt={4} />)}
                   </Box>
                 </VStack>
-                <VStack alignItems="flex-start" mt="10rem" spacing="4px" width="81%" ml="-2.5rem">
+                <VStack alignItems="flex-start" mt="10rem" spacing="4px" width="76%" position='absolute' left='0px'>
                   <Divider borderColor="blue.600" borderWidth="1px" w="100%" mt="1rem" />
                   <Divider borderColor="blue.300" borderWidth="2px" w="90%" mt="0px" />
                   <Flex ml="1rem" gap="1rem" mt="2px">

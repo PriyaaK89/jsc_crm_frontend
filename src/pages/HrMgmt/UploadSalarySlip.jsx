@@ -1,22 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
-import {
-  Box,
-  Button,
-  Select,
-  Text,
-  SimpleGrid,
-  VStack,
-  useToast,
-  FormControl,
-  FormLabel,
-  Input,
-  HStack,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-} from "@chakra-ui/react";
+import { Box, Button, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Input, HStack, Breadcrumb, BreadcrumbItem, BreadcrumbLink,} from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 
 const UploadSalarySlip = () => {
@@ -25,19 +10,9 @@ const UploadSalarySlip = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [formData, setFormData] = useState({
-    employeeId: "",
-    employeeName: "",
-    month: "",
-  });
-
+  const [formData, setFormData] = useState({ employeeId: "", employeeName: "", month: "",});
   const [file, setFile] = useState(null);
-
-  const labelStyles = {
-    fontSize: "12px",
-    color: "#686868",
-    marginBottom: "3px",
-  };
+  const labelStyles = { fontSize: "12px", color: "#686868", marginBottom: "3px", };
 
   // 🔹 Fetch Employees
   const fetchEmployeeList = async () => {
@@ -229,21 +204,11 @@ const UploadSalarySlip = () => {
             <FormLabel {...labelStyles}>
               Upload Salary Slip (PDF/Image)
             </FormLabel>
-            <Input
-              type="file"
-              accept=".pdf,.jpg,.png"
-              onChange={handleFileChange}
-              p={1}
-            />
+            <Input type="file" accept=".pdf,.jpg,.png" onChange={handleFileChange} p={1}/>
           </FormControl>
         </SimpleGrid>
 
-        <Button
-          colorScheme="blue"
-          alignSelf="center"
-          isLoading={isSubmitting}
-          onClick={handleSubmit}
-        >
+        <Button colorScheme="blue" alignSelf="center" isLoading={isSubmitting} onClick={handleSubmit}>
           Upload Salary Slip
         </Button>
       </VStack>

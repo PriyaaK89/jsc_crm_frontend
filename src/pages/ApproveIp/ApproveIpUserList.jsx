@@ -55,7 +55,7 @@ const ApproveIpUserList = () => {
 
   return (
     <>
-      <ApproveIpRequestModal 
+      <ApproveIpRequestModal
         isOpen={isOpen}
         onClose={onClose}
         userId={userId}
@@ -73,7 +73,7 @@ const ApproveIpUserList = () => {
 
             <BreadcrumbItem isCurrentPage>
               <BreadcrumbLink fontSize="13px">
-              
+
                 Request Table
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -84,66 +84,71 @@ const ApproveIpUserList = () => {
           Request Table
         </Text>
 
-        {loading ? (
-          // <Flex justify="center" align="center" py={8}>
-<Center>
-            <Spinner size="md" />
-</Center>
-        ) : (
-          <Table
-          className="productsTable"
+        {
+          loading ? (
+            // <Flex justify="center" align="center" py={8}>
+            <Center>
+              <Spinner size="md" />
+            </Center>
+          ) : (
+            <Box overflowX="auto">
 
-            border="1px solid #cdcdcd"
-          >
-            <Thead bg="gray.100">
-              <Tr>
-                <Th>Id</Th>
-                <Th>Serial No</Th>
-                <Th>Name</Th>
-                <Th>IP Address</Th>
-                <Th>Is Allowed</Th>
-                <Th>Approved At</Th>
-                <Th>Created At</Th>
-                <Th>Action</Th>
-              </Tr>
-            </Thead>
-
-            <Tbody>
-              {userList.length === 0 ? (
+            <Table
+              className="productsTable"
+              maxW="1500px"
+              border="1px solid #cdcdcd"
+            >
+              <Thead bg="gray.100">
                 <Tr>
-                  <Td colSpan={8} textAlign="center" py={6} fontWeight="500" >
-                    No Data Found
-                  </Td>
+                  <Th>Id</Th>
+                  <Th>Serial No</Th>
+                  <Th>Name</Th>
+                  <Th>IP Address</Th>
+                  <Th>Is Allowed</Th>
+                  <Th>Approved At</Th>
+                  <Th>Created At</Th>
+                  <Th>Action</Th>
                 </Tr>
-              ) : (
-                userList.map((user, index) => (
-                  <Tr key={index}>
-                    <Td py={1}>{user.user_id}</Td>
-                    <Td py={1}>{index + 1}</Td>
-                    <Td>{user.user_name}</Td>
-                    <Td>{user.ip_address}</Td>
-                    <Td>{user.is_allowed ? "Yes" : "No"}</Td>
-                    <Td>{user.approved_at}</Td>
-                    <Td>{user.created_at}</Td>
-                    <Td>
-                      <Button
-                        size="xs"
-                       
-                        fontSize="11px"
-                        borderRadius="4px"
-                        colorScheme="blue"
-                        onClick={() => handleIpRequest(user?.id)}
-                      >
-                        Approve
-                      </Button>
+              </Thead>
+
+              <Tbody>
+                {userList.length === 0 ? (
+                  <Tr>
+                    <Td colSpan={8} textAlign="center" py={6} fontWeight="500" >
+                      No Data Found
                     </Td>
                   </Tr>
-                ))
-              )}
-            </Tbody>
-          </Table>
-        )}
-      
+                ) : (
+                  userList.map((user, index) => (
+                    <Tr key={index}>
+                      <Td py={1}>{user.user_id}</Td>
+                      <Td py={1}>{index + 1}</Td>
+                      <Td>{user.user_name}</Td>
+                      <Td>{user.ip_address}</Td>
+                      <Td>{user.is_allowed ? "Yes" : "No"}</Td>
+                      <Td>{user.approved_at}</Td>
+                      <Td>{user.created_at}</Td>
+                      <Td>
+                        <Button
+                          size="xs"
+
+                          fontSize="11px"
+                          borderRadius="4px"
+                          colorScheme="blue"
+                          onClick={() => handleIpRequest(user?.id)}
+                        >
+                          Approve
+                        </Button>
+                      </Td>
+                    </Tr>
+                  ))
+                )}
+              </Tbody>
+            </Table>
+                        </Box>
+
+          )         
+}
       </Box>
     </>
   );

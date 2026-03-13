@@ -88,8 +88,8 @@ const AgreementLetter = () => {
   return (
     <>
       <Box bg="white" p={6} borderRadius="12px">
-        <Heading size="md" mb={4}>
-          Generate Agreement Letter
+        <Heading size="md" mb={4}> 
+          Generate Agreement Letter  
         </Heading>
 
 
@@ -102,28 +102,28 @@ const AgreementLetter = () => {
           mb={8}
         >
           <Heading size="sm" mb={4} color="gray.600">
-            Employee Information
+            Employee Information 
           </Heading>
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
 
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-            <Text><b>Name:</b> {employee?.name}</Text>
-            <Text><b>Email:</b> {employee?.email}</Text>
-            <Text><b>Contact:</b> {employee?.contact_no}</Text>
-            <Text><b>Father's Name:</b>{employee?.father_name}</Text>
+            <Text fontSize={{base:"13px",md:"16px"}}><b>Name: </b> {employee?.name}</Text>
+            <Text fontSize={{base:"13px",md:"16px"}} ><b>Email:</b> {employee?.email}</Text>
+            <Text fontSize={{base:"13px",md:"16px"}}><b>Contact:</b> {employee?.contact_no}</Text>
+            <Text fontSize={{base:"13px",md:"16px"}}><b>Father's Name:</b>{employee?.father_name}</Text>
 
-            <Text><b>Department:</b> {employee?.department_name}</Text>
-            <Text><b>Role:</b> {employee?.job_role_name}</Text>
-            <Text>
+            <Text fontSize={{base:"13px",md:"16px"}}><b>Department:</b> {employee?.department_name}</Text>
+            <Text fontSize={{base:"13px",md:"16px"}}><b>Role:</b> {employee?.job_role_name}</Text>
+            <Text fontSize={{base:"13px",md:"16px"}}>
               <b>DOJ:</b>{" "}
               {new Date(employee?.date_of_joining).toLocaleDateString()}
             </Text>
 
-            <Text gridColumn="span 3">
+            <Text fontSize={{base:"13px",md:"16px"}} gridColumn={{base: "span 1",md:"2",lg:"span 3"}}>
               <b>Address:</b> {employee?.address_line1} {employee?.address_line2}{employee?.address_line2 ? "," : " "}
               {employee?.area}, {employee?.city}, {employee?.state} -{" "}
               {employee?.pincode}
             </Text>
-            <Text><b>Salary:</b>{" "}
+            <Text fontSize={{base:"13px",md:"16px"}}><b>Salary:</b>{" "}
               ₹{Number(employee?.salary).toLocaleString("en-IN", {
                 maximumFractionDigits: 0,
               })}

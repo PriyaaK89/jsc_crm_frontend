@@ -16,8 +16,7 @@ const OfferLetterLayout = () => {
                          position="fixed"
                          top="0"
                          left="0"
-                         w="280px"
-                         h="100vh"
+                         w="268px"
                          display={{ base: "none", md: "block" }}
                        >
                          <Sidebar />
@@ -44,8 +43,6 @@ const OfferLetterLayout = () => {
                          {/* Mobile Topbar */}
                          <Box
                            display={{ base: "block", md: "none" }}
-                           px={4}
-                           py={4}
                          >
                            <MobileTopbar />
                          </Box>
@@ -60,9 +57,10 @@ const OfferLetterLayout = () => {
                          >
                            <Box
                              bg="white"
-                             p={6}
+                             p={{base:3,md:4}}
                              borderRadius="21px"
-                             boxShadow="sm" mt="75px"
+                             boxShadow="sm"
+                              mt="75px"
                            >
                     <OfferLetterPage />
                            </Box>

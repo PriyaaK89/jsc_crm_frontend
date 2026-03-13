@@ -60,7 +60,7 @@ const MobileTopbar = () => {
       <Flex
         w="100%"
         h="75px"
-        bg="#F5F0FA"
+        bg="white"
         align="center"
         px={4}
         boxShadow="sm"

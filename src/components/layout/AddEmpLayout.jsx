@@ -13,8 +13,7 @@ const AddEmpLayout = () => {
        position = "fixed"
        top="0"
        left="0"
-        w="280px"
-        h="100vh"
+        w="268px"
         display={{ base: "none", md: "block" }}
       >
         <Sidebar />
@@ -51,7 +50,7 @@ const AddEmpLayout = () => {
         <Box
           flex="1"
           p={{ base: 3, md: 6 }}
-          pt={{ base: "70px", md: 4 }}
+          pt={{ base: "20px", md: 4 }}
         >
           <Box
             bg="white"

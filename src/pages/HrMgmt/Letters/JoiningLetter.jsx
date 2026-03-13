@@ -154,7 +154,7 @@ const EmpJoiningLetter = () => {
     <Box bg="white" p={6} borderRadius="12px">
 
       <Heading size="md" mb={4}>
-        Generate Joining Letter
+        Generate Joining Letter 
       </Heading>
 
       {/* ================= EMPLOYEE INFO ================= */}
@@ -172,37 +172,27 @@ const EmpJoiningLetter = () => {
           Employee Information
         </Heading>
 
-        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
 
-          <Text><b>Name:</b> {employee?.name}</Text>
-          <Text><b>Email:</b> {employee?.email}</Text>
-          <Text><b>Contact:</b> {employee?.contact_no}</Text>
+  <Text fontSize={{base:"13px",md:"16px"}}><b>Name:</b> {employee?.name}</Text>
+  <Text fontSize={{base:"13px",md:"16px"}}><b>Email:</b> {employee?.email}</Text>
+  <Text fontSize={{base:"13px",md:"16px"}}><b>Contact:</b> {employee?.contact_no}</Text>
 
-          <Text><b>Department:</b> {employee?.department_name}</Text>
-          <Text><b>Role:</b> {employee?.job_role_name}</Text>
+  <Text fontSize={{base:"13px",md:"16px"}}><b>Department:</b> {employee?.department_name}</Text>
+  <Text fontSize={{base:"13px",md:"16px"}} ><b>Role:</b> {employee?.job_role_name}</Text>
 
-          <Text>
-            <b>DOJ:</b>{" "}
-            {employee?.date_of_joining
-              ? new Date(employee.date_of_joining).toLocaleDateString()
-              : ""}
-          </Text>
+  <Text fontSize={{base:"13px",md:"16px"}}>
+    <b>DOJ:</b>{" "}
+    {employee?.date_of_joining
+      ? new Date(employee.date_of_joining).toLocaleDateString()
+      : ""}
+  </Text>
 
-          <Text gridColumn="span 3">
-            <b>Address:</b>{" "}
-            {employee?.address_line1} {employee?.address_line2},
-            {employee?.area}, {employee?.city}, {employee?.state} -
-            {employee?.pincode}
-          </Text>
+  <Text fontSize={{base:"13px",md:"16px"}} gridColumn={{ md: "span 2", lg: "span 3" }}>
+    <b>Address:</b> {employee?.address_line1}
+  </Text>
 
-          <Text>
-            <b>Salary:</b>{" "}
-            ₹{employee?.salary
-              ? Number(employee.salary).toLocaleString("en-IN")
-              : ""}
-          </Text>
-
-        </SimpleGrid>
+</SimpleGrid>  
 
       </Box>
 

@@ -19,7 +19,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  TableContainer
+  TableContainer,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 
@@ -42,7 +42,7 @@ const Payment = () => {
   };
 
   return (
-    <Box p={{ base: 3, md: 6 }}>
+    <Box bg="white" overflow="hidden">
 
       {/* Breadcrumb */}
       <HStack justifyContent="space-between" flexWrap="wrap">
@@ -54,19 +54,21 @@ const Payment = () => {
           </BreadcrumbItem>
 
           <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink fontSize="13px">Payment</BreadcrumbLink>
+            <BreadcrumbLink fontSize="13px">
+              Payment 
+            </BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>
       </HStack>
 
       <Text fontSize="lg" fontWeight="bold" mb={6}>
-        Payment
+        Payment 
       </Text>
 
       {/* Payment No */}
       <FormControl mb={4}>
         <FormLabel>Payment No.</FormLabel>
-        <Input value="3044" />
+        <Input defaultValue="3044" />
       </FormControl>
 
       {/* Account */}
@@ -76,9 +78,13 @@ const Payment = () => {
       </FormControl>
 
       {/* Responsive Table */}
-      <TableContainer overflowX="auto">
-        <Table variant="simple" mb={6} border="1px solid #cdcdcd" mt={2} minW="900px">
-          <Thead bgColor="aliceblue">
+      <TableContainer overflowX="auto" w="100%">
+        <Table
+          className="productsTable"
+          minW="900px"
+          border="1px solid #cdcdcd"
+        >
+          <Thead bg="gray.100">
             <Tr>
               <Th>Particulars</Th>
               <Th>Current Balance</Th>
@@ -93,22 +99,36 @@ const Payment = () => {
             {rows.map((row, index) => (
               <Tr key={index}>
                 <Td>
-                  <Select>
+                  <Select size="sm" minW="150px">
                     <option>End Of List</option>
                     <option>Test 1</option>
                   </Select>
                 </Td>
 
                 <Td>
-                  <Input type="number" defaultValue="0" />
+                  <Input
+                    size="sm"
+                    type="number"
+                    defaultValue="0"
+                    minW="80px"
+                  />
                 </Td>
 
                 <Td>
-                  <Input type="number" defaultValue="0" />
+                  <Input
+                    size="sm"
+                    type="number"
+                    defaultValue="0"
+                    minW="80px"
+                  />
                 </Td>
 
                 <Td>
-                  <Select placeholder="Please select">
+                  <Select
+                    size="sm"
+                    minW="160px"
+                    placeholder="Please select"
+                  >
                     <option>Cash</option>
                     <option>Cheque/DD</option>
                     <option>e-Fund Transfer</option>
@@ -117,14 +137,17 @@ const Payment = () => {
                 </Td>
 
                 <Td>
-                  <Select placeholder="Select Bank"></Select>
+                  <Select size="sm" minW="150px" placeholder="Select Bank">
+                    <option>SBI</option>
+                    <option>HDFC</option>
+                    <option>ICICI</option>
+                  </Select>
                 </Td>
 
                 <Td>
-                  <Flex gap={2} flexWrap="wrap">
+                  <Flex gap={2}>
                     <Button
-                      size="sm"
-                      variant="ghost"
+                      size="xs"
                       colorScheme="blue"
                       onClick={handleAddRow}
                     >
@@ -133,8 +156,7 @@ const Payment = () => {
 
                     {index !== 0 && (
                       <Button
-                        size="sm"
-                        variant="ghost"
+                        size="xs"
                         colorScheme="red"
                         onClick={() => handleRemoveRow(index)}
                       >
@@ -150,26 +172,26 @@ const Payment = () => {
       </TableContainer>
 
       {/* Total Amount */}
-      <FormControl mb={4}>
+      <FormControl mt={5}>
         <FormLabel>Total Amount</FormLabel>
         <Input type="number" />
       </FormControl>
 
       {/* Narration */}
-      <FormControl mb={4}>
+      <FormControl mt={5}>
         <FormLabel>Narration</FormLabel>
         <Textarea placeholder="Enter narration..." />
       </FormControl>
 
       {/* Upload */}
-      <FormControl mb={6}>
+      <FormControl mt={5}>
         <FormLabel>Upload Document *</FormLabel>
         <Input type="file" p={1} />
       </FormControl>
 
       {/* Save Button */}
-      <Flex justify={{ base: "center", md: "flex-end" }}>
-        <Button colorScheme="blue" w={{ base: "100%", md: "auto" }}>
+      <Flex justify={{ base: "center", md: "flex-end" }} mt={6}>
+        <Button colorScheme="blue" w={{ base: "100%", md: "200px" }}>
           SAVE
         </Button>
       </Flex>

@@ -18,7 +18,8 @@ import {
   BreadcrumbLink,
   Textarea,
   Button,
-  Flex
+  Flex,
+  TableContainer
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 
@@ -27,7 +28,7 @@ const Credit = () => {
   const [consignee, setConsignee] = useState("no");
 
   return (
-    <Box p={6}>
+    <Box p={{ base: 3, md: 6 }} overflowX="hidden">
 
       {/* Breadcrumb */}
       <HStack justifyContent="space-between" flexWrap="wrap">
@@ -41,41 +42,41 @@ const Credit = () => {
 
           <BreadcrumbItem isCurrentPage>
             <BreadcrumbLink fontSize="13px">
-              Credit Note
+              Credit Note 
             </BreadcrumbLink>
           </BreadcrumbItem>
 
         </Breadcrumb>
       </HStack>
 
-      {/* Page Title */}
+      {/* Title */}
       <Text fontSize="lg" fontWeight="bold" mb={6}>
         Credit Note
       </Text>
-       <FormControl mb={4}>
-              <FormLabel>Credit Note No.</FormLabel>
-              <Input value="1" />
-            </FormControl>
-      
-            {/* Party Name */}
-            <FormControl mb={4}>
-              <FormLabel>Party A/c Name</FormLabel>
-      
-              <Select
-                placeholder="--Please Select--"
-                onChange={(e) => setParty(e.target.value)}
-              >
-                <option value="test1">test1</option>
-              </Select>
-      
-            </FormControl>
 
+      {/* Credit Note */}
+      <FormControl mb={4}>
+        <FormLabel>Credit Note No.</FormLabel>
+        <Input value="1" />
+      </FormControl>
+
+      {/* Party */}
+      <FormControl mb={4}>
+        <FormLabel>Party A/c Name</FormLabel>
+
+        <Select placeholder="--Please Select--">
+          <option value="test1">test1</option>
+        </Select>
+
+      </FormControl>
+
+      {/* Balance */}
       <FormControl mb={6}>
         <FormLabel>Current Balance</FormLabel>
         <Input value="1" />
       </FormControl>
 
-      {/* Consignee Select */}
+      {/* Consignee */}
       <FormControl mb={6}>
         <FormLabel>Is Consignee</FormLabel>
 
@@ -89,106 +90,109 @@ const Credit = () => {
 
       </FormControl>
 
-
-      {/* Dealer Details Table */}
+      {/* Dealer Table */}
       {consignee === "yes" && (
 
-        <Table border="1px solid #ccc" mb={6}>
+        <TableContainer overflowX="auto" mb={6} maxWidth="100vw">
 
-          <Thead bg="#f5f5f5">
-            <Tr>
-              <Th>Dealer Name</Th>
-              <Th>Prop Name</Th>
-              <Th>Contact</Th>
-              <Th>Address</Th>
-              <Th>GSTN No</Th>
-            </Tr>
-          </Thead>
+          <Table border="1px solid #ccc" maxW="500px">
 
-          <Tbody>
-            <Tr>
-              <Td><Input placeholder="Dealer Name" /></Td>
-              <Td><Input placeholder="Prop Name" /></Td>
-              <Td><Input placeholder="Contact" /></Td>
-              <Td><Input placeholder="Address" /></Td>
-              <Td><Input placeholder="GSTN No" /></Td>
-            </Tr>
-          </Tbody>
+            <Thead bg="#f5f5f5">
+              <Tr>
+                <Th>Dealer Name</Th>
+                <Th>Prop Name</Th>
+                <Th>Contact</Th>
+                <Th>Address</Th>
+                <Th>GSTN No</Th>
+              </Tr>
+            </Thead>
 
-        </Table>
+            <Tbody>
+              <Tr>
+                <Td><Input placeholder="Dealer Name" /></Td>
+                <Td><Input placeholder="Prop Name" /></Td>
+                <Td><Input placeholder="Contact" /></Td>
+                <Td><Input placeholder="Address" /></Td>
+                <Td><Input placeholder="GSTN No" /></Td>
+              </Tr>
+            </Tbody>
+
+          </Table>
+
+        </TableContainer>
 
       )}
-
 
       {/* Transport Section */}
       <Text fontWeight="bold" mb={3}>
         Transport Details
       </Text>
 
-      <Table border="1px solid #ccc">
+      <TableContainer overflowX="scroll" maxWidth="100vw">
 
-        <Thead bg="#f5f5f5">
-          <Tr>
-            <Th>Transport Name</Th>
-            <Th>LR No</Th>
-            <Th>Vehicle No</Th>
-          </Tr>
-        </Thead>
+        <Table border="1px solid #ccc" maxW="500px">
 
-        <Tbody>
-          <Tr>
-            <Td><Input value="sg" /></Td>
-            <Td><Input type="file" /></Td>
-            <Td><Input type="file" /></Td>
-          </Tr>
-        </Tbody>
+          <Thead bg="#f5f5f5">
+            <Tr>
+              <Th>Transport Name</Th>
+              <Th>LR No</Th>
+              <Th>Vehicle No</Th>
+            </Tr>
+          </Thead>
 
-      </Table>
-      <FormControl mb={4} mt={6}>
-                                    <FormLabel>IGST ()</FormLabel>
-                                    <Input type="text"  />
-                                  </FormControl>
-                                  <FormControl mb={4}>
-                                    <FormLabel>
-                                       CGST ()
-                                                                           <Input type="text"  />
+          <Tbody>
+            <Tr>
+              <Td><Input value="sg" /></Td>
+              <Td><Input type="file" /></Td>
+              <Td><Input type="file" /></Td>
+            </Tr>
+          </Tbody>
 
-                                     </FormLabel>
-                                  </FormControl><FormControl mb={4}>
-                                    <FormLabel>SGST ()</FormLabel>
-                                    <Input type="text"  />
-                                  </FormControl>
-                                  <FormControl mb={4}>
-                                    <FormLabel>Total Amount</FormLabel>
-                                    <Input type="number"  />
-                                  </FormControl>
+        </Table>
 
-       {/* Narration */}
-                                
-                          
-                                  <FormControl mb={4}>
-                                    <FormLabel>Narration</FormLabel>
-                                    <Textarea defaultValue="debit" />
-                                  </FormControl>
-                          
-                          
-                                {/* Upload */}
-                                
-                          
-                                  <FormControl mb={6}>
-                                    <FormLabel>Upload Document *</FormLabel>
-                                    <Input type="file" />
-                                  </FormControl>
-                          
-                                {/* Save Button */}
-                                
-                          
-                                  <Flex justify="flex-end">
-                                    <Button colorScheme="blue">
-                                      SAVE
-                                    </Button>
-                                  </Flex>
-                          
+      </TableContainer>
+
+      {/* GST Fields */}
+
+      <FormControl mt={6} mb={4}>
+        <FormLabel>IGST</FormLabel>
+        <Input />
+      </FormControl>
+
+      <FormControl mb={4}>
+        <FormLabel>CGST</FormLabel>
+        <Input />
+      </FormControl>
+
+      <FormControl mb={4}>
+        <FormLabel>SGST</FormLabel>
+        <Input />
+      </FormControl>
+
+      <FormControl mb={4}>
+        <FormLabel>Total Amount</FormLabel>
+        <Input type="number" />
+      </FormControl>
+
+      {/* Narration */}
+      <FormControl mb={4}>
+        <FormLabel>Narration</FormLabel>
+        <Textarea />
+      </FormControl>
+
+      {/* Upload */}
+      <FormControl mb={6}>
+        <FormLabel>Upload Document</FormLabel>
+        <Input type="file" />
+      </FormControl>
+
+      {/* Save */}
+      <Flex justify="flex-end">
+        <Button colorScheme="blue">
+          SAVE
+        </Button>
+      </Flex>
+
     </Box>
   );
 };

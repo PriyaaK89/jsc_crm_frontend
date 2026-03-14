@@ -29,7 +29,7 @@ const Debit = () => {
   const [item, setItem] = useState("");
 
   return (
-    <Box p={6}>
+    <Box p={6} overflowX="hidden">
 
       {/* Breadcrumb */}
       <HStack justifyContent="space-between" flexWrap="wrap">
@@ -97,8 +97,18 @@ const Debit = () => {
 
       {/* Item Table */}
       {consignee === "yes" && (
+        <Box bg="white" borderRadius="md" boxShadow="sm"  border="1px solid #e5e5e5" width="100%">
 
-        <Table border="1px solid #ccc" mb={6}>
+ <Box overflowX="auto" maxW="100vw">
+                    <Box overflowX="auto" whiteSpace="nowrap" sx={{
+                        "&::-webkit-scrollbar": { width: "8px", height: '8px' },
+                        "&::-webkit-scrollbar-thumb": {
+                            width: "8px", backgroundColor: "#7A7A7A", borderRadius: "4px",
+                        },
+                        "&::-webkit-scrollbar-track": {
+                            background: "#eeeded", borderRadius: "4px",},
+                    }}>
+        <Table border="1px solid #ccc" mb={6} minW="1200px">
 
           <Thead bg="#f5f5f5">
             <Tr>
@@ -156,7 +166,8 @@ const Debit = () => {
             </Tr>
           </Tbody>
 
-        </Table>
+        </Table></Box></Box>
+               </Box>
 
       )}
 
@@ -164,8 +175,11 @@ const Debit = () => {
       <Text fontWeight="bold" mb={3}>
         Transport Details
       </Text>
+      
+       <Box overflowX="auto">
 
-      <Table border="1px solid #ccc">
+
+      <Table border="1px solid #ccc" className="">
 
         <Thead bg="#f5f5f5">
           <Tr>
@@ -184,6 +198,7 @@ const Debit = () => {
         </Tbody>
 
       </Table>
+      </Box>
 
       {/* Tax Section */}
 

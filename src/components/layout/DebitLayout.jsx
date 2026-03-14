@@ -63,7 +63,7 @@ const DebitLayout = () => {
                 mt="75px"
                 mb={5}
               >
-                <EditEmployee />
+                <Debit />
               </Box>
             </Box>
           </Flex>

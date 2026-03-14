@@ -126,7 +126,7 @@ const Newsidebar = () => {
       icon: MdCorporateFare,
       children: [
         { label: "Create Company", path: "/company-master/create-company", icon: HiOfficeBuilding },
-
+          
 
       ]
     },

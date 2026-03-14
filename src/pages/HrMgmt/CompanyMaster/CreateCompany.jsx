@@ -37,36 +37,36 @@ const CreateCompany = () => {
   };
 
   // Submit Form
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
 
-    try {
-      const response = await axios.post(
-        "http://103.110.127.211:8080/WeaverBO/com/stpl/pms/action/bo/um/bo_um_createCompany.action",
-        formData
-      );
+  //   try {
+  //     const response = await axios.post(
+  //       "http://103.110.127.211:8080/WeaverBO/com/stpl/pms/action/bo/um/bo_um_createCompany.action",
+  //       formData
+  //     );
 
-      toast({
-        title: "Company Created Successfully",
-        status: "success",
-        duration: 3000,
-      });
+  //     toast({
+  //       title: "Company Created Successfully",
+  //       status: "success",
+  //       duration: 3000,
+  //     });
 
-      console.log(response.data);
+  //     console.log(response.data);
 
-    } catch (error) {
-      toast({
-        title: "Failed to create company",
-        status: "error",
-        duration: 3000,
-      });
+  //   } catch (error) {
+  //     toast({
+  //       title: "Failed to create company",
+  //       status: "error",
+  //       duration: 3000,
+  //     });
 
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     console.error(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <Box   mt={10} p={8}  borderRadius="lg" bg="white">

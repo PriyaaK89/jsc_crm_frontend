@@ -7,13 +7,14 @@ import PartyLedgerReport from "../../../pages/Reports/PartyLedgerReport";
 
 const PartyLedgerReportLayout = () => {
   return (
- <Flex h="100vh" bg="#f4f4f4" overflow="hidden">      
+      <Flex bg="#f4f4f4" minH="100vh">
+      
       {/* Desktop Sidebar */}
       <Box
        position = "fixed"
        top="0"
        left="0"
-        w="280px"
+        w="268px"
         display={{ base: "none", md: "block" }}
       >
         <Sidebar />
@@ -49,17 +50,19 @@ const PartyLedgerReportLayout = () => {
         {/* Content */}
         <Box
           flex="1"
-          p={{ base: 3, md: 6 }}
-          pt={{ base: "70px", md: 4 }}
-          overflowY="auto"
+          px={{ base: 3, md: 6 }}
+          pt={{ base: "20px", md: 4 }}
+          
         >
           <Box
             bg="white"
             borderRadius="20px"
             boxShadow="sm"
-            p={{ base: 3, md: 3 }}  mt="75px" 
+            p={{ base: 3, md: 6 }} 
+            mt="75px"
+            mb={5}
           >
-            <PartyLedgerReport />
+            <EditEmployee />
           </Box>
         </Box>
       </Flex>
@@ -67,3 +70,4 @@ const PartyLedgerReportLayout = () => {
   );
 };
 export default PartyLedgerReportLayout
+ 

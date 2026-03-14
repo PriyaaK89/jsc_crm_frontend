@@ -65,7 +65,7 @@ const ViewStockGroupLayout = () => {
             <ViewStockGroup />
           </Box>
         </Box>
-      </Flex>
+      </Flex> 
     </Flex>
   );
 };

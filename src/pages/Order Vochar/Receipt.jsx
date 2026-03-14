@@ -1,5 +1,4 @@
-import React from 'react'
-import { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Text,
@@ -19,53 +18,54 @@ import {
   Textarea,
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink
+  BreadcrumbLink,
+  TableContainer
 } from "@chakra-ui/react";
+
 import { GoHomeFill } from "react-icons/go";
-import { IoMdAdd } from "react-icons/io";
-import { IoMdRemove } from "react-icons/io";
+import { IoMdAdd, IoMdRemove } from "react-icons/io";
 
- const Receipt = () => {
-   const [rows, setRows] = useState([
-     { particulars: "", balance: 0, amount: 0, type: "", bank: "" },
-   ]);
+const Receipt = () => {
+  const [rows, setRows] = useState([
+    { particulars: "", balance: 0, amount: 0, type: "", bank: "" },
+  ]);
 
-   const handleAddRow = () => {
-     setRows([
-       ...rows,
-       { particulars: "", balance: 0, amount: 0, type: "", bank: "" },
-     ]);
-   };
- 
-   const handleRemoveRow = (index) => {
-     if (index === 0) return;
-     const updated = rows.filter((_, i) => i !== index);
-     setRows(updated);
-   };
+  const handleAddRow = () => {
+    setRows([
+      ...rows,
+      { particulars: "", balance: 0, amount: 0, type: "", bank: "" },
+    ]);
+  };
 
+  const handleRemoveRow = (index) => {
+    if (index === 0) return;
+    const updated = rows.filter((_, i) => i !== index);
+    setRows(updated);
+  };
 
   return (
- <Box p={6}>
-         <HStack justifyContent="space-between" flexWrap="wrap">
-                  <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
-                    <BreadcrumbItem>
-                      <BreadcrumbLink href="/dashboard">
-                        <GoHomeFill color="#5570F1" />
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-        
-                    <BreadcrumbItem isCurrentPage>
-                      <BreadcrumbLink fontSize="13px">
-                        Receipt
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                  </Breadcrumb>
-                </HStack>
-        
-                <Text fontSize="lg" fontWeight="bold" mb={6}>
-                  Receipt
-                </Text>
-    
+    <Box p={{ base: 3, md: 6 }}>
+
+      {/* Breadcrumb */}
+      <HStack justifyContent="space-between" flexWrap="wrap">
+        <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">
+              <GoHomeFill color="#5570F1" />
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+
+          <BreadcrumbItem isCurrentPage>
+            <BreadcrumbLink fontSize="13px">
+              Receipt
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </Breadcrumb>
+      </HStack>
+
+      <Text fontSize="lg" fontWeight="bold" mb={6}>
+        Receipt
+      </Text>
 
       {/* Receipt No */}
       <FormControl mb={4}>
@@ -76,88 +76,92 @@ import { IoMdRemove } from "react-icons/io";
       {/* Account */}
       <FormControl mb={6}>
         <FormLabel>Account</FormLabel>
-        <Select placeholder="Select Account">
-        </Select>
+        <Select placeholder="Select Account"></Select>
       </FormControl>
 
-      {/* Table */}
-      <Table variant="simple" mb={6} border="1px solid #cdcdcd" mt={2}>
-        <Thead bgColor="aliceblue">
-          <Tr>
-            <Th>Particulars</Th>
-            <Th>Current Balance</Th>
-            <Th>Amount</Th>
-            <Th>Transaction Type</Th>
-            <Th>Bank Name</Th>
-            <Th>Action</Th>
-          </Tr>
-        </Thead>
-
-        <Tbody>
-          {rows.map((row, index) => (
-            <Tr key={index}>
-              <Td>
-                <Select>
-                  <option>End Of List</option>
-                  <option>Test 1</option>
-                </Select>
-              </Td>
-
-              <Td>
-                <Input type="number" defaultValue="0" />
-              </Td>
-
-              <Td>
-                <Input type="number" defaultValue="0" />
-              </Td>
-
-              <Td>
-                <Select placeholder="Please select">
-                  <option>Cash</option>
-                  <option>Cheque/DD</option>
-                  <option>e-Fund Transfer</option>
-                  <option>Other</option>
-                </Select>
-              </Td>
-
-              <Td>
-                <Select placeholder="Select Bank">
-                </Select>
-              </Td>
-
-              <Td>
-                <Flex gap={2}>
-                  <Button
-                  padding="0px"
-                      bgColor="white"
-                    size="sm"
-                    onClick={handleAddRow}
-                    border="1px solid blue"
-                    borderRadius="5px"
-                  >
-                    <IoMdAdd size={15} color="blue" />
-
-                  </Button>
-
-                  {index !== 0 && (
-                    <Button
-                    padding="0px"
-                     bgColor="white"
-                      size="sm"
-                      border="1px solid red"
-                      borderRadius="5px"
-                      onClick={() => handleRemoveRow(index)}
-                    >
-                      <IoMdRemove size={15}  color="red" />
-
-                    </Button>
-                  )}
-                </Flex>
-              </Td>
+      {/* Responsive Table */}
+      <TableContainer overflowX="auto">
+        <Table
+          variant="simple"
+          mb={6}
+          border="1px solid #cdcdcd"
+          mt={2}
+          minW="900px"
+        >
+          <Thead bgColor="aliceblue">
+            <Tr>
+              <Th>Particulars</Th>
+              <Th>Current Balance</Th>
+              <Th>Amount</Th>
+              <Th>Transaction Type</Th>
+              <Th>Bank Name</Th>
+              <Th>Action</Th>
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
+          </Thead>
+
+          <Tbody>
+            {rows.map((row, index) => (
+              <Tr key={index}>
+                <Td>
+                  <Select>
+                    <option>End Of List</option>
+                    <option>Test 1</option>
+                  </Select>
+                </Td>
+
+                <Td>
+                  <Input type="number" defaultValue="0" />
+                </Td>
+
+                <Td>
+                  <Input type="number" defaultValue="0" />
+                </Td>
+
+                <Td>
+                  <Select placeholder="Please select">
+                    <option>Cash</option>
+                    <option>Cheque/DD</option>
+                    <option>e-Fund Transfer</option>
+                    <option>Other</option>
+                  </Select>
+                </Td>
+
+                <Td>
+                  <Select placeholder="Select Bank"></Select>
+                </Td>
+
+                <Td>
+                  <Flex gap={2} flexWrap="wrap">
+                    <Button
+                      p="0"
+                      bg="white"
+                      size="sm"
+                      border="1px solid blue"
+                      borderRadius="5px"
+                      onClick={handleAddRow}
+                    >
+                      <IoMdAdd size={15} color="blue" />
+                    </Button>
+
+                    {index !== 0 && (
+                      <Button
+                        p="0"
+                        bg="white"
+                        size="sm"
+                        border="1px solid red"
+                        borderRadius="5px"
+                        onClick={() => handleRemoveRow(index)}
+                      >
+                        <IoMdRemove size={15} color="red" />
+                      </Button>
+                    )}
+                  </Flex>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
 
       {/* Total Amount */}
       <FormControl mb={4}>
@@ -171,21 +175,21 @@ import { IoMdRemove } from "react-icons/io";
         <Textarea placeholder="Enter narration..." />
       </FormControl>
 
-      {/* Upload Document */}
+      {/* Upload */}
       <FormControl mb={6}>
         <FormLabel>Upload Document *</FormLabel>
         <Input type="file" p={1} />
       </FormControl>
 
       {/* Save Button */}
-      <Flex justify="flex-end">
-        <Button colorScheme="blue">
+      <Flex justify={{ base: "center", md: "flex-end" }}>
+        <Button colorScheme="blue" w={{ base: "100%", md: "auto" }}>
           SAVE
         </Button>
       </Flex>
+
     </Box>
+  );
+};
 
-  )
-}
-
-export default Receipt
+export default Receipt;

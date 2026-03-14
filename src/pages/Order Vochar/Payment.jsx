@@ -18,7 +18,8 @@ import {
   Textarea,
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink
+  BreadcrumbLink,
+  TableContainer
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 
@@ -41,27 +42,26 @@ const Payment = () => {
   };
 
   return (
-    <Box p={6}>
-         <HStack justifyContent="space-between" flexWrap="wrap">
-                  <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
-                    <BreadcrumbItem>
-                      <BreadcrumbLink href="/dashboard">
-                        <GoHomeFill color="#5570F1" />
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-        
-                    <BreadcrumbItem isCurrentPage>
-                      <BreadcrumbLink fontSize="13px">
-                       Payment
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                  </Breadcrumb>
-                </HStack>
-        
-                <Text fontSize="lg" fontWeight="bold" mb={6}>
-                  Payment
-                </Text>
-    
+    <Box p={{ base: 3, md: 6 }}>
+
+      {/* Breadcrumb */}
+      <HStack justifyContent="space-between" flexWrap="wrap">
+        <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">
+              <GoHomeFill color="#5570F1" />
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+
+          <BreadcrumbItem isCurrentPage>
+            <BreadcrumbLink fontSize="13px">Payment</BreadcrumbLink>
+          </BreadcrumbItem>
+        </Breadcrumb>
+      </HStack>
+
+      <Text fontSize="lg" fontWeight="bold" mb={6}>
+        Payment
+      </Text>
 
       {/* Payment No */}
       <FormControl mb={4}>
@@ -72,82 +72,82 @@ const Payment = () => {
       {/* Account */}
       <FormControl mb={6}>
         <FormLabel>Account</FormLabel>
-        <Select placeholder="Select Account">
-        </Select>
+        <Select placeholder="Select Account"></Select>
       </FormControl>
 
-      {/* Table */}
-      <Table variant="simple" mb={6} border="1px solid #cdcdcd" mt={2}>
-        <Thead bgColor="aliceblue">
-          <Tr>
-            <Th>Particulars</Th>
-            <Th>Current Balance</Th>
-            <Th>Amount</Th>
-            <Th>Transaction Type</Th>
-            <Th>Bank Name</Th>
-            <Th>Action</Th>
-          </Tr>
-        </Thead>
+      {/* Responsive Table */}
+      <TableContainer overflowX="auto">
+        <Table variant="simple" mb={6} border="1px solid #cdcdcd" mt={2} minW="900px">
+          <Thead bgColor="aliceblue">
+            <Tr>
+              <Th>Particulars</Th>
+              <Th>Current Balance</Th>
+              <Th>Amount</Th>
+              <Th>Transaction Type</Th>
+              <Th>Bank Name</Th>
+              <Th>Action</Th>
+            </Tr>
+          </Thead>
 
-        <Tbody>
-          {rows.map((row, index) => (
-            <Tr key={index}>
-              <Td>
-                <Select>
-                  <option>End Of List</option>
-                  <option>Test 1</option>
-                </Select>
-              </Td>
+          <Tbody>
+            {rows.map((row, index) => (
+              <Tr key={index}>
+                <Td>
+                  <Select>
+                    <option>End Of List</option>
+                    <option>Test 1</option>
+                  </Select>
+                </Td>
 
-              <Td>
-                <Input type="number" defaultValue="0" />
-              </Td>
+                <Td>
+                  <Input type="number" defaultValue="0" />
+                </Td>
 
-              <Td>
-                <Input type="number" defaultValue="0" />
-              </Td>
+                <Td>
+                  <Input type="number" defaultValue="0" />
+                </Td>
 
-              <Td>
-                <Select placeholder="Please select">
-                  <option>Cash</option>
-                  <option>Cheque/DD</option>
-                  <option>e-Fund Transfer</option>
-                  <option>Other</option>
-                </Select>
-              </Td>
+                <Td>
+                  <Select placeholder="Please select">
+                    <option>Cash</option>
+                    <option>Cheque/DD</option>
+                    <option>e-Fund Transfer</option>
+                    <option>Other</option>
+                  </Select>
+                </Td>
 
-              <Td>
-                <Select placeholder="Select Bank">
-                </Select>
-              </Td>
+                <Td>
+                  <Select placeholder="Select Bank"></Select>
+                </Td>
 
-              <Td>
-                <Flex gap={2}>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    colorScheme="blue"
-                    onClick={handleAddRow}
-                  >
-                    Add
-                  </Button>
-
-                  {index !== 0 && (
+                <Td>
+                  <Flex gap={2} flexWrap="wrap">
                     <Button
                       size="sm"
                       variant="ghost"
-                      colorScheme="red"
-                      onClick={() => handleRemoveRow(index)}
+                      colorScheme="blue"
+                      onClick={handleAddRow}
                     >
-                      Delete
+                      Add
                     </Button>
-                  )}
-                </Flex>
-              </Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
+
+                    {index !== 0 && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        colorScheme="red"
+                        onClick={() => handleRemoveRow(index)}
+                      >
+                        Delete
+                      </Button>
+                    )}
+                  </Flex>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
 
       {/* Total Amount */}
       <FormControl mb={4}>
@@ -161,15 +161,15 @@ const Payment = () => {
         <Textarea placeholder="Enter narration..." />
       </FormControl>
 
-      {/* Upload Document */}
+      {/* Upload */}
       <FormControl mb={6}>
         <FormLabel>Upload Document *</FormLabel>
         <Input type="file" p={1} />
       </FormControl>
 
       {/* Save Button */}
-      <Flex justify="flex-end">
-        <Button colorScheme="blue">
+      <Flex justify={{ base: "center", md: "flex-end" }}>
+        <Button colorScheme="blue" w={{ base: "100%", md: "auto" }}>
           SAVE
         </Button>
       </Flex>

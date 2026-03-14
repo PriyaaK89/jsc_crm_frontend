@@ -14,7 +14,7 @@ const CreateSubTeam = () => {
     };
 
     return (
-    <Box w="100%" bg="white" p={6} borderRadius="lg"  >
+    <Box w="100%" bg="white" p={4} borderRadius="lg"  >
                 <HStack justifyContent='space-between'>
                       <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                         <BreadcrumbItem>

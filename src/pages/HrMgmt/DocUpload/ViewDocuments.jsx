@@ -8,6 +8,7 @@ import {
   Box,
   Text,
   VStack,
+  SimpleGrid,
   Image,
   Divider,
   Button,
@@ -17,6 +18,8 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
+import { FiUploadCloud } from "react-icons/fi";
+
 
 const DOCUMENT_LABELS = {
   aadhar_card: "Aadhar Card",
@@ -83,7 +86,7 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
         description: "Document uploaded successfully",
       });
 
-      getEmployeeDocuments(); 
+      getEmployeeDocuments();
     } catch (err) {
       toast({
         status: "error",
@@ -96,16 +99,18 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="4xl" isCentered scrollBehavior="inside">
+    <Modal isOpen={isOpen} onClose={onClose} size="2xl" isCentered scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent borderRadius="14px">
-        <ModalHeader>Uploaded Documents</ModalHeader>
-        <ModalCloseButton />
+      <ModalContent borderRadius="12px" mx="10px">
+        <ModalHeader bg="blue.500" textColor="white" p={7} fontSize={{ base: "15px", md: "lg" }} >Uploaded Documents</ModalHeader>
+        <ModalCloseButton color="white" p={5} size={{ base: "md", md: "lg" }} />
 
         <ModalBody pb={6}>
           {userName && (
             <>
-              <Text fontSize="lg" fontWeight="600" mb={4}>
+
+              <Text fontSize="lg" fontWeight="600" mb={4} mt={4}>
+                UserName:
                 {userName}
               </Text>
               <Divider mb={6} />
@@ -124,8 +129,10 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
               const url = docs[key];
 
               return (
-                <Box key={key}>
-                  <Text fontWeight="500" mb={2}>
+                <Box key={key} mt={4}>
+                    <SimpleGrid columns={3} justify="space-between" spacing={{sm:0, base:0, md:"7rem"}}>
+
+                  <Text fontSize={{base:"12px",md:"14px"}} fontWeight="500" mb={2}  width={{base:"100px", md:"200px"}}>
                     {DOCUMENT_LABELS[key]}
                   </Text>
 
@@ -155,20 +162,27 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
                     </>
                   ) : (
                     <>
-                      <Text color="gray.500" fontStyle="italic" mb={2}>
+                      <Text fontSize={{base:"12px",md:"14px"}}  fontStyle="italic" mb={2}>
                         Not provided
                       </Text>
+                      <Box>
 
-                      <Button
-                        size="sm"
-                        colorScheme="green"
-                        onClick={() => handleUploadClick(key)}
-                        isLoading={uploadingKey === key}
-                      >
-                        Upload
-                      </Button>
+                        <Button
+                        rightIcon={<FiUploadCloud  size={15} color="white"/>
+}
+                          // size="sm"
+                          fontSize={{base:"12px",md:"14px"}}
+                          colorScheme="blue"
+                          onClick={() => handleUploadClick(key)}
+                          isLoading={uploadingKey === key}
+                        >
+                          Upload
+                        </Button>
+                      </Box>
+
                     </>
                   )}
+                  </SimpleGrid>
                 </Box>
               );
             })}

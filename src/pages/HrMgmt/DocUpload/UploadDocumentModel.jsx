@@ -75,8 +75,9 @@ const UploadDocumentModal = ({ isOpen, onClose, userId, documentType}) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
       <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Upload Document</ModalHeader>
+      <ModalContent borderRadius="12px" mx="10px" >
+        <ModalHeader bg="blue.500" color="white" border="12px" fontSize={{base:"15px",md:"lg"}}>Upload Document 
+        </ModalHeader>
         <ModalCloseButton />
 
         <ModalBody>

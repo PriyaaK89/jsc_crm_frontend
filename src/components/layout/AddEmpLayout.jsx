@@ -1,21 +1,68 @@
 import React from "react";
-import AddEmployee from "../../pages/HrMgmt/AddEmployee";
-import { Flex } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
+import DesktopTopbar from "./Topbar";
+import MobileTopbar from "./MobileTopbar";
+import AddEmployee from "../../pages/HrMgmt/AddEmployee";
+const AddEmpLayout = () => {
+  return (
+    <Flex bg="#f4f4f4" minH="100vh">
+      
+      {/* Desktop Sidebar */}
+      <Box
+       position = "fixed"
+       top="0"
+       left="0"
+        w="268px"
+        display={{ base: "none", md: "block" }}
+      >
+        <Sidebar />
+      </Box>
 
-const AddEmpLayout = ()=>{
-    return(
-        <>
-         <Flex bgColor="#f4f4f4">
-         <Sidebar />
-        <Flex direction="column" minH="100vh" width="78%" margin="1rem auto" gap="1rem">
-         <Topbar />
-         <AddEmployee/>
-         </Flex>
-        </Flex>
-        </>
-    )
-}
+      {/* Main Area */}
+      <Flex
+        direction="column"
+        flex="1"
+        ml={{ base: 0, md: "268px" }}
+      >
+        {/* Desktop Topbar */}
+        <Box
+          display={{ base: "none", md: "block" }}
+            px={{ base: 4, md: 6 }}
+          pt={4}
+          mx={3}
+        >
+          <DesktopTopbar />
+        </Box>
 
-export default AddEmpLayout
+        {/* Mobile Topbar */}
+        <Box
+          display={{ base: "block", md: "none" }}
+          position="fixed"
+          top="0"
+          w="100%"
+          zIndex="10"
+        >
+          <MobileTopbar />
+        </Box>
+
+        {/* Content */}
+        <Box
+          flex="1"
+          p={{ base: 3, md: 6 }}
+          pt={{ base: "20px", md: 4 }}
+        >
+          <Box
+            bg="white"
+            borderRadius="20px"
+            boxShadow="sm"
+            p={{ base: 3, md: 6 }} mt="75px"
+          >
+            <AddEmployee />
+          </Box>
+        </Box>
+      </Flex>
+    </Flex>
+  );
+};
+export default AddEmpLayout;

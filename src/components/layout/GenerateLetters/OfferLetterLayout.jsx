@@ -1,22 +1,77 @@
-import { Flex } from "@chakra-ui/react";
-import React from "react";
+import { Flex, Box } from "@chakra-ui/react";
 import OfferLetterPage from "../../../pages/HrMgmt/Letters/OfferLetter";
 import Sidebar from "../Sidebar";
-import Topbar from "../Topbar";
-
+import DesktopTopbar from "../Topbar";
+import MobileTopbar from "../MobileTopbar";
 
 const OfferLetterLayout = () => {
-    return (
-        <>
-            <Flex bgColor="#f4f4f4">
-                <Sidebar />
-                <Flex direction="column" minH="100vh" width="78%" margin="1rem auto" gap="1rem">
-                    <Topbar />
-                    <OfferLetterPage/>
-                </Flex>
-            </Flex>
-        </>
-    )
-}
+  return (
+   
 
-export default OfferLetterLayout
+
+            <Flex minH="100vh" bg="#f4f4f4">
+                 
+                       {/* Fixed Sidebar */}
+                       <Box
+                         position="fixed"
+                         top="0"
+                         left="0"
+                         w="268px"
+                         display={{ base: "none", md: "block" }}
+                       >
+                         <Sidebar />
+                       </Box>
+                 
+                       {/* Main Content Area */}
+                       <Flex
+                         direction="column"
+                         flex="1"
+                         ml={{ base: 0, md: "268px" }}
+                         
+                       >
+                 
+                         {/* Desktop Topbar */}
+                         <Box
+                           display={{ base: "none", md: "block" }}
+                           px={{ base: 4, md: 6 }}
+                           pt={4}
+                           mx={3}
+                         >
+                           <DesktopTopbar />
+                         </Box>
+                 
+                         {/* Mobile Topbar */}
+                         <Box
+                           display={{ base: "block", md: "none" }}
+                         >
+                           <MobileTopbar />
+                         </Box>
+                 
+                         {/* Page Content */}
+                         <Box
+                           flex="1"
+                           px={{ base: 0, md: 6 }}
+                           py={6}
+                           overflow="auto"
+                           mx={3}
+                         >
+                           <Box
+                             bg="white"
+                             p={{base:3,md:4}}
+                             borderRadius="21px"
+                             boxShadow="sm"
+                              mt="75px"
+                           >
+                    <OfferLetterPage />
+                           </Box>
+                         </Box>
+                 
+                       </Flex>
+                     </Flex>
+       
+     
+       
+  );
+};
+
+export default OfferLetterLayout;

@@ -3,13 +3,13 @@ import {
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
   ModalBody,
   ModalFooter,
   ModalCloseButton,
   Button,
   Text,
   useToast,
+  Flex
 } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
@@ -64,12 +64,19 @@ const DeleteEmployeeModel = ({
       isCentered
     >
       <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Delete Employee</ModalHeader>
-        <ModalCloseButton />
+      <ModalContent mx="12px">
+        {/* <ModalHeader>Delete Employee</ModalHeader> */}
 
-        <ModalBody>
-          <Text>
+        <Flex bg="#E53E3E" color="white" py={2} px={4} justify="space-between" alignItems="center"  size="xl">
+         <Text fontWeight="bold">
+          Delete Employee
+         </Text>
+         <ModalCloseButton position="static" size="md"/>
+        </Flex>
+       
+
+        <ModalBody mt={4}>
+          <Text fontSize={{base:"12px",md:"14px"}}>
             Are you sure you want to{" "}
             <b style={{ color: "red" }}>delete</b> this employee?
             <br />
@@ -82,13 +89,17 @@ const DeleteEmployeeModel = ({
             variant="outline"
             mr={3}
             onClick={onDeleteModalClose}
+            fontSize={{base:"12px",md:"14px"}}
           >
             Cancel
           </Button>
           <Button
-            colorScheme="red"
+           bg="#E53E3E"
+           fontSize={{base:"12px",md:"14px"}}
             onClick={handleDeleteEmployee}
             isLoading={loading}
+            color="white"
+            _hover={{bg:"#dd2c2c"}}
           >
             Delete
           </Button>

@@ -11,9 +11,20 @@ export const API_ENDPOINTS = {
   create_jobRole: `create-jobRole`,
   get_jobRole_list: `get-jobRole`,
   upload_img: `upload-image`,
-  get_emp_docs: 'get-documents',
+  get_emp_docs: "get-documents",
   get_emp_details: `auth/get-employee-details`,
   update_emp_status: `/auth/user-status`,
   get_deleted_users: `/auth/get-deleted-users`,
-  delete_users: `/auth/delete-user`
+  delete_users: `/auth/delete-user`,
+  get_ip_requests: `auth/get-ip-requests`,
+  approve_ip: `auth/approve-ip`,
+  get_Emp_Attendance: `/attendance/daywise`,
+  get_Emp_Attendance_Summary:  `attendance/monthly-summary`,
+  upload_salary_slip:`upload-emp-salary`,
+  get_attendance_images: `get-attendance-images`,
+   get_daily_salary_report:`daily-salary-range`,
+  get_emp_route: `get-route`,
+  upload_emp_letters: `employee-letter`,
+  get_emp_docs: `get-employee-documents`,
+  send_esign: "/documents/send-esign"
 };

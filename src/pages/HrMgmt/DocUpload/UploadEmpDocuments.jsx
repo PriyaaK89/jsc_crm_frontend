@@ -37,12 +37,12 @@ const handleNext = () => {
 
 console.log(userId, "usersID")
   return (
-    <Box p={5} bg="white" rounded="md" shadow="md">
-      <Text fontSize="lg" fontWeight="bold" mb={4}>
+    <Box  bg="white" rounded="md" p={5} >
+      <Text fontSize="lg" fontWeight="bold" mb={6}>
         Upload Employee Documents
       </Text>
 
-      <VStack spacing={4} align="stretch" divider={<Divider />}>
+      <VStack spacing={4} align="stretch" divider={<Divider />} >
         {DOCUMENTS.map((doc) => (
           <DocumentRow
             key={doc.type}
@@ -55,7 +55,7 @@ console.log(userId, "usersID")
         ))}
       </VStack>
         <Box mt={6} textAlign="right">
-        <Button colorScheme="blue" onClick={handleNext}>
+        <Button colorScheme="blue" onClick={handleNext} mt={5}>
           Next
         </Button>
       </Box>

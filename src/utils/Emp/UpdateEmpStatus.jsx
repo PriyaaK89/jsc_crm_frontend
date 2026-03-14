@@ -89,10 +89,10 @@ const UpdateEmpStatus = ({ userId, currentStatus, onSuccess }) => {
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Confirm Action</ModalHeader>
-          <ModalCloseButton />
+          <ModalHeader bg="#f4f4f4" p={6}>Confirm Action</ModalHeader>
+          <ModalCloseButton size="lg"/>
 
-          <ModalBody>
+          <ModalBody mt={5} mb={5}>
             Are you sure you want to{" "}
             <b>{selectedStatus === "activate" ? "activate" : "deactivate"}</b>{" "}
             this employee?

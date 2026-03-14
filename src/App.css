@@ -2,6 +2,7 @@
     padding: 0;
     margin: 0;
     font-family: 'InterRegular';
+   
 }
 
 @font-face{
@@ -20,6 +21,13 @@
 @font-face {
   font-family: 'Inter-Medium';
   src: url('../public/fonts/Inter-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Georgia";
+  src: url('../public/fonts/georgia.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
 }
@@ -63,7 +71,7 @@
   font-size: 14px;
 }
 
-.pdf-page {
+/* .pdf-page {
   width: 210mm;
   height: 296mm; 
 padding: 40px;
@@ -73,11 +81,45 @@ padding: 40px;
   overflow: hidden;  
 }
 .page-break {
-  /* page-break-before: always; */
+  page-break-before: always;
   break-before: page;
+} */
+
+#agre-letter-preview {
+  width: 210mm;
 }
+
+.pdf-page {
+  width: 210mm;
+  height: 296mm;
+  padding: 15mm;
+  box-sizing: border-box;
+  background: white;
+  position: relative;
+
+}
+#offer-letter-preview {
+  width: 210mm;
+  overflow: visible;
+}
+.pdf-inner{
+  width:100%;
+  height:auto;
+}
+
+.page-break {
+  page-break-before: always;
+}
+
+.pdf-page:last-child {
+  page-break-after: auto;
+}
+
 .letter-content{
   font-size: 14px;
+ line-height: 1.7;
+  /* word-break: break-word; */
+  text-align: justify;
 }
 .watermark_img{
   position: absolute;
@@ -99,5 +141,28 @@ padding: 40px;
   font-size: 12px !important;
   color: #686868;
   margin-bottom: 3px !important;
+}
+.chakra-checkbox__label{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#agre-letter-preview p{
+   font-family: 'Georgia';
+   color: black ;
+}
+
+  
+.chakra-heading{
+ line-height: 2.2 !important;
+}
+
+.css-1ebyn6{
+    line-height: 2 !important;
+}
+
+.chakra-modal__header {
+  line-height: 0 !important;
 }
 

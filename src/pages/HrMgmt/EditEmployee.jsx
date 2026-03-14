@@ -36,6 +36,7 @@ const EditEmployee = () => {
 
         department_id: "",
         job_role_id: "",
+        job_role_name:"",
         date_of_joining: "",
         salary: "",
 
@@ -121,8 +122,27 @@ const EditEmployee = () => {
     /* ---------------- HANDLE CHANGE ---------------- */
     const handleChange = (e) => {
         const { name, value } = e.target;
+        const label = e.target.selectedOptions[0].text;
+        console.log(label)
+      
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
+
+
+     const handleJobRole = (e) => {
+        const {name,value } = e.target;
+        const label = e.target.selectedOptions[0].text;
+        
+      
+        setFormData(prev => ({
+            ...prev,
+            job_role_id:value,
+            job_role_name: label,
+        }));
+    };
+
+    
+
 
     /* ---------------- DEPARTMENT CHANGE ---------------- */
     const handleDepartmentChange = (e) => {
@@ -189,7 +209,7 @@ const EditEmployee = () => {
 
     /* ---------------- UI ---------------- */
     return (
-        <Box p={6} bg="white" borderRadius="10px">
+        <Box p={6} bg="white" borderRadius="10px" boxShadow="sm" >
             <Text fontSize="2xl" fontWeight="bold" mb={6}>
                 Edit Employee
             </Text>
@@ -315,12 +335,16 @@ const EditEmployee = () => {
                         <Select
                             name="job_role_id"
                             value={formData.job_role_id}
-                            onChange={handleChange}
+                            onChange={handleJobRole}
                         >
                             {jobRole.map((r) => (
-                                <option key={r.id} value={r.id}>{r.name}</option>
+                                
+                                <option key={r.id} value={r.id} >{r.name}</option>
                             ))}
                         </Select>
+
+
+
                     </FormControl>
 
                     <CustomDatePicker

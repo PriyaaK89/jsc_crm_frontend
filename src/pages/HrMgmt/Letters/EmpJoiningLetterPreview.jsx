@@ -1,91 +1,249 @@
-import {
-  Box,
-  Button,
-  HStack,
-  Image,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalOverlay,
-  Text,
-  VStack,
-  Divider,
-  Flex,
-} from "@chakra-ui/react";
+import { Box, Button, HStack, Image, Modal, ModalBody, ModalContent, ModalOverlay, Text, VStack, Divider, Flex, } from "@chakra-ui/react";
 import React from "react";
 import top_ele from "../../../assets/images/top_left_ele.png";
 import bottom_ele from "../../../assets/images/bottom_right_ele.png";
 import company_logo from "../../../assets/images/logo-removebg-preview.png";
 import r_logo from "../../../assets/images/jamidara_logo.png";
-
 import emailIcon from "../../../assets/images/email.png";
 import webIcon from "../../../assets/images/web.png";
 import { formatDate, formatTime } from "../../../components/common/helper";
-import html2pdf from "html2pdf.js";
+import jsc_stamp from "../../../assets/images/stamp_jsc.png"
+import API from "../../../services/api";
+import { API_ENDPOINTS } from "../../../services/endpoints";
+import { CloseButton } from "@chakra-ui/react";
+import { toJpeg } from "html-to-image";
+import jsPDF from "jspdf";
+import { useToast } from "@chakra-ui/react";
 
 const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
+ 
+  const handleClose = () => {
+    onClose(true);
+  };
 
-  const basic = Number(formData?.basic) || 0;
-  const houseRent = Number(formData?.house_rent) || 0;
-  const medical = Number(formData?.medical) || 0;
+  const basic = Number(formData.basic) || 0;
+  const houseRent = Number(formData.house_rent) || 0;
+  const medical = Number(formData.medical) || 0;
+  const dearnessAllowance = Number(formData.dearness_allowance) || 0;
+  const otherAllowance = Number(formData.other_allowance) || 0;
 
-  const monthlyGross = basic + houseRent + medical;
+  const monthlyGross =
+    basic + houseRent + medical + dearnessAllowance + otherAllowance;
+
   const annualGross = monthlyGross * 12;
 
   const petrolRate = Number(formData?.petrol_per_km) || 0;
   const maxKm = Number(formData?.max_km) || 0;
+  const minKm = Number(formData?.min_km) || 0;
 
-   const handleDownloadPDF = () => {
-      const element = document.getElementById("joining-letter-preview");
-  
-      html2pdf()
-        .set({
-          margin: 0,
-          filename: `Offer_Letter_${employee?.name}.pdf`,
-          image: { type: "jpeg", quality: 1 },
-          html2canvas: {
-            scale: 2,
-            useCORS: true,
-            scrollY: 0,
-            windowWidth: 1200
-          },
-          jsPDF: {
-            unit: "mm",
-            format: "a4",
-            orientation: "portrait"
-          },
-          pagebreak: { mode: ['css'] }
-        })
-  
-        .from(element)
-        .save();
-  
-    };
+  // const handleDownloadPDF = () => {
+  //   const element = document.getElementById("joining-letter-preview");
 
-  return (
+  //   html2pdf()
+  //     .set({
+  //       margin: 0,
+  //       filename: `Offer_Letter_${employee?.name}.pdf`,
+  //       image: { type: "jpeg", quality: 1 },
+  //       html2canvas: {
+  //         scale: 2,
+  //         useCORS: true,
+  //         scrollY: 0,
+  //         windowWidth: 1200
+  //       },
+  //       jsPDF: {
+  //         unit: "mm",
+  //         format: "a4",
+  //         orientation: "portrait"
+  //       },
+  //       pagebreak: { mode: ['css'] }
+  //     })
+
+  //     .from(element)
+  //     .save();
+
+  // };
+
+
+//   const handleDownloadPDF = async () => {
+//   const element = document.getElementById("joining-letter-preview");
+//   const options = {
+//     margin: 0,
+//     filename: `Joining_Letter_${employee?.name}.pdf`,
+//     image: { type: "jpeg", quality: 1 },
+//     html2canvas: {
+//       scale: 2,
+//       useCORS: true,
+//       scrollY: 0,
+//       windowWidth: 1200
+//     },
+//     jsPDF: {
+//       unit: "mm",
+//       format: "a4",
+//       orientation: "portrait"
+//     },
+//     pagebreak: { mode: ["css"] }
+//   };
+
+//   try {
+
+//     const worker = html2pdf().set(options).from(element);
+
+//     // Generate PDF Blob
+//     const pdfBlob = await worker.outputPdf("blob");
+
+//     // ================= DOWNLOAD =================
+
+//     const url = URL.createObjectURL(pdfBlob);
+
+//     const link = document.createElement("a");
+//     link.href = url;
+//     link.download = `Joining_Letter_${employee?.name}.pdf`;
+
+//     document.body.appendChild(link);
+//     link.click();
+//     document.body.removeChild(link);
+
+//     // ================= UPLOAD =================
+
+//     const formData = new FormData();
+
+//     formData.append(
+//       "file",
+//       pdfBlob,
+//       `Joining_Letter_${employee?.name}.pdf`
+//     );
+
+//     formData.append("employee_id", employee?.id);
+//     formData.append("employee_name", employee?.name);
+//     formData.append("document_type", "joining_letter");
+
+//     await API.post(
+//       API_ENDPOINTS?.upload_emp_letters,
+//       formData
+//     );
+
+//     console.log("Joining letter uploaded successfully");
+
+//   } catch (error) {
+
+//     console.error("PDF generation/upload error:", error);
+
+//   }
+
+// };
+
+const toast = useToast();
+ const handleDownloadJoiningPDF = async () => {
+  try {
+    const pages = document.querySelectorAll(".pdf-page");
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    for (let i = 0; i < pages.length; i++) {
+
+      const page = pages[i];
+
+      const dataUrl = await toJpeg(page, {
+        quality: 0.75,
+        pixelRatio: 1.5,
+        cacheBust: true
+      });
+
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const pdfWidth = 210;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      if (i > 0) {
+        pdf.addPage();
+      }
+
+      pdf.addImage(dataUrl, "JPEG", 0, 0, pdfWidth, pdfHeight);
+    }
+
+    const pdfBlob = pdf.output("blob");
+
+    // DOWNLOAD
+
+    const url = URL.createObjectURL(pdfBlob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Joining_Letter_${employee?.name}.pdf`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // UPLOAD
+
+    const formDataObj = new FormData();
+
+    formDataObj.append(
+      "file",
+      pdfBlob,
+      `Joining_Letter_${employee?.name}.pdf`
+    );
+
+    formDataObj.append("type", "employee_letters");
+    formDataObj.append("employee_id", employee?.id);
+    formDataObj.append("employee_name", employee?.name);
+    formDataObj.append("document_type", "joining_letter");
+    formDataObj.append("email", employee?.email);
+    formDataObj.append("phone", employee?.contact_no);
+
+    if (pdfBlob.size > 5 * 1024 * 1024) {
+      toast({
+        description: "PDF too large. Please reduce content.",
+        status: "error",
+      });
+      return;
+    }
+
+    const res = await API.post(
+      API_ENDPOINTS?.upload_emp_letters,
+      formDataObj,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }
+    );
+
+    if (res?.status === 200) {
+      toast({
+        description:
+          "Joining Letter Uploaded Successfully!" || res?.data?.message,
+        duration: 2000,
+        status: "success"
+      });
+    }
+
+  } catch (error) {
+
+    console.error("PDF generation/upload error:", error);
+
+    toast({
+      description:
+        error?.response?.data?.message ||
+        "Something went wrong, Please try again!",
+      status: "error",
+      duration: 2000,
+      isClosable: true,
+      position: "top-right"
+    });
+  }
+};
+return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="5xl">
         <ModalOverlay />
-        <ModalContent maxW="791px">
+        <ModalContent maxW="794px">
           <ModalBody p="0">
-            <Box id="joining-letter-preview" fontFamily="serif">
+            <Flex justifyContent="flex-end" m={2} ><CloseButton bg="#d3d2d2"p={5}    onClick={handleClose} /></Flex>
+            <Box id="joining-letter-preview" fontFamily="serif" borderTop="1px" borderColor="gray.300">
               <Box className="pdf-page">
                 {/* Decorative Images */}
-                <Image
-                  src={top_ele}
-                  position="absolute"
-                  top="0"
-                  left="0"
-                  width="175px"
-                />
-                <Image
-                  src={bottom_ele}
-                  position="absolute"
-                  bottom="0"
-                  right="0"
-                  width="175px"
-                />
+                <Image src={top_ele} position="absolute" top="0" left="0" width="175px" />
+                <Image src={bottom_ele} position="absolute" bottom="0" right="0" width="175px" />
 
                 {/* Header */}
                 <VStack spacing={0} align="center" ml="1rem">
@@ -94,9 +252,6 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     <Image src={r_logo} width="120px" />
                   </HStack>
 
-                  {/* <Text fontSize="12px" color="gray.600">
-                             Corpo Add. : P.B. Road, R.N.B. District Haveri, Karnataka
-                           </Text> */}
                   <VStack
                     justifyContent="flex-start"
                     alignItems="flex-start"
@@ -119,20 +274,12 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                   />
                 </VStack>
 
-                <Box width="83%" marginLeft="3rem" className="letter-content">
-                  <Image
-                    src={r_logo}
-                    alt="Round Logo"
-                    className="watermark_img"
-                  />
+                <Box width="83%" marginLeft="2.75rem" className="letter-content">
+                  <Image src={r_logo} alt="Round Logo" className="watermark_img" />
                   {/* Title */}
-                  <Text
-                    textAlign="center"
-                    fontSize="22px"
-                    fontWeight="bold"
-                    color="#1A365D"
-                    mt="25px"
-                    mb="30px">
+                  <Text textAlign="center"
+                    fontSize="22px" fontWeight="bold"
+                    color="#1A365D" mt="24px" mb="24px">
                     JOB JOINING LETTER
                   </Text>
 
@@ -155,7 +302,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                   {/* Body */}
                   <VStack align="flex-start" spacing={3}>
                     <Text>Dear {employee?.name},</Text>
-                    <Text>
+                    <Text >
                       Further to the interview you had with us and subsequent to
                       your joining the company we have pleasure in offering you
                       appointment as {" "}
@@ -185,9 +332,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                       <Text fontSize="14px" textAlign="justify">
                         Your services may be transferred to other divisions / locations or associates
                         of our company, existing or to be formed in future or to any of our group
-                        companies and you will abide by the company’s rules and regulations that may
-                        be in force at the time of your appointment and also those that may be
-                        promulgated from time to time thereafter.
+                      
                       </Text>
                     </HStack>
 
@@ -228,6 +373,13 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                   <Text textAlign="center" mt="2rem" mb="2rem" width="84%">
                     CONTD:-2
                   </Text>
+
+                                        <Text fontSize="14px" textAlign="justify">
+                  
+                        companies and you will abide by the company’s rules and regulations that may
+                        be in force at the time of your appointment and also those that may be
+                        promulgated from time to time thereafter.
+                      </Text>
 
                   <HStack align="flex-start">
                     <Text fontWeight="bold">b.</Text>
@@ -296,22 +448,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     may be terminated in accordance with law.
                   </Text>
 
-                  <Text fontSize="14px" textAlign="justify">
-                    You will also be subject at all times to the service rules and regulations of
-                    the company applicable to employees of your status as are in force at present
-                    or shall come into force from time to time.
-                  </Text>
-
-                  <Text fontSize="14px" textAlign="justify">
-                    You are forbidden to make any unauthorized disclosure of any official
-                    information pertaining to the company’s operations or its employees while in
-                    service or even thereafter. You shall have to sign a confidentiality agreement
-                    to this effect after joining the company.
-                  </Text>
-
-                  <Text>Your date of birth as confirmed by you is {formatDate(employee?.date_of_birth)} and
-                    you will retire on attaining the age of 58 years. The company, however, reserves the right
-                    to modify and amend the retirement policy and age.</Text>
+                 
                 </VStack>
               </Box>
 
@@ -334,6 +471,25 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                   <Text textAlign="center" mt="2rem" mb="2rem" width="84%">
                     CONTD:-3
                   </Text>
+
+                  <VStack>
+                     <Text fontSize="14px" textAlign="justify">
+                    You will also be subject at all times to the service rules and regulations of
+                    the company applicable to employees of your status as are in force at present
+                    or shall come into force from time to time.
+                  </Text>
+
+                  <Text fontSize="14px" textAlign="justify">
+                    You are forbidden to make any unauthorized disclosure of any official
+                    information pertaining to the company’s operations or its employees while in
+                    service or even thereafter. You shall have to sign a confidentiality agreement
+                    to this effect after joining the company.
+                  </Text>
+
+                  <Text>Your date of birth as confirmed by you is {formatDate(employee?.date_of_birth)} and
+                    you will retire on attaining the age of 58 years. The company, however, reserves the right
+                    to modify and amend the retirement policy and age.</Text>
+                  </VStack>
 
                   <HStack align="flex-start">
 
@@ -359,22 +515,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                       No other allowances will be applicable other than your salary Anx. For travelling expenses you will be informed separately as per the norms of the company.
                     </Text>
                   </HStack>
-                  <Text>Please acknowledge and return us the duplicate copy of this letter in token of your acceptance of the above terms and condition of employment. <br />
-                    I wish you a successful tenure in the company and advise you to be devoted and sincere in your duties.
-                  </Text>
-                  <Text mt="30px" fontWeight="bold">
-                    HR Department,
-                    <br />
-                    Jamidara Seeds Corporation
-                  </Text>
-
-                  <VStack spacing={0} alignItems="flex-start">
-                    <Text>{formData?.appoint_under_name}</Text>
-                    <Text>{formData?.job_role_name},{formData?.appointer_state}</Text>
-                  </VStack>
-
-
-
+                 
                 </VStack>
 
               </Box>
@@ -395,10 +536,25 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     className="watermark_img1"
                   />
                   <Text textAlign="center" mt="2rem" mb="2rem" width="84%">
-                    CONTD:-3
+                    CONTD:-4
                   </Text>
 
+                    <VStack  align="flex-start">
+                       <Text>Please acknowledge and return us the duplicate copy of this letter in token of your acceptance of the above terms and condition of employment. <br />
+                    I wish you a successful tenure in the company and advise you to be devoted and sincere in your duties.
+                  </Text>
+                  <Text mt="30px" fontWeight="bold">
+                    HR Department,
+                    <br />
+                    Jamidara Seeds Corporation
+                  </Text>
 
+                  <VStack spacing={0} alignItems="flex-start">
+                    <Text>{formData?.appoint_under_name}</Text>
+                    <Text>{formData?.job_role_name},{formData?.appointer_state}</Text>
+                  </VStack>
+
+                    </VStack>
 
                   <Box mt="0rem" width="100%">
                     <Text fontSize="20px" fontWeight="bold" textAlign="center" mb="12px">
@@ -409,7 +565,8 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                       Fixed Annual Compensation For - <b>{employee?.name}</b>
                     </Text>
 
-                    <Box border="1px solid black">
+                    <Box border="1px solid black"  overflow="hidden">
+
                       {/* Header Row */}
                       <Flex borderBottom="1px solid black">
                         <Box flex="1" p="10px" borderRight="1px solid black">
@@ -425,8 +582,8 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
                       {/* Basic */}
                       <Flex borderBottom="1px solid black">
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          Basic
+                        <Box flex="1" p="10px" borderRight="1px solid black" fontSize="13px">
+                          Basic (50%)
                         </Box>
                         <Box flex="1" p="10px" borderRight="1px solid black">
                           {basic}/-
@@ -438,8 +595,8 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
                       {/* House Rent */}
                       <Flex borderBottom="1px solid black">
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          House Rent
+                        <Box flex="1" p="10px" borderRight="1px solid black" fontSize="13px">
+                          House Rent (20%)
                         </Box>
                         <Box flex="1" p="10px" borderRight="1px solid black">
                           {houseRent}/-
@@ -451,14 +608,40 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
                       {/* Medical */}
                       <Flex borderBottom="1px solid black">
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          Medical Reimbursement
+                        <Box flex="1" p="10px" borderRight="1px solid black" fontSize="13px">
+                          Medical Reimbursement (10%)
                         </Box>
                         <Box flex="1" p="10px" borderRight="1px solid black">
                           {medical}/-
                         </Box>
                         <Box flex="1" p="10px">
                           {medical * 12}/-
+                        </Box>
+                      </Flex>
+
+                      {/* Dearness Allowance */}
+                      <Flex borderBottom="1px solid black">
+                        <Box flex="1" p="10px" borderRight="1px solid black" fontSize="13px">
+                          Dearness Allowance (10%)
+                        </Box>
+                        <Box flex="1" p="10px" borderRight="1px solid black">
+                          {dearnessAllowance}/-
+                        </Box>
+                        <Box flex="1" p="10px">
+                          {dearnessAllowance * 12}/-
+                        </Box>
+                      </Flex>
+
+                      {/* Other Allowance */}
+                      <Flex borderBottom="1px solid black" fontSize="13px" overflow="hidden">
+                        <Box flex="1" p="10px" borderRight="1px solid black">
+                          Other Allowance (10%)
+                        </Box>
+                        <Box flex="1" p="10px" borderRight="1px solid black">
+                          {otherAllowance}/-
+                        </Box>
+                        <Box flex="1" p="10px">
+                          {otherAllowance * 12}/-
                         </Box>
                       </Flex>
 
@@ -474,14 +657,14 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                           <b>{annualGross}/-</b>
                         </Box>
                       </Flex>
+
                     </Box>
-                  </Box>
-                  <Box>
-                    <Text fontWeight="bold">  Daily Allowance will be on variable basis. <br />
-                      TRAVELING ALLOWANCE/DAILY ALLOWANCE/OUT STATION BOARDING AND/LODGING(NIGHT HAULT) POLICY.</Text>
 
                   </Box>
-                  <Flex border="1px solid black" width="100%">
+                  <Box>
+
+                  </Box>
+                  <Flex border="1px solid black" width="100%" overflow="hidden">
                     <Box flex="1" p="6px" borderRight="1px solid black" fontWeight="bold" textAlign='center'>
                       PETROL PER / K.M.
                     </Box>
@@ -489,81 +672,80 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     <Box flex="1" p="6px" borderRight="1px solid black" textAlign='center'>
                       ₹ {petrolRate} or Public Transport
                     </Box>
-
+                    <Box flex="1" p="6px" borderRight="1px solid black" textAlign='center'>
+                      {minKm} K.M. MIN.
+                    </Box>
                     <Box flex="1" p="6px" borderRight="1px solid black" textAlign='center'>
                       {maxKm} K.M. MAX.
                     </Box>
-
                   </Flex>
+                </VStack>
+              </Box>
 
+              <Box className="pdf-page page-break">
+                {/* Decorative Images */}
+                <Image src={top_ele} position="absolute" top="0" left="0" width="175px" />
+                <Image src={bottom_ele} position="absolute" bottom="0" right="0" width="175px" />
+
+                <VStack
+                  align="flex-start"
+                  spacing={4}
+                  width="83%"
+                  marginLeft="3.8rem"
+                  className="letter-content">
+                  <Image
+                    src={r_logo}
+                    alt="Round Logo"
+                    className="watermark_img1"
+                  />
+                  <Text textAlign="center" mt="2rem" mb="2rem" width="84%">
+                    CONTD:-5
+                  </Text>
                   <Box mt="2rem">
 
-  <Text fontWeight="bold" textDecoration="underline" mb="1rem">
-    Note:
-  </Text>
+                    <Text fontWeight="bold" textDecoration="underline" mb="1rem"> Note: </Text>
 
-  <VStack align="flex-start" spacing={3} pl="1rem">
+                    <VStack align="flex-start" spacing={3} pl="1rem">
 
-    <Text>
-      1):- In case of boarding (FOOD) Bill are required. Shall be paid up to maximum limits specified.
-    </Text>
+                      <Text>  1):- In case of boarding (FOOD) Bill are required. Shall be paid up to maximum limits specified. </Text>
+                      <Text> 2):- In case of LODGING (Hotel) claims are settled at actual (or) up to limits specified,{" "}
+                        <Text as="span" textDecoration="underline" fontWeight="bold">  which ever is less. </Text>{" "}
+                        Claims shall not be settled without bills.</Text>
+                      <Text>
+                        3):- In case of TRAVLE claims are settled{" "} <Text as="span" textDecoration="underline" fontWeight="bold">
+                          only on submission of counter foils of TRAIN / BUS TICKETS. </Text>
+                      </Text>
 
-    <Text>
-      2):- In case of LODGING (Hotel) claims are settled at actual (or) up to limits specified,{" "}
-      <Text as="span" textDecoration="underline" fontWeight="bold">
-        which ever is less.
-      </Text>{" "}
-      Claims shall not be settled without bills.
-    </Text>
-
-    <Text>
-      3):- In case of TRAVLE claims are settled{" "}
-      <Text as="span" textDecoration="underline" fontWeight="bold">
-        only on submission of counter foils of TRAIN / BUS TICKETS.
-      </Text>
-    </Text>
-
-  </VStack>
-</Box>
-
-
+                    </VStack>
+                    <VStack alignItems="end">
+                      {formData.show_stamp && (
+                        <Image src={jsc_stamp} alt="Company Stamp"  boxSize="120px"/> )}
+                      </VStack>
+                  </Box>
                 </VStack>
-                <VStack
-                  alignItems="flex-start"
-                  mt="20rem"
-                  spacing="4px"
-                  width="81%"
-                  ml="-2.5rem" position="absolute" bottom="75px">
-                  <Divider
-                    borderColor="blue.600"
-                    borderWidth="1px"
-                    w="100%"
-                    mt="1rem"
-                  />
-                  <Divider
-                    borderColor="blue.300"
-                    borderWidth="2px"
-                    w="90%"
-                    mt="0px"
-                  />
+                <VStack alignItems="flex-start" mt="20rem" spacing="4px" width="81%"
+                  position="absolute" bottom="75px" left="0px">
+                  <Divider borderColor="blue.600" borderWidth="1px" w="100%"  mt="1rem" />
+                  <Divider borderColor="blue.300" borderWidth="2px" w="90%" mt="0px"/>
                   <Flex ml="1rem" gap="1rem" mt="2px">
                     <Flex alignItems="center" gap="8px">
                       <Image src={emailIcon} width="24px" mt="12px" />
-                      <Text fontSize="14px">
+                      <Text fontSize="14px" mt="12px">
                         jamidaraseedscorporation@gmail.com
                       </Text>
                     </Flex>
                     <Flex alignItems="center" gap="8px">
                       <Image src={webIcon} width="24px" mt="12px" />
-                      <Text fontSize="14px">www.jamidaraseeds.com</Text>
+                      <Text fontSize="14px" mt="12px">www.jamidaraseeds.com</Text>
                     </Flex>
                   </Flex>
                 </VStack>
               </Box>
             </Box>
-            <VStack mb='1rem'>
-              <Button colorScheme="blue" onClick={handleDownloadPDF}>Download Joining Letter</Button>
-            </VStack>
+            <Flex p={1} justifyContent="center" borderTop="1px" borderColor="#bdbcbc">
+              <Button colorScheme="gray" onClick={handleClose} >Close</Button>
+              <Button colorScheme="blue" onClick={handleDownloadJoiningPDF} ml={5}>Download Joining Letter</Button>
+            </Flex>
           </ModalBody>
         </ModalContent>
       </Modal>

@@ -1,21 +1,60 @@
-import { Flex } from "@chakra-ui/react";
 import React from "react";
+import { Flex, Box } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
+import DesktopTopbar from "./Topbar";
+import MobileTopbar from "./MobileTopbar";
 import EmployeeList from "../../pages/HrMgmt/EmployeeList";
 
-const EmployeeListLayout = ()=>{
-    return(
-        <>
-        <Flex bgColor="#f4f4f4">
-                <Sidebar />
-                <Flex direction="column" minH="100vh" width="78%" margin="1rem auto" gap="1rem">
-                    <Topbar />
-                    <EmployeeList/>
-                </Flex>
-        </Flex>
-        </>
-    )
-}
+const EmployeeListLayout = () => {
+  return (
+    <Flex bg="#f4f4f4" h="100vh" overflow="hidden">
 
-export default EmployeeListLayout
+      {/* Fixed Sidebar */}
+      <Box
+        position="fixed"
+        top="0"
+        left="0"
+        w="280px"
+        display={{ base: "none", md: "block" }}
+      >
+        <Sidebar />
+      </Box>
+
+      {/* Main Content Area */}
+      <Flex
+        direction="column"
+        flex="1"
+        ml={{ base: 0, md: "268px" }}
+      >
+
+        {/* Desktop Topbar */}
+        <Box
+          display={{ base: "none", md: "block" }}
+          px={{ base: 4, md: 6 }}
+          pt={4}
+          mx={3}>
+          <DesktopTopbar />
+        </Box>
+
+        {/* Mobile Topbar */}
+        <Box
+          display={{ base: "block", md: "none" }}
+          position="fixed"
+          top="0"
+          w="100%"
+          zIndex="10">
+          <MobileTopbar />
+        </Box>
+
+        <Box flex="1" p={{ base: 3, md: 6 }} pt={4} overflowY="auto">
+          <Box bg="white" borderRadius="20px" boxShadow="sm" mt="75px">
+            <EmployeeList />
+          </Box>
+        </Box>
+
+      </Flex>
+    </Flex>
+  );
+};
+
+export default EmployeeListLayout;

@@ -118,7 +118,7 @@ function App() {
         <Route path='/accounting-master/create-ledger' element={<CreateLedgerLayout/>}/>
         <Route path='/accounting-master/view-ledger' element={<ViewLedgerLayout/>}/>
         <Route path='/accounting-master/delete-ledger' element={<DeleteLedgerLayout/>}/>
-        <Route path='/accounting-master/create-voucher' element={<CreateVoucherLayout/>}/>
+        <Route path='/accounting-master/create-vouche' element={<CreateVoucherLayout/>}/>
         <Route path='/accounting-master/view-voucher' element={<ViewVoucherLayout/>}/>
         <Route path='/accounting-master/delete-voucher' element={<DeleteVoucherLayout/>}/>
         <Route path='/accounting-master/edit-ledger-assignment' element={<EditLedgerAssignmentLayout/>}/>

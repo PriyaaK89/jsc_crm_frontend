@@ -95,7 +95,7 @@ const EmployeeList = () => {
     <VerifyDocumentModel isVerifyModelOpen={isVerifyModelOpen} onVerifyModalClose={onVerifyModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList}/>
       <ViewUploadedDocument isOpen={isOpen} onClose={onClose} selectedId={selectedId} />
       <DeleteEmployeeModel isDeleteModalOpen={isDeleteModalOpen} onDeleteModalClose={onDeleteModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList} />
-      <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px 0px'>
+      <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px 0px' width="80%">
         {/* Header */}
         <HStack justifyContent='space-between'>
           <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
@@ -131,7 +131,7 @@ const EmployeeList = () => {
               <Spinner size="lg" />
             </Flex>
           ) : (
-            <Box overflowX="auto" px={1} maxW="100vw">
+            <Box overflowX="auto" maxW="100vw">
                     <Box overflowX="auto" whiteSpace="nowrap" sx={{
                         "&::-webkit-scrollbar": { width: "8px", height: '8px' },
                         "&::-webkit-scrollbar-thumb": {
@@ -140,12 +140,12 @@ const EmployeeList = () => {
                         "&::-webkit-scrollbar-track": {
                             background: "#E8E8E8", borderRadius: "4px",},
                     }}>
-            <Table variant="striped" colorScheme="gray" size="sm" minW="3950px" className="productsTable">
+            <Table variant="striped" colorScheme="gray" size="sm" minW="2650px" className="productsTable">
               <Thead>
                 <Tr>
                   {["Name", "Email", "Department", "Role", "Contact", "City / State", "Salary(Rs.)", "DOJ", "Leaves", "Login", "Logout", "Approver", "View Doc", "Action", "Generate Letters"].map((header, index) => (
                     <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize' 
-                      width={header === "Name" ? "3%" : "auto" && header === "Email" ? "5%" : "auto" && header === "Role" ? '8%' : 'auto' && header === "Generate Letters" ? "20%" : 'auto'} borderColor='#D9D9D9'
+                      width={header === "Name" ? "3%" : "auto" && header === "Email" ? "5%" : "auto" && header === "Role" ? '8%' : 'auto' && header === "Generate Letters" ? "15%" : 'auto'} borderColor='#D9D9D9'
                     >
                       <Flex alignItems="center" gap='7px'>
                         <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' overflow="hidden">
@@ -282,6 +282,7 @@ const EmployeeList = () => {
                   {(page - 1) * limit + 1}–
                   {Math.min(page * limit, totalItems)} of {totalItems} items
                 </Text>
+              
               </Flex>
             </Flex>
 

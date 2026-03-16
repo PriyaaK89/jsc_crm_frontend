@@ -16,13 +16,12 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import useUsersapi from '../../Apis/GetUsersapi';
 
 function EmployeePerformanceReport() {
+  const {users}=useUsersapi();
   return (
-     <Box
-            
-              p={6}
-            >
+     <Box p={6}>
                <Breadcrumb mb={6} fontSize="sm">
                              <BreadcrumbItem>
                                            <BreadcrumbLink href="/dashboard">
@@ -48,7 +47,11 @@ function EmployeePerformanceReport() {
         
                 <FormControl>
                   <FormLabel>Select Employee</FormLabel>
-                  <Select placeholder="--Please Select--" />
+                  <Select placeholder="--Please Select--" >
+                    {users?.map((emp)=>(
+                      <option key={emp.id} value={emp.id}>{emp.name}</option>
+                    ))}
+                  </Select>
                 </FormControl>
         
                

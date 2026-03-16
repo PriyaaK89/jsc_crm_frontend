@@ -3,37 +3,17 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { Box, Button, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Input, HStack, Breadcrumb, BreadcrumbItem, BreadcrumbLink,} from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import useUsersapi from "../../Apis/GetUsersapi";
 
 const UploadSalarySlip = () => {
   const toast = useToast();
+  // --------------featch employee---
+  const {users}=useUsersapi();
 
-  const [employeeList, setEmployeeList] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [formData, setFormData] = useState({ employeeId: "", employeeName: "", month: "",});
   const [file, setFile] = useState(null);
   const labelStyles = { fontSize: "12px", color: "#686868", marginBottom: "3px", };
-
-  // 🔹 Fetch Employees
-  const fetchEmployeeList = async () => {
-    try {
-      const response = await API.get(API_ENDPOINTS.GET_USERS);
-      if (response?.status === 200) {
-        setEmployeeList(response.data.data || []);
-      }
-    } catch (error) {
-      toast({
-        title: "Failed to load employees",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-
-  useEffect(() => {
-    fetchEmployeeList();
-  }, []);
 
   // 🔹 Handle File
   const handleFileChange = (e) => {
@@ -45,7 +25,7 @@ const UploadSalarySlip = () => {
     const { name, value } = e.target;
 
     if (name === "employeeId") {
-      const selectedEmployee = employeeList.find(
+      const selectedEmployee = users.find(
         (emp) => String(emp.id) === String(value),
       );
 
@@ -180,7 +160,7 @@ const UploadSalarySlip = () => {
               value={formData.employeeId}
               onChange={handleChange}
             >
-              {employeeList.map((emp) => (
+              {users.map((emp) => (
                 <option key={emp.id} value={emp.id}>
                   {emp.name}
                 </option>

@@ -16,8 +16,10 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import useUsersapi from '../../Apis/GetUsersapi';
 
 function SuperCashBillReport() {
+  const {users}=useUsersapi();
   return (
     <Box
        
@@ -47,7 +49,11 @@ function SuperCashBillReport() {
          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
            <FormControl>
              <FormLabel>Select Employee</FormLabel>
-             <Select placeholder="--Please Select--" />
+             <Select placeholder="--Please Select--" >
+              {users?.map((emp)=>(
+                <option key={emp.id} value={emp.id}>{emp.name}</option>
+              ))}
+             </Select>
            </FormControl>
    
            <FormControl>

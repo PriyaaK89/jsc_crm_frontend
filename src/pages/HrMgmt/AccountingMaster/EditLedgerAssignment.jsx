@@ -1,7 +1,11 @@
 import React from 'react'
 import {Box,FormControl,FormLabel,Select,Button,Flex,HStack,Breadcrumb,BreadcrumbItem,Heading,BreadcrumbLink, SimpleGrid} from "@chakra-ui/react";
-import { GoHomeFill } from "react-icons/go";  
+import { GoHomeFill } from "react-icons/go"; 
+import useUsersapi from '../../../Apis/GetUsersapi';
+
 function EditLedgerAssignment() {
+  const {users}=useUsersapi();
+  
   return (
     <>
     <Box >
@@ -29,6 +33,11 @@ function EditLedgerAssignment() {
             <FormControl mt={5}>
                      <FormLabel>Employee under</FormLabel>
                    <Select fontSize="13px" placeholder='Select employee under' >
+                    {users?.map((emp)=>(
+                      <option key={emp.id} value={emp.id}>
+                        {emp.name}
+                      </option>
+                    ))}
             </Select>
            </FormControl>
            </SimpleGrid>

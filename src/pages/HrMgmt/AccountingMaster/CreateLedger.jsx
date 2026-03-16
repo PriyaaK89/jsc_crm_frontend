@@ -116,7 +116,7 @@ const CreateLedger = () => {
     <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
     <FormControl isRequired mt={5}> 
     <FormLabel {...labelStyles}>Employee Under</FormLabel>
-    <Select name="employeeUnder" fontSize="14px" >
+    <Select name="employeeUnder" fontSize="14px" placeholder="--Please Select--" >
       {users?.map((emp) => (
                 <option key={emp.id} value={emp.id}>
                   {emp.name}

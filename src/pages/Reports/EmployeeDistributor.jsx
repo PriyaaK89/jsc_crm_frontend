@@ -16,8 +16,10 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import useUsersapi from '../../Apis/GetUsersapi';
 
 function EmployeeDistributor() {
+  const {users}=useUsersapi();
   return (
     <Box
           
@@ -49,7 +51,11 @@ function EmployeeDistributor() {
       
               <FormControl>
                 <FormLabel>Select Employee</FormLabel>
-                <Select placeholder="--Please Select--" />
+                <Select placeholder="--Please Select--" >
+                  {users?.map((emp)=>(
+                    <option key={emp.id} value={emp.id}>{emp.name}</option>
+                  ))}
+                </Select>
               </FormControl>
       
             </SimpleGrid>

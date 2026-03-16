@@ -24,13 +24,12 @@ import {
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import sort_icon from "../../assets/sort.svg";
-
-
+import useUsersapi from "../../Apis/GetUsersapi";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 
 const EmpSalaryReport = () => {
-  const [users, setUsers] = useState([]);
+  const {users} = useUsersapi();
   const [dailySalry, setdailySalry] = useState([]);
   const [hasDatafind, setDatafind] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -44,22 +43,6 @@ const EmpSalaryReport = () => {
 
    const toast = useToast()
   const toastIdRef = React.useRef()
-
-  // ✅ Fetch Users on Mount
-  const fetchUsers = async () => {
-    try {
-      const res = await API.get(API_ENDPOINTS.GET_USERS);
-      if (res.status === 200) {
-        setUsers(res.data.data);
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
 
   const validateForm = () => {
   const newErrors = {};
@@ -123,7 +106,7 @@ const EmpSalaryReport = () => {
   };
 
   return (
-    <Box bg="white"  borderRadius="lg">
+    <Box bg="white"  borderRadius="lg" >
         <HStack justifyContent="space-between" flexWrap="wrap">
                         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
                           <BreadcrumbItem>

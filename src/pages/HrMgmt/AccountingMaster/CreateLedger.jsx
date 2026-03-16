@@ -1,7 +1,7 @@
 import { Flex, FormControl,FormLabel,Input } from "@chakra-ui/react";
 import { Select,Text } from '@chakra-ui/react'
 import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack,VStack,Heading,Button,SimpleGrid} from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { GoHomeFill } from "react-icons/go";
 import CreateLedgerBankAccount from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerBankAccount";
 import CreateLedgerActivationIntersetcalcuation from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerActivationIntersetcalcuation";
@@ -9,12 +9,14 @@ import CreateLedgerMillingDetails from "../../../components/Accountingmastercomp
 import CreateLedgerbankconfi from '../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerbankconfi';
 import CreateLedgerGst from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerGst";
 import CreateLedgerSundrydr_cr from "../../../components/Accountingmastercomponents/CreateLedgerSundrydr_cr";
-
+import useUsersapi from '../../../Apis/GetUsersapi';
 
 
 
 const CreateLedger = () => {
 
+  const { users} = useUsersapi();
+  console.log(users)
 
         const [SelectGroup, setSelectGroup] = useState("");
 
@@ -114,11 +116,12 @@ const CreateLedger = () => {
     <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
     <FormControl isRequired mt={5}> 
     <FormLabel {...labelStyles}>Employee Under</FormLabel>
-    <Select name="employeeUnder" fontSize="14px">
-    <option value="-1">Select Employee Name</option>
-    <option value="VIKASKUMAR">VIKASKUMAR</option>
-    <option value="RAJDEEPSINGH">RAJDEEPSINGH</option>
-    <option value="VIKASSINGH">VIKASSINGH</option>
+    <Select name="employeeUnder" fontSize="14px" >
+      {users?.map((emp) => (
+                <option key={emp.id} value={emp.id}>
+                  {emp.name}
+                </option>
+              ))}
    </Select>
    </FormControl>
 

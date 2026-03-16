@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../services/api";
 import { API_ENDPOINTS } from "../../src/services/endpoints";
 
-const GetUsersapi = () => {
+const useUsersapi = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -13,6 +13,7 @@ const GetUsersapi = () => {
 
       if (res.status === 200) {
         setUsers(res.data.data || []);
+       
       }
     } catch (error) {
       console.log(error);
@@ -28,4 +29,4 @@ const GetUsersapi = () => {
   return { users, loading, fetchUsers };
 };
 
-export default GetUsersapi
+export default useUsersapi

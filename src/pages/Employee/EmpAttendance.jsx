@@ -29,14 +29,14 @@ import {
   HStack
 } from "@chakra-ui/react";
 
-import API from "../../services/api";
-import { API_ENDPOINTS } from "../../services/endpoints";
+import useUsersapi from "../../Apis/GetUsersapi";
 import sort_icon from "../../assets/sort.svg";
 import EmployeeImageModal from "./EmployeeImageModal";
 import { GoHomeFill } from "react-icons/go";
 
 const EmpAttendance = () => {
-  const [users, setUsers] = useState([]);
+
+  const{users,fetchUsers} =useUsersapi();
   const [attendance, setAttendance] = useState([]);
   const [empRep, setEmpRep] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -54,17 +54,6 @@ const EmpAttendance = () => {
     year: "",
   });
 
-  // Fetch Users
-  const fetchUsers = async () => {
-    try {
-      const res = await API.get(API_ENDPOINTS.GET_USERS);
-      if (res.status === 200) {
-        setUsers(res.data.data || []);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   useEffect(() => {
     fetchUsers();

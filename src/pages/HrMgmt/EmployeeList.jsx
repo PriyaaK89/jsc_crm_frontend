@@ -140,12 +140,12 @@ const EmployeeList = () => {
                         "&::-webkit-scrollbar-track": {
                             background: "#E8E8E8", borderRadius: "4px",},
                     }}>
-            <Table variant="striped" colorScheme="gray" size="sm" minW="2527px" className="productsTable">
+            <Table variant="striped" colorScheme="gray" size="sm" minW="2650px" className="productsTable">
               <Thead>
                 <Tr>
                   {["Name", "Email", "Department", "Role", "Contact", "City / State", "Salary(Rs.)", "DOJ", "Leaves", "Login", "Logout", "Approver", "View Doc", "Action", "Generate Letters"].map((header, index) => (
                     <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize' 
-                      width={header === "Name" ? "3%" : "auto" && header === "Email" ? "5%" : "auto" && header === "Role" ? '8%' : 'auto' && header === "Generate Letters" ? "20%" : 'auto'} borderColor='#D9D9D9'
+                      width={header === "Name" ? "3%" : "auto" && header === "Email" ? "5%" : "auto" && header === "Role" ? '8%' : 'auto' && header === "Generate Letters" ? "15%" : 'auto'} borderColor='#D9D9D9'
                     >
                       <Flex alignItems="center" gap='7px'>
                         <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' overflow="hidden">
@@ -282,6 +282,7 @@ const EmployeeList = () => {
                   {(page - 1) * limit + 1}–
                   {Math.min(page * limit, totalItems)} of {totalItems} items
                 </Text>
+              
               </Flex>
             </Flex>
 

@@ -20,7 +20,7 @@ function ViewLedger() {
                                         </BreadcrumbItem>
                             
                                         <BreadcrumbItem>
-                                          <BreadcrumbLink href='#' color='#8B8D97' fontSize='13px'> Select Ledger </BreadcrumbLink>
+                                          <BreadcrumbLink color='#8B8D97' fontSize='13px'> Select Ledger </BreadcrumbLink>
                                         </BreadcrumbItem>
                             
                                       </Breadcrumb>

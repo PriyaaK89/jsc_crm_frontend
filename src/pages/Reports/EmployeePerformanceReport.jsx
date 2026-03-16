@@ -28,11 +28,7 @@ function EmployeePerformanceReport() {
                                              <GoHomeFill color="#5570F1"  size={20}/>
                                            </BreadcrumbLink>
                                          </BreadcrumbItem>
-                      
-                              <BreadcrumbItem>
-                                <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-                              </BreadcrumbItem>
-                      
+                                         
                               <BreadcrumbItem isCurrentPage>
                                 <BreadcrumbLink> Employee Performance Report </BreadcrumbLink>
                               </BreadcrumbItem>

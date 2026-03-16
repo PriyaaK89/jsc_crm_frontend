@@ -25,7 +25,7 @@ const ViewLedger = () => {
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='#' color='#8B8D97' fontSize='13px'>View Voucher</BreadcrumbLink>
+                          <BreadcrumbLink  color='#8B8D97' fontSize='13px'>View Voucher</BreadcrumbLink>
                         </BreadcrumbItem>
             
                       </Breadcrumb>

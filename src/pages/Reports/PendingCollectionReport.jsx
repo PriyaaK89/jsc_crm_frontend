@@ -32,9 +32,7 @@ function PendingCollectionReport() {
                                           </BreadcrumbLink>
                                         </BreadcrumbItem>
                      
-                             <BreadcrumbItem>
-                               <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-                             </BreadcrumbItem>
+                            
                      
                              <BreadcrumbItem isCurrentPage>
                                <BreadcrumbLink> Pending Collection Report </BreadcrumbLink>

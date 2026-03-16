@@ -31,7 +31,7 @@ function RetailerAssignment() {
 
           <BreadcrumbItem>
             <BreadcrumbLink
-              href='/accounting-master/retail-assignment'
+             
               color='#8B8D97'
               fontSize='13px'
             >

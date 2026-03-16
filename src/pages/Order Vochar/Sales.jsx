@@ -67,7 +67,7 @@ const Sales = () => {
         </Breadcrumb>
       </HStack>
 
-      <Text fontSize="lg" fontWeight="bold" mb={6}>
+      <Text fontSize="xl" fontWeight="bold" mb={6}>
         Sales
       </Text>
 

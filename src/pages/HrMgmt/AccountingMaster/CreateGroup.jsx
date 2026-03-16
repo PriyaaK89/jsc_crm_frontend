@@ -25,7 +25,7 @@ const CreateGroup = () => {
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='#' color='#8B8D97' fontSize='13px'>Create Group</BreadcrumbLink>
+                          <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Create Group</BreadcrumbLink>
                         </BreadcrumbItem>
             
                       </Breadcrumb>
@@ -35,9 +35,9 @@ const CreateGroup = () => {
                 
        
                 
- <Text fontSize="2xl" fontWeight="bold" mb={6}>
+ <Heading fontSize="xl" fontWeight="bold" mb={6} textAlign="center">
              Create Group
-        </Text>          
+        </Heading>          
                 <Box as="form" >
                  
                      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>

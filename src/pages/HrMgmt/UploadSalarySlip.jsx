@@ -130,11 +130,6 @@ const UploadSalarySlip = () => {
             </BreadcrumbLink>
           </BreadcrumbItem>
 
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/hr-mgmt/view-employee-list" fontSize="13px">
-              Employee List
-            </BreadcrumbLink>
-          </BreadcrumbItem>
 
           <BreadcrumbItem isCurrentPage>
             <BreadcrumbLink fontSize="13px">Upload Salary Slip</BreadcrumbLink>

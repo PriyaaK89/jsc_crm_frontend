@@ -22,7 +22,7 @@ const AssignTargetSM = () => {
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='#' color='#8B8D97' fontSize='14px'>Assign RSM Sub Team</BreadcrumbLink>
+                          <BreadcrumbLink  color='#8B8D97' fontSize='14px'>Assign Target SM</BreadcrumbLink>
                         </BreadcrumbItem>
             
                       </Breadcrumb>

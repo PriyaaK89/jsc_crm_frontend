@@ -46,7 +46,7 @@ const DeleteStockGroup = () => {
             Delete Stock Group
           </Text>
 
-          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+          <SimpleGrid columns={{ base: 1, md: 1 }} spacing={4}>
             <FormControl>
               <FormLabel>Select Stock Group</FormLabel>
               <Select name="stockGroup">

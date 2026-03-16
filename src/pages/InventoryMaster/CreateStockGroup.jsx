@@ -35,10 +35,10 @@ const CreateStockGroup = () => {
            </Breadcrumb>
                 </HStack>
    {/* Form Section */}
-   <Box maxW="90%" mx="auto">
+   <Box >
 
       <VStack spacing={4} align="stretch">
-        <Text fontSize="lg" color="#4d4d4d" fontWeight="bold">
+        <Text fontSize="lg"  fontWeight="bold">
           Create Stock Group
         </Text>
 

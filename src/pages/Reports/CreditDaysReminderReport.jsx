@@ -69,10 +69,6 @@ function CreditDaysReminderReport() {
                                  </BreadcrumbLink>
                                </BreadcrumbItem>
 
-        <BreadcrumbItem>
-          <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-        </BreadcrumbItem>
-
         <BreadcrumbItem isCurrentPage>
           <BreadcrumbLink>Credit Days Reminder Report</BreadcrumbLink>
         </BreadcrumbItem>

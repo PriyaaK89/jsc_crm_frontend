@@ -23,7 +23,7 @@ const AssignTargetTSM = () => {
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='#' color='#8B8D97' fontSize='13px'>Assign TSM Sub Team</BreadcrumbLink>
+                          <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Assign TSM Sub Team</BreadcrumbLink>
                         </BreadcrumbItem>
             
                       </Breadcrumb>
@@ -33,7 +33,7 @@ const AssignTargetTSM = () => {
                 
        
                 <Heading size="md" textAlign="center" mb={6}>
-                  Assign TSM sub Team
+                  Assign TSM Sub Team
                 </Heading>
           
                 <Box as="form" >

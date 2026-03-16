@@ -88,14 +88,14 @@ const CreateJobRole = () => {
                  </BreadcrumbItem>
      
                  <BreadcrumbItem>
-                   <BreadcrumbLink href='/hr-mgmt/view-employee-list' color='#8B8D97' fontSize='13px'>Employee List</BreadcrumbLink>
+                   <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Create Job Role</BreadcrumbLink>
                  </BreadcrumbItem>
      
                </Breadcrumb>
                {/* <Button backgroundColor='#3E60AA' color='white' fontWeight='400' height='36px' fontSize='14px' borderRadius='12px' _hover={{ backgroundColor: '#5570F1' }}><span style={{ fontSize: '18px', paddingRight: '10px' }}><FaPlus /></span> Create a New Product</Button> */}
      
              </HStack>
-      <Heading size="md" textAlign="center" mb={6} fontWeight="600">
+      <Heading fontSize="2xl" fontWeight="600" mb={6} textAlign="center">
         Create Job Role
       </Heading>
 

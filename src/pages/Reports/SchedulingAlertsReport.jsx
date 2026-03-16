@@ -28,9 +28,6 @@ function SchedulingAlertsReport() {
                           </BreadcrumbLink>
                         </BreadcrumbItem>
      
-             <BreadcrumbItem>
-               <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-             </BreadcrumbItem>
      
              <BreadcrumbItem isCurrentPage>
                <BreadcrumbLink>Schedular Report</BreadcrumbLink>

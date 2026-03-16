@@ -57,12 +57,12 @@ const CreateLedger = () => {
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='/accounting-master/create-ledger' color='#8B8D97' fontSize='13px'>Create Ledger</BreadcrumbLink>
+                          <BreadcrumbLink isCurrentPage color='#8B8D97' fontSize='13px'>Create Ledger</BreadcrumbLink>
                         </BreadcrumbItem>
                       </Breadcrumb>
                     </HStack>
                 
-        <Text fontSize="2xl" fontWeight="bold" mb={6}>
+        <Text fontSize="xl" fontWeight="bold" mb={6} textAlign="center">
           Create Ledger
                     
                </Text> 

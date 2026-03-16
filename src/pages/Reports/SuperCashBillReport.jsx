@@ -31,10 +31,7 @@ function SuperCashBillReport() {
                                         <GoHomeFill color="#5570F1"  size={20}/>
                                       </BreadcrumbLink>
                                     </BreadcrumbItem>
-                 
-                         <BreadcrumbItem>
-                           <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-                         </BreadcrumbItem>
+                
                  
                          <BreadcrumbItem isCurrentPage>
                            <BreadcrumbLink> Super Cash Bill Report </BreadcrumbLink>

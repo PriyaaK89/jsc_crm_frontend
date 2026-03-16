@@ -33,9 +33,6 @@ function EmployeeVisitReport() {
                                       </BreadcrumbLink>
                                     </BreadcrumbItem>
                  
-                         <BreadcrumbItem>
-                           <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-                         </BreadcrumbItem>
                  
                          <BreadcrumbItem isCurrentPage>
                            <BreadcrumbLink> View Visit Report  </BreadcrumbLink>

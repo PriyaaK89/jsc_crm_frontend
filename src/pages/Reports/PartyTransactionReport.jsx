@@ -15,8 +15,10 @@ import {
 import { GoHomeFill } from "react-icons/go";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import { useState } from "react";
+import useUsersapi from "../../Apis/GetUsersapi";
 
 function PartyTransactionReport() {
+   const {users} = useUsersapi();
   const [formData, setFormData] = useState({
      startDate: "",
      endDate: "",
@@ -32,9 +34,7 @@ function PartyTransactionReport() {
                      </BreadcrumbLink>
                    </BreadcrumbItem>
 
-        <BreadcrumbItem>
-          <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-        </BreadcrumbItem>
+    
 
         <BreadcrumbItem isCurrentPage>
           <BreadcrumbLink>Party Transaction Report</BreadcrumbLink>

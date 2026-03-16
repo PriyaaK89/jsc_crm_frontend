@@ -104,12 +104,10 @@ const EmployeeList = () => {
             </BreadcrumbItem>
 
             <BreadcrumbItem>
-              <BreadcrumbLink href='/products' color='#8B8D97' fontSize='13px'>Employee List</BreadcrumbLink>
+              <BreadcrumbLink color='#8B8D97' fontSize='13px'>Employee List</BreadcrumbLink>
             </BreadcrumbItem>
 
           </Breadcrumb>
-          {/* <Button backgroundColor='#3E60AA' color='white' fontWeight='400' height='36px' fontSize='14px' borderRadius='12px' _hover={{ backgroundColor: '#5570F1' }}><span style={{ fontSize: '18px', paddingRight: '10px' }}><FaPlus /></span> Create a New Product</Button> */}
-
         </HStack>
         <Flex justifyContent="space-between" mb={4} alignItems='baseline'>
 

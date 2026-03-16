@@ -25,7 +25,7 @@ const DeleteGroup = () => {
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='#' color='#8B8D97' fontSize='13px'>Delete Group</BreadcrumbLink>
+                          <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Delete Group</BreadcrumbLink>
                         </BreadcrumbItem>
             
                       </Breadcrumb>

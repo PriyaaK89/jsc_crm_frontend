@@ -20,14 +20,14 @@ function DeleteLedger() {
                                         </BreadcrumbItem>
                             
                                         <BreadcrumbItem>
-                                          <BreadcrumbLink href='#' color='#8B8D97' fontSize='13px'>Delete Ledger </BreadcrumbLink>
+                                          <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Delete Ledger </BreadcrumbLink>
                                         </BreadcrumbItem>
                             
                                       </Breadcrumb>
                                    
                             
                                     </HStack>
-                                 < Heading size="lg" textAlign="center" mb={6}>
+                                 < Heading size="lg" textAlign="center" mb={6} >
                                                     Delete Ledger 
                                                     </Heading>
                 <FormControl>

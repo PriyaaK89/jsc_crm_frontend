@@ -16,21 +16,17 @@ const ViewStockCategory = () => {
                  <BreadcrumbLink as={Link} href="/dashboard"><GoHomeFill color="#5570F1"/></BreadcrumbLink>
                  </BreadcrumbItem>
                  <BreadcrumbItem>
-                  <BreadcrumbLink isCurrentPage>Create Stock Group</BreadcrumbLink>
+                  <BreadcrumbLink isCurrentPage>View Stock Category</BreadcrumbLink>
                  </BreadcrumbItem>
                  </Breadcrumb>
                       </HStack>
-                      <Box maxW="90%" mx="auto">
+                      <Box >
 
       <VStack spacing={4} align="stretch">
-        <Text fontSize="lg" color="#4d4d4d" fontWeight="bold">
-          Create Stock Category
+        <Text fontSize="lg"  fontWeight="bold">
+          View Stock Category
         </Text>
-        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} width="100%">
-          <FormControl isRequired>
-            <FormLabel>Name</FormLabel>
-            <Input type="text"  />
-          </FormControl>
+        <SimpleGrid columns={{ base: 1, md: 1 }} spacing={4} width="100%">
           <FormControl>
             <FormLabel isRequired>Select Stock Group</FormLabel>
             <Select placeholder="Select Stock Name">

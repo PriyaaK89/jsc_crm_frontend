@@ -16,14 +16,16 @@ import {
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import useUserapi    from '../../Apis/GetUsersapi'
 
 
 const ChangePassword = () => {
+  const {users,fetchUsers}=useUserapi();
 
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 const [selectedUserId, setSelectedUserId] = useState("");
-const [users, setUsers] = useState([]);
+// const [users, setUsers] = useState([]);
 
   const location = useLocation();
   const toast = useToast();
@@ -33,25 +35,25 @@ const [users, setUsers] = useState([]);
   const mail = location?.state?.email;
    
 // if gmail doesnot recive form probes  
- const fetchEmployeeList = async () => {
-    try {
-      const response = await API.get(API_ENDPOINTS.GET_USERS);
-      if (response?.status === 200) {
-        setUsers(response.data.data || []);
-      }
-    } catch (error) {
-      toast({
-        title: "Failed to load employees",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
+//  const fetchEmployeeList = async () => {
+//     try {
+//       const response = await API.get(API_ENDPOINTS.GET_USERS);
+//       if (response?.status === 200) {
+//         setUsers(response.data.data || []);
+//       }
+//     } catch (error) {
+//       toast({
+//         title: "Failed to load employees",
+//         status: "error",
+//         duration: 3000,
+//         isClosable: true,
+//       });
+//     }
+//   };
 
   useEffect(() => {
   if (!mail) {
-   fetchEmployeeList();
+   fetchUsers();
   }
 }, [mail]);
 
@@ -153,7 +155,7 @@ const [users, setUsers] = useState([]);
       value={selectedUserId}
       onChange={(e) => setSelectedUserId(e.target.value)}
     >
-      {users.map((user) => (
+      {users?.map((user) => (
         <option key={user.id} value={user.id}>
           {user.name}
         </option>

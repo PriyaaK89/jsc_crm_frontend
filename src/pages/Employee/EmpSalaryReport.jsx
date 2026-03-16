@@ -7,7 +7,7 @@ import {
   SimpleGrid,
   FormControl,
   FormLabel,
-  VStack,
+  VStack,Heading,
   Table,
   Thead,
   Tbody,
@@ -123,9 +123,9 @@ const EmpSalaryReport = () => {
                         </Breadcrumb>
                       </HStack>
 
-      <Text fontSize="2xl" fontWeight="bold" mb={6}>
+      <Heading fontSize="xl" fontWeight="bold" mb={6}>
         Daily Salary Report
-      </Text>
+      </Heading>
       
 
       <VStack spacing={6} align="stretch" >

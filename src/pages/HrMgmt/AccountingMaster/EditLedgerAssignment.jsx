@@ -16,7 +16,7 @@ function EditLedgerAssignment() {
                               </BreadcrumbItem>
                   
                               <BreadcrumbItem>
-                                <BreadcrumbLink href='/accounting-master/edit-ledger-assignment' color='#8B8D97' fontSize='13px'>Assign Ledger</BreadcrumbLink>
+                                <BreadcrumbLink color='#8B8D97' fontSize='13px'>Assign Ledger</BreadcrumbLink>
                               </BreadcrumbItem>
                             </Breadcrumb>
                         </HStack>

@@ -4,7 +4,7 @@ import {
   Box,
   FormControl,
   FormLabel,
-  VStack,
+  VStack,HStack,BreadcrumbItem,BreadcrumbLink,Breadcrumb,
   Input,
   Button,
   SimpleGrid,
@@ -12,6 +12,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Smile } from "lucide-react";
+import { GoHomeFill } from "react-icons/go";
 
 const CreateCompany = () => {
   const toast = useToast();
@@ -70,6 +71,20 @@ const CreateCompany = () => {
 
   return (
     <Box   mt={10} p={8}  borderRadius="lg" bg="white">
+      <HStack justifyContent='space-between'>
+                      <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+                        <BreadcrumbItem>
+                          <BreadcrumbLink href='/dashboard'> <GoHomeFill color="#5570F1"/> </BreadcrumbLink>
+                        </BreadcrumbItem>
+            
+                        <BreadcrumbItem>
+                          <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Create Company</BreadcrumbLink>
+                        </BreadcrumbItem>
+            
+                      </Breadcrumb>
+                     
+            
+                    </HStack> 
       <Heading size="md" textAlign="center" mb={6}>
         Create Company
       </Heading>

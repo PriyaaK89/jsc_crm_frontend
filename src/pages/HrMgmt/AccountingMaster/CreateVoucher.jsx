@@ -32,13 +32,13 @@ function CreateVoucher() {
                               </BreadcrumbItem>
                   
                               <BreadcrumbItem>
-                                <BreadcrumbLink href='/accounting-master/create-ledger' color='#8B8D97' fontSize='13px'>Create Voucher</BreadcrumbLink>
+                                <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Create Voucher</BreadcrumbLink>
                               </BreadcrumbItem>
                             </Breadcrumb>
                           </HStack>
 
       {/* 🔹 Page Title */}
-       <Text fontSize="2xl" fontWeight="bold" mb={6}>
+       <Text fontSize="2xl" fontWeight="bold" mb={6} textAlign="center">
                 Create Voucher
               </Text> 
 

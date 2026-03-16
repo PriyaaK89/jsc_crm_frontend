@@ -23,7 +23,7 @@ const AssignTargetFA = () => {
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='#' color='#8B8D97' fontSize='13px'>Assign RSM Sub Team</BreadcrumbLink>
+                          <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Assign Target FA</BreadcrumbLink>
                         </BreadcrumbItem>
             
                       </Breadcrumb>

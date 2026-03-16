@@ -6,8 +6,6 @@ import MobileTopbar from "../MobileTopbar";
 
 const OfferLetterLayout = () => {
   return (
-   
-
 
             <Flex minH="100vh" bg="#f4f4f4">
                  

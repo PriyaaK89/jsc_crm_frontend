@@ -120,15 +120,14 @@ const EditEmployee = () => {
     }, []);
 
     /* ---------------- HANDLE CHANGE ---------------- */
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        const label = e.target.selectedOptions[0].text;
-        console.log(label)
-      
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    };
+   const handleChange = (e) => {
+   const { name, value } = e.target;
 
-
+   setFormData((prev) => ({
+      ...prev,
+      [name]: value
+   }));
+};
      const handleJobRole = (e) => {
         const {name,value } = e.target;
         const label = e.target.selectedOptions[0].text;
@@ -237,7 +236,13 @@ const EditEmployee = () => {
                         <Input name="contact_no" value={formData.contact_no} onChange={handleChange} />
                     </FormControl>
 
-                    <CustomDatePicker label="Date of Birth" name="date_of_birth" value={formData.date_of_birth} onChange={handleChange} />
+                    <CustomDatePicker label="Date of Birth" name="date_of_birth" value={formData.date_of_birth} onChange=
+                    {(date)=>{
+                        setFormData((prev)=>({
+                            ...prev,
+                            date_of_birth: date
+                        }))
+                    }} />
                     <FormControl>
                         <FormLabel {...labelStyles}>Email</FormLabel>
                         <Input name="email" value={formData.email} onChange={handleChange} />
@@ -351,7 +356,12 @@ const EditEmployee = () => {
                         label="Date of Joining"
                         name="date_of_joining"
                         value={formData.date_of_joining}
-                        onChange={handleChange}
+                        onChange={(date)=>{
+                            setFormData((prev)=>({
+                             ...prev,
+                             date_of_joining: date
+                            }))
+                        }}
                     />
 
                     <FormControl>

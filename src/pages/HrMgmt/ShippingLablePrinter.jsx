@@ -184,7 +184,7 @@ const pdfBlob = doc.output("dataurlstring");
         <SimpleGrid columns={{base:1,md:2}} spacing={5}>
           <FormControl>
             <FormLabel >Select Ledger</FormLabel>
-            <Select name="ledgerName" onChange={handleChange} placeholder="plese select">
+            <Select name="ledgerName" onChange={handleChange} placeholder="please select">
               <option>murli</option>
               <option>jaya bijj</option>
               <option>balaji khad bij bhandar chomu</option>
@@ -239,7 +239,7 @@ const pdfBlob = doc.output("dataurlstring");
 
           <FormControl>
             <FormLabel>Freight Charge Type</FormLabel>
-            <Select name="FreightChargeType" onChange={handleChange} placeholder="--plese select--">
+            <Select name="FreightChargeType" onChange={handleChange} placeholder="--please select--">
               <option Value="toPay">TO PAY</option>
               <option Value="Paid">PAID</option>
             </Select>

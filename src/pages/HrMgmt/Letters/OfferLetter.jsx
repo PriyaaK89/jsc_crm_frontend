@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
+  Box,HStack,Breadcrumb,BreadcrumbItem,BreadcrumbLink,
   Button,
   Checkbox,
   Flex,
   FormControl,
   FormLabel,
   Heading,
-  HStack,
   Image,
   Input,
   SimpleGrid,
@@ -85,6 +84,20 @@ const OfferLetterPage = () => {
 
   return (
     <Box bg="white" p={6} borderRadius="12px">
+       <HStack justifyContent='space-between'>
+                                  <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+                                    <BreadcrumbItem>
+                                      <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                                    </BreadcrumbItem>
+                        
+                                    <BreadcrumbItem>
+                                      <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Generate Offer Letter</BreadcrumbLink>
+                                    </BreadcrumbItem>
+                        
+                                  </Breadcrumb>
+                               
+                        
+                                </HStack>
       <Heading size="md" mb={4}>
         Generate Offer Letter
       </Heading>

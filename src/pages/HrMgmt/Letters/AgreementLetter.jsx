@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import { useParams } from "react-router-dom";
-import { Box, Button, Checkbox, Flex, FormControl, FormLabel, Heading, Image, Select, SimpleGrid, Spinner, Text, useDisclosure, VStack } from "@chakra-ui/react";
+import { Box, Button, Checkbox, Flex, FormControl,HStack,Breadcrumb,BreadcrumbItem,BreadcrumbLink, FormLabel, Heading, Image, Select, SimpleGrid, Spinner, Text, useDisclosure, VStack } from "@chakra-ui/react";
 import EmpAgreementLetterPreview from "./EmpAgreementLetterPreview";
 import CustomDatePicker from "../../../components/common/CustomDatepicker";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png"
@@ -88,6 +88,20 @@ const AgreementLetter = () => {
   return (
     <>
       <Box bg="white" p={6} borderRadius="12px">
+        <HStack justifyContent='space-between'>
+                                          <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+                                            <BreadcrumbItem>
+                                              <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                                            </BreadcrumbItem>
+                                
+                                            <BreadcrumbItem>
+                                              <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Generate Agreement Letter</BreadcrumbLink>
+                                            </BreadcrumbItem>
+                                
+                                          </Breadcrumb>
+                                       
+                                
+                                        </HStack>
         <Heading size="md" mb={4}> 
           Generate Agreement Letter  
         </Heading>

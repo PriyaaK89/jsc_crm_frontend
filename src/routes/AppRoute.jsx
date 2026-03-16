@@ -8,6 +8,7 @@ import JobRoleLayout from "../components/layout/AddJobRoleLayout";
 import EmployeeListLayout from "../components/layout/EmployeeList";
 import UploadEmpDocumentsLayout from "../components/layout/UploadEmpDocumentsLayout";
 import EditEmployeePage from "../components/layout/EditEmployee";
+import ViewEmpDetailsLayout from '../components/layout/ViewEmpDetailsLayout'
 import OfferLetterLayout from "../components/layout/GenerateLetters/OfferLetterLayout";
 import JoiningLetterLayout from "../components/layout/GenerateLetters/JoiningLetterLayout";
 import AgreementLetterLayout from '../components/layout/GenerateLetters/AgreementLetterLayout';
@@ -99,6 +100,7 @@ function App() {
           path="/edit-employee-details/:empId"
           element={<EditEmployeePage />}
         />
+        <Route path="/view-employee-details/:id" element={<ViewEmpDetailsLayout/>}/>
         <Route
           path="/generate-offer-letter/:id"
           element={<OfferLetterLayout />}

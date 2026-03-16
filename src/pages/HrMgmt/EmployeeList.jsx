@@ -4,9 +4,8 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 import { data, useNavigate } from "react-router-dom";
 import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Flex, HStack, IconButton, Img, Input, InputGroup, Select, Spinner, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useDisclosure } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
-import { FiSearch } from "react-icons/fi";
 import sort_icon from "../../assets/sort.svg"
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiEdit2, FiTrash2,FiSearch ,FiFileText  } from "react-icons/fi";
 import { FaEye } from "react-icons/fa";
 import ViewUploadedDocument from "./DocUpload/ViewDocuments";
 import UpdateEmpStatus from "../../utils/Emp/UpdateEmpStatus";
@@ -73,6 +72,10 @@ const EmployeeList = () => {
 
   const handleEdit = (empId) => {
     navigate(`/edit-employee-details/${empId}`)
+  };
+                            
+  const handleView = (id)=>{
+    navigate(`/view-employee-details/${id}`)
   };
 
   const handleDelete = (id) => {
@@ -202,6 +205,15 @@ const EmployeeList = () => {
                               color="blue.600" _hover={{ bg: "blue.50" }}
                               aria-label="Edit"
                               onClick={() => handleEdit(emp?.id)} />
+                          </Tooltip>
+
+                          <Tooltip label="View Employee" hasArrow>
+                            <IconButton
+                              icon={<FiFileText  />}
+                              size="sm" variant="ghost"
+                              color="blue.600" _hover={{ bg: "blue.50" }}
+                              aria-label="View" onClick={() => handleView(emp?.id)} />
+                              
                           </Tooltip>
 
                           <Tooltip label="Delete Employee" hasArrow>

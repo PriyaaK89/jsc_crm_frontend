@@ -27,5 +27,7 @@ export const API_ENDPOINTS = {
   get_emp_route: `get-route`,
   upload_emp_letters: `employee-letter`,
   get_emp_docs: `get-employee-documents`,
-  send_esign: "/documents/send-esign"
+  document_status:`document-status`,
+  send_esign: "/documents/send-esign",
+
 };

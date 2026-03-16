@@ -32,39 +32,84 @@ const VerifyDocumentModel = ({
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [esignLoading, setEsignLoading] = useState(null);
+  const [legID, setLegID] = useState('')
 
-  const getEmployeeDocs = async () => {
-    try {
-      setLoading(true);
+ const getEmployeeDocs = async () => {
+  try {
+    setLoading(true);
 
-      const response = await API.get(
-        `${API_ENDPOINTS?.get_emp_docs}/${selectedId}`
-      );
+    const response = await API.get(
+      `${API_ENDPOINTS.get_emp_docs}/${selectedId}`
+    );
 
-      setDocuments(response?.data?.data || []);
+    const docs = response?.data?.data || [];
+    
 
-    } catch (error) {
-      console.log(error);
+    setDocuments(docs);
+    setLegID(response?.data?.data[0]?.leegality_document_id)
+    console.log(response?.data?.data[0]?.leegality_document_id, "qwertyuewq")
 
-      toast({
-        title: "Error fetching documents",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+    // docs.forEach((doc) => {
 
-    } finally {
-      setLoading(false);
-    }
-  };
+    //   if (
+    //     doc.signing_status === "pending" &&
+    //     doc.leegality_document_id
+    //   ) {
+    //     checkDocumentStatus(doc.leegality_document_id);
+    //     console.log(doc.leegality_document_id, "asdfghj")
+    //   }
+    //   console.log(doc.leegality_document_id, "asdfghj")
+
+    // });
+
+  } catch (error) {
+    console.log(error);
+
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
-    if (isVerifyModelOpen && selectedId) {
+
+     getEmployeeDocs();
+
+    documents.forEach((doc) => {
+      if (
+        doc.signing_status === "pending" &&
+        doc.leegality_document_id
+      ) {
+        checkDocumentStatus(doc.leegality_document_id);
+        console.log(doc.leegality_document_id, "asdfghj")
+      }
+      console.log(doc.leegality_document_id, "asdfghj")
+    });
+     
+    
+  }, [ selectedId,legID]);
+
+  // ---------check legality status ----
+ const checkDocumentStatus = async (legID) => {
+  try {
+    const response = await API.get(
+      `${API_ENDPOINTS.document_status}/${legID}`
+    );
+    if (response?.data?.status === 1) {
       getEmployeeDocs();
     }
-  }, [isVerifyModelOpen, selectedId]);
+
+  } catch (error) {
+    console.log("Document status error", error);
+  }
+};
 
 
+
+
+
+
+
+  // -------get sattus color----
 
   const getStatusColor = (status) => {
     if (status === "signed") return "green";
@@ -81,54 +126,54 @@ const VerifyDocumentModel = ({
 
 
   const viewDocument = (url) => {
-    const fileURL = `${import.meta.env.VITE_BASE_URL}/${url}`;
+    const fileURL = `${import.meta.env.get_emp_docs}/${url}`;
     window.open(fileURL, "_blank");
   };
 
-const sendForESign = async (docId) => {
-  try {
-    setEsignLoading(docId);
+  const sendForESign = async (docId) => {
+    try {
+      setEsignLoading(docId);
 
-    const response = await API.post(
-      API_ENDPOINTS.send_esign,
-      { document_id: docId }
-    );
+      const response = await API.post(
+        API_ENDPOINTS.send_esign,
+        { document_id: docId }
+      );
 
-    if (response?.data?.status === 1) {
-      toast({
-        title: response?.data?.messages?.[0]?.message || "Document sent for eSign",
-        status: "success",
-        duration: 3000,
-        isClosable: true
-      });
-console.log(response?.data?.data?.invitees?.[0]?.signUrl);
-      getEmployeeDocs(); // refresh status
-    } else {
+      if (response?.data?.status === 1) {
+        toast({
+          title: response?.data?.messages?.[0]?.message || "Document sent for eSign",
+          status: "success",
+          duration: 3000,
+          isClosable: true
+        });
+        console.log(response?.data?.data?.invitees?.[0]?.signUrl);
+        getEmployeeDocs(); // refresh status
+      } else {
+        toast({
+          title: "Failed to send for eSign",
+          description:
+            response?.data?.messages?.[0]?.message || "Something went wrong",
+          status: "error",
+          duration: 3000,
+          isClosable: true
+        });
+      }
+
+    } catch (error) {
       toast({
         title: "Failed to send for eSign",
         description:
-          response?.data?.messages?.[0]?.message || "Something went wrong",
+          error?.response?.data?.messages?.[0]?.message ||
+          error?.response?.data?.message ||
+          "Something went wrong",
         status: "error",
         duration: 3000,
         isClosable: true
       });
+    } finally {
+      setEsignLoading(null);
     }
-
-  } catch (error) {
-    toast({
-      title: "Failed to send for eSign",
-      description:
-        error?.response?.data?.messages?.[0]?.message ||
-        error?.response?.data?.message ||
-        "Something went wrong",
-      status: "error",
-      duration: 3000,
-      isClosable: true
-    });
-  } finally {
-    setEsignLoading(null);
-  }
-};
+  };
 
   return (
     <Modal isOpen={isVerifyModelOpen} onClose={onVerifyModalClose} size="xl">
@@ -169,8 +214,11 @@ console.log(response?.data?.data?.invitees?.[0]?.signUrl);
                         {doc.document_type.replace("_", " ")}
                       </Text>
 
-                      <Badge mt="4px" colorScheme={getStatusColor(doc.signing_status)}>
-                        {doc.signing_status}
+                      <Badge
+                        mt="4px"
+                        colorScheme={getStatusColor(doc.signing_status)}
+                      >
+                        {doc.signing_status === "signed" ? "eSigned" : "Pending"}
                       </Badge>
 
                     </Box>
@@ -204,9 +252,9 @@ console.log(response?.data?.data?.invitees?.[0]?.signUrl);
                     {doc.document_type === "offer_letter" && (
                       <Button
                         size="sm"
-                        leftIcon={<FiSend />}  isLoading={esignLoading === doc.id}
-                        colorScheme="blue"  onClick={() => sendForESign(doc.id)} >
-                        Send eSign 
+                        leftIcon={<FiSend />} isLoading={esignLoading === doc.id}
+                        colorScheme="blue" onClick={() => sendForESign(doc.id)} >
+                        Send eSign
                       </Button>
                     )}
 
@@ -215,12 +263,13 @@ console.log(response?.data?.data?.invitees?.[0]?.signUrl);
                         <Button
                           size="sm"
                           leftIcon={<FiSend />}
-                           isLoading={esignLoading === doc.id}
-                          colorScheme="blue"  onClick={() => sendForESign(doc.id)}
+                          isLoading={esignLoading === doc.id}
+                          colorScheme="blue"
+                          isDisabled={doc.signing_status === "signed"}
+                          onClick={() => sendForESign(doc.id)}
                         >
-                          Send eSign
+                          {doc.signing_status === "signed" ? "Signed" : "Send eSign"}
                         </Button>
-
                         <Button size="sm" colorScheme="purple">
                           Send eStamp
                         </Button>

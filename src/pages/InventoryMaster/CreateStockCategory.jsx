@@ -39,7 +39,7 @@ const CreateStockCategory = () => {
       </HStack>
 
       {/* Form Section */}
-      <Box maxW="90%" mx="auto">
+      <Box maxW="90%" mx="auto" >
         <VStack spacing={6} align="stretch">
           <Text fontSize="lg" color="#4d4d4d" fontWeight="bold">
             Create Stock Category

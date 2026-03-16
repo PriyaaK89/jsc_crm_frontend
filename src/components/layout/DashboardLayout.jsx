@@ -10,7 +10,7 @@ const DashboardLayout = ({ children }) => {
 
   return (
     <Flex bg="#f4f4f4" height="100vh" overflow="hidden" >
-      
+
       {/* Desktop Sidebar */}
       <Box
         w="280px"
@@ -18,7 +18,7 @@ const DashboardLayout = ({ children }) => {
         display={{ base: "none", md: "block" }}
       >
         {/* <Sidebar /> */}
-        <Newsidebar/>
+        <Newsidebar />
       </Box>
 
       {/* Main Area */}
@@ -30,7 +30,7 @@ const DashboardLayout = ({ children }) => {
         {/* Desktop Topbar */}
         <Box
           display={{ base: "none", md: "block" }}
-          p={4} mt={{base:"175px",md:"65px"}}
+          p={4} mt={{ base: "175px", md: "65px" }}
         >
           <DesktopTopbar />
         </Box>
@@ -50,18 +50,19 @@ const DashboardLayout = ({ children }) => {
         <Box
           flex="1"
           p={4}
-          pt={{ base: "70px", md: 4 }}
+          pt={{ base: "20px", md: 4 }}
+          px={{ base: 3, md: 6 }}
         >
           <Flex gap={4} direction={{ base: "column", lg: "row" }}>
-            
+
             {/* Main Content */}
             <Box
               flex="1"
               bg="white"
               borderRadius="20px"
-              p={4}
               boxShadow="sm"
-              mt={{base:"20px",md:0}}
+              mt={{ base: "20px", md: 0 }}
+              p={{ base: 3, md: 6 }}
             >
               {children}
             </Box>
@@ -73,7 +74,7 @@ const DashboardLayout = ({ children }) => {
               bg="white"
               borderRadius="20px"
               p={4}
-              boxShadow="sm"  
+              boxShadow="sm"
             >
               <RightSidebar />
             </Box>

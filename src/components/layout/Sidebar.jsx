@@ -128,13 +128,8 @@ const Newsidebar = () => {
 
       ]
       },
+      
       {
-        label:"Leads",key:"leads",icon:RiUser3Line,
-        children:[
-          {label:"New Lead",path:"/leads/new",icon:RiUserAddLine},
-          {label:"Lead List",path:"/leads/list",icon:RiFileList3Line}
-        ]
-      },{
           label:"Reports",key:"Reports",icon:RiBarChartLine,path:"/report",
           children:[
             {label:"Attendance Report",path:"/report/emp-attendance-report",icon:CalendarCheck},

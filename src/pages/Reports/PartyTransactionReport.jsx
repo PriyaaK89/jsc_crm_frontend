@@ -13,8 +13,14 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import CustomDatePicker from "../../components/common/CustomDatepicker";
+import { useState } from "react";
 
 function PartyTransactionReport() {
+  const [formData, setFormData] = useState({
+     startDate: "",
+     endDate: "",
+  });
   return (
    <Box p={6}>
 
@@ -80,10 +86,29 @@ function PartyTransactionReport() {
           </FormControl>
 
           <FormControl>
-            <FormLabel>Select Date</FormLabel>
             <SimpleGrid columns={2} spacing={4}>
-              <Input type="date" />
-              <Input type="date" />
+             <CustomDatePicker
+                label="Start Date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={(date)=>{
+                 setFormData((prev)=>({
+                     ...prev,
+                     startDate: date
+                 }))
+                }}
+             />
+              <CustomDatePicker
+                label="End Date"
+                name="endDate"
+                value={formData.endDate}
+                onChange={(date)=>{
+                 setFormData((prev)=>({
+                     ...prev,
+                     endDate: date
+                 }))
+                }}
+             />
             </SimpleGrid>
           </FormControl>
 

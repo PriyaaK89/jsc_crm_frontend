@@ -136,7 +136,12 @@ const OfferLetterPage = () => {
           <CustomDatePicker
             label="Date of Issue"
             value={formData.date_of_issue}
-            onChange={(e) => setFormData({ ...formData, date_of_issue: e.target.value })}
+            onChange={(date)=>{
+               setFormData((prev)=>({
+                   ...prev, date_of_issue: date
+               }))
+            }}
+
             placeholder="Select date of issue"
           />
           <FormControl>

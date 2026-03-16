@@ -513,25 +513,31 @@ const AddEmployee = () => {
                   }
                 }}
               />
+
               <FormErrorMessage>{error.contact_no}</FormErrorMessage>
             </FormControl>
 
-            {/* <CustomDatePicker
+            <CustomDatePicker
                             label="Date of Birth"
                             name="date_of_birth"
                             value={formData.date_of_birth}
-                            onChange={handleChange}
+                            onChange={(date)=>{
+                              setFormData((prev)=>({
+                                 ...prev,
+                                 date_of_birth: date,
+                              }))
+                            }}
                             placeholder="Select date of Birth"
-                        /> */}
+                        />
             <FormControl isRequired isInvalid={error.date_of_birth}>
-              <FormLabel>Date of Birth</FormLabel>
+              {/* <FormLabel>Date of Birth</FormLabel>
               <Input
                 type="date"
                 name="date_of_birth"
                 value={formData.date_of_birth}
                 onChange={handleChange}
-              />
-              <FormErrorMessage>{error.date_of_birth}</FormErrorMessage>
+              /> */}
+              {/* <FormErrorMessage>{error.date_of_birth}</FormErrorMessage> */}
             </FormControl>
 
             <FormControl isRequired isInvalid={error.email}>
@@ -756,12 +762,17 @@ const AddEmployee = () => {
 
             <FormControl isRequired isInvalid={error.date_of_joining}>
               <CustomDatePicker
-                label="Date of Joining"
-                name="date_of_joining"
-                value={formData.date_of_joining}
-                onChange={handleChange}
-                placeholder="Select date of joining"
-              />
+    label="Date of Joining"
+    name="date_of_joining"
+    value={formData.date_of_joining}
+    onChange={(date) =>
+      setFormData((prev) => ({
+        ...prev,
+        date_of_joining: date,
+      }))
+    }
+    placeholder="Select date of joining"
+  />
               <FormErrorMessage>{error.date_of_joining}</FormErrorMessage>
             </ FormControl>
             <FormControl isRequired isInvalid={error.salary}>

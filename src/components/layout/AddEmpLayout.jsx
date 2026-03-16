@@ -49,14 +49,16 @@ const AddEmpLayout = () => {
         {/* Content */}
         <Box
           flex="1"
-          p={{ base: 3, md: 6 }}
+          px={{ base: 3, md: 6 }}
           pt={{ base: "20px", md: 4 }}
         >
           <Box
             bg="white"
             borderRadius="20px"
             boxShadow="sm"
-            p={{ base: 3, md: 6 }} mt="75px"
+            p={{ base: 3, md: 6 }} 
+            mt="75px"
+            mb={5}
           >
             <AddEmployee />
           </Box>

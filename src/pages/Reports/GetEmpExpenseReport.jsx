@@ -54,15 +54,14 @@ function GetEmpExpenseReport() {
               <FormLabel>Expense Type</FormLabel>
               <Select placeholder="Please Select">
                 <option>Bus/Train/Toll expense</option>
-                <option>Petrol/Desialexpense</option>
+                <option>Petrol/Diesel expense</option>
                 <option value="">Hotel expense</option>
                 <option value="">Other expense</option>
               </Select>
             </FormControl>
 
              <FormControl>
-              <FormLabel>Form Date</FormLabel>
-             
+              <FormLabel>From Date</FormLabel>
                 <Input type="date" />
               
               

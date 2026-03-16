@@ -258,6 +258,7 @@ const MobileTopbar = () => {
           path: "/accounting-master/retail-assignment",
           icon: FaStore,
         },
+       
       ],
     },
 

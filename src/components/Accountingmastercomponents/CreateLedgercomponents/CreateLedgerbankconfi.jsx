@@ -12,7 +12,7 @@ function CreateLedgerbankconfi() {
   return (
     <>
       <Box w="100%"    mt={5} border="1px" borderRadius="lg">
-            <HStack justifyContent='space-between' bg="#e9f2ff" borderBottom="1px solid #d9e5f8" p={1} pl={6}>
+            <HStack justifyContent='space-between' bg="#e9f2ff" borderBottom="1px solid #d9e5f8" borderTopRadius="lg" p={1} pl={6}>
                              <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                                
                    

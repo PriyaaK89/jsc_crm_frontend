@@ -20,7 +20,8 @@ import {
    Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  HStack,Img,useToast 
+  HStack,Img,useToast, 
+  TableContainer
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import sort_icon from "../../assets/sort.svg";
@@ -128,7 +129,7 @@ const EmpSalaryReport = () => {
       </Heading>
       
 
-      <VStack spacing={6} align="stretch" >
+      <VStack spacing={6} align="stretch"  className="empsalryreportsection" w="100%" maxW="100%" >
         {/* Filters */}
         <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4} alignItems="flex-end">
           <FormControl isInvalid={!!errors.userId}  >
@@ -172,6 +173,7 @@ const EmpSalaryReport = () => {
             isLoading={loading}
             onClick={handleViewDailySalary}
             w="full"
+            p={{base:"2px",md:"1px"}}
           >
             View Report
 
@@ -186,70 +188,81 @@ const EmpSalaryReport = () => {
                 <Spinner size="lg" color="blue.500" />
               </Flex>
             ) : (
-              <Box 
-                overflowX="auto" 
-                borderWidth="1px" 
-                borderColor="gray.200" 
-                borderRadius="lg" 
-                mt={5}
-                
-              >
-                <Table size="sm" minW="2100px" variant="simple" >
-                  <Thead bg="gray.50">
-                    <Tr>
+              <Box
+  borderWidth="1px"
+  borderColor="gray.200"
+  borderRadius="lg"
+  mt={5}
+  maxW="100%"
+  overflowX="auto"
+>
 
-                      {[
-                        "Employee Id", "Salary Date", "Attendance Type", "Working Hours", 
-                        "Per Day Salary", "Basic Salary", "Travelling Allowance",
-                        "Daily Allowance", "Gross Salary", "Net Salary", "Created At"
-                      ].map((header, index) => (
-                        <Th 
-                          key={index} 
-                           fontSize="14px"
-                        fontWeight="500"
-                        color="#2C2D33"
-                        textTransform="capitalize"
-                        borderColor="#D9D9D9" p={4} >
-                           <Flex align="center" gap="4px">
-                          <Text  fontSize="14px"  color="#2C2D33"
-                                   fontWeight="400"
-                                   fontFamily="InterRegular" >
-                                 {header}
-                         </Text>
-                         <Img src={sort_icon} alt="sort_icon" />
-                       </Flex>
-                        </Th>
-                      ))}
-                    </Tr>
-                  </Thead>
+  <TableContainer  overflowX="auto" >
+    
+    <Table
+      size="sm"
+      minW="1000px"
+      variant="simple"
+      whiteSpace="nowrap"
+     
+    >
+    
+      <Thead bg="gray.50" >
+        <Tr >
+          {[
+            "Employee Id",
+            "Salary Date",
+            "Attendance Type",
+            "Working Hours",
+            "Per Day Salary",
+            "Basic Salary",
+            "Travelling Allowance",
+            "Daily Allowance",
+            "Gross Salary",
+            "Net Salary",
+            "Created At"
+          ].map((header, index) => (
+            <Th key={index}>
+              <Flex align="center" gap="4px">
+                <Text>{header}</Text>
+                <Img src={sort_icon} alt="sort" />
+              </Flex>
+            </Th>
+          ))}
+        </Tr>
+      </Thead>
 
-                  <Tbody p={4}>
-                    {dailySalry.length > 0 ? (
-                      dailySalry.map((emp) => (
-                        <Tr key={emp.id} _hover={{ bg: "gray.50" }}>
-                          <Td>{emp.employee_id}</Td>
-                          <Td>{new Date(emp.salary_date).toLocaleDateString()}</Td>
-                          <Td>{emp.attendance_type}</Td>
-                          <Td>{emp.working_hours}</Td>
-                          <Td>{emp.per_day_salary}</Td>
-                          <Td>{emp.basic_salary}</Td>
-                          <Td>{emp.travelling_allowance}</Td>
-                          <Td>{emp.daily_allowance}</Td>
-                          <Td>{emp.gross_salary}</Td>
-                          <Td>{emp.net_salary}</Td>
-                          <Td>{new Date(emp.created_at).toLocaleDateString()}</Td>
-                        </Tr>
-                      ))
-                    ) : (
-                      <Tr>
-                        <Td colSpan={11} textAlign="center" py={10}>
-                          No data found for the selected criteria.
-                        </Td>
-                      </Tr>
-                    )}
-                  </Tbody>
-                </Table>
-              </Box>
+      <Tbody>
+        {dailySalry.length > 0 ? (
+          dailySalry.map((emp) => (
+            <Tr key={emp.id}>
+              <Td>{emp.employee_id}</Td>
+              <Td>{new Date(emp.salary_date).toLocaleDateString()}</Td>
+              <Td>{emp.attendance_type}</Td>
+              <Td>{emp.working_hours}</Td>
+              <Td>{emp.per_day_salary}</Td>
+              <Td>{emp.basic_salary}</Td>
+              <Td>{emp.travelling_allowance}</Td>
+              <Td>{emp.daily_allowance}</Td>
+              <Td>{emp.gross_salary}</Td>
+              <Td>{emp.net_salary}</Td>
+              <Td>{new Date(emp.created_at).toLocaleDateString()}</Td>
+            </Tr>
+          ))
+        ) : (
+          <Tr>
+            <Td colSpan={11} textAlign="center" py={10}>
+              No data found for the selected criteria.
+            </Td>
+          </Tr>
+        )}
+      </Tbody>
+
+    </Table>
+
+  </TableContainer>
+
+</Box>
             )}
           </>
         )}

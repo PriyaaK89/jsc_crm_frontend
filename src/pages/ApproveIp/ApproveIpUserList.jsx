@@ -16,7 +16,8 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  Center
+  Center,
+  TableContainer
 } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
@@ -92,11 +93,12 @@ const ApproveIpUserList = () => {
             </Center>
           ) : (
             <Box overflowX="auto">
+              <TableContainer border="1px solid" borderColor="gray.300" borderRadius="xl">
 
             <Table
               className="productsTable"
               maxW="1500px"
-              border="1px solid #cdcdcd"
+              
             >
               <Thead bg="gray.100">
                 <Tr>
@@ -145,6 +147,7 @@ const ApproveIpUserList = () => {
                 )}
               </Tbody>
             </Table>
+            </TableContainer>
                         </Box>
 
           )         

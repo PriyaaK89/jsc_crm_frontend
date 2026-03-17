@@ -181,7 +181,7 @@ const CreateLedger = () => {
    {Gst_un_Panno  && ( <CreateLedgerGst/>)}
    {OnlyGst && (
   <Box w="100%"   borderRadius="lg" mt={5}  border="1px" >
-  <HStack justifyContent='space-between'  bg="#e9f2ff" borderBottom="1px solid #d9e5f8" p={1} pl={6}>
+  <HStack justifyContent='space-between'  bg="#e9f2ff" borderBottom="1px solid #d9e5f8"  borderTopRadius="lg" p={1} pl={6}>
   <Breadcrumb  padding='10px 0px 1rem 0px' >
   <BreadcrumbItem>
   <BreadcrumbLink  color='#000000' size="lg" >Tax Registration Details :</BreadcrumbLink>

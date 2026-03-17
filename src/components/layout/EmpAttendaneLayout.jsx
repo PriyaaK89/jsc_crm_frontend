@@ -1,4 +1,4 @@
-// EmpAttendanceLayout.js
+//  EmpAttendanceLayout.js
 import React from "react";
 import { Flex, Box } from "@chakra-ui/react";
 import Sidebar from "../Sidebar";

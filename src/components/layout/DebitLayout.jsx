@@ -1,72 +1,40 @@
 import React from 'react'
-import{ Flex, Box } from "@chakra-ui/react";
+import { Flex, Box } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
+import DesktopTopbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import Debit from "../../pages/Order Vochar/Debit";
 
 const DebitLayout = () => {
   return (
-      <Flex bg="#f4f4f4" minH="100vh">
-           
-           {/* Desktop Sidebar */}
-           <Box
-            position = "fixed"
-            top="0"
-            left="0"
-             w="268px"
-             display={{ base: "none", md: "block" }}
-           >
-             <Sidebar />
-           </Box>
-     
-           {/* Main Area */}
-           <Flex
-             direction="column"
-             flex="1"
-             ml={{ base: 0, md: "268px" }}
-           >
-             {/* Desktop Topbar */}
-             <Box
-               display={{ base: "none", md: "block" }}
-                 px={{ base: 4, md: 6 }}
-               pt={4}
-               mx={3}
-             >
-               <Topbar />
-             </Box>
-     
-             {/* Mobile Topbar */}
-             <Box
-               display={{ base: "block", md: "none" }}
-               position="fixed"
-               top="0"
-               w="100%"
-               zIndex="10"
-             >
-               <MobileTopbar />
-             </Box>
-     
-             {/* Content */}
-             <Box
-               flex="1"
-               px={{ base: 3, md: 6 }}
-               pt={{ base: "20px", md: 4 }}
-             >
-               <Box
-                 bg="white"
-                 borderRadius="20px"
-                 boxShadow="sm"
-                 p={{ base: 3, md: 6 }} 
-                 mt="75px"
-                 mb={5}
-               >
-                 <Debit />
-               </Box>
-             </Box>
-           </Flex>
-         </Flex>
+    <Box bg="#f4f4f4">
+
+      {/* Sidebar */}
+      <Box display={{ base: "none", md: "block" }}>
+        <Sidebar />
+      </Box>
+
+      {/* Desktop Topbar */}
+      <Box display={{ base: "none", md: "block" }}>
+        <DesktopTopbar />
+      </Box>
+
+      {/* Mobile Topbar */}
+      <Box display={{ base: "flex", md: "none" }}>
+        <MobileTopbar />
+      </Box>
+
+      {/* Page Content */}
+      <Box
+        ml={{ base: 3, md: "268px" }}
+        mr={{ base: 3, md: 6 }}
+        mt={{ base: "90px", md: "90px" }}
+        mb={{ base: 6, md: 8 }}
+      >
+        <Debit />
+      </Box>
+
+    </Box>
   )
 }
-
-export default DebitLayout;
+export default DebitLayout ;

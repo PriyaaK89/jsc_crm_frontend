@@ -215,14 +215,15 @@ useEffect(() => {
   return (
     <Box
 
-     position="fixed"
   top="0"
   left="0"
 
       w="280px"
       bg="#FFFFFF"
       color="#333333"
+     position="fixed"
      
+
   borderRight="1px solid #e5e7eb"
     borderColor="gray.200"
       overflowY="auto"

@@ -703,7 +703,6 @@ const AddEmployee = () => {
             <FormControl >
               <FormLabel {...lableStyles}>Blood Group</FormLabel>
               <Select name="blood_group" placeholder="Select Blood Group" onChange={handleChange}>
-                <option value="">Select Blood Group</option>
                 <option value="A+">A+</option>
                 <option value="A-">A-</option>
                 <option value="B+">B+</option>

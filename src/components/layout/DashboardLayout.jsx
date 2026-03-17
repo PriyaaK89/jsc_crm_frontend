@@ -1,6 +1,6 @@
 import { Box, Flex } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
-import DesktopTopbar from "./Topbar";
+import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import RightSidebar from "./RightSidebar";
 import Newsidebar from "./Sidebar";
@@ -32,7 +32,7 @@ const DashboardLayout = ({ children }) => {
           display={{ base: "none", md: "block" }}
           p={4} mt={{ base: "175px", md: "65px" }}
         >
-          <DesktopTopbar />
+          <Topbar />
         </Box>
 
         {/* Mobile Topbar */}

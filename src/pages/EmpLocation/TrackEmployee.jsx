@@ -10,13 +10,15 @@ import {
   HStack,
   VStack
 } from "@chakra-ui/react";
+import useUsersapi from "../../Apis/GetUsersapi";
 
 const TrackEmployee = () => {
+
   const mapRef = useRef(null);
   const polylineRef = useRef(null);
   const markersRef = useRef([]);
 
-  const [users, setUsers] = useState([]);
+  const {users}=useUsersapi();
   const [selectedUser, setSelectedUser] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
 
@@ -37,18 +39,18 @@ const TrackEmployee = () => {
   }, []);
 
   //  Fetch Employees
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await API.get(API_ENDPOINTS?.GET_USERS);
-        setUsers(res.data.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     try {
+  //       const res = await API.get(API_ENDPOINTS?.GET_USERS);
+  //       setUsers(res.data.data);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
 
-    fetchUsers();
-  }, []);
+  //   fetchUsers();
+  // }, []);
 
   //  Fetch Route
   const fetchRoute = async () => {

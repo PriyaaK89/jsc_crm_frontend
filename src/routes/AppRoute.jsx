@@ -8,6 +8,7 @@ import JobRoleLayout from "../components/layout/AddJobRoleLayout";
 import EmployeeListLayout from "../components/layout/EmployeeList";
 import UploadEmpDocumentsLayout from "../components/layout/UploadEmpDocumentsLayout";
 import EditEmployeePage from "../components/layout/EditEmployee";
+import ViewEmpDetailsLayout from '../components/layout/ViewEmpDetailsLayout'
 import OfferLetterLayout from "../components/layout/GenerateLetters/OfferLetterLayout";
 import JoiningLetterLayout from "../components/layout/GenerateLetters/JoiningLetterLayout";
 import AgreementLetterLayout from '../components/layout/GenerateLetters/AgreementLetterLayout';
@@ -82,7 +83,7 @@ function App() {
         <Route path="/login" element={<UserLogin />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/hr-mgmt/add-employee" element={<AddEmpLayout />} />
-        <Route path="/change-password" element={<ChangePasswordLayout />} />
+        <Route path="/hr-mgmt/change-password" element={<ChangePasswordLayout />} />
         <Route path="/hr-mgmt/dept/add-department" element={<DepartmentLayout />} />
         <Route path="/hr-mgmt/roles/add-job-role" element={<JobRoleLayout />} />
         <Route
@@ -99,6 +100,7 @@ function App() {
           path="/edit-employee-details/:empId"
           element={<EditEmployeePage />}
         />
+        <Route path="/view-employee-details/:id" element={<ViewEmpDetailsLayout/>}/>
         <Route
           path="/generate-offer-letter/:id"
           element={<OfferLetterLayout />}
@@ -118,7 +120,7 @@ function App() {
         <Route path='/accounting-master/create-ledger' element={<CreateLedgerLayout/>}/>
         <Route path='/accounting-master/view-ledger' element={<ViewLedgerLayout/>}/>
         <Route path='/accounting-master/delete-ledger' element={<DeleteLedgerLayout/>}/>
-        <Route path='/accounting-master/create-vouche' element={<CreateVoucherLayout/>}/>
+        <Route path='/accounting-master/create-voucher' element={<CreateVoucherLayout/>}/>
         <Route path='/accounting-master/view-voucher' element={<ViewVoucherLayout/>}/>
         <Route path='/accounting-master/delete-voucher' element={<DeleteVoucherLayout/>}/>
         <Route path='/accounting-master/edit-ledger-assignment' element={<EditLedgerAssignmentLayout/>}/>

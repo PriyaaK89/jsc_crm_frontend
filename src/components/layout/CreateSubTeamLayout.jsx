@@ -1,8 +1,6 @@
 import React from 'react'
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-import Createteam from "../../pages/HrMgmt/CreateTeam";
-import DesktopTopbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import CreateSubTeam from '../../pages/HrMgmt/CreateSubTeam';
 import { Flex,Box } from '@chakra-ui/react';
@@ -35,7 +33,7 @@ function CreateSubTeamLayout() {
              pt={4}
              mx={3}
            >
-             <DesktopTopbar />
+             <Topbar />
            </Box>
    
            {/* Mobile Topbar */}

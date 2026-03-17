@@ -15,8 +15,10 @@ import {
 import { GoHomeFill } from "react-icons/go";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import { useState } from "react";
+import useUsersapi from "../../Apis/GetUsersapi";
 
 function PartyTransactionReport() {
+   const {users} = useUsersapi();
   const [formData, setFormData] = useState({
      startDate: "",
      endDate: "",
@@ -32,9 +34,7 @@ function PartyTransactionReport() {
                      </BreadcrumbLink>
                    </BreadcrumbItem>
 
-        <BreadcrumbItem>
-          <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-        </BreadcrumbItem>
+    
 
         <BreadcrumbItem isCurrentPage>
           <BreadcrumbLink>Party Transaction Report</BreadcrumbLink>
@@ -59,7 +59,7 @@ function PartyTransactionReport() {
 
           <FormControl>
             <FormLabel>Select Transaction</FormLabel>
-            <Select placeholder="Please Select">
+            <Select placeholder="--Please Select--">
               <option>Sale</option>
               <option>Purchase</option>
             </Select>
@@ -67,12 +67,16 @@ function PartyTransactionReport() {
 
           <FormControl>
             <FormLabel>Select Bills Under Employee</FormLabel>
-            <Select placeholder="Please Select" />
+            <Select placeholder="--Please Select--" >
+              {users?.map((emp)=>(
+                <option key={emp.id} value={emp.id}>{emp.name}</option>
+              ))}
+            </Select>
           </FormControl>
 
           <FormControl>
             <FormLabel>Select Party</FormLabel>
-            <Select placeholder="Please Select" />
+            <Select placeholder="--Please Select--" />
           </FormControl>
 
           <FormControl>
@@ -82,7 +86,7 @@ function PartyTransactionReport() {
 
           <FormControl>
             <FormLabel>Choose Bill</FormLabel>
-            <Select placeholder="Please Select" />
+            <Select placeholder="--Please Select--" />
           </FormControl>
 
           <FormControl>

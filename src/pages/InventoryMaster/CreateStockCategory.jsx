@@ -31,7 +31,7 @@ const CreateStockCategory = () => {
           </BreadcrumbItem>
 
           <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink color="#8B8D97" fontSize="13px">
+            <BreadcrumbLink  fontSize="13px">
               Create Stock Category
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -39,7 +39,7 @@ const CreateStockCategory = () => {
       </HStack>
 
       {/* Form Section */}
-      <Box maxW="90%" mx="auto">
+      <Box  >
         <VStack spacing={6} align="stretch">
           <Text fontSize="lg" color="#4d4d4d" fontWeight="bold">
             Create Stock Category

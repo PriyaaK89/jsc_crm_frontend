@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Flex } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
-import DesktopTopbar from "./Topbar";
+import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import ViewStockCategory from "../../pages/InventoryMaster/ViewStockCategory";
 
@@ -33,7 +33,7 @@ const ViewStockCategoryLayout = () => {
               pt={4}
               mx={3}
             >
-              <DesktopTopbar />
+              <Topbar />
             </Box>
     
             {/* Mobile Topbar */}

@@ -1,7 +1,7 @@
 import React from "react";
 import { Flex, Box } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
-import DesktopTopbar from "./Topbar";
+import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import EmployeeList from "../../pages/HrMgmt/EmployeeList";
 
@@ -33,7 +33,7 @@ const EmployeeListLayout = () => {
                pt={4}
                mx={3}
              >
-               <DesktopTopbar />
+               <Topbar />
              </Box>
      
              {/* Mobile Topbar */}

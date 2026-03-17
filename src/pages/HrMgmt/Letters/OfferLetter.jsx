@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
+  Box,HStack,Breadcrumb,BreadcrumbItem,BreadcrumbLink,
   Button,
   Checkbox,
   Flex,
   FormControl,
   FormLabel,
   Heading,
-  HStack,
   Image,
   Input,
   SimpleGrid,
@@ -23,7 +22,7 @@ import { API_ENDPOINTS } from "../../../services/endpoints";
 import OfferLetterPreviewModal from "./OfferLetterPreviewModal";
 import CustomDatePicker from "../../../components/common/CustomDatepicker";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png"
-
+import { GoHomeFill } from "react-icons/go";
 const OfferLetterPage = () => {
   const { id } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -85,6 +84,20 @@ const OfferLetterPage = () => {
 
   return (
     <Box bg="white" p={6} borderRadius="12px">
+       <HStack justifyContent='space-between'>
+                                  <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+                                    <BreadcrumbItem>
+                                      <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                                    </BreadcrumbItem>
+                        
+                                    <BreadcrumbItem>
+                                      <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Generate Offer Letter</BreadcrumbLink>
+                                    </BreadcrumbItem>
+                        
+                                  </Breadcrumb>
+                               
+                        
+                                </HStack>
       <Heading size="md" mb={4}>
         Generate Offer Letter
       </Heading>

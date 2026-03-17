@@ -31,9 +31,6 @@ function FrightReport() {
                                           </BreadcrumbLink>
                                         </BreadcrumbItem>
                      
-                             <BreadcrumbItem>
-                               <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-                             </BreadcrumbItem>
                      
                              <BreadcrumbItem isCurrentPage>
                                <BreadcrumbLink> Super Cash Bill Report </BreadcrumbLink>

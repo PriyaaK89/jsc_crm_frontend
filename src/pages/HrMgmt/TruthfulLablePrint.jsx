@@ -218,7 +218,7 @@ const TruthfulLablePrint = () => {
           </BreadcrumbItem>
 
           <BreadcrumbItem>
-            <BreadcrumbLink href='/print/mgmt/truthful_labelprint' color='#8B8D97' fontSize='13px'> TruthFull lable printer</BreadcrumbLink>
+            <BreadcrumbLink  color='#8B8D97' fontSize='13px'> TruthFull lable printer</BreadcrumbLink>
           </BreadcrumbItem>
 
         </Breadcrumb>

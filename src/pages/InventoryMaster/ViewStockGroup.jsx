@@ -38,14 +38,14 @@ const ViewStockGroup = () => {
       </HStack>
 
       {/* Content Section */}
-      <Box maxW="90%" mx="auto">
+      <Box>
         <VStack spacing={6} align="stretch">
 
-          <Text fontSize="lg" fontWeight="bold" color="#4d4d4d">
+          <Text fontSize="lg" fontWeight="bold" >
             View Stock Groups
           </Text>
 
-          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+          <SimpleGrid columns={{ base: 1, md: 1 }} spacing={4}>
             <FormControl>
               <FormLabel>Select Stock Group</FormLabel>
               <Select placeholder="Select Stock Group">

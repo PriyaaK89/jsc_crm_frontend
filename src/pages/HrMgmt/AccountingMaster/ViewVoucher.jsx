@@ -25,7 +25,7 @@ const ViewLedger = () => {
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='#' color='#8B8D97' fontSize='13px'>View Voucher</BreadcrumbLink>
+                          <BreadcrumbLink  color='#8B8D97' fontSize='13px'>View Voucher</BreadcrumbLink>
                         </BreadcrumbItem>
             
                       </Breadcrumb>
@@ -34,7 +34,7 @@ const ViewLedger = () => {
                     </HStack>
                 
        
-                <Heading size="lg" textAlign="center" mb={6}>
+                <Heading size="md" textAlign="center" mb={6}>
                  View Voucher
                 </Heading>
           

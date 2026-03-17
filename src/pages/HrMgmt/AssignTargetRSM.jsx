@@ -23,7 +23,7 @@ const AssignTargetRSM = () => {
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='#' color='#8B8D97' fontSize='13px'>Assign RSM Sub Team</BreadcrumbLink>
+                          <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Assign RSM Sub Team</BreadcrumbLink>
                         </BreadcrumbItem>
             
                       </Breadcrumb>
@@ -33,7 +33,7 @@ const AssignTargetRSM = () => {
                 
        
                 <Heading size="md" textAlign="center" mb={6}>
-                  Assign RSM sub Team
+                  Assign RSM Sub Team
                 </Heading>
           
                 <Box as="form" >

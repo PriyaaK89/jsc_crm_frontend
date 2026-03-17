@@ -77,7 +77,7 @@ const CreateDepartment = () => {
                   </BreadcrumbItem>
       
                   <BreadcrumbItem>
-                    <BreadcrumbLink href='hr-mgmt/view-employee-list' color='#8B8D97' fontSize='13px'>Create Department</BreadcrumbLink>
+                    <BreadcrumbLink isCurrentPage color='#8B8D97' fontSize='13px'>Create Department</BreadcrumbLink>
                   </BreadcrumbItem>
       
                 </Breadcrumb>

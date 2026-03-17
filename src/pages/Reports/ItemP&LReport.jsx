@@ -72,10 +72,7 @@ function ItemPLReport() {
                                             <GoHomeFill color="#5570F1"  size={20}/>
                                           </BreadcrumbLink>
                                         </BreadcrumbItem>
-                     
-                             <BreadcrumbItem>
-                               <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-                             </BreadcrumbItem>
+               
                      
                              <BreadcrumbItem isCurrentPage>
                                <BreadcrumbLink>  Item  Profit Loss Report</BreadcrumbLink>
@@ -123,21 +120,15 @@ function ItemPLReport() {
                </FormControl>
        )}
   
-   {statewise &&(
-  <FormControl>
-                 <FormLabel>Select state</FormLabel>
-                 <Select placeholder="--Please Select--" />
-               </FormControl>
-       )}
   
-   {districwise &&(
+   {(statewise ||districwise) &&(
    
       
   <FormControl mb={4}>
   <FormLabel>State</FormLabel>
 
   <Select
-    placeholder="Select State"
+    placeholder="--Select State--"
     value={selectedState}
     onChange={(e) => handleStateChange(e.target.value)}
   >
@@ -158,7 +149,7 @@ function ItemPLReport() {
           <FormControl>
   <FormLabel>District</FormLabel>
 
-  <Select placeholder="Select District">
+  <Select placeholder="--Select District--">
     {districts.map((d, i) => (
       <option key={i} value={d}>
         {d}

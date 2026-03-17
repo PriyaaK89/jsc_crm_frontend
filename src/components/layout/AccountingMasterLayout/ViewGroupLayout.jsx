@@ -1,7 +1,6 @@
 import React from 'react'
 import Sidebar from "../Sidebar";
 import Topbar from "../Topbar";
-import DesktopTopbar from "../Topbar";
 import MobileTopbar from "../MobileTopbar";
 import { Flex,Box,Text } from '@chakra-ui/react';
 import ViewGroup from '../../../pages/HrMgmt/AccountingMaster/ViewGroup';
@@ -34,7 +33,7 @@ function ViewGroupLayout() {
                pt={4}
                mx={3}
              >
-               <DesktopTopbar />
+               <Topbar />
              </Box>
      
              {/* Mobile Topbar */}
@@ -62,7 +61,7 @@ function ViewGroupLayout() {
                  mt="75px"
                  mb={5}
                >
-                 <ViewGroupLayout />
+                 <ViewGroup />
                </Box>
              </Box>
            </Flex>

@@ -16,8 +16,10 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import useUsersapi from '../../Apis/GetUsersapi';
 
 function ProductReport() {
+  const {users}=useUsersapi();
   return (
    <Box
     
@@ -30,9 +32,7 @@ function ProductReport() {
                                    </BreadcrumbLink>
                                  </BreadcrumbItem>
               
-                      <BreadcrumbItem>
-                        <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-                      </BreadcrumbItem>
+                    
               
                       <BreadcrumbItem isCurrentPage>
                         <BreadcrumbLink> Product Transaction Report </BreadcrumbLink>
@@ -58,7 +58,11 @@ function ProductReport() {
 
         <FormControl>
           <FormLabel>Select Employee</FormLabel>
-          <Select placeholder="--Please Select--" />
+          <Select placeholder="--Please Select--" >
+            {users?.map((emp)=>(
+              <option key={emp.id} value={emp.id}>{emp.name}</option>
+            ))}
+          </Select>
         </FormControl>
 
         <FormControl>

@@ -1,7 +1,7 @@
 import { Flex } from "@chakra-ui/react";
 import React from "react";
 import Sidebar from "./Sidebar";
-import DesktopTopbar from "./Topbar";
+import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import { Upload } from "lucide-react";
 
@@ -33,7 +33,7 @@ const UploadDocLayout = ()=>{
                   pt={4}
                   mx={3}
                 >
-                  <DesktopTopbar />
+                  <Topbar />
                 </Box>
         
                 {/* Mobile Topbar */}

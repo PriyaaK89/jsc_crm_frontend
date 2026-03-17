@@ -2,7 +2,6 @@ import React from 'react'
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import { Flex,Box } from '@chakra-ui/react';
-import DesktopTopbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import ChangePassword from "../../pages/ChangePassword/ChangeUserPassword";
 
@@ -35,7 +34,7 @@ const ChangePasswordLayout = ()=>{
                   pt={4}
                   mx={3}
                 >
-                  <DesktopTopbar />
+                  <Topbar />
                 </Box>
         
                 {/* Mobile Topbar */}

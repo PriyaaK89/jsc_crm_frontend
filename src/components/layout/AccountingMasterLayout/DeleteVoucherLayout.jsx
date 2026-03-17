@@ -1,7 +1,6 @@
 import React from 'react'
 import Sidebar from "../Sidebar";
 import Topbar from "../Topbar";
-import DesktopTopbar from "../Topbar";
 import MobileTopbar from "../MobileTopbar";
 import { Flex,Box } from '@chakra-ui/react';
 import DeleteVoucher from '../../../pages/HrMgmt/AccountingMaster/DeleteVoucher';
@@ -34,7 +33,7 @@ function DeleteVoucherLayout() {
              pt={4}
              mx={3}
            >
-             <DesktopTopbar />
+             <Topbar />
            </Box>
    
            {/* Mobile Topbar */}
@@ -62,7 +61,7 @@ function DeleteVoucherLayout() {
                mt="75px"
                mb={5}
              >
-               <AddEmployee />
+               <DeleteVoucher />
              </Box>
            </Box>
          </Flex>

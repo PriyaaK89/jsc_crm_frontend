@@ -15,8 +15,10 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import useUsersapi from '../../Apis/GetUsersapi';
 
 function EmployeeBalanceSheet() {
+  const {users}=useUsersapi();
   return (
       <Box p={6}>
         
@@ -27,10 +29,6 @@ function EmployeeBalanceSheet() {
                                <GoHomeFill color="#5570F1"  size={20}/>
                              </BreadcrumbLink>
                            </BreadcrumbItem>
-        
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-                </BreadcrumbItem>
         
                 <BreadcrumbItem isCurrentPage>
                   <BreadcrumbLink>Employee Balance Sheet  </BreadcrumbLink>
@@ -52,9 +50,10 @@ function EmployeeBalanceSheet() {
                   <FormControl>
                     <FormLabel>Select Employee</FormLabel>
                     <Select placeholder="Please Select">
-                      <option>SHAYAM </option>
-                      <option>gorauv</option>
-                     
+
+                      {users?.map((emp)=>(
+                       <option key={emp.id} value={emp.id}>{emp.name} </option>
+                      ))} 
                     </Select>
                   </FormControl>
       

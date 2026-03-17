@@ -9,12 +9,14 @@ import CreateLedgerMillingDetails from "../../../components/Accountingmastercomp
 import CreateLedgerbankconfi from '../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerbankconfi';
 import CreateLedgerGst from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerGst";
 import CreateLedgerSundrydr_cr from "../../../components/Accountingmastercomponents/CreateLedgerSundrydr_cr";
-
+import useUsersapi from '../../../Apis/GetUsersapi';
 
 
 
 const CreateLedger = () => {
 
+  const { users} = useUsersapi();
+  console.log(users)
 
         const [SelectGroup, setSelectGroup] = useState("");
 
@@ -55,12 +57,12 @@ const CreateLedger = () => {
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='/accounting-master/create-ledger' color='#8B8D97' fontSize='13px'>Create Ledger</BreadcrumbLink>
+                          <BreadcrumbLink isCurrentPage color='#8B8D97' fontSize='13px'>Create Ledger</BreadcrumbLink>
                         </BreadcrumbItem>
                       </Breadcrumb>
                     </HStack>
                 
-        <Text fontSize="2xl" fontWeight="bold" mb={6}>
+        <Text fontSize="xl" fontWeight="bold" mb={6} textAlign="center">
           Create Ledger
                     
                </Text> 
@@ -114,11 +116,12 @@ const CreateLedger = () => {
     <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
     <FormControl isRequired mt={5}> 
     <FormLabel {...labelStyles}>Employee Under</FormLabel>
-    <Select name="employeeUnder" fontSize="14px">
-    <option value="-1">Select Employee Name</option>
-    <option value="VIKASKUMAR">VIKASKUMAR</option>
-    <option value="RAJDEEPSINGH">RAJDEEPSINGH</option>
-    <option value="VIKASSINGH">VIKASSINGH</option>
+    <Select name="employeeUnder" fontSize="14px" placeholder="--Please Select--" >
+      {users?.map((emp) => (
+                <option key={emp.id} value={emp.id}>
+                  {emp.name}
+                </option>
+              ))}
    </Select>
    </FormControl>
 
@@ -178,7 +181,7 @@ const CreateLedger = () => {
    {Gst_un_Panno  && ( <CreateLedgerGst/>)}
    {OnlyGst && (
   <Box w="100%"   borderRadius="lg" mt={5}  border="1px" >
-  <HStack justifyContent='space-between'  bg="#e9f2ff" borderBottom="1px solid #d9e5f8" p={1} pl={6}>
+  <HStack justifyContent='space-between'  bg="#e9f2ff" borderBottom="1px solid #d9e5f8"  borderTopRadius="lg" p={1} pl={6}>
   <Breadcrumb  padding='10px 0px 1rem 0px' >
   <BreadcrumbItem>
   <BreadcrumbLink  color='#000000' size="lg" >Tax Registration Details :</BreadcrumbLink>

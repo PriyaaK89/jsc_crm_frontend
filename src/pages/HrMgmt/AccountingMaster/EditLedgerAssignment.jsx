@@ -1,7 +1,11 @@
 import React from 'react'
 import {Box,FormControl,FormLabel,Select,Button,Flex,HStack,Breadcrumb,BreadcrumbItem,Heading,BreadcrumbLink, SimpleGrid} from "@chakra-ui/react";
-import { GoHomeFill } from "react-icons/go";  
+import { GoHomeFill } from "react-icons/go"; 
+import useUsersapi from '../../../Apis/GetUsersapi';
+
 function EditLedgerAssignment() {
+  const {users}=useUsersapi();
+  
   return (
     <>
     <Box >
@@ -12,11 +16,11 @@ function EditLedgerAssignment() {
                               </BreadcrumbItem>
                   
                               <BreadcrumbItem>
-                                <BreadcrumbLink href='/accounting-master/edit-ledger-assignment' color='#8B8D97' fontSize='13px'>Assign Ledger</BreadcrumbLink>
+                                <BreadcrumbLink color='#8B8D97' fontSize='13px'>Assign Ledger</BreadcrumbLink>
                               </BreadcrumbItem>
                             </Breadcrumb>
                         </HStack>
-                         < Heading size="lg" textAlign="center" mb={6}>
+                         < Heading size="md" textAlign="center" mb={6}>
                                                                  Assign Ledger 
                                                                   </Heading>
                         <SimpleGrid columns={{base:1,md:2}} spacing={5}>
@@ -29,6 +33,11 @@ function EditLedgerAssignment() {
             <FormControl mt={5}>
                      <FormLabel>Employee under</FormLabel>
                    <Select fontSize="13px" placeholder='Select employee under' >
+                    {users?.map((emp)=>(
+                      <option key={emp.id} value={emp.id}>
+                        {emp.name}
+                      </option>
+                    ))}
             </Select>
            </FormControl>
            </SimpleGrid>

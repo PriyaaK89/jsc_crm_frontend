@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Flex } from "@chakra-ui/react";
 import Sidebar from "../Sidebar";
-import DesktopTopbar from "../Topbar";
+import Topbar from "../Topbar";
 import MobileTopbar from "../MobileTopbar";
 import ShippingLablePrinter from "../../../pages/HrMgmt/ShippingLablePrinter";
 
@@ -34,7 +34,7 @@ const PrintShippingLablePrinterLayout = () => {
              pt={4}
              mx={3}
            >
-             <DesktopTopbar />
+             <Topbar />
            </Box>
    
            {/* Mobile Topbar */}

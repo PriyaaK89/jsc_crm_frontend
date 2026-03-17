@@ -18,7 +18,8 @@ import {
   BreadcrumbLink,
   Textarea,
   Button,
-  Flex
+  Flex,
+  TableContainer
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 
@@ -93,9 +94,10 @@ const Credit = () => {
       {/* Dealer Details Table */}
       {consignee === "yes" && (
 
-        <Table border="1px solid #ccc" mb={6}>
+    <TableContainer border="1px solid #d1d2d4"  mb={6} mt={2} borderRadius="lg">
+        <Table >
 
-          <Thead bg="#f5f5f5">
+          <Thead bg="#d9e5f8">
             <Tr>
               <Th>Dealer Name</Th>
               <Th>Prop Name</Th>
@@ -116,6 +118,7 @@ const Credit = () => {
           </Tbody>
 
         </Table>
+        </TableContainer>
 
       )}
 
@@ -124,10 +127,10 @@ const Credit = () => {
       <Text fontWeight="bold" mb={3}>
         Transport Details
       </Text>
+      <TableContainer border="1px solid #d1d2d4"  mb={6} mt={2} borderRadius="lg">
+      <Table >
 
-      <Table border="1px solid #ccc">
-
-        <Thead bg="#f5f5f5">
+        <Thead bg="#d9e5f8">
           <Tr>
             <Th>Transport Name</Th>
             <Th>LR No</Th>
@@ -144,6 +147,8 @@ const Credit = () => {
         </Tbody>
 
       </Table>
+</TableContainer>
+
       <FormControl mb={4} mt={6}>
                                     <FormLabel>IGST ()</FormLabel>
                                     <Input type="text"  />

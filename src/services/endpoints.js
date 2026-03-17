@@ -3,6 +3,7 @@ export const API_ENDPOINTS = {
   LOGIN: "auth/login",
   CREATE_USERS: "auth/create-user",
   GET_USERS: "auth/get-users",
+  get_user_list:"auth/user-dropdown",
   update_emp_details: `auth/update-user`,
   get_jobRole_list: `get-jobRole`,
   change_password: `auth/set-password`,
@@ -26,5 +27,7 @@ export const API_ENDPOINTS = {
   get_emp_route: `get-route`,
   upload_emp_letters: `employee-letter`,
   get_emp_docs: `get-employee-documents`,
-  send_esign: "/documents/send-esign"
+  document_status:`document-status`,
+  send_esign: "/documents/send-esign",
+
 };

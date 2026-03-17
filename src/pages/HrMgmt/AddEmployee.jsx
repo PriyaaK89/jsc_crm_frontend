@@ -450,7 +450,6 @@ const AddEmployee = () => {
 
             <BreadcrumbItem>
               <BreadcrumbLink
-                href="hr-mgmt/view-employee-list"
                 color="#8B8D97"
                 fontSize="13px"
               >
@@ -460,7 +459,7 @@ const AddEmployee = () => {
           </Breadcrumb>
           {/* <Button backgroundColor='#3E60AA' color='white' fontWeight='400' height='36px' fontSize='14px' borderRadius='12px' _hover={{ backgroundColor: '#5570F1' }}><span style={{ fontSize: '18px', paddingRight: '10px' }}><FaPlus /></span> Create a New Product</Button> */}
         </HStack>
-        <Text fontSize="2xl" fontWeight="bold" mb={6}>
+        <Text fontSize="2xl" fontWeight="bold" mb={6} textAlign="center">
           Create User
         </Text>
 

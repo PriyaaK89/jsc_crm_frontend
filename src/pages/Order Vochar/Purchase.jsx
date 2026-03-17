@@ -61,7 +61,7 @@ const Purchase = () => {
                     </BreadcrumbItem>   
                   </Breadcrumb>
                 </HStack>
-                <Text fontSize="2xl" fontWeight="bold" mb={6}>
+                <Text fontSize="xl" fontWeight="bold" mb={6}>
                     Purchase 
                 </Text>
                 <FormControl mb={4}>

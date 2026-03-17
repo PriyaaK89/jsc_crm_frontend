@@ -26,7 +26,8 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  HStack
+  HStack,
+  TableContainer
 } from "@chakra-ui/react";
 
 import API from "../../services/api";
@@ -35,9 +36,11 @@ import sort_icon from "../../assets/sort.svg";
 import EmployeeImageModal from "./EmployeeImageModal";
 import { GoHomeFill } from "react-icons/go";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
+import useUsersapi from "../../Apis/GetUsersapi";
 
 const EmpAttendance = () => {
-  const [users, setUsers] = useState([]);
+  const {users,fetchUsers}=useUsersapi();
+  // const [users, setUsers] = useState([]);
   const [attendance, setAttendance] = useState([]);
   const [empRep, setEmpRep] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -56,16 +59,7 @@ const EmpAttendance = () => {
   });
 
   // Fetch Users
-  const fetchUsers = async () => {
-    try {
-      const res = await API.get(API_ENDPOINTS.GET_USERS);
-      if (res.status === 200) {
-        setUsers(res.data.data || []);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+ 
 
   useEffect(() => {
     fetchUsers();
@@ -340,25 +334,24 @@ const EmpAttendance = () => {
 
         <Box
           bg="white"
-          borderRadius="md"
-          overflowX="auto"
-
-
-        >
+          borderRadius="md">
           {loading ? (
             <Flex justify="center" align="center" py={10}>
               <Spinner size="lg" />
             </Flex>
           ) : attendance.length > 0 ? (
+            <TableContainer>
             <Table
-              border="1px solid" borderColor="gray.300"
-              borderRadius="md"
+                borderWidth="1px"
+         borderColor="gray.200"
+         borderRadius="lg"
               variant="striped"
               colorScheme="gray"
               size="sm"
-              width="2650px"
+              minW="900px"
               className="productsTable"
             >
+
               <Thead>
                 <Tr>
                   {[
@@ -423,6 +416,7 @@ const EmpAttendance = () => {
                 ))}
               </Tbody>
             </Table>
+            </TableContainer>
           ) : ""
           }
         </Box>

@@ -16,8 +16,11 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import useUsersapi from '../../Apis/GetUsersapi';
 
 function EmployeeVisitReport() {
+  
+  const {users}=useUsersapi();
   return (
     <Box
        
@@ -30,9 +33,6 @@ function EmployeeVisitReport() {
                                       </BreadcrumbLink>
                                     </BreadcrumbItem>
                  
-                         <BreadcrumbItem>
-                           <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-                         </BreadcrumbItem>
                  
                          <BreadcrumbItem isCurrentPage>
                            <BreadcrumbLink> View Visit Report  </BreadcrumbLink>
@@ -49,7 +49,11 @@ function EmployeeVisitReport() {
    
            <FormControl>
              <FormLabel>Select Employee</FormLabel>
-             <Select placeholder="--Please Select--" />
+             <Select placeholder="--Please Select--" >
+              {users?.map((emp)=>(
+                <option key={emp.id} value={emp.id}>{emp.name}</option>
+              ))}
+             </Select>
            </FormControl>
    
     <HStack>

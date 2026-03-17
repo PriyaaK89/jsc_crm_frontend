@@ -19,7 +19,8 @@ import {
   Textarea,
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink
+  BreadcrumbLink,
+  TableContainer
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import { IoMdAdd } from "react-icons/io";
@@ -81,8 +82,9 @@ import { IoMdRemove } from "react-icons/io";
       </FormControl>
 
       {/* Table */}
-      <Table variant="simple" mb={6} border="1px solid #cdcdcd" mt={2}>
-        <Thead bgColor="aliceblue">
+      <TableContainer border="1px solid #e0e2e6"  mb={6} mt={2} borderRadius="lg">
+      <Table variant="simple">
+        <Thead bgColor="#d9e5f8">
           <Tr>
             <Th>Particulars</Th>
             <Th>Current Balance</Th>
@@ -158,6 +160,7 @@ import { IoMdRemove } from "react-icons/io";
           ))}
         </Tbody>
       </Table>
+      </TableContainer>
 
       {/* Total Amount */}
       <FormControl mb={4}>

@@ -3,9 +3,9 @@ import { Box, Flex } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
-import ViewStockGroup from "../../pages/InventoryMaster/ViewStockGroup";
+import ViewEmployeeDetails from '../../pages/HrMgmt/ViewEmployeeDetails';
 
-const ViewStockGroupLayout = () => {
+const ViewEmpDetailsLayout = () => {
   return (
     <Flex bg="#f4f4f4" minH="100vh">
           
@@ -54,14 +54,14 @@ const ViewStockGroupLayout = () => {
               pt={{ base: "20px", md: 4 }}
             >
               <Box
-                bg="white"
+               bg="#F7F8FA"
                 borderRadius="20px"
                 boxShadow="sm"
                 p={{ base: 3, md: 6 }} 
                 mt="75px"
                 mb={5}
               >
-                <ViewStockGroup />
+                <ViewEmployeeDetails />
               </Box>
             </Box>
           </Flex>
@@ -69,4 +69,7 @@ const ViewStockGroupLayout = () => {
   );
 };
 
-export default ViewStockGroupLayout;
+
+
+
+export default ViewEmpDetailsLayout

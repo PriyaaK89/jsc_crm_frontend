@@ -30,9 +30,6 @@ function ItemStockReport() {
                                      </BreadcrumbLink>
                                    </BreadcrumbItem>
                 
-                        <BreadcrumbItem>
-                          <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-                        </BreadcrumbItem>
                 
                         <BreadcrumbItem isCurrentPage>
                           <BreadcrumbLink> Item Stock Report </BreadcrumbLink>

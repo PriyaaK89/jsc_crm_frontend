@@ -222,6 +222,7 @@ useEffect(() => {
       bg="#FFFFFF"
       color="#333333"
      position="fixed"
+
      
 
   borderRight="1px solid #e5e7eb"
@@ -239,7 +240,7 @@ useEffect(() => {
       {/* Logo */}
       <Box borderBottom="1px solid #e5e7eb" bg="#FFFF" position="fixed" zIndex="9999" w="100%" >
         <Image src={logo} alt="Company Logo" h="74px" w="224px" pl='2.5rem'/>
-      </Box>
+      </Box> 
 
       <VStack spacing={2} align="stretch" mt="75px"  p={4}>
         {menuSections.map((menu, index) => {

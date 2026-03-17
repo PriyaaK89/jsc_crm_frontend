@@ -20,7 +20,7 @@ function EditLedgerAssignment() {
                               </BreadcrumbItem>
                             </Breadcrumb>
                         </HStack>
-                         < Heading size="lg" textAlign="center" mb={6}>
+                         < Heading size="md" textAlign="center" mb={6}>
                                                                  Assign Ledger 
                                                                   </Heading>
                         <SimpleGrid columns={{base:1,md:2}} spacing={5}>

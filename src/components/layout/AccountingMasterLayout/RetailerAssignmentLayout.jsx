@@ -1,8 +1,6 @@
 import React from 'react'
 import Sidebar from "../Sidebar";
 import Topbar from "../Topbar";
-
-import DesktopTopbar from "../Topbar";
 import MobileTopbar from "../MobileTopbar";
 import { Flex,Box } from '@chakra-ui/react';
 import RetailerAssignment from '../../../pages/HrMgmt/AccountingMaster/RetailerAssignment';
@@ -36,7 +34,7 @@ function RetailerAssignmentLayout() {
              pt={4}
              mx={3}
            >
-             <DesktopTopbar />
+             <Topbar />
            </Box>
    
            {/* Mobile Topbar */}

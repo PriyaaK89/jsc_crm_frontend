@@ -3,7 +3,6 @@ import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import { Flex,Box } from '@chakra-ui/react';
 import AssignTargetFA from '../../pages/HrMgmt/AssignTargetFA';
-import DesktopTopbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 
 
@@ -35,7 +34,7 @@ function AssignTargetFALayout() {
                 pt={4}
                 mx={3}
               >
-                <DesktopTopbar />
+                <Topbar />
               </Box>
       
               {/* Mobile Topbar */}

@@ -38,7 +38,7 @@ function CreateVoucher() {
                           </HStack>
 
       {/* 🔹 Page Title */}
-       <Text fontSize="2xl" fontWeight="bold" mb={6} textAlign="center">
+       <Text fontSize="xl" fontWeight="bold" mb={6} textAlign="center">
                 Create Voucher
               </Text> 
 

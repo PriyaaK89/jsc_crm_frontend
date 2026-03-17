@@ -22,7 +22,7 @@ import { API_ENDPOINTS } from "../../../services/endpoints";
 import OfferLetterPreviewModal from "./OfferLetterPreviewModal";
 import CustomDatePicker from "../../../components/common/CustomDatepicker";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png"
-
+import { GoHomeFill } from "react-icons/go";
 const OfferLetterPage = () => {
   const { id } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();

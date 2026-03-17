@@ -33,7 +33,7 @@ const ProfileLayout = ()=>{
                 pt={4}
                 mx={3}
               >
-                <DesktopTopbar />
+                <Topbar />
               </Box>
       
               {/* Mobile Topbar */}

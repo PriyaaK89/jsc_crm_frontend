@@ -80,7 +80,7 @@ const Newsidebar = () => {
       icon: FaUser,
       children: [
         {label: "Add Employee", path: "/hr-mgmt/add-employee",icon: FaUserPlus},
-        {label:"Change Password",path:"/change-password",icon:FiLock },
+        {label:"Change Password",path:"/hr-mgmt/change-password",icon:FiLock },
         {label: "Employee List", path: "/hr-mgmt/view-employee-list",icon: RiUser3Line,},
         {label: "Create Job Role", path: "/hr-mgmt/roles/add-job-role",icon: HiUserGroup,},
         {label: "Create Department",path: "/hr-mgmt/dept/add-department",icon: MdAccountTree,},

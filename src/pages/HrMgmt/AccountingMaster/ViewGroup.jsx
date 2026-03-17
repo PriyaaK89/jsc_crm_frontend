@@ -34,7 +34,7 @@ const ViewGroup = () => {
                     </HStack>
                 
        
-                <Heading size="lg" textAlign="center" mb={6}>
+                <Heading size="md" textAlign="center" mb={6}>
                   View Group
                 </Heading>
           

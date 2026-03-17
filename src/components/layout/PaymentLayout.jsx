@@ -2,7 +2,6 @@ import { Center, Flex ,Box} from "@chakra-ui/react";
 import React from "react";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-import DesktopTopbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import Payment from "../../pages/Order Vochar/Payment";
 
@@ -34,7 +33,7 @@ const PaymentLayout = ()=>{
                   pt={4}
                   mx={3}
                 >
-                  <DesktopTopbar />
+                  <Topbar />
                 </Box>
         
                 {/* Mobile Topbar */}

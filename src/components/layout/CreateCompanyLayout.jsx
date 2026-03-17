@@ -2,8 +2,6 @@ import React from 'react'
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import { Flex,Box } from '@chakra-ui/react';
-
-import DesktopTopbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import CreateCompany from '../../pages/HrMgmt/CompanyMaster/CreateCompany';
       
@@ -38,7 +36,7 @@ function CreateCompanyLayout() {
               pt={4}
               mx={3}
             >
-              <DesktopTopbar />
+              <Topbar />
             </Box>
     
             {/* Mobile Topbar */}

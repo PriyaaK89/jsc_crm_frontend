@@ -2,7 +2,6 @@ import React from 'react'
 import{ Flex, Box } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-import DesktopTopbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import Credit from "../../pages/Order Vochar/Credit";
 
@@ -34,7 +33,7 @@ const CreditLayout = () => {
                pt={4}
                mx={3}
              >
-               <DesktopTopbar />
+               <Topbar />
              </Box>
      
              {/* Mobile Topbar */}

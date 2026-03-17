@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Flex } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
-import DesktopTopbar from "./Topbar";
+import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import DeleteStockGroup from "../../pages/InventoryMaster/DeleteStockGroup";
 const DeleteStockGroupLayout = () => {
@@ -32,7 +32,7 @@ const DeleteStockGroupLayout = () => {
                pt={4}
                mx={3}
              >
-               <DesktopTopbar />
+               <Topbar />
              </Box>
      
              {/* Mobile Topbar */}

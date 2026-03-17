@@ -3,7 +3,6 @@ import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import { Flex,Box } from '@chakra-ui/react';
 import AssignTargetTSM from '../../pages/HrMgmt/AssignTargetTSM';
-import DesktopTopbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 
 
@@ -36,7 +35,7 @@ function AssignTargetTSMLayout() {
                pt={4}
                mx={3}
              >
-               <DesktopTopbar />
+               <Topbar />
              </Box>
      
              {/* Mobile Topbar */}

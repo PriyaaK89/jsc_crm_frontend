@@ -1,6 +1,6 @@
 import React from 'react'
 import Sidebar from "./Sidebar";
-import DesktopTopbar from "./Topbar";
+import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import { Flex } from '@chakra-ui/react';
 import { View } from 'lucide-react';
@@ -37,7 +37,7 @@ function ViewCompanyLayout() {
                pt={4}
                mx={3}
              >
-               <DesktopTopbar />
+               <Topbar />
              </Box>
      
              {/* Mobile Topbar */}

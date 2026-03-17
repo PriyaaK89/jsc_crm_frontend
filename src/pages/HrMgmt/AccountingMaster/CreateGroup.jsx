@@ -35,7 +35,7 @@ const CreateGroup = () => {
                 
        
                 
- <Heading fontSize="xl" fontWeight="bold" mb={6} textAlign="center">
+ <Heading fontSize="lg" fontWeight="bold" mb={6} textAlign="center">
              Create Group
         </Heading>          
                 <Box as="form" >

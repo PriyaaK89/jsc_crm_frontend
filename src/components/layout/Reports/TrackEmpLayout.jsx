@@ -2,7 +2,7 @@ import { Box, Flex } from "@chakra-ui/react";
 import React from "react";
 import Sidebar from "../Sidebar";
 import MobileTopbar from "../MobileTopbar";
-import Topbar from "../Topbar";
+import DesktopTopbar from "../Topbar";
 import MapView from "../../../pages/EmpLocation/Map";
 import TrackEmployee from '../../../pages/EmpLocation/TrackEmployee'
 

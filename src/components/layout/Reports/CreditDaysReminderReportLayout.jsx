@@ -5,6 +5,7 @@ import Topbar from "../Topbar";
 import MobileTopbar from "../MobileTopbar";
 import CreditDaysReminderReport from "../../../pages/Reports/CreditDaysReminderReport";
 
+
 const CreditDaysReminderReportLayout = () => {
   return (
    <Flex bg="#f4f4f4" minH="100vh">

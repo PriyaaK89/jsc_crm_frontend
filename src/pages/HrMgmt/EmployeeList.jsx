@@ -98,7 +98,7 @@ const EmployeeList = () => {
     <VerifyDocumentModel isVerifyModelOpen={isVerifyModelOpen} onVerifyModalClose={onVerifyModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList}/>
       <ViewUploadedDocument isOpen={isOpen} onClose={onClose} selectedId={selectedId} />
       <DeleteEmployeeModel isDeleteModalOpen={isDeleteModalOpen} onDeleteModalClose={onDeleteModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList} />
-      <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px 0px' width="80%">
+      <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px 0px' width="100%">
         {/* Header */}
         <HStack justifyContent='space-between'>
           <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
@@ -132,7 +132,7 @@ const EmployeeList = () => {
               <Spinner size="lg" />
             </Flex>
           ) : (
-            <Box overflowX="auto" maxW="100vw">
+            <Box overflowX="auto" >
                     <Box overflowX="auto" whiteSpace="nowrap" sx={{
                         "&::-webkit-scrollbar": { width: "8px", height: '8px' },
                         "&::-webkit-scrollbar-thumb": {

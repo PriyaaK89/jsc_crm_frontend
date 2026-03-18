@@ -277,9 +277,19 @@ const VerifyDocumentModel = ({
                     )}
 
                     {doc.document_type === "agreement_letter" && (
+                      <>
+                       <Button
+                          size="sm"
+                          leftIcon={<FiSend />}
+                           isLoading={esignLoading === doc.id}
+                          colorScheme="blue"  onClick={() => sendForESign(doc.id)}
+                        >
+                          Send eSign
+                        </Button>
                       <Button size="sm" colorScheme="purple">
                         Send eStamp
                       </Button>
+                      </>
                     )}
 
                   </Flex>

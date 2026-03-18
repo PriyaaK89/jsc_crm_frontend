@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Heading, HStack,Flex, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, useToast, VStack } from "@chakra-ui/react";
+import { Box, Button, Divider, Heading, HStack, Flex, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, useToast, VStack, TableContainer, Table, Thead, Tr, Th, Tbody, Td } from "@chakra-ui/react";
 import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
 import React from "react";
@@ -10,9 +10,9 @@ import { CloseButton } from "@chakra-ui/react";
 const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, probationDays }) => {
 
 
-     const handleClose = () => {
-    onClose(true);
-  };
+    const handleClose = () => {
+        onClose(true);
+    };
     // const handleDownloadAgreementPDF = () => {
     //     const element = document.getElementById("agre-letter-preview");
 
@@ -29,96 +29,119 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
     //         .save();
     // };
 
+    const salaryPolicy = [
+    {
+      target: "Below 60% Target Achievement",
+      payout: "Only the basic component of the salary will be payable",
+    },
+    {
+      target: "60% – 70% Target Achievement",
+      payout: "Basic salary plus 20% of applicable allowances will be payable",
+    },
+    {
+      target: "70% – 80% Target Achievement",
+      payout: "Basic salary plus 30% of applicable allowances will be payable",
+    },
+    {
+      target: "80% – 90% Target Achievement",
+      payout: "Basic salary plus 40% of applicable allowances will be payable",
+    },
+    {
+      target: "90% – 100% Target Achievement",
+      payout: "Full salary payout along with applicable allowances will be payable",
+    },
+  ];
+
     const toast = useToast();
-   const handleDownloadAgreementPDF = async () => {
-  try {
+    const handleDownloadAgreementPDF = async () => {
+        try {
 
-    const pages = document.querySelectorAll(".pdf-page");
-    const pdf = new jsPDF("p", "mm", "a4");
+            const pages = document.querySelectorAll(".pdf-page");
+            const pdf = new jsPDF("p", "mm", "a4");
 
-    for (let i = 0; i < pages.length; i++) {
+            for (let i = 0; i < pages.length; i++) {
 
-      const page = pages[i];
+                const page = pages[i];
 
-      const dataUrl = await toJpeg(page, {
-        quality: 0.9,
-        pixelRatio: 2,
-        cacheBust: true
-      });
+                const dataUrl = await toJpeg(page, {
+                    quality: 0.9,
+                    pixelRatio: 2,
+                    cacheBust: true
+                });
 
-      const imgProps = pdf.getImageProperties(dataUrl);
+                const imgProps = pdf.getImageProperties(dataUrl);
 
-      const pdfWidth = 210;
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                const pdfWidth = 210;
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-      if (i > 0) {
-        pdf.addPage();
-      }
+                if (i > 0) {
+                    pdf.addPage();
+                }
 
-      pdf.addImage(dataUrl, "JPEG", 0, 0, pdfWidth, pdfHeight);
-    }
+                pdf.addImage(dataUrl, "JPEG", 0, 0, pdfWidth, pdfHeight);
+            }
 
-    const pdfBlob = pdf.output("blob");
+            const pdfBlob = pdf.output("blob");
 
-    // Download
+            // Download
 
-    const url = URL.createObjectURL(pdfBlob);
+            const url = URL.createObjectURL(pdfBlob);
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `Agreement_Letter_${employee?.name}.pdf`;
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `Agreement_Letter_${employee?.name}.pdf`;
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
-    // Upload
+            // Upload
 
-    const uploadFormData = new FormData();
+            const uploadFormData = new FormData();
 
-    uploadFormData.append(
-      "file",
-      pdfBlob,
-      `Agreement_Letter_${employee?.name}.pdf`
-    );
+            uploadFormData.append(
+                "file",
+                pdfBlob,
+                `Agreement_Letter_${employee?.name}.pdf`
+            );
 
-    uploadFormData.append("employee_id", employee?.id);
-    uploadFormData.append("employee_name", employee?.name);
-    uploadFormData.append("document_type", "agreement_letter");
+            uploadFormData.append("employee_id", employee?.id);
+            uploadFormData.append("employee_name", employee?.name);
+            uploadFormData.append("document_type", "agreement_letter");
 
-    const res = await API.post(
-      API_ENDPOINTS.upload_emp_letters,
-      uploadFormData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data"
+            const res = await API.post(
+                API_ENDPOINTS.upload_emp_letters,
+                uploadFormData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                }
+            );
+
+            if (res?.status === 200) {
+                toast({
+                    description: "Agreement Letter Uploaded Successfully!",
+                    duration: 2000,
+                    status: "success"
+                });
+            }
+
+        } catch (error) {
+
+            console.error("Agreement PDF generation/upload error:", error);
+
+            toast({
+                description:
+                    error?.response?.data?.message ||
+                    "Something went wrong, Please try again!",
+                status: "error",
+                duration: 2000,
+                isClosable: true,
+                position: "top-right"
+            });
         }
-      }
-    );
-
-    if (res?.status === 200) {
-      toast({
-        description: "Agreement Letter Uploaded Successfully!",
-        duration: 2000,
-        status: "success"
-      });
-    }
-
-  } catch (error) {
-
-    console.error("Agreement PDF generation/upload error:", error);
-
-    toast({
-      description:
-        error?.response?.data?.message ||
-        "Something went wrong, Please try again!",
-      status: "error",
-      duration: 2000,
-      isClosable: true,
-      position: "top-right"
-    });
-  }
-};
+    };
 
     const formatDateLong = (value) => {
         if (!value) return "";
@@ -140,8 +163,8 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
                     bg="white"
                     boxShadow="none">
                     <ModalBody p={0}>
-                                   <Flex justifyContent="flex-end" m={4} ><CloseButton bg="#d3d2d2"p={3}  onClick={handleClose} /></Flex>
-                        
+                        <Flex justifyContent="flex-end" m={4} ><CloseButton bg="#d3d2d2" p={3} onClick={handleClose} /></Flex>
+
                         <Box id="agre-letter-preview" fontFamily="Georgia">
                             <VStack spacing={0}>
                                 <Box className="pdf-page" textAlign="justify" >
@@ -441,14 +464,38 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
                                 </Box>
                                 <Box className="pdf-page page-break">
                                     <VStack width="95%" margin="auto" gap="1rem">
-                                        <Box mt="4rem">
+                                        <Box mt="3rem">
+                                               <VStack align="flex-start" width="100%" mb="2rem">
+                                                                <Text fontSize="14px" textAlign="justify"><Text fontSize="20px" fontWeight="bold" mb="10px">25. Performance Linked Compensation Policy:</Text></Text>
+                                                                <Text mb="10px" fontSize="15px" textAlign="justify">As part of the employee’s role in the organization, the employee will be assigned annual and monthly performance targets aligned with the company’s business objectives.</Text>
+                                                                <Text mb="10px" fontSize="15px" textAlign="justify">The employee’s monthly salary payout will be linked to the percentage of the assigned monthly target achieved, and the payout will be determined as per the following performance criteria:</Text>
+                                                                {/* <TableContainer borderTop="1px solid black" borderRight="1px solid black" borderLeft="1px solid black"> */}
+                                                                  <Table variant="simple" className="performancePayoutTable" border="1px solid black">
+                                                                    <Thead>
+                                                                      <Tr>
+                                                                        <Th style={{borderRight: '1px solid black', borderBottom: "1px solid black"}}>Target Achievement</Th>
+                                                                        <Th style={{borderBottom: "1px solid black"}}>Salary Payout</Th>
+                                                                      </Tr>
+                                                                    </Thead>
+                                            
+                                                                    <Tbody>
+                                                                      {salaryPolicy.map((item, index) => (
+                                                                        <Tr key={index}>
+                                                                          <Td style={{borderBottom: "1px solid black", borderRight: '1px solid black', fontSize:"14px", padding: "10px"}} whiteSpace="normal" wordBreak="break-word">{item.target}</Td>
+                                                                          <Td style={{borderBottom: "1px solid black", fontSize:"14px", padding: "10px"}} whiteSpace="normal" wordBreak="break-word">{item.payout}</Td>
+                                                                        </Tr>
+                                                                      ))}
+                                                                    </Tbody>
+                                                                  </Table>
+                                                                {/* </TableContainer> */}
+                                                              </VStack>
                                             <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">25. Counterparts</Text>
+                                                <Text fontSize="20px" fontWeight="bold" mb="10px">26. Counterparts</Text>
                                                 <Text mb="18px" fontSize="15px" textAlign="justify">The Agreement may be executed in two or more counterparts, any one of which shall be deemed the original without reference to the others.</Text>
                                                 <Text mb="18px" fontSize="15px" textAlign="justify">IN WITNESS WHEREOF, the Employee has hereunto set his hand, and the Company has caused these presents to be executed in its name and on its behalf, all as of the day and year first above written.</Text>
                                             </Box>
                                             <Box>
-                                                <HStack width="93%" justifyContent="space-between" marginTop="5rem">  <Text>____________________	</Text>
+                                                <HStack width="93%" justifyContent="space-between" marginTop="3rem">  <Text>____________________	</Text>
                                                     <Text>___________________</Text>
                                                 </HStack>
                                                 <HStack width="79%" justifyContent="space-between" >
@@ -468,16 +515,7 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
                                                 </HStack>
                                             </Box>
                                             <VStack alignItems="end" spacing={0}>
-                                                {formData.show_stamp && (
-                                                    <Image
-                                                        src={jsc_stamp}
-                                                        alt="Company Stamp"
-                                                        boxSize="120px"
-                                                    // mt={4}
-                                                    />
-
-                                                )}</VStack>
-
+                                                {formData.show_stamp && ( <Image src={jsc_stamp} alt="Company Stamp" boxSize="120px" /> )}</VStack>
                                         </Box>
                                     </VStack>
                                     <Box>
@@ -488,11 +526,11 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
                         </Box>
                     </ModalBody>
                     <ModalFooter>
-                          <Flex p={1} justifyContent="center" borderTop="1px" borderColor="#bdbcbc" w="100%">
-                                                <Button colorScheme="gray" onClick={handleClose} >Close</Button>
-                                                <Button colorScheme="blue" onClick={handleDownloadAgreementPDF} ml={5}>Download PDF</Button>
-                                              </Flex>
-                                 
+                        <Flex p={1} justifyContent="center" borderTop="1px" borderColor="#bdbcbc" w="100%">
+                            <Button colorScheme="gray" onClick={handleClose} >Close</Button>
+                            <Button colorScheme="blue" onClick={handleDownloadAgreementPDF} ml={5}>Download PDF</Button>
+                        </Flex>
+
                     </ModalFooter>
                 </ModalContent>
             </Modal>

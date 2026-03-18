@@ -335,11 +335,13 @@ const EmpAttendance = () => {
         <Box
           bg="white"
           borderRadius="md">
+          
           {loading ? (
             <Flex justify="center" align="center" py={10}>
               <Spinner size="lg" />
             </Flex>
           ) : attendance.length > 0 ? (
+            <TableContainer>
             <TableContainer>
             <Table
                 borderWidth="1px"
@@ -351,6 +353,7 @@ const EmpAttendance = () => {
               minW="900px"
               className="productsTable"
             >
+
 
               <Thead>
                 <Tr>
@@ -416,6 +419,7 @@ const EmpAttendance = () => {
                 ))}
               </Tbody>
             </Table>
+            </TableContainer>
             </TableContainer>
           ) : ""
           }

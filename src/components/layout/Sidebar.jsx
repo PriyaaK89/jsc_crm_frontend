@@ -1,5 +1,5 @@
 import {Box,VStack,Text,Button,Collapse,Icon, Image } from "@chakra-ui/react";
-import { ChevronDownIcon, ChevronRightIcon,IconButton } from "@chakra-ui/icons";
+import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
 import { MdAssignmentInd, MdOutlineTrackChanges } from "react-icons/md";
@@ -14,7 +14,7 @@ import { MdInventory, MdAddBox, MdViewList, MdDelete } from "react-icons/md";
 import { MdCategory } from "react-icons/md";
 import { MdAddCircleOutline,MdAccountTree   } from "react-icons/md";
 import { FaFileInvoice } from "react-icons/fa";
-import { FiMapPin,FiKey,FiLock  } from "react-icons/fi";
+import { FiMapPin } from "react-icons/fi";
 import { FaClipboardList,FaCalculator,FaWallet,FaList,FaTrash,FaFileInvoiceDollar,FaBookOpen,FaMoneyCheckAlt} from "react-icons/fa";
   import { FaEdit,FaStore } from "react-icons/fa";
   import { Receipt,CalendarCheck,BellRing,Handshake,BookText,Clock,FileSpreadsheet,BarChart3 } from "lucide-react";
@@ -80,7 +80,6 @@ const Newsidebar = () => {
       icon: FaUser,
       children: [
         {label: "Add Employee", path: "/hr-mgmt/add-employee",icon: FaUserPlus},
-        {label:"Change Password",path:"/hr-mgmt/change-password",icon:FiLock },
         {label: "Employee List", path: "/hr-mgmt/view-employee-list",icon: RiUser3Line,},
         {label: "Create Job Role", path: "/hr-mgmt/roles/add-job-role",icon: HiUserGroup,},
         {label: "Create Department",path: "/hr-mgmt/dept/add-department",icon: MdAccountTree,},
@@ -113,7 +112,7 @@ const Newsidebar = () => {
         {label:"Create Ledger",path:"/accounting-master/create-ledger", icon:FaFileInvoiceDollar},
         {label:"View Ledger",path:"/accounting-master/view-ledger", icon:FaFileInvoice},
         {label:"Delete Ledger",path:"/accounting-master/delete-ledger", icon:FaTrash},
-        {label:"Create Voucher",path:"/accounting-master/create-voucher", icon:FaMoneyCheckAlt},
+        {label:"Create Voucher",path:"/accounting-master/create-vouche", icon:FaMoneyCheckAlt},
         {label:"View Voucher", path:"/accounting-master/view-voucher", icon:FaFileInvoice },
         {label:"Delete Voucher",path:"/accounting-master/delete-voucher", icon:FaTrash},
         {label:"Edit Ledger Assignment",path:"/accounting-master/edit-ledger-assignment",  icon:FaEdit },

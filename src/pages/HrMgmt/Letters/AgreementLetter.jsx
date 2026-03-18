@@ -6,6 +6,7 @@ import { Box, Button, Checkbox, Flex, FormControl,HStack,Breadcrumb,BreadcrumbIt
 import EmpAgreementLetterPreview from "./EmpAgreementLetterPreview";
 import CustomDatePicker from "../../../components/common/CustomDatepicker";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png"
+import { GoHomeFill } from "react-icons/go";
 
 const AgreementLetter = () => {
 

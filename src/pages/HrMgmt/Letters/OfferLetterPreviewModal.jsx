@@ -1,4 +1,4 @@
-import { Box, Button, HStack, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, VStack, Divider, Flex, useToast } from "@chakra-ui/react";
+import { Box, Button, HStack, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, VStack, Divider, Flex, useToast, Table, Thead, Tr, Th, Tbody, Td } from "@chakra-ui/react";
 import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
 import top_ele from "../../../assets/images/top_left_ele.png";
@@ -15,7 +15,29 @@ import { API_ENDPOINTS } from "../../../services/endpoints";
 
 const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
 
-  const toast = useToast()
+  const toast = useToast();
+  const salaryPolicy = [
+    {
+      target: "Below 60% Target Achievement",
+      payout: "Only the basic component of the salary will be payable",
+    },
+    {
+      target: "60% – 70% Target Achievement",
+      payout: "Basic salary plus 20% of applicable allowances will be payable",
+    },
+    {
+      target: "70% – 80% Target Achievement",
+      payout: "Basic salary plus 30% of applicable allowances will be payable",
+    },
+    {
+      target: "80% – 90% Target Achievement",
+      payout: "Basic salary plus 40% of applicable allowances will be payable",
+    },
+    {
+      target: "90% – 100% Target Achievement",
+      payout: "Full salary payout along with applicable allowances will be payable",
+    },
+  ];
 
   const handleDownloadPDF = async () => {
     try {
@@ -187,6 +209,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                       <Text>• &nbsp; Copy of PAN / Aadhaar / DL / Voter ID.</Text>
                       <Text>• &nbsp; Bank passbook copy.</Text>
                     </Box>
+                     <Text> After checking the above documents, we will return the originals to you. </Text>
                   </VStack>
                 </Box>
               </Box>
@@ -216,7 +239,71 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                 <VStack align="flex-start" spacing={4} width="89%" marginLeft="4rem" className="letter-content">
                   <Image src={r_logo} alt="Round Logo" className="watermark_img1" />
                   <Text textAlign="center" mt="2rem" mb="2rem" width="89%">CONTD:-2</Text>
-                  <Text> After checking the above documents, we will return the originals to you. </Text>
+                 
+
+                  <VStack align="flex-start" width="100%">
+                    <Text fontSize="14px" textAlign="justify"><Text fontWeight="600" fontSize="18px">Performance Linked Compensation Policy:</Text></Text>
+                    <Text>As part of the employee’s role in the organization, the employee will be assigned annual and monthly performance targets aligned with the company’s business objectives.</Text>
+                    <Text>The employee’s monthly salary payout will be linked to the percentage of the assigned monthly target achieved, and the payout will be determined as per the following performance criteria:</Text>
+                    {/* <TableContainer borderTop="1px solid black" borderRight="1px solid black" borderLeft="1px solid black"> */}
+                    <Table variant="simple" className="performancePayoutTable" border="1px solid black">
+                      <Thead>
+                        <Tr>
+                          <Th style={{ borderRight: '1px solid black', borderBottom: "1px solid black" }}>Target Achievement</Th>
+                          <Th style={{ borderBottom: "1px solid black" }}>Salary Payout</Th>
+                        </Tr>
+                      </Thead>
+
+                      <Tbody>
+                        {salaryPolicy.map((item, index) => (
+                          <Tr key={index}>
+                            <Td style={{ borderBottom: "1px solid black", borderRight: '1px solid black' }} whiteSpace="normal" wordBreak="break-word">{item.target}</Td>
+                            <Td style={{ borderBottom: "1px solid black" }} whiteSpace="normal" wordBreak="break-word">{item.payout}</Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                    {/* </TableContainer> */}
+                  </VStack>
+                 
+
+              
+                  {/* Footer */}
+               
+                </VStack>
+               
+              </Box>
+            </Box>
+
+             <Box className="pdf-page page-break">
+              <Box className="pdf-inner">
+                {/* Decorative Images */}
+                <Image
+                  src={top_ele}
+                  position="absolute"
+                  top="0"
+                  left="0"
+                  width="175px"
+                />
+
+                <Image
+                  src={bottom_ele}
+                  position="absolute"
+                  bottom="0"
+                  right="0"
+                  width="175px"
+                />
+
+                <VStack align="flex-start" spacing={4} width="89%" marginLeft="4rem" className="letter-content">
+                  <Image src={r_logo} alt="Round Logo" className="watermark_img1" />
+                  <Text textAlign="center" mt="2rem" mb="2rem" width="89%">CONTD:-3</Text>
+              
+
+                  <VStack align="flex-start" width="100%">
+                   
+
+                   
+                  </VStack>
                   <Text> We will issue a detailed appointment letter with the salary break up and other service's condition on your joining with us. Please send your acceptance to this offer by indicating your joining date on or before above mentioned date, failing which this offer will stand cancelled. </Text>
                   <Text> Welcome to <strong>Jamidara Seeds Corporation</strong> and look forward to your association & contribution to achieve the organizational objectives.</Text>
                   <Text fontWeight="bold" mt="10px"> Other Terms </Text>

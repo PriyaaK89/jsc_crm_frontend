@@ -25,7 +25,8 @@ const ChangePasswordLayout = ()=>{
               <Flex
                 direction="column"
                 flex="1"
-                ml={{ base: 0, md: "268px" }}
+                ml={{ base: 0, md: "0px" }} position="absolute" left="278px"
+
               >
                 {/* Desktop Topbar */}
                 <Box

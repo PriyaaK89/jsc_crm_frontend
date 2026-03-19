@@ -30,20 +30,14 @@ const Debit = () => {
   const [item, setItem] = useState("");
 
   return (
-    // <Box  backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px'  >
     <Box
      bg="white"
-     mt={{base:2, md:4}}
+     mt={{base:2, md:5}}
      px={{base:3, md:6}}
      py={{base:3, md:4}}
-    borderRadius="md"
+    borderRadius="lg"
+    boxShadow="md"
  >
-
-       
-
-    {/* // <Box "> */}
-      
-    
       {/* Breadcrumb */}
       <HStack justifyContent="space-between" flexWrap="wrap" spacing="space-between">
         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
@@ -203,36 +197,36 @@ const Debit = () => {
 
       {/* Tax Section */}
 
-      <FormControl mb={4} mt={6}>
+      <FormControl mb={4} mt={6} w="100%">
         <FormLabel>IGST</FormLabel>
         <Input type="text" />
       </FormControl>
 
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>CGST</FormLabel>
         <Input type="text" />
       </FormControl>
 
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>SGST</FormLabel>
         <Input type="text" />
       </FormControl>
 
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>Total Amount</FormLabel>
         <Input type="number" />
       </FormControl>
 
       {/* Narration */}
 
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>Narration</FormLabel>
         <Textarea defaultValue="debit note" />
       </FormControl>
 
       {/* Upload */}
 
-      <FormControl mb={6}>
+      <FormControl mb={6} w="100%">
         <FormLabel>Upload Document *</FormLabel>
         <Input type="file" />
       </FormControl>

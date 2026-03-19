@@ -4,11 +4,14 @@ import { Box, Text } from "@chakra-ui/react";
 const RightSidebar = () => {
   return (
     <Box
-      w="250px"
-      bg="white"
-      // minH="100vh"
-      p={5}
-      display={{ base: "none", lg: "block" }}
+    w="100%"
+    h="140px"
+       bg="white"
+     mt={{base:2, md:5}}
+     px={{base:3, md:6}}
+     py={{base:3, md:4}}
+    borderRadius="lg"
+    boxShadow="md"
     >
       <Text fontWeight="bold" mb={4}>Activity Feed</Text>
       <Text fontSize="sm" color="gray.600">Recent activities and updates here...</Text>

@@ -58,7 +58,7 @@ const EmployeeListLayout = () => {
                  borderRadius="20px"
                  boxShadow="sm"
                  p={{ base: 3, md: 6 }} 
-                 mt="75px" width="83%"
+                 mt="75px" width={{base: "100%",sm: "100%",md:"83%", lg: "83%"}}
                  mb={5}
                >
                  <EmployeeList />

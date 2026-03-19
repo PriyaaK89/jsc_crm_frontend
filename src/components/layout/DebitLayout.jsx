@@ -1,40 +1,33 @@
 import React from 'react'
-import { Flex, Box } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
-import DesktopTopbar from "./Topbar";
+import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import Debit from "../../pages/Order Vochar/Debit";
 
 const DebitLayout = () => {
   return (
-    <Box bg="#f4f4f4">
-
-      {/* Sidebar */}
+    <Box bg="#F3F3F3" h="100%" >
       <Box display={{ base: "none", md: "block" }}>
         <Sidebar />
-      </Box>
 
-      {/* Desktop Topbar */}
+      </Box>
       <Box display={{ base: "none", md: "block" }}>
-        <DesktopTopbar />
+        <Topbar />
       </Box>
-
-      {/* Mobile Topbar */}
-      <Box display={{ base: "flex", md: "none" }}>
+      <Box display={{ base: "block", md: "none" }}>
         <MobileTopbar />
       </Box>
-
-      {/* Page Content */}
       <Box
-        ml={{ base: 3, md: "268px" }}
-        mr={{ base: 3, md: 6 }}
-        mt={{ base: "90px", md: "90px" }}
-        mb={{ base: 6, md: 8 }}
+        ml={{ base: 5, md: "295px" }}
+        mr={{base:5, md:5}}
+        pt="5rem"
+        pb={6}
       >
         <Debit />
       </Box>
-
     </Box>
   )
 }
-export default DebitLayout ;
+
+export default DebitLayout;

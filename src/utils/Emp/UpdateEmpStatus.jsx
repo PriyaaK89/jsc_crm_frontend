@@ -86,11 +86,11 @@ const UpdateEmpStatus = ({ userId, currentStatus, onSuccess }) => {
       </select>
 
       {/* Confirmation Modal */}
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered borderRadius="md">
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader bg="#f4f4f4" p={6}>Confirm Action</ModalHeader>
-          <ModalCloseButton size="lg"/>
+        <ModalContent mx={2}>
+          <ModalHeader bg="red.500" p={6} color="white">Confirm Action</ModalHeader>
+          <ModalCloseButton size="lg" color="white"/>
 
           <ModalBody mt={5} mb={5}>
             Are you sure you want to{" "}

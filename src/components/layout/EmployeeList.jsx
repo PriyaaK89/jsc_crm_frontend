@@ -7,7 +7,7 @@ import EmployeeList from "../../pages/HrMgmt/EmployeeList";
 
 const EmployeeListLayout = () => {
   return (
-    <Flex bg="#f4f4f4" minH="100vh">
+    <Flex bg="#f4f4f4" minH="100vh" overflowX="hidden">
            
            {/* Desktop Sidebar */}
            <Box
@@ -24,7 +24,7 @@ const EmployeeListLayout = () => {
            <Flex
              direction="column"
              flex="1"
-             ml={{ base: 0, md: "268px" }}
+             ml={{ base: 0, md: "268px" }} width="100%"
            >
              {/* Desktop Topbar */}
              <Box
@@ -58,7 +58,7 @@ const EmployeeListLayout = () => {
                  borderRadius="20px"
                  boxShadow="sm"
                  p={{ base: 3, md: 6 }} 
-                 mt="75px"
+                 mt="75px" width={{base: "100%",sm: "100%",md:"83%", lg: "83%"}}
                  mb={5}
                >
                  <EmployeeList />

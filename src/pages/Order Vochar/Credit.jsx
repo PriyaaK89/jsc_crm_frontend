@@ -28,8 +28,14 @@ const Credit = () => {
   const [consignee, setConsignee] = useState("no");
 
   return (
-    <Box p={6}>
-
+  <Box
+       bg="white"
+       mt={{base:2, md:5}}
+       px={{base:3, md:6}}
+       py={{base:3, md:4}}
+      borderRadius="lg"
+      boxShadow="md"
+   >
       {/* Breadcrumb */}
       <HStack justifyContent="space-between" flexWrap="wrap">
         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
@@ -53,16 +59,18 @@ const Credit = () => {
       <Text fontSize="lg" fontWeight="bold" mb={6}>
         Credit Note
       </Text>
-       <FormControl mb={4}>
+              <FormControl mb={4} w="100%">
               <FormLabel>Credit Note No.</FormLabel>
               <Input value="1" />
             </FormControl>
       
             {/* Party Name */}
-            <FormControl mb={4}>
+            <FormControl mb={4} w="100%">
               <FormLabel>Party A/c Name</FormLabel>
       
               <Select
+               size="sm"
+               w="100%"
                 placeholder="--Please Select--"
                 onChange={(e) => setParty(e.target.value)}
               >
@@ -71,18 +79,20 @@ const Credit = () => {
       
             </FormControl>
 
-      <FormControl mb={6}>
+      <FormControl mb={6} w="100%">
         <FormLabel>Current Balance</FormLabel>
         <Input value="1" />
       </FormControl>
 
       {/* Consignee Select */}
-      <FormControl mb={6}>
+      <FormControl mb={6} w="100%">
         <FormLabel>Is Consignee</FormLabel>
 
         <Select
           value={consignee}
           onChange={(e) => setConsignee(e.target.value)}
+          size="sm"
+          w="100%"
         >
           <option value="no">No</option>
           <option value="yes">Yes</option>
@@ -93,48 +103,56 @@ const Credit = () => {
 
       {/* Dealer Details Table */}
       {consignee === "yes" && (
+            <Box w="100%" overflowX="auto" >
 
-    <TableContainer border="1px solid #d1d2d4"  mb={6} mt={2} borderRadius="lg">
-        <Table >
-
+        <Table
+          border="1px solid #ccc"
+           w="100%"
+           size={{base:"sm",md: "md", lg: "lg"}}
+           variant="simple"
+         >
           <Thead bg="#d9e5f8">
             <Tr>
-              <Th>Dealer Name</Th>
-              <Th>Prop Name</Th>
-              <Th>Contact</Th>
-              <Th>Address</Th>
-              <Th>GSTN No</Th>
+              <Th minW="150px">Dealer Name</Th>
+              <Th minW="150px">Prop Name</Th>
+              <Th minW="120px">Contact</Th>
+              <Th minW="200px">Address</Th>
+              <Th minW="180px">GSTN No</Th>
             </Tr>
           </Thead>
 
           <Tbody>
             <Tr>
-              <Td><Input placeholder="Dealer Name" /></Td>
-              <Td><Input placeholder="Prop Name" /></Td>
-              <Td><Input placeholder="Contact" /></Td>
-              <Td><Input placeholder="Address" /></Td>
-              <Td><Input placeholder="GSTN No" /></Td>
+              <Td><Input placeholder="Dealer Name" sm="sm" w="100%" /></Td>
+              <Td><Input placeholder="Prop Name" sm="sm" w="100%" /></Td>
+              <Td><Input placeholder="Contact" sm="sm" w="100%" /></Td>
+              <Td><Input placeholder="Address" sm="sm" w="100%" /></Td>
+              <Td><Input placeholder="GSTN No" sm="sm" w="100%" /></Td>
             </Tr>
           </Tbody>
 
         </Table>
-        </TableContainer>
+        </Box>
 
       )}
 
 
       {/* Transport Section */}
-      <Text fontWeight="bold" mb={3}>
+      <Text fontWeight="bold" mb={3} w="100%">
         Transport Details
       </Text>
-      <TableContainer border="1px solid #d1d2d4"  mb={6} mt={2} borderRadius="lg">
-      <Table >
+                   <Box overflowX="auto" w="100%" mb={2}>
+      
+      <Table w="100%" size={{base:"sm", md:"md", xl:"lg"}} variant="simple" 
+        
+      >
+        
 
         <Thead bg="#d9e5f8">
           <Tr>
-            <Th>Transport Name</Th>
-            <Th>LR No</Th>
-            <Th>Vehicle No</Th>
+            <Th minW="180px">Transport Name</Th>
+            <Th minW="180px">LR No</Th>
+            <Th minW="180px">Vehicle No</Th>
           </Tr>
         </Thead>
 
@@ -147,9 +165,9 @@ const Credit = () => {
         </Tbody>
 
       </Table>
-</TableContainer>
+</Box>
 
-      <FormControl mb={4} mt={6}>
+      <FormControl mb={4} mt={6} w="100%">
                                     <FormLabel>IGST ()</FormLabel>
                                     <Input type="text"  />
                                   </FormControl>
@@ -159,11 +177,12 @@ const Credit = () => {
                                                                            <Input type="text"  />
 
                                      </FormLabel>
-                                  </FormControl><FormControl mb={4}>
+                                  </FormControl>
+                                  <FormControl mb={6} w="100%">
                                     <FormLabel>SGST ()</FormLabel>
                                     <Input type="text"  />
                                   </FormControl>
-                                  <FormControl mb={4}>
+                                  <FormControl mb={4} w="100%">
                                     <FormLabel>Total Amount</FormLabel>
                                     <Input type="number"  />
                                   </FormControl>
@@ -171,7 +190,7 @@ const Credit = () => {
        {/* Narration */}
                                 
                           
-                                  <FormControl mb={4}>
+                                  <FormControl mb={4} w="100%">
                                     <FormLabel>Narration</FormLabel>
                                     <Textarea defaultValue="debit" />
                                   </FormControl>
@@ -180,7 +199,7 @@ const Credit = () => {
                                 {/* Upload */}
                                 
                           
-                                  <FormControl mb={6}>
+                                  <FormControl mb={6} w="100%">
                                     <FormLabel>Upload Document *</FormLabel>
                                     <Input type="file" />
                                   </FormControl>
@@ -188,7 +207,7 @@ const Credit = () => {
                                 {/* Save Button */}
                                 
                           
-                                  <Flex justify="flex-end">
+                                  <Flex justify={{base: "center", md:"flex-end"}}>
                                     <Button colorScheme="blue">
                                       SAVE
                                     </Button>

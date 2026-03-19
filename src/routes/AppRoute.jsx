@@ -48,8 +48,6 @@ import CreditLayout from "../components/layout/CreditLayout";
 import DebitLayout from "../components/layout/DebitLayout"; 
 import ESignSuccess from "../components/redirection-pages/esign-success";
 import ESignError from "../components/redirection-pages/esign-error";
-
-
 import EmpAttendanceLayout from "../components/layout/Reports/EmpAttendaneLayout";
 import SchedulingAlertsReportLayout from "../components/layout/Reports/Scheduling&AlertReportLayout";
 import PartyTransactionReportLayout from '../components/layout/Reports/PartyTransactionReportLayout';
@@ -154,7 +152,7 @@ function App() {
           element={<AssignTargetFALayout />}
         />
         <Route
-          path="company-master/create-company"
+          path="/company-master/create-company"
           element={<CreateCompanyLayout />}
         />
    

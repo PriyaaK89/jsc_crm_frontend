@@ -38,6 +38,8 @@ import { GoHomeFill } from "react-icons/go";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import useUsersapi from "../../Apis/GetUsersapi";
 
+
+
 const EmpAttendance = () => {
   const {users,fetchUsers}=useUsersapi();
   // const [users, setUsers] = useState([]);
@@ -48,6 +50,7 @@ const EmpAttendance = () => {
   const [selectedDate, setSelectedDate] = useState(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
 
 
   const [filters, setFilters] = useState({
@@ -335,11 +338,13 @@ const EmpAttendance = () => {
         <Box
           bg="white"
           borderRadius="md">
+          
           {loading ? (
             <Flex justify="center" align="center" py={10}>
               <Spinner size="lg" />
             </Flex>
           ) : attendance.length > 0 ? (
+            <TableContainer>
             <TableContainer>
             <Table
                 borderWidth="1px"
@@ -351,6 +356,7 @@ const EmpAttendance = () => {
               minW="900px"
               className="productsTable"
             >
+
 
               <Thead>
                 <Tr>
@@ -416,6 +422,7 @@ const EmpAttendance = () => {
                 ))}
               </Tbody>
             </Table>
+            </TableContainer>
             </TableContainer>
           ) : ""
           }

@@ -21,6 +21,8 @@ const TrackEmployee = () => {
   const {users}=useUsersapi();
   const [selectedUser, setSelectedUser] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(40);
 
   //  Initialize Map ONLY ONCE
   useEffect(() => {

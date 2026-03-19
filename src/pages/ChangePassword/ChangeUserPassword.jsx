@@ -11,12 +11,19 @@ import {
   useToast,
   Select, InputGroup,
   InputRightElement,
-  IconButton
+  IconButton,
+  Breadcrumb,
+  BreadcrumbLink,
+  BreadcrumbItem,
+  HStack
+  
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import useUserapi    from '../../Apis/GetUsersapi'
+import { GoHomeFill } from "react-icons/go";
+
 
 
 const ChangePassword = () => {
@@ -121,22 +128,44 @@ const [selectedUserId, setSelectedUserId] = useState("");
 
 
   return (
-    <Box
-
-      display="flex"
-      alignItems="flex-start"
-      justifyContent="center" >
+    
       <Box
         bg="white"
-        p={8}
-        rounded="md"
-        w="100%"
+     mt={{base:2, md:5}}
+     px={{base:3, md:6}}
+     py={{base:3, md:4}}
+    borderRadius="lg"
+    boxShadow="md"
       >
+        <HStack justifyContent="space-between" flexWrap="wrap" spacing="space-between">
+                <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+        
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href="/dashboard">
+                      <GoHomeFill color="#5570F1" />
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink fontSize="13px" href="/hr-mgmt/view-employee-list">
+                      Employee List
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+        
+                  
+        
+                  <BreadcrumbItem isCurrentPage>
+                    <BreadcrumbLink fontSize="13px">
+                      Change Password
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+        
+                </Breadcrumb>
+              </HStack>
         <Heading size="md" textAlign="center" mb={6}  lineHeight="1.4">
           Change Password
         </Heading>
 
-       <SimpleGrid columns={{ base: 1, md: 1 }} spacing={5}>
+       <SimpleGrid columns={2} spacing={5}>
           {mail ? (
   <FormControl>
     <FormLabel>Email</FormLabel>
@@ -151,6 +180,8 @@ const [selectedUserId, setSelectedUserId] = useState("");
   <FormControl isRequired>
     <FormLabel>Select User</FormLabel>
     <Select
+    w="100%"
+      size="sm"
       placeholder="Select User"
       value={selectedUserId}
       onChange={(e) => setSelectedUserId(e.target.value)}
@@ -206,7 +237,6 @@ const [selectedUserId, setSelectedUserId] = useState("");
 
        
       </Box>
-    </Box>
   );
 };
 

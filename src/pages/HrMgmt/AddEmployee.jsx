@@ -444,12 +444,13 @@ const AddEmployee = () => {
           <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
             <BreadcrumbItem>
               <BreadcrumbLink href="/dashboard">
-                <GoHomeFill color="#5570F1" />{" "}
+                <GoHomeFill color="#5570F1" />
               </BreadcrumbLink>
             </BreadcrumbItem>
 
             <BreadcrumbItem>
               <BreadcrumbLink
+                href="/hr-mgmt/view-employee-list"
                 color="#8B8D97"
                 fontSize="13px"
               >
@@ -703,7 +704,6 @@ const AddEmployee = () => {
             <FormControl >
               <FormLabel {...lableStyles}>Blood Group</FormLabel>
               <Select name="blood_group" placeholder="Select Blood Group" onChange={handleChange}>
-                <option value="">Select Blood Group</option>
                 <option value="A+">A+</option>
                 <option value="A-">A-</option>
                 <option value="B+">B+</option>

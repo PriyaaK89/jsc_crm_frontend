@@ -6,9 +6,16 @@ const Dashboard = () => {
   return (
    
     <DashboardLayout > 
-     <Box  >
+     <Box 
+     w="100%"
+      bg="white"
+     mt={{base:2, md:5}}
+     px={{base:3, md:6}}
+     py={{base:3, md:4}}
+    borderRadius="lg"
+    boxShadow="md" >
       <SimpleGrid  bg="white"  columns={{ base: 1, md: 3 }}  spacing={6} mt={4}>
-        <Box bg="blue.100" p={4} borderRadius="md" >
+        <Box  bg="blue.100" p={4} borderRadius="md" >
           <Text fontWeight="bold">Total Users</Text>
           <Text fontSize="2xl">120</Text>
         </Box>

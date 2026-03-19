@@ -108,6 +108,7 @@ function App() {
           path="/generate-joining-letter/:id"
           element={<JoiningLetterLayout />}
         />
+      
         <Route path="/generate-agreement/:id" element={<AgreementLetterLayout/>}/>
         <Route path="/dashboard/profile/:empId" element={<ProfileLayout />} />
         <Route path="/approve-ip-user-list" element={<ApproveIpUserListLayout />}/>

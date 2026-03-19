@@ -4,6 +4,7 @@ import Topbar from "../Topbar";
 import MobileTopbar from "../MobileTopbar";
 import { Flex,Box } from '@chakra-ui/react';
 import CreateLedger from '../../../pages/HrMgmt/AccountingMaster/CreateLedger';
+import DistributorAgreement from '../../../pages/HrMgmt/Letters/DistributorAgreement';
 
 function CreateLedgerLayout() {
   return (
@@ -62,6 +63,13 @@ function CreateLedgerLayout() {
                 mb={5}
               >
                 <CreateLedger />
+                
+              </Box>
+              <Box bg="white"
+                borderRadius="20px"
+                boxShadow="sm"
+                p={{ base: 3, md: 6 }} mt={5} >
+              <DistributorAgreement />
               </Box>
             </Box>
           </Flex>

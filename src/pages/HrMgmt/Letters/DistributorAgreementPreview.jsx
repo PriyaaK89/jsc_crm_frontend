@@ -66,8 +66,8 @@ const DistributorAgreementPreview = ({ isOpen, onClose, formData }) => {
 
           <Box id="distributor-agreement-content" bg="white" shadow="xl" borderTop="1px solid #e8e2e2">
             {/* PAGE 1: COVER / HEADER */}
-            <Box className="pdf-page" position="relative" w="210mm" h="297mm" p="40px" overflow="hidden">
-              <Image src={toprightcorner} position="absolute" top="0" right="0" w="600px" marginRight="-80px" marginTop="-70px" />
+            <Box className="pdf-page page-break disagr" >
+              <Image src={toprightcorner} position="absolute" top="0" right="0" w="500px" marginRight="-30px" marginTop="-8px" />
               <VStack spacing={6} mt="150px" align="center">
                 <Flex position="absolute" top="300" left="100" >
                 <Image src={companyleft_logo} width="200px" />
@@ -80,67 +80,163 @@ const DistributorAgreementPreview = ({ isOpen, onClose, formData }) => {
                   <Text fontSize="50px" fontWeight="black" letterSpacing="1px" color="#083d15">AGREEMENT FORM</Text>
                 </Box>
               </VStack>
-              <Image src={bottomleft_img} position="absolute" bottom="0" left="0" w="600px" marginLeft="-90px" marginBottom="-60px" />
+              <Image src={bottomleft_img} position="absolute" bottom="0" left="0" w="500px" marginLeft="0px" marginBottom="0px" />
             </Box>
 
             {/* PAGE 2: FIRM DETAILS */}
-            <Box className="pdf-page" position="relative" w="210mm" h="297mm" p="20mm">
-               <VStack align="stretch" spacing={4}>
-                  <HStack align="center" spacing={6} w="100%">
-  
-  {/* Logo */}
-  <Image src={r_logo} w="90px" />
+          <Box
+  className="pdf-page page-break"
 
-  {/* Company Details */}
-  <VStack spacing={1} align="center" color="#3f5f3f" w="100%">
-    
-    <Text fontSize="14px" fontWeight="semibold">
-      AN ISO 9001:2008 CERTIFIED COMPANY
+  bg="white"
+  fontFamily="serif"
+  fontSize="13px"
+  color="black"
+>
+  <VStack align="stretch" spacing={3} h="100%">
+
+    {/* HEADER */}
+    <HStack align="center" spacing={4}>
+      <Image src={r_logo} w="110px" />
+
+      <VStack spacing={1} align="center" w="100%" color="#3f5f3f">
+        <Text fontSize="18px" fontWeight="bold">
+          AN ISO 9001:2008 CERTIFIED COMPANY
+        </Text>
+
+        <Text fontSize="33px" fontWeight="bold" letterSpacing="1px">
+          JAMIDARA SEEDS CORPORATION
+        </Text>
+
+        <Text fontSize="16px" fontWeight="bold">
+          Cor. Add : P.B. Road, Ranebennur, District Haveri, Karnataka - 581115
+        </Text>
+
+        <Text fontSize="15px" fontWeight="bold" >
+          73, Ganesh Nagar - 2, Murli Pura Jaipur Rajasthan
+        </Text>
+      </VStack>
+    </HStack>
+
+    {/* DESCRIPTION */}
+    <Text textAlign="center" mt={2} fontSize="13px" w="70%" marginLeft="150px">
+      In order to smoothes services and correspondence we request you to kindly
+      spare valuable time in furnishing of your organization in given format.
     </Text>
 
-    <Text fontSize="32px" fontWeight="bold" letterSpacing="1px">
-      JAMIDARA SEEDS CORPORATION
-    </Text>
+    {/* BRANCH */}
+    <HStack mt={7} textAlign="center" w="300px" ml="180px">
+      <Text w="80px">BRANCH:</Text>
+      <Box borderBottom="1px solid black" flex="1" w="50px" ><Text>{formData?.firm_name}</Text></Box>
+    </HStack>
 
-    <Text fontSize="16px" fontWeight="semibold">
-      Cor. Add : P.B. Road, Ranebennur, District Haveri, Karnataka - 581115
-    </Text>
+    {/* NAME OF FIRM */}
+    <HStack align="flex-start" mt={5} >
+      <Text w="250px">
+        NAME OF THE FIRM WITH <br /> COMPLETE BUSINESS ADDRESS
+      </Text>
+      <VStack flex="1" spacing={6}>
+        <Box borderBottom="1px solid black" w="100%" >{formData?.business_address}
+          {formData?.firm_type}
+        </Box>
+        <Box borderBottom="1px solid black" w="100%" />
+        <Box borderBottom="1px solid black" w="100%" />
+      </VStack>
+    </HStack>
 
-    <Text fontSize="16px" fontWeight="semibold">
-      73, Ganesh Nagar - 2, Murli Pura, Jaipur Rajasthan
+    {/* DETAILS */}
+    <HStack align="flex-start" mt={5}>
+      <Text w="250px">
+        DETAIL OF THE PRO. PARTNERS DIRECTORS <br />
+        WITH COMPLETE RESI. ADDRESS
+      </Text>
+      <VStack flex="1" spacing={6}>
+        <Box borderBottom="1px solid black" w="100%" />
+        <Box borderBottom="1px solid black" w="100%" />
+      </VStack>
+    </HStack>
+
+    {/* CONTACT */}
+    <HStack align="flex-start">
+      <Text w="250px">HONE NOS. E-MAIL ID</Text>
+      <VStack flex="1" spacing={3}>
+        <Box borderBottom="1px solid black" w="100%" />
+        <HStack w="100%">
+          <Text>LAND MARK</Text>
+          <Box borderBottom="1px solid black" flex="1" />
+        </HStack>
+        <HStack w="100%">
+          <Text>DISTT.</Text>
+          <Box borderBottom="1px solid black" flex="1" />
+          <Text>PIN CODE</Text>
+          <Box borderBottom="1px solid black" flex="1" />
+        </HStack>
+      </VStack>
+    </HStack>
+
+    {/* RESPONSIBLE PERSON */}
+    <HStack align="flex-start">
+      <Text w="250px">
+        RESPONSIBLE/CONTACT PERSON <br />
+        WITH ADDRESS PHONE NOS.
+      </Text>
+      <VStack flex="1" spacing={3}>
+        <Box borderBottom="1px solid black" w="100%" />
+        <Box borderBottom="1px solid black" w="100%" />
+        <Box borderBottom="1px solid black" w="100%" />
+      </VStack>
+    </HStack>
+
+    {/* GST */}
+    <HStack>
+      <Text w="250px">GST NO. OF FIRM</Text>
+      <Box borderBottom="1px solid black" flex="1" />
+    </HStack>
+
+    {/* PAN */}
+    <HStack>
+      <Text w="250px">PAN OF THE FIRM/PROPRITOR</Text>
+      <Box borderBottom="1px solid black" flex="1" />
+    </HStack>
+
+    {/* LICENSE */}
+    <HStack>
+      <Text w="250px">SEED LICENCE NO./VALIDITY</Text>
+      <Box borderBottom="1px solid black" flex="1" />
+    </HStack>
+
+    {/* STRUCTURE */}
+    <HStack>
+      <Text w="250px">ORGANISATION STRUCTURE</Text>
+      <Box borderBottom="1px solid black" flex="1" />
+    </HStack>
+
+    {/* CHECKBOX */}
+    <HStack spacing={6} pl="250px">
+      <HStack>
+        <Text>SOLI PROPRIETOR</Text>
+        <Box border="1px solid black" w="14px" h="14px" />
+      </HStack>
+
+      <HStack>
+        <Text>PARTNERSHIP</Text>
+        <Box border="1px solid black" w="14px" h="14px" />
+      </HStack>
+    </HStack>
+
+    {/* FOOTER */}
+    <Text
+      mt="auto"
+      textAlign="center"
+      fontSize="12px"
+    >
+      (Specimen Signature (s) of proprietor Partner(s))
     </Text>
 
   </VStack>
-
-</HStack>
-                  <Divider borderColor="black" />
-                  
-                  <Grid templateColumns="repeat(2, 1fr)" gap={4} fontSize="13px">
-                    <GridItem colSpan={2}><Text><b>BRANCH:</b> {formData?.branch}</Text></GridItem>
-                    <GridItem colSpan={2} border="1px solid #ccc" p={2}>
-                        <Text fontWeight="bold">NAME OF THE FIRM & ADDRESS:</Text>
-                        <Text>{formData?.firm_name}, {formData?.business_address}</Text>
-                    </GridItem>
-                    <GridItem colSpan={2} border="1px solid #ccc" p={2}>
-                        <Text fontWeight="bold">DETAILS OF PROPRIETOR / PARTNERS:</Text>
-                        <Text>{formData?.partner_details}</Text>
-                    </GridItem>
-                    <GridItem><Text><b>GST NO:</b> {formData?.gst_no}</Text></GridItem>
-                    <GridItem><Text><b>PAN NO:</b> {formData?.pan_no}</Text></GridItem>
-                    <GridItem colSpan={2}><Text><b>SEED LICENCE / VALIDITY:</b> {formData?.seed_licence}</Text></GridItem>
-                  </Grid>
-
-                  <HStack spacing={10} py={4}>
-                     <Text fontWeight="bold">ORGANISATION STRUCTURE:</Text>
-                     <Checkbox isChecked={formData?.type === 'Proprietor'}>Proprietor</Checkbox>
-                     <Checkbox isChecked={formData?.type === 'Partnership'}>Partnership</Checkbox>
-                  </HStack>
-               </VStack>
-               <Text position="absolute" bottom="40px" fontStyle="italic" fontSize="12px">Specimen Signature of Proprietor/Partner ________________</Text>
-            </Box>
+</Box>
 
             {/* PAGE 3: LICENSES & BANKING */}
-            <Box className="pdf-page" w="210mm" h="297mm" p="20mm">
+            <Box className="pdf-page page-break" w="210mm" h="297mm" p="20mm">
                 <VStack align="stretch" spacing={5} fontSize="14px">
                     <Text><b>FERTILIZER LICENCE:</b> {formData?.fert_licence}</Text>
                     <Text><b>PESTICIDE LICENCE:</b> {formData?.pest_licence}</Text>

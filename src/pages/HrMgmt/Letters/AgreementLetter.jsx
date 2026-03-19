@@ -94,9 +94,13 @@ const AgreementLetter = () => {
                                             <BreadcrumbItem>
                                               <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
                                             </BreadcrumbItem>
+                                              <BreadcrumbItem>
+                                              <BreadcrumbLink  href="/hr-mgmt/view-employee-list"  fontSize='13px'>Employee List</BreadcrumbLink>
+                                            </BreadcrumbItem>
+                                
                                 
                                             <BreadcrumbItem>
-                                              <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Generate Agreement Letter</BreadcrumbLink>
+                                              <BreadcrumbLink   fontSize='13px'>Generate Agreement Letter</BreadcrumbLink>
                                             </BreadcrumbItem>
                                 
                                           </Breadcrumb>

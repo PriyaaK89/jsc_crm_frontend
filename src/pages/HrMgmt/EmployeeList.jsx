@@ -19,6 +19,7 @@ const EmployeeList = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
+
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const { onOpen, onClose, isOpen } = useDisclosure();
@@ -53,6 +54,8 @@ const EmployeeList = () => {
   useEffect(() => {
     fetchEmployeeList();
   }, [page, limit, search]);
+
+
 
   const headers = ["Name", "Email", "Department", "Role", "Contact", "City / State", "Salary(Rs.)", "DOJ", "Leaves", "Login", "Logout", "Approver",];
 
@@ -98,8 +101,10 @@ const EmployeeList = () => {
     <VerifyDocumentModel isVerifyModelOpen={isVerifyModelOpen} onVerifyModalClose={onVerifyModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList}/>
       <ViewUploadedDocument isOpen={isOpen} onClose={onClose} selectedId={selectedId} />
       <DeleteEmployeeModel isDeleteModalOpen={isDeleteModalOpen} onDeleteModalClose={onDeleteModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList} />
-      <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px 0px' width="100%">
-        {/* Header */}
+      {/* <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px 0px' width="100%"> */}
+              <Box backgroundColor='white' mt='1rem' padding='12px 20px' pt={{base:2,md:3}}  px={{base:1, md:4}} borderRadius='15px 15px 0px 0px' width="100%">
+
+
         <HStack justifyContent='space-between'>
           <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
             <BreadcrumbItem>
@@ -119,7 +124,11 @@ const EmployeeList = () => {
           </Box>
           <Box position='relative' w='40%'>
             <InputGroup justifyContent='end'>
-              <FiSearch fontSize='20px' style={{ color: '#8C8C91', position: 'absolute', top: '10px', right: '16px' }} />
+               <Box display={{base:"none",md:"none",lg:"block"}} style={{ color: '#8C8C91', position: 'absolute', top: '10px', right: '16px' }}
+               >
+                 <FiSearch fontSize='20px'  />
+               </Box>
+
               <Input placeholder="Search by Employee Name" border='1px solid #CFD3D4' borderRadius='32px' _placeholder={{ fontSize: '16px', color: '#8C8C91' }} boxShadow='0px 2px 2px #e5e5e5'
                 value={search} onChange={(e) => setSearch(e.target.value)} />
             </InputGroup>

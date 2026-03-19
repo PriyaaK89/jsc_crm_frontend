@@ -197,36 +197,36 @@ const Debit = () => {
 
       {/* Tax Section */}
 
-      <FormControl mb={4} mt={6}>
+      <FormControl mb={4} mt={6} w="100%">
         <FormLabel>IGST</FormLabel>
         <Input type="text" />
       </FormControl>
 
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>CGST</FormLabel>
         <Input type="text" />
       </FormControl>
 
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>SGST</FormLabel>
         <Input type="text" />
       </FormControl>
 
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>Total Amount</FormLabel>
         <Input type="number" />
       </FormControl>
 
       {/* Narration */}
 
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>Narration</FormLabel>
         <Textarea defaultValue="debit note" />
       </FormControl>
 
       {/* Upload */}
 
-      <FormControl mb={6}>
+      <FormControl mb={6} w="100%">
         <FormLabel>Upload Document *</FormLabel>
         <Input type="file" />
       </FormControl>

@@ -1,7 +1,7 @@
 import React from 'react'
-import { Flex, Box } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
-import DesktopTopbar from "./Topbar";
+import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import Debit from "../../pages/Order Vochar/Debit";
 
@@ -13,7 +13,7 @@ const DebitLayout = () => {
 
       </Box>
       <Box display={{ base: "none", md: "block" }}>
-        <DesktopTopbar />
+        <Topbar />
       </Box>
       <Box display={{ base: "block", md: "none" }}>
         <MobileTopbar />

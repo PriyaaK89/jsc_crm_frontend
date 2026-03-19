@@ -5,11 +5,6 @@ import { Flex, Box } from '@chakra-ui/react';
 import MobileTopbar from "./MobileTopbar";
 import UploadEmpDocuments from '../../pages/HrMgmt/DocUpload/UploadEmpDocuments';
 
-
-
-
-
-
 function UploadEmpDocumentsLayout() {
 
   return (

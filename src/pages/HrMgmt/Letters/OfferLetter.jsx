@@ -89,9 +89,14 @@ const OfferLetterPage = () => {
                                     <BreadcrumbItem>
                                       <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
                                     </BreadcrumbItem>
+
+                                    
+                                    <BreadcrumbItem>
+                                      <BreadcrumbLink href="/hr-mgmt/view-employee-list"  fontSize='13px'>Employee List</BreadcrumbLink>
+                                    </BreadcrumbItem>
                         
                                     <BreadcrumbItem>
-                                      <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Generate Offer Letter</BreadcrumbLink>
+                                      <BreadcrumbLink isCurrentPage  fontSize='13px'>Generate Offer Letter</BreadcrumbLink>
                                     </BreadcrumbItem>
                         
                                   </Breadcrumb>

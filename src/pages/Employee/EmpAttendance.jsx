@@ -38,6 +38,8 @@ import { GoHomeFill } from "react-icons/go";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import useUsersapi from "../../Apis/GetUsersapi";
 
+
+
 const EmpAttendance = () => {
   const {users,fetchUsers}=useUsersapi();
   // const [users, setUsers] = useState([]);
@@ -48,6 +50,7 @@ const EmpAttendance = () => {
   const [selectedDate, setSelectedDate] = useState(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
 
 
   const [filters, setFilters] = useState({

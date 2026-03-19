@@ -1,88 +1,62 @@
 import { Box, Flex } from "@chakra-ui/react";
-import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
-import RightSidebar from "./RightSidebar";
-import Newsidebar from "./Sidebar";
+import Sidebar from "./Sidebar";
+import RightSidebar from "./RightSidebar"
 
 
 const DashboardLayout = ({ children }) => {
 
   return (
-    <Flex bg="#f4f4f4" height="100vh" overflow="hidden" >
+    <Box bg="#F3F3F3" h="100vh" >
 
-      {/* Desktop Sidebar */}
       <Box
-        w="280px"
-        position="fixed"
         display={{ base: "none", md: "block" }}
       >
-        {/* <Sidebar /> */}
-        <Newsidebar />
+        <Sidebar />
       </Box>
 
-      {/* Main Area */}
-      <Flex
-        direction="column"
-        flex="1"
-        ml={{ base: 0, md: "268px" }}
+
+      {/*  Topbar */}
+      <Box
+        display={{ base: "none", md: "block" }}
       >
-        {/* Desktop Topbar */}
-        <Box
-          display={{ base: "none", md: "block" }}
-          p={4} mt={{ base: "175px", md: "65px" }}
-        >
-          <Topbar />
-        </Box>
+        <Topbar />
+      </Box>
 
-        {/* Mobile Topbar */}
-        <Box
-          display={{ base: "block", md: "none" }}
-          position="fixed"
-          top="0"
-          w="100%"
-          zIndex="10"
-        >
-          <MobileTopbar />
-        </Box>
+      {/* Mobile Topbar */}
+      <Box
+        display={{ base: "block", md: "none" }}
+      >
+        <MobileTopbar />
+      </Box>
 
-        {/* Content */}
-        <Box
-          flex="1"
-          p={4}
-          pt={{ base: "20px", md: 4 }}
-          px={{ base: 3, md: 6 }}
-        >
-          <Flex gap={4} direction={{ base: "column", lg: "row" }}>
+      {/* Content */}
 
-            {/* Main Content */}
-            <Box
-              flex="1"
-              bg="white"
-              borderRadius="20px"
-              boxShadow="sm"
-              mt={{ base: "20px", md: 0 }}
-              p={{ base: 3, md: 6 }}
-            >
-              {children}
-            </Box>
+      <Box
 
-            {/* Right Sidebar */}
-            <Box
-              w={{ base: "100%", lg: "300px" }}
-              display={{ base: "none", lg: "block" }}
-              bg="white"
-              borderRadius="20px"
-              p={4}
-              boxShadow="sm"
-            >
-              <RightSidebar />
-            </Box>
+        ml={{ base: 5, md: "295px" }}
+        mr={{ base: 5, md: 5 }}
+        pt="5rem"
+        pb={6}
+        display={{ base: "column", lg: "flex" }}
+        gap={{ base: 0, lg: 6 }}
+      >
 
-          </Flex>
-        </Box>
-      </Flex>
-    </Flex>
+        {/* Main Content */}
+
+
+        {children}
+      <Box display={{ base: "none", lg: "block" }}>
+        <RightSidebar />
+      </Box>
+      </Box >
+
+
+      {/* Right Sidebar */}
+
+
+    </Box>
   );
 };
 export default DashboardLayout;

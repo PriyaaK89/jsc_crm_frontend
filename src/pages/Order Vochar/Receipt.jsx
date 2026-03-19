@@ -46,11 +46,18 @@ import { IoMdRemove } from "react-icons/io";
 
 
   return (
- <Box p={6}>
-         <HStack justifyContent="space-between" flexWrap="wrap">
+    <Box
+         bg="white"
+         mt={{base:2, md:5}}
+         px={{base:3, md:6}}
+         py={{base:3, md:4}}
+        borderRadius="lg"
+        boxShadow="md"
+     >
+         <HStack justifyContent="space-between" flexWrap="wrap" spacing="space-between">
                   <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
                     <BreadcrumbItem>
-                      <BreadcrumbLink href="/dashboard">
+                      <BreadcrumbLink href="/dashboard"> 
                         <GoHomeFill color="#5570F1" />
                       </BreadcrumbLink>
                     </BreadcrumbItem>
@@ -82,8 +89,14 @@ import { IoMdRemove } from "react-icons/io";
       </FormControl>
 
       {/* Table */}
-      <TableContainer border="1px solid #e0e2e6"  mb={6} mt={2} borderRadius="lg">
-      <Table variant="simple">
+          <Box w="100%" overflowX="auto" >
+         <Table
+            border="1px solid #ccc"
+            width="100%"
+            size={{ base: "sm", md: "md", lg:"lg" }}
+            variant="simple"
+          >
+
         <Thead bgColor="#d9e5f8">
           <Tr>
             <Th>Particulars</Th>
@@ -160,7 +173,7 @@ import { IoMdRemove } from "react-icons/io";
           ))}
         </Tbody>
       </Table>
-      </TableContainer>
+      </Box>
 
       {/* Total Amount */}
       <FormControl mb={4}>

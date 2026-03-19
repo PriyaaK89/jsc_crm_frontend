@@ -12,7 +12,7 @@ export const API_ENDPOINTS = {
   create_jobRole: `create-jobRole`,
   get_jobRole_list: `get-jobRole`,
   upload_img: `upload-image`,
-  get_emp_docs: "get-documents",
+  get_user_docs: "get-documents",
   get_emp_details: `auth/get-employee-details`,
   update_emp_status: `/auth/user-status`,
   get_deleted_users: `/auth/get-deleted-users`,
@@ -28,6 +28,6 @@ export const API_ENDPOINTS = {
   upload_emp_letters: `employee-letter`,
   get_emp_docs: `get-employee-documents`,
   document_status:`document-status`,
-  send_esign: "/documents/send-esign",
-
+  send_esign: "documents/send-esign",
+  digio_send_eSign: "letters/send-esign"
 };

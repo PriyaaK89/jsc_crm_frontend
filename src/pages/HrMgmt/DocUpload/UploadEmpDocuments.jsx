@@ -24,7 +24,7 @@ const { userId, email, mustChangePassword } = location.state || {};
 
 const handleNext = () => {
   if (Number(mustChangePassword) === 1) {
-    navigate("/change-password", {
+    navigate("/hr-mgmt/change-password", {
       state: {
         userId,
         email,

@@ -1,32 +1,11 @@
-import {
-  Box, Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalOverlay,
-  useToast,
-  Button,
-  Text,
-  Flex,
-  Spinner,
-  Badge,
-  IconButton,
-  Progress,
-  Tooltip
-} from "@chakra-ui/react";
-
+import { Box, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, useToast, Button, Text, Flex, Spinner, Badge, IconButton, Progress, Tooltip} from "@chakra-ui/react";
 import { FaFilePdf, FaEye, FaDownload } from "react-icons/fa";
 import { FiSend } from "react-icons/fi";
-
 import React, { useEffect, useState } from "react";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 
-const VerifyDocumentModel = ({
-  isVerifyModelOpen,
-  onVerifyModalClose,
-  selectedId,
-}) => {
+const VerifyDocumentModel = ({ isVerifyModelOpen, onVerifyModalClose, selectedId,}) => {
 
   const toast = useToast();
   const [documents, setDocuments] = useState([]);
@@ -37,43 +16,20 @@ const VerifyDocumentModel = ({
  const getEmployeeDocs = async () => {
   try {
     setLoading(true);
-
-    const response = await API.get(
-      `${API_ENDPOINTS.get_emp_docs}/${selectedId}`
-    );
-
+    const response = await API.get( `${API_ENDPOINTS.get_emp_docs}/${selectedId}` );
     const docs = response?.data?.data || [];
-    
-
     setDocuments(docs);
     setLegID(response?.data?.data[0]?.leegality_document_id)
     console.log(response?.data?.data[0]?.leegality_document_id, "qwertyuewq")
-
-    // docs.forEach((doc) => {
-
-    //   if (
-    //     doc.signing_status === "pending" &&
-    //     doc.leegality_document_id
-    //   ) {
-    //     checkDocumentStatus(doc.leegality_document_id);
-    //     console.log(doc.leegality_document_id, "asdfghj")
-    //   }
-    //   console.log(doc.leegality_document_id, "asdfghj")
-
-    // });
-
   } catch (error) {
     console.log(error);
-
   } finally {
     setLoading(false);
   }
 };
 
   useEffect(() => {
-
      getEmployeeDocs();
-
     documents.forEach((doc) => {
       if (
         doc.signing_status === "pending" &&
@@ -84,8 +40,6 @@ const VerifyDocumentModel = ({
       }
       console.log(doc.leegality_document_id, "asdfghj")
     });
-     
-    
   }, [ selectedId,legID]);
 
   // ---------check legality status ----
@@ -103,23 +57,16 @@ const VerifyDocumentModel = ({
   }
 };
 
-
-
-
-
-
-
   // -------get sattus color----
-
   const getStatusColor = (status) => {
     if (status === "signed") return "green";
     if (status === "pending") return "orange";
     return "gray";
   };
 
-
   const getProgressValue = (status) => {
     if (status === "signed") return 100;
+    if (status === "completed") return 100;
     if (status === "pending") return 50;
     return 10;
   };
@@ -133,11 +80,7 @@ const VerifyDocumentModel = ({
   const sendForESign = async (docId) => {
     try {
       setEsignLoading(docId);
-
-      const response = await API.post(
-        API_ENDPOINTS.send_esign,
-        { document_id: docId }
-      );
+      const response = await API.post( API_ENDPOINTS.send_esign, { document_id: docId });
 
       if (response?.data?.status === 1) {
         toast({
@@ -175,19 +118,58 @@ const VerifyDocumentModel = ({
     }
   };
 
+const handleSendForESignDigio = async (docId) => {
+  try {
+    setEsignLoading(docId);
+
+    const response = await API.post(
+      API_ENDPOINTS.digio_send_eSign,
+      { document_id: docId }
+    );
+
+    if (response?.data?.success) {
+      toast({
+        title: response?.data?.message || "Sent for eSign via Digio",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      console.log(response?.data?.data); 
+      getEmployeeDocs();
+    } else {
+      toast({
+        title: "Failed to send for eSign",
+        description: response?.data?.message || "Something went wrong",
+        status: "error",
+        duration: 3000,
+      });
+    }
+  } catch (error) {
+    toast({
+      title: "Digio eSign failed",
+      description:
+        error?.response?.data?.message || "Something went wrong",
+      status: "error",
+    });
+  } finally {
+    setEsignLoading(null);
+  }
+};
+
   return (
     <Modal isOpen={isVerifyModelOpen} onClose={onVerifyModalClose} size="xl">
       <ModalOverlay />
 
-      <ModalContent>
-        <ModalCloseButton />
-
-        <ModalBody p={6}>
-
-          <Text fontSize="18px" fontWeight="600" mb={4}>
+      <ModalContent width={{base: "90%",sm: "90%", md: "100%"}}>
+        <Flex bg="#2e89c1" padding="12px" borderRadius="5px 5px 0px 0px">
+          <Text fontSize={{sm:"14px",md: "18px", lg:"18px"}} color="white" marginBottom="0px" mb="0" fontWeight="600" >
             Employee Documents
           </Text>
+        <ModalCloseButton color="white"/>
+        </Flex>
 
+        <ModalBody p={6}>
           {loading ? (
             <Flex justify="center" py={10}>
               <Spinner size="lg" />
@@ -197,38 +179,30 @@ const VerifyDocumentModel = ({
               No documents found
             </Text>
           ) : (
-
             documents.map((doc) => (
-
               <Box key={doc.id} border="1px solid #E2E8F0"
                 borderRadius="10px" p={4} mb={4}>
 
-                <Flex justify="space-between" align="center">
+                <Flex justify="space-between" align={{base: "start",md:"center"}} direction={{base: "column", md: "row"}} gap={{base: 4, md: 'auto'}}>
 
-                  {/* LEFT SECTION */}
-                  <Flex align="center" gap="12px">
-                    <FaFilePdf size="24px" color="#E53E3E" />
-
+                  <Flex align={{base: "start",md:"center"}} gap="12px">
+                    <FaFilePdf size="24px" color="#E53E3E" style={{marginTop: "4px"}} />
                     <Box>
-                      <Text fontWeight="600" textTransform="capitalize">
+                      <Text fontWeight="600" textTransform="capitalize" fontSize={{base: "14px", md: "16px"}}>
                         {doc.document_type.replace("_", " ")}
                       </Text>
 
                       <Badge
-                        mt="4px"
-                        colorScheme={getStatusColor(doc.signing_status)}
-                      >
-                        {doc.signing_status === "signed" ? "eSigned" : "Pending"}
+                        mt="4px" fontSize={{base: "11px", md: "12px"}}
+                        colorScheme={getStatusColor(doc.signing_status)}>
+                        {["signed", "completed"].includes(doc.signing_status)  ? "eSigned" : "Pending"}
                       </Badge>
 
                     </Box>
                   </Flex>
 
-
-
                   {/* RIGHT ACTIONS */}
                   <Flex gap="8px">
-
                     {/* VIEW DOCUMENT */}
                     <Tooltip label="View Document">
                       <IconButton
@@ -253,7 +227,7 @@ const VerifyDocumentModel = ({
                       <Button
                         size="sm"
                         leftIcon={<FiSend />} isLoading={esignLoading === doc.id}
-                        colorScheme="blue" onClick={() => sendForESign(doc.id)} >
+                        colorScheme="blue" onClick={() => sendForESign(doc.id)} fontSize={{base: "11px", md: "14px"}}>
                         Send eSign
                       </Button>
                     )}
@@ -265,12 +239,12 @@ const VerifyDocumentModel = ({
                           leftIcon={<FiSend />}
                           isLoading={esignLoading === doc.id}
                           colorScheme="blue"
-                          isDisabled={doc.signing_status === "signed"}
-                          onClick={() => sendForESign(doc.id)}
+                          isDisabled={["signed", "completed"].includes(doc.signing_status)}
+                          onClick={() => handleSendForESignDigio(doc.id)}
                         >
-                          {doc.signing_status === "signed" ? "Signed" : "Send eSign"}
+                          {["signed", "completed"].includes(doc.signing_status) ? "Signed" : "Send eSign"}
                         </Button>
-                        <Button size="sm" colorScheme="purple">
+                        <Button size="sm" colorScheme="purple" fontSize={{base: "11px", md: "14px"}}>
                           Send eStamp
                         </Button>
                       </>
@@ -280,13 +254,13 @@ const VerifyDocumentModel = ({
                       <>
                        <Button
                           size="sm"
-                          leftIcon={<FiSend />}
-                           isLoading={esignLoading === doc.id}
-                          colorScheme="blue"  onClick={() => sendForESign(doc.id)}
-                        >
+                          leftIcon={<FiSend />} isLoading={esignLoading === doc.id}
+                          colorScheme="blue" fontSize={{base: "11px", md: "14px"}}
+                          isDisabled={["signed", "completed"].includes(doc.signing_status)}
+                          onClick={() => handleSendForESignDigio(doc.id)}>
                           Send eSign
                         </Button>
-                      <Button size="sm" colorScheme="purple">
+                      <Button size="sm" colorScheme="purple" fontSize={{base: "11px", md: "14px"}}>
                         Send eStamp
                       </Button>
                       </>
@@ -301,7 +275,6 @@ const VerifyDocumentModel = ({
                   size="sm" borderRadius="md" />
               </Box>
             ))
-
           )}
         </ModalBody>
       </ModalContent>

@@ -15,6 +15,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import { Link } from 'react-router-dom';
 
 function SchedulingAlertsReport() {
   return (
@@ -23,7 +24,7 @@ function SchedulingAlertsReport() {
            {/* Breadcrumb */}
            <Breadcrumb mb={6} fontSize="sm">
             <BreadcrumbItem>
-                          <BreadcrumbLink href="/dashboard">
+                          <BreadcrumbLink as={Link} to="/dashboard">
                             <GoHomeFill color="#5570F1"  size={20}/>
                           </BreadcrumbLink>
                         </BreadcrumbItem>

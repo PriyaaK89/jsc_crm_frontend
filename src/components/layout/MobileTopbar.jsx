@@ -16,6 +16,9 @@ import {
   Collapse,
   Icon,
   Box,
+  Image,
+ useToast
+  
 } from "@chakra-ui/react";
 
 import {
@@ -41,7 +44,7 @@ import {
   FaUserTie,
   FaBullseye,
   FaList,
-  FaTrash,
+  FaTrash, 
   FaFileInvoiceDollar,
   FaFileInvoice,
   FaMoneyCheckAlt,
@@ -91,21 +94,44 @@ import {
 } from "lucide-react";
 
 import { FaUser, FaUserPlus, FaWallet } from "react-icons/fa";
+import { FiLogOut } from "react-icons/fi";
+import logo1 from "../../assets/images/logo1.jpg"
+
+
 
 const MobileTopbar = () => {
-  const { auth } = useContext(AuthContext);
+  const { auth, logoutUser} = useContext(AuthContext);
   const role = auth?.user?.role;
 
   const location = useLocation();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
+    const toast = useToast();
+  
 
   const onOpen = () => setIsDrawerOpen(true);
   const onClose = () => setIsDrawerOpen(false);
 
   const toggleMenu = (key) => {
     setOpenMenu(openMenu === key ? null : key);
+  };
+    const logout = () => {
+
+    logoutUser();
+    // Show toast
+    toast({
+      title: "Logged out",
+      description: "You are logged out successfully.",
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+    });
+
+    // Redirect after delay
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 1500);
   };
 
   const sidebarButtonStyle = {
@@ -472,11 +498,13 @@ const MobileTopbar = () => {
         <DrawerOverlay />
 
         <DrawerContent>
-          <DrawerCloseButton />
 
-          <DrawerHeader>CRM</DrawerHeader>
+  <Flex align="center" justify="space-between" p={4} borderBottom="1px solid #eee">
+    <Image src={logo1} alt="logo" w="115px" h="54px" />
+    <DrawerCloseButton position="static" />
+  </Flex>
 
-          <DrawerBody>
+          <DrawerBody mt={2}>
             <VStack spacing={2} align="stretch">
               {menuSection.map((menu, index) => {
                 const IconComponent = menu.icon;
@@ -557,6 +585,21 @@ const MobileTopbar = () => {
                   IP Request
                 </Button>
               )}
+               <Button
+               w="80%"
+                        size="md"
+                        rightIcon={<FiLogOut/>}
+                        fontSize="xs"
+                        variant="ghost"
+                                 border="1px solid gray"
+              
+                        justifyContent="flex-start"
+                        onClick={logout}
+                                 _hover={{bgColor:"#f4bfbf", border:"1px solid #e48f8f", color:"#971345"}}
+                       textAlign="center"
+                      >
+                        Logout
+                      </Button>
             </VStack>
           </DrawerBody>
         </DrawerContent>

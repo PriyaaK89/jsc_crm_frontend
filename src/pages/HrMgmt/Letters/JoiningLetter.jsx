@@ -24,6 +24,7 @@ import { API_ENDPOINTS } from "../../../services/endpoints";
 import EmpJoiningLetterPreview from "./EmpJoiningLetterPreview";
 import CustomDatePicker from "../../../components/common/CustomDatepicker";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png";
+import {Link} from "react-router-dom";
 
 const EmpJoiningLetter = () => {
 
@@ -110,6 +111,17 @@ const EmpJoiningLetter = () => {
     }
   };
 
+  useEffect(() => {
+  if (employee?.salary) {
+    const monthly = (employee.salary / 12).toFixed(0);
+
+    setFormData((prev) => ({
+      ...prev,
+      salary: monthly
+    })); 
+  }
+}, [employee]);
+
   /* ================= USE EFFECTS ================= */
 
   useEffect(() => {
@@ -156,10 +168,10 @@ const EmpJoiningLetter = () => {
        <HStack justifyContent='space-between'>
                             <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                               <BreadcrumbItem>
-                                <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                                <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
                               </BreadcrumbItem>
                                <BreadcrumbItem>
-                                <BreadcrumbLink href="/hr-mgmt/view-employee-list"   fontSize='13px'>Employee List</BreadcrumbLink>
+                                <BreadcrumbLink as={Link} to="/hr-mgmt/view-employee-list"   fontSize='13px'>Employee List</BreadcrumbLink>
                               </BreadcrumbItem>
                   
                               <BreadcrumbItem>
@@ -303,13 +315,20 @@ const EmpJoiningLetter = () => {
           <FormControl>
             <FormLabel>Monthly Gross Salary</FormLabel>
             <Input
-              value={
-                employee?.salary
-                  ? (employee.salary / 12).toFixed(0)
-                  : ""
+              // value={
+              //   employee?.salary
+              //     ? (employee.salary / 12).toFixed(0)
+              //     : ""
+              // }
+              value={formData.salary}
+               onChange={(e) =>
+                setFormData({
+                  ...formData,
+                   salary: e.target.value
+                })
               }
-              isReadOnly
             />
+          
           </FormControl>
 
           <FormControl>

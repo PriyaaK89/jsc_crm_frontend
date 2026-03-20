@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
+import { Link } from "react-router-dom";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import {
   Box,
@@ -445,14 +446,15 @@ const AddEmployee = () => {
         <HStack justifyContent="space-between">
           <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">
+              <BreadcrumbLink as={Link}  to="/dashboard">
                 <GoHomeFill color="#5570F1" />
               </BreadcrumbLink>
             </BreadcrumbItem>
 
             <BreadcrumbItem>
               <BreadcrumbLink
-                href="/hr-mgmt/view-employee-list"
+              as={Link}
+                to="/hr-mgmt/view-employee-list"
                 color="#8B8D97"
                 fontSize="13px"
               >

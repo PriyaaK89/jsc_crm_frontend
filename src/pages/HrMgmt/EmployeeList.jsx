@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
-import { data, useNavigate } from "react-router-dom";
+import { data, Link, useNavigate } from "react-router-dom";
 import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Flex, HStack, IconButton, Img, Input, InputGroup, Select, Spinner, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useDisclosure } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import sort_icon from "../../assets/sort.svg"
@@ -11,6 +11,8 @@ import ViewUploadedDocument from "./DocUpload/ViewDocuments";
 import UpdateEmpStatus from "../../utils/Emp/UpdateEmpStatus";
 import DeleteEmployeeModel from "./DeleteEmployee";
 import VerifyDocumentModel from "./models/VerifyDocuments";
+
+
 
 const EmployeeList = () => {
 
@@ -106,15 +108,15 @@ const EmployeeList = () => {
       {/* <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px 0px' width="100%"> */}
               <Box backgroundColor='white' mt='1rem' padding='12px 20px' pt={{base:2,md:3}}  px={{base:1, md:4}} borderRadius='15px 15px 0px 0px' width="100%">
 
-
         <HStack justifyContent='space-between'>
           <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+             <BreadcrumbItem>
+                        <BreadcrumbLink as={Link} to="/dashboard">
+                          <GoHomeFill color="#5570F1" />
+                        </BreadcrumbLink>
+</BreadcrumbItem>
             <BreadcrumbItem>
-              <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
-            </BreadcrumbItem>
-
-            <BreadcrumbItem>
-              <BreadcrumbLink color='#8B8D97' fontSize='13px'>Employee List</BreadcrumbLink>
+              <BreadcrumbLink as={Link} color='#8B8D97' fontSize='13px'>Employee List</BreadcrumbLink>
             </BreadcrumbItem>
 
           </Breadcrumb>

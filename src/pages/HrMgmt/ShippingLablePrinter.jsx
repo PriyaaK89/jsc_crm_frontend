@@ -31,6 +31,8 @@ import QRCode from "qrcode";
 import JsBarcode from "jsbarcode";
 // import autoTable from "jspdf-autotable";
 import logo from "../../assets/images/jamidaraBIllLogo.jpeg";
+import { Link } from "react-router-dom";
+
 const ShippingLablePrinter = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -162,7 +164,7 @@ const pdfBlob = doc.output("dataurlstring");
        <HStack justifyContent="space-between">
         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">
+            <BreadcrumbLink as={Link}  to="/dashboard">
               <GoHomeFill color="#5570F1" />
             </BreadcrumbLink>
           </BreadcrumbItem>

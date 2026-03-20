@@ -28,6 +28,7 @@ import sort_icon from "../../assets/sort.svg";
 import useUsersapi from "../../Apis/GetUsersapi";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import { Link } from "react-router-dom";
 
 const EmpSalaryReport = () => {
   const {users} = useUsersapi();
@@ -111,7 +112,7 @@ const EmpSalaryReport = () => {
         <HStack justifyContent="space-between" flexWrap="wrap">
                         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
                           <BreadcrumbItem>
-                            <BreadcrumbLink href="/dashboard">
+                            <BreadcrumbLink as={Link} to="/dashboard">
                               <GoHomeFill color="#5570F1" />
                             </BreadcrumbLink>
                           </BreadcrumbItem>

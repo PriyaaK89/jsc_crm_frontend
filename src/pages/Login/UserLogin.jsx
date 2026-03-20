@@ -8,14 +8,15 @@ import {
   Button,
   Link,
   useToast,
-
 } from "@chakra-ui/react";
 import { Eye, EyeOff } from "lucide-react";
 import login_img from "../../assets/crm_login.png";
-import API from "../../services/api"; // Axios instance
+import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import logoRemovebgPreview from "../../assets/images/logo-removebg-preview.png";
+
 
 function UserLogin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,87 +24,110 @@ function UserLogin() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { loginUser } = useContext(AuthContext);
-  const toast = useToast()
+  const toast = useToast();
 
   const handleLogin = async () => {
     try {
-      const response = await API.post(API_ENDPOINTS.LOGIN, { email, password });
-      console.log(response.data);
-      if(response?.status === 200){
+      const response = await API.post(API_ENDPOINTS.LOGIN, {
+        email,
+        password,
+      });
+
+      if (response?.status === 200) {
         loginUser(response.data);
         toast({
-          description: 'You have Logged in Successfully.',
-          status: 'success',
+          description: "You have Logged in Successfully.",
+          status: "success",
+          duration: 2000,
           isClosable: true,
-          duration: 2000
-        })
-        navigate("/dashboard"); 
+        });
+        navigate("/dashboard");
       }
-      if(response?.status === 403){
-        toast({
-          description: response?.data?.message || "Your Id is deactivated, you can't login!",
-          status: 'warning',
-          isClosable: true,
-          duration: 2000
-        })
-      }
+    } catch (error) {
+      const message =
+        error?.response?.data?.message ||
+        "Something went wrong. Please try again.";
 
-
-    }  catch (error) {
-    console.log(error);
-
-    const status = error?.response?.status;
-    const message =
-      error?.response?.data?.message ||
-      "Something went wrong. Please try again.";
-
-    if (status === 403) {
-      toast({
-        description: message || "Your ID is deactivated, you can't login!",
-        status: "warning",
-        isClosable: true,
-        duration: 2000,
-      });
-    } else {
       toast({
         description: message,
         status: "error",
-        isClosable: true,
         duration: 2000,
+        isClosable: true,
       });
     }
-  }
   };
 
   return (
-    <Flex minH="100vh">
-      {/* LEFT SIDE IMAGE */}
-      <Box flex="1" bg="#ffffff" display={{ base: "none", md: "flex" }} alignItems="center" justifyContent="flex-start">
-        <Image src={login_img} alt="CRM Illustration" maxW="93%" />
-      </Box>
+    <Flex direction={{ base: "column", md: "row" }} minH="100vh" bgGradient={{ base: "linear(to-b, #e0f2fe, #f8fafc)", md: "transpart" }}
 
-      {/* RIGHT SIDE LOGIN FORM */}
-      <Flex flex="1" alignItems="center" justifyContent="center" px={10}>
+    >
+
+      {/* LEFT IMAGE (Desktop only) */}
+      <Flex
+        flex="1"
+        display={{ base: "none", md: "flex" }}
+        align="center"
+        justify="center"
+        p={5}
+      >
+        <Image src={login_img} alt="CRM" maxW="100%" />
+      </Flex>
+
+      {/* MOBILE HEADER ( Center Logo) */}
+      <Flex
+        w="100%"
+        h="220px"
+        display={{ base: "flex", md: "none" }}
+        justify="center"
+        align="center"
+
+      >
+        <Image
+          src={logoRemovebgPreview}
+          alt="Logo"
+          maxW="150px"
+          objectFit="contain"
+        />
+      </Flex>
+
+      {/* RIGHT LOGIN FORM */}
+      <Flex
+        flex="1"
+        align="center"
+        justify="center"
+        px={{ base: 4, md: 10 }}
+        py={6}
+      >
         <Box w="100%" maxW="420px">
-          <Text fontSize="3xl" fontWeight="bold" color="blue.500" mb={6}>CRM</Text>
-          <Text fontSize="sm" color="blue.500" mb={1}>Welcome Back!</Text>
-          <Text fontSize="md" mb={6} color="gray.600">Sign in to continue to CRM.</Text>
+
+          {/* Logo instead of CRM text */}
+
+          <Text fontSize="sm" color="blue.500" mb={1}>
+            Welcome Back!
+          </Text>
+
+          <Text fontSize="md" mb={6} color="gray.600">
+            Sign in to continue to CRM.
+          </Text>
 
           {/* EMAIL */}
-          <Box mb={4}>
+          <Box mb={5}>
             <Text fontSize="sm" mb={1}>E-mail</Text>
             <Input
               placeholder="Enter email"
+              size="md"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </Box>
 
           {/* PASSWORD */}
-          <Box mb={2}>
+          <Box mb={3}>
             <Flex justify="space-between">
               <Text fontSize="sm">Password</Text>
-              <Link fontSize="sm" color="blue.500">Forgot password?</Link>
+              <Link fontSize="sm" color="blue.500">
+                Forgot password?
+              </Link>
             </Flex>
 
             <Box position="relative" mt={1}>
@@ -114,13 +138,13 @@ function UserLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+
               <Box
                 position="absolute"
                 top="50%"
                 right="12px"
                 transform="translateY(-50%)"
                 cursor="pointer"
-                zIndex={1}
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -129,7 +153,13 @@ function UserLogin() {
           </Box>
 
           {/* LOGIN BUTTON */}
-          <Button mt={6} colorScheme="blue" w="100%" size="md" onClick={handleLogin}>
+          <Button
+            mt={6}
+            colorScheme="blue"
+            w="100%"
+            h="45px"
+            onClick={handleLogin}
+          >
             Login
           </Button>
 

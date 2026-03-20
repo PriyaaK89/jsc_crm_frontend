@@ -23,6 +23,7 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import ApproveIpRequestModal from "./ApproveIpRequestModal";
 import { GoHomeFill } from "react-icons/go";
+import {Link} from "react-router-dom";
 
 const ApproveIpUserList = () => {
   const [userList, setUserList] = useState([]);
@@ -67,7 +68,7 @@ const ApproveIpUserList = () => {
         <HStack justifyContent="space-between" flexWrap="wrap">
           <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">
+              <BreadcrumbLink as={Link} to="/dashboard">
                 <GoHomeFill color="#5570F1" />
               </BreadcrumbLink>
             </BreadcrumbItem>

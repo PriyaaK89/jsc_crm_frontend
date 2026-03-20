@@ -101,16 +101,10 @@ const AddressForm = ({ data, onChange, index = 0, label }) => {
 
         <FormControl>
           <FormLabel>Upload owner Passport size Photo</FormLabel>
-
           <Input
             type="file"
             accept="image/*"
-
-            onChange={(e) => {
-              e.target.files[0];
-
-            }}
-
+            onChange={(e) => onChange(index, "upload_img", e.target.files[0])}
           />
 
 
@@ -149,11 +143,18 @@ function DistributorAgreement() {
     aadhar_no: "",
     mobile_no: "",
     alt_mobile_no: "",
+    upload_img: null,
   });
 
   const [partners, setPartners] = useState([
-    { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "", mobile_no: "", alt_mobile_no: "" },
+    { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "", mobile_no: "", alt_mobile_no: "", upload_img: null },
   ]);
+  // image for partners 
+  const handlePartnerImage = (index, file) => {
+    const updated = [...partners];
+    updated[index].upload_img = file;
+    setPartners(updated);
+  };
 
   // add mulyiple comapny
   const handleOtherCompanyChange = (index, field, value) => {
@@ -163,7 +164,10 @@ function DistributorAgreement() {
   };
 
   const addOtherCompany = () => {
-    setOtherCompanies([...otherCompanies, ""]);
+    setOtherCompanies([
+      ...otherCompanies,
+      { name: "", turnover: "" } // ✅ correct object
+    ]);
   };
   const removeOtherCompany = (index) => {
     const updated = otherCompanies.filter((_, i) => i !== index);
@@ -191,6 +195,19 @@ function DistributorAgreement() {
     setPartners(updated);
   };
 
+  const Approvername = () => {
+    // const approvername = e.target.value;
+    const selectedApprover = users?.find(
+      (u) => u.id === formData.approver_name
+    );
+    // console.log(approvername)
+
+    setFormData((prev) => ({
+      ...prev,
+      approver_name: selectedApprover, // ✅ proper key
+    }));
+  };
+  // habndle change 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -200,6 +217,9 @@ function DistributorAgreement() {
     }));
 
   };
+
+  
+
   return (
     <>
       <Box bg="white" p={6} borderRadius="lg">
@@ -605,7 +625,7 @@ function DistributorAgreement() {
           </FormControl>
 
 
-          <FormControl gridColumn={{ base: "span 1", md: "span 2" }}  border="1px solid #413e3e" p={4} borderRadius="lg" >
+          <FormControl gridColumn={{ base: "span 1", md: "span 2" }} border="1px solid #413e3e" p={4} borderRadius="lg" >
             <FormLabel>Other Company Detail</FormLabel>
 
             {otherCompanies.map((company, index) => (
@@ -625,24 +645,24 @@ function DistributorAgreement() {
                 </Button>
 
                 {/* Company Name */}
-                <SimpleGrid columns={{base:1,md:2}}>
-                <Input
-                  mb={2}
-                  placeholder={`Company ${index + 1}`}
-                  value={company.name}
-                  onChange={(e) =>
-                    handleOtherCompanyChange(index, "name", e.target.value)
-                  }
-                />
+                <SimpleGrid columns={{ base: 1, md: 2 }}>
+                  <Input
+                    mb={2}
+                    placeholder={`Company ${index + 1}`}
+                    value={company.name}
+                    onChange={(e) =>
+                      handleOtherCompanyChange(index, "name", e.target.value)
+                    }
+                  />
 
-                {/* Turnover */}
-                <Input ml={3}
-                  placeholder="Turnover"
-                  value={company.turnover}
-                  onChange={(e) =>
-                    handleOtherCompanyChange(index, "turnover", e.target.value)
-                  }
-                />
+                  {/* Turnover */}
+                  <Input ml={3}
+                    placeholder="Turnover"
+                    value={company.turnover}
+                    onChange={(e) =>
+                      handleOtherCompanyChange(index, "turnover", e.target.value)
+                    }
+                  />
                 </SimpleGrid>
 
               </Box>
@@ -669,24 +689,31 @@ function DistributorAgreement() {
 
               <Select
                 name="approver_name"
-                value={formData.approver_name}
-                onChange={handleChange}
-                _placeholder="--Select Approver Name--"
-
-              >{users?.map((e) => (
-                <option key={e.id} value={e.id}>{e.name}</option>
-              ))}
-
+                value={formData.approver_name || ""}
+                onChange={(e) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    approver_name: e.target.value, // ✅ only ID
+                  }));
+                }}
+              >
+                {users?.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.name}
+                  </option>
+                ))}
               </Select>
             </FormControl>
 
             <FormControl>
               <FormLabel>Approvering Date</FormLabel>
 
-              <Input type="date"
-                name="approveringdate"
-                value={formData.approvering_date}
+              <Input
+                type="date"
+                name="approvering_date"   
+                value={formData.approvering_date || ""}
                 onChange={handleChange}
+                max={new Date().toISOString().split("T")[0]} 
               />
             </FormControl>
             <FormControl>
@@ -750,6 +777,7 @@ function DistributorAgreement() {
         formData={formData}
         ownerAddress={ownerAddress}
         partners={partners}
+        otherCompanies={otherCompanies}
       />
 
 

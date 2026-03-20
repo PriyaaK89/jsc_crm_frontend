@@ -44,7 +44,7 @@ import {
   FaUserTie,
   FaBullseye,
   FaList,
-  FaTrash,
+  FaTrash, 
   FaFileInvoiceDollar,
   FaFileInvoice,
   FaMoneyCheckAlt,

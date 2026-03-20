@@ -21,7 +21,7 @@ import { Bell } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { FiLogOut } from "react-icons/fi";
-import {Link} from "react-router-dom"
+import { useNavigate  } from "react-router-dom";
 
 
 // import { toast } from "react-toastify";
@@ -29,6 +29,7 @@ import {Link} from "react-router-dom"
 const Topbar = () => {
   // full screen function 
   const [full, setFull] = useState(false);
+  const navigate = useNavigate();
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
@@ -57,7 +58,7 @@ const Topbar = () => {
 
     // Redirect after delay
     setTimeout(() => {
-      window.location.Link = "/login";
+      navigate("/login")
     }, 1500);
   };
 
@@ -124,7 +125,7 @@ const Topbar = () => {
           w="100%"
           justifyContent="flex-start"
           onClick={() =>
-            (window.location.Link = `/dashboard/profile/${auth?.user?.id}`)
+            (navigate(`/dashboard/profile/${auth?.user?.id}`))
           }
         >
           My Account

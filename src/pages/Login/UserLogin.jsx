@@ -15,7 +15,8 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import logo1 from "../../assets/images/logo1.jpg";
+import logoRemovebgPreview from "../../assets/images/logo-removebg-preview.png";
+
 
 function UserLogin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -57,8 +58,10 @@ function UserLogin() {
   };
 
   return (
-    <Flex direction={{ base: "column", md: "row" }} minH="100vh">
-      
+    <Flex direction={{ base: "column", md: "row" }} minH="100vh" bgGradient={{ base: "linear(to-b, #e0f2fe, #f8fafc)", md: "transpart" }}
+
+    >
+
       {/* LEFT IMAGE (Desktop only) */}
       <Flex
         flex="1"
@@ -70,20 +73,19 @@ function UserLogin() {
         <Image src={login_img} alt="CRM" maxW="100%" />
       </Flex>
 
-      {/* MOBILE HEADER (Gradient + Center Logo) */}
+      {/* MOBILE HEADER ( Center Logo) */}
       <Flex
         w="100%"
         h="220px"
         display={{ base: "flex", md: "none" }}
         justify="center"
         align="center"
-        bgGradient="linear(to-b, #e0f2fe, #f8fafc)"
-        
+
       >
         <Image
-          src={logo1}
+          src={logoRemovebgPreview}
           alt="Logo"
-          maxW="120px"
+          maxW="150px"
           objectFit="contain"
         />
       </Flex>
@@ -97,7 +99,7 @@ function UserLogin() {
         py={6}
       >
         <Box w="100%" maxW="420px">
-          
+
           {/* Logo instead of CRM text */}
 
           <Text fontSize="sm" color="blue.500" mb={1}>

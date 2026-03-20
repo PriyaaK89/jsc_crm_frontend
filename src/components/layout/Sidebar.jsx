@@ -31,9 +31,8 @@ import { FaShoppingCart } from "react-icons/fa";
 import { FaReceipt } from "react-icons/fa";
 import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg'
 import { useState, useContext, useEffect ,memo } from "react";
-import { NavLink, useLocation} from "react-router-dom";
+import { NavLink, useLocation,useNavigate} from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
-import { Link } from "react-router-dom";
 
 
 
@@ -49,6 +48,7 @@ const Newsidebar = () => {
   };
 
   const toast = useToast();
+  const navigate = useNavigate();
   
   const logout = () =>{
     logoutUser();
@@ -63,7 +63,7 @@ const Newsidebar = () => {
     });
     // Redirect after delay
      setTimeout(()=>{
-       window.location.Link  = "/login"
+       navigate("/login")
      },1500)
  
   }
@@ -73,9 +73,13 @@ const Newsidebar = () => {
     justifyContent: "flex-start",
     fontWeight: "700",
     color: "#333333",
+    transition: "all 0.3s ease", 
+
     _hover: {
       bg: "gray.100",
       borderRadius: "28px",
+      transform: "translateX(5px)"
+
     },
     height: "39px",
   };

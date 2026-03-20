@@ -3,8 +3,8 @@ import React from "react";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
-import { Upload } from "lucide-react";
- 
+
+
 const UploadDocLayout = ()=>{
     return(
         <Flex bg="#f4f4f4" minH="100vh">

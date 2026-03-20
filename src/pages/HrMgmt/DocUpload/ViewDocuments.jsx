@@ -43,7 +43,7 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
   const getEmployeeDocuments = async () => {
     try {
       const res = await API.get(
-        `${API_ENDPOINTS?.get_emp_docs}/${selectedId}`
+        `${API_ENDPOINTS?.get_user_docs}/${selectedId}`
       );
 
       if (res?.status === 200) {

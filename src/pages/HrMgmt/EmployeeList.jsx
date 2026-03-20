@@ -24,6 +24,7 @@ const EmployeeList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const { onOpen, onClose, isOpen } = useDisclosure();
   const [selectedId, setSelectedId] = useState('');
+  const [empName, setEmpName] = useState('')
   const navigate = useNavigate();
   const { isOpen: isDeleteModalOpen, onOpen: onDeleteModalOpen, onClose: onDeleteModalClose } = useDisclosure();
   const {isOpen: isVerifyModelOpen, onOpen: onVerifyModalOpen, onClose: onVerifyModalClose} = useDisclosure();
@@ -91,14 +92,15 @@ const EmployeeList = () => {
     setSelectedId(id)
   }
 
-  const handleVerifyModal = (id)=>{
+  const handleVerifyModal = (id,name)=>{
     onVerifyModalOpen();
-    setSelectedId(id)
+    setSelectedId(id);
+    setEmpName(name)
   }
   return (
     <>
   
-    <VerifyDocumentModel isVerifyModelOpen={isVerifyModelOpen} onVerifyModalClose={onVerifyModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList}/>
+    <VerifyDocumentModel isVerifyModelOpen={isVerifyModelOpen} onVerifyModalClose={onVerifyModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList} empName={empName}/>
       <ViewUploadedDocument isOpen={isOpen} onClose={onClose} selectedId={selectedId} />
       <DeleteEmployeeModel isDeleteModalOpen={isDeleteModalOpen} onDeleteModalClose={onDeleteModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList} />
       {/* <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px 0px' width="100%"> */}
@@ -258,7 +260,7 @@ const EmployeeList = () => {
                           </Tooltip>
 
                           <Tooltip label="Verify Documents">
-                            <Button size="xs" colorScheme="yellow" onClick={()=>handleVerifyModal(emp?.id)}>
+                            <Button size="xs" colorScheme="yellow" onClick={()=>handleVerifyModal(emp?.id,emp?.name)}>
                               Verify Documents
                             </Button>
                           </Tooltip>

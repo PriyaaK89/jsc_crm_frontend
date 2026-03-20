@@ -14,7 +14,8 @@ import {
 import { AddIcon } from "@chakra-ui/icons";
 import { CloseIcon } from "@chakra-ui/icons";
 import { GoHomeFill } from "react-icons/go";
-import DistributorAgreementPreview from "./DistributorAgreementPreview";
+import DistributorAgreementPdfPreview from "./DistributorAgreementPdfPreview";
+import DistributorAgreementPreview from './DistributorAgreementpreview'
 import useUsersapi from "../../../Apis/GetUsersapi";
 
 
@@ -22,10 +23,27 @@ import useUsersapi from "../../../Apis/GetUsersapi";
 const AddressForm = ({ data, onChange, index = 0, label }) => {
 
   return (
-    <Box border="1px solid black" borderRadius="lg" mt={4} gridColumn="span 2">
+    <Box border="1px solid black" borderRadius="lg" mt={4} gridColumn={{ base: "span 1", md: "span 2" }}>
       <Text fontWeight="bold" mb={3} bg="#e9f2ff" p={3} borderTopRadius="lg" borderBottom="1px solid #f3f3f3"> {label}</Text>
 
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} p={4}>
+        <FormControl>
+          <FormLabel>PAN NO.</FormLabel>
+          <Input
+            value={data.pan_no || ""}
+            onChange={(e) => onChange(index, "pan_no", e.target.value)}
+          />
+        </FormControl>
+
+        <FormControl>
+          <FormLabel>Aadhar No.</FormLabel>
+          <Input
+            value={data.aadhar_no || ""}
+            onChange={(e) => onChange(index, "aadhar_no", e.target.value)}
+          />
+        </FormControl>
+
+
         <FormControl>
           <FormLabel>Address</FormLabel>
           <Input
@@ -65,6 +83,22 @@ const AddressForm = ({ data, onChange, index = 0, label }) => {
             onChange={(e) => onChange(index, "pincode", e.target.value)}
           />
         </FormControl>
+
+        <FormControl>
+          <FormLabel>Mobile No.</FormLabel>
+          <Input
+            value={data.mobile_no || ""}
+            onChange={(e) => onChange(index, "mobile_no", e.target.value)}
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>Alt Mobile No.</FormLabel>
+          <Input
+            value={data.alt_mobile_no || ""}
+            onChange={(e) => onChange(index, "alt_mobile_no", e.target.value)}
+          />
+        </FormControl>
+
         <FormControl>
           <FormLabel>Upload owner Passport size Photo</FormLabel>
 
@@ -73,12 +107,12 @@ const AddressForm = ({ data, onChange, index = 0, label }) => {
             accept="image/*"
 
             onChange={(e) => {
-               e.target.files[0];
-              
+              e.target.files[0];
+
             }}
 
           />
-         
+
 
         </FormControl>
       </SimpleGrid>
@@ -88,11 +122,14 @@ const AddressForm = ({ data, onChange, index = 0, label }) => {
 
 function DistributorAgreement() {
   const { users } = useUsersapi();
+  const previewModal = useDisclosure();
+  const generateModal = useDisclosure();
 
   const [firmtype, setFirmtype] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [formData, setFormData] = useState({});
-  const [otherCompanies, setOtherCompanies] = useState([""]);
+  const [otherCompanies, setOtherCompanies] = useState([
+    { name: "", turnover: "" }
+  ]);
 
   const [firmAddress, setFirmAddress] = useState({
     address: "",
@@ -109,17 +146,19 @@ function DistributorAgreement() {
     tehsil: "",
     pincode: "",
     pan_no: "",
-    aadharno: "",
+    aadhar_no: "",
+    mobile_no: "",
+    alt_mobile_no: "",
   });
 
   const [partners, setPartners] = useState([
-    { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadharno: "" },
+    { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "", mobile_no: "", alt_mobile_no: "" },
   ]);
 
   // add mulyiple comapny
-  const handleOtherCompanyChange = (index, value) => {
+  const handleOtherCompanyChange = (index, field, value) => {
     const updated = [...otherCompanies];
-    updated[index] = value;
+    updated[index][field] = value;
     setOtherCompanies(updated);
   };
 
@@ -142,7 +181,7 @@ function DistributorAgreement() {
   const addPartner = () => {
     setPartners([
       ...partners,
-      { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadharno: "" },
+      { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "" },
     ]);
   };
 
@@ -159,8 +198,8 @@ function DistributorAgreement() {
       ...prev,
       [name]: value,
     }));
-  };
 
+  };
   return (
     <>
       <Box bg="white" p={6} borderRadius="lg">
@@ -206,7 +245,18 @@ function DistributorAgreement() {
               value={firmtype}
               onChange={(e) => {
                 handleChange(e);
-                setFirmtype(e.target.value);
+                const value = e.target.value;
+                setFirmtype(value);
+
+                if (value === "partnership") {
+                  setPartners([
+                    { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadharno: "" },
+                  ]);
+                }
+
+                if (value === "proprietorship") {
+                  setPartners([]); // optional cleanup
+                }
               }}
             >
               <option value="">Select</option>
@@ -220,7 +270,7 @@ function DistributorAgreement() {
           </FormControl>
 
           {/* Business Address */}
-          <Box border="1px" borderColor="gray.900" gridColumn="span 2" p={4} borderRadius="lg">
+          <Box border="1px" borderColor="gray.900" gridColumn={{ base: "span 1", md: "span 2" }} p={4} borderRadius="lg">
 
             <FormControl mt={3}>
               <FormLabel>Business Address</FormLabel>
@@ -228,7 +278,9 @@ function DistributorAgreement() {
                 name="business_address"
                 value={formData.business_address || ""}
                 onChange={handleChange}
+
               />
+
             </FormControl>
 
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5} mt={5}>
@@ -249,7 +301,25 @@ function DistributorAgreement() {
 
               <FormControl>
                 <FormLabel>Pincode</FormLabel>
-                <Input name="pincode" value={formData.pincode || ""} onChange={handleChange} />
+                <Input name="pin_code" value={formData.pin_code || ""} onChange={handleChange} />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Contact No(without +91)</FormLabel>
+                <Input
+                  name="contact_person"
+                  value={formData.contact_person}
+                  onChange={handleChange}
+                // placeholder="Enter Contact No (without +91)"
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel> Alt. Contact No</FormLabel>
+                <Input
+                  name="alternative_contact_person"
+                  value={formData.alternative_contact_person}
+                  onChange={handleChange}
+                // placeholder="Enter Alternative Contact No (without +91)"
+                />
               </FormControl>
             </SimpleGrid>
           </Box>
@@ -267,7 +337,7 @@ function DistributorAgreement() {
 
           {/* Partnership */}
           {firmtype === "partnership" && (
-            <Box gridColumn="span 2">
+            <Box gridColumn={{ base: "span 1", md: "span 2" }}>
               {partners.map((partner, index) => (
                 <Box key={index} position="relative">
                   <Button
@@ -299,31 +369,10 @@ function DistributorAgreement() {
 
 
 
-
-
-          <FormControl>
-            <FormLabel>Contact No(without +91)</FormLabel>
-            <Input
-              name="contact_person"
-              value={formData.contact_person}
-              onChange={handleChange}
-            // placeholder="Enter Contact No (without +91)"
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel> Alt. Contact No</FormLabel>
-            <Input
-              name="alternative_contact_person"
-              value={formData.alternative_contact_person}
-              onChange={handleChange}
-            // placeholder="Enter Alternative Contact No (without +91)"
-            />
-          </FormControl>
-
           <FormControl>
             <FormLabel>Responsible Persone Name</FormLabel>
             <Input
-              name="responsiblepersonename"
+              name="responsile_person_name"
               value={formData.responsile_person_name}
               onChange={handleChange}
             // placeholder="Enter Responsible Persone Name"
@@ -333,7 +382,7 @@ function DistributorAgreement() {
           <FormControl>
             <FormLabel>Responsible Persone Address</FormLabel>
             <Input
-              name="responsiblepersoneaddress"
+              name="responsile_person_address"
               value={formData.responsile_person_address}
               onChange={handleChange}
             // placeholder="Enter Responsible Persone Address"
@@ -343,18 +392,36 @@ function DistributorAgreement() {
           <FormControl>
             <FormLabel>Responsible Persone Contact No</FormLabel>
             <Input
-              name="responsiblepersoneno"
+              name="responsile_person_no"
               value={formData.responsile_person_no}
               onChange={handleChange}
             // placeholder="Enter Responsible Persone No"
             />
           </FormControl>
+          <FormControl>
+            <FormLabel>Responsible Persone Alternat Contact No</FormLabel>
+            <Input
+              name="responsile_Alternat_person_no"
+              value={formData.responsile_Alternat_person_no}
+              onChange={handleChange}
+            // placeholder="Enter Responsible Persone No"
+            />
+          </FormControl>
 
+          <FormControl>
+            <FormLabel>Firm Email Id</FormLabel>
+            <Input
+              name="firm_email_id"
+              value={formData.firm_email_id}
+              onChange={handleChange}
+            // placeholder="Enter Firm GSTN"
+            />
+          </FormControl>
 
           <FormControl>
             <FormLabel>Firm GSTN</FormLabel>
             <Input
-              name="firm_gstn"
+              name="firm_gstn_no"
               value={formData.firm_gstn_no}
               onChange={handleChange}
             // placeholder="Enter Firm GSTN"
@@ -379,18 +446,35 @@ function DistributorAgreement() {
 
           <FormControl>
             <FormLabel> Firm Since</FormLabel>
-            <Input type="date"
+            <Select
+              name="firm_since_date"
+              value={formData.firm_start_date || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select Year</option>
+
+              {Array.from({ length: 100 }, (_, i) => {
+                const year = new Date().getFullYear() - i;
+                return (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                );
+              })}
+            </Select>
+            {/* <Input type="date"
+
               name="firm_start_date"
               value={formData.firm_since_date}
               onChange={handleChange}
-            />
+            /> */}
           </FormControl>
 
           <FormControl>
-            <FormLabel>PAN Number</FormLabel>
+            <FormLabel>Firm PAN Number</FormLabel>
             <Input
-              name="pan_no"
-              value={formData.pan_no}
+              name="firm_pan_no"
+              value={formData.firm_pan_no}
               onChange={handleChange}
             // placeholder="Enter Firm PAN Card No."
             />
@@ -446,8 +530,8 @@ function DistributorAgreement() {
           <FormControl>
             <FormLabel>Pesticide License No.</FormLabel>
             <Input
-              name="fertilizer_license"
-              value={formData.fertilizer_license}
+              name="pesticide_license"
+              value={formData.pesticide_license}
               onChange={handleChange}
             />
           </FormControl>
@@ -521,42 +605,46 @@ function DistributorAgreement() {
           </FormControl>
 
 
-          <FormControl gridColumn="span 2">
+          <FormControl gridColumn={{ base: "span 1", md: "span 2" }}  border="1px solid #413e3e" p={4} borderRadius="lg" >
             <FormLabel>Other Company Detail</FormLabel>
 
             {otherCompanies.map((company, index) => (
-              <Box
-                key={index}
-                position="relative"
-                mb={3}
-              // _hover={{ ".remove-btn": { opacity: 1 } }} // 👈 only this box reacts
-              >
+              <Box key={index} position="relative" mb={3}>
 
-                {/* ❌ Remove Button */}
+                {/* Remove Button */}
                 <Button
-                  className="remove-btn"
                   size="xs"
                   colorScheme="red"
                   position="absolute"
-                  borderRadius="lg"
                   right="0"
                   top="-25px"
-                  // opacity={0}
-                  transition="0.2s"
                   onClick={() => removeOtherCompany(index)}
                   isDisabled={otherCompanies.length === 1}
                 >
                   remove
                 </Button>
 
+                {/* Company Name */}
+                <SimpleGrid columns={{base:1,md:2}}>
                 <Input
-                  value={company}
-                  mb={5}
-                  onChange={(e) =>
-                    handleOtherCompanyChange(index, e.target.value)
-                  }
+                  mb={2}
                   placeholder={`Company ${index + 1}`}
+                  value={company.name}
+                  onChange={(e) =>
+                    handleOtherCompanyChange(index, "name", e.target.value)
+                  }
                 />
+
+                {/* Turnover */}
+                <Input ml={3}
+                  placeholder="Turnover"
+                  value={company.turnover}
+                  onChange={(e) =>
+                    handleOtherCompanyChange(index, "turnover", e.target.value)
+                  }
+                />
+                </SimpleGrid>
+
               </Box>
             ))}
 
@@ -579,12 +667,12 @@ function DistributorAgreement() {
             <FormControl>
               <FormLabel>Approver Name</FormLabel>
 
-
               <Select
-                name="frim_gstn_type"
-                value={formData.frim_gstn_type}
+                name="approver_name"
+                value={formData.approver_name}
                 onChange={handleChange}
-              // placeholder="Select Firm GSTN Type"
+                _placeholder="--Select Approver Name--"
+
               >{users?.map((e) => (
                 <option key={e.id} value={e.id}>{e.name}</option>
               ))}
@@ -618,7 +706,7 @@ function DistributorAgreement() {
                   }));
                 }}
               />
-              <Button onClick={() => document.getElementById("cameraUpload").click()}>
+              <Button onClick={() => document.getElementById("cameraUpload").click()} size={{ base: "sm", md: "lg" }}>
                 📷 Upload Approver Image
               </Button>
             </FormControl>
@@ -628,18 +716,40 @@ function DistributorAgreement() {
 
       </Box>
 
-      <Button
-        colorScheme="blue"
-        mt={6}
-        onClick={onOpen}
-      >
-        Create
-      </Button>
+      <Box textAlign="center">
+        <Button
+          colorScheme="blue" ml={5}
+          mt={6}
+          onClick={previewModal.onOpen}
+        >
+          Download Aggrement Latter
+        </Button>
+
+        <Button ml={5}
+          colorScheme="green"
+          mt={6}
+          onClick={generateModal.onOpen}
+        >
+          Genrate  Disributor Aggrement
+        </Button>
+
+      </Box>
 
       <DistributorAgreementPreview
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={generateModal.isOpen}
+        onClose={generateModal.onClose}
         formData={formData}
+        ownerAddress={ownerAddress}
+        partners={partners}
+        otherCompanies={otherCompanies}
+
+      />
+      <DistributorAgreementPdfPreview
+        isOpen={previewModal.isOpen}
+        onClose={previewModal.onClose}
+        formData={formData}
+        ownerAddress={ownerAddress}
+        partners={partners}
       />
 
 

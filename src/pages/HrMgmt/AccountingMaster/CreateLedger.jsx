@@ -4,12 +4,13 @@ import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack,VStack,Heading,
 import React, { useState } from "react";
 import { GoHomeFill } from "react-icons/go";
 import CreateLedgerBankAccount from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerBankAccount";
-import CreateLedgerActivationIntersetcalcuation from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerActivationIntersetcalcuation";
 import CreateLedgerMillingDetails from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerMillingDetails";
 import CreateLedgerbankconfi from '../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerbankconfi';
 import CreateLedgerGst from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerGst";
-import CreateLedgerSundrydr_cr from "../../../components/Accountingmastercomponents/CreateLedgerSundrydr_cr";
+import CreateLedgerSundrydr_cr from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerSundrydr_cr";
 import useUsersapi from '../../../Apis/GetUsersapi';
+import DistributorAgreement from "../Letters/DistributorAgreement";
+import  CreateLedgerInterestParameter from '../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerInterestParameter';
 
 
 
@@ -19,6 +20,7 @@ const CreateLedger = () => {
   console.log(users)
 
         const [SelectGroup, setSelectGroup] = useState("");
+        const [activeInterest, setActiveInterest] = useState("");
 
     //  checks  where these fields open   
         const Actvationintersetcal = ["Bank_Account", "Capital_account","Bank_occ_a_c","Bank_od_a_c"
@@ -40,6 +42,8 @@ const CreateLedger = () => {
           const UseforPayroll=["Current_assets","Current_liabilities","Provision","Loans_advances_assets"].includes(SelectGroup);
          const Sundrycr_dr=["Sundry_debtors","Sundry_creditors"].includes(SelectGroup);
          const SetOdLimit=["Bank_occ_a_c","Bank_od_a_c"].includes(SelectGroup);
+          const activeinterestyes =["active-interest-yes"].includes(activeInterest);
+
 //    ..................custom style .............
        const labelStyles = {
         fontSize: "12px",
@@ -49,6 +53,7 @@ const CreateLedger = () => {
 
 
     return (
+      <>
     <Box w="100%" bg="white"  borderRadius="lg" >
                 <HStack justifyContent='space-between'>
                       <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
@@ -62,7 +67,7 @@ const CreateLedger = () => {
                       </Breadcrumb>
                     </HStack>
                 
-        <Text fontSize="xl" fontWeight="bold" mb={6} textAlign="center">
+        <Text fontSize="xl" fontWeight="bold" mb={6} >
           Create Ledger
                     
                </Text> 
@@ -127,9 +132,21 @@ const CreateLedger = () => {
 
   {/* activation interset calculation  */}
   {Actvationintersetcal && (
-  <CreateLedgerActivationIntersetcalcuation/>
+  <FormControl isRequired mt={5}>
+                         <FormLabel {...labelStyles} >Activate interest calculation</FormLabel>
+        <Select name="active_interest_calculation" fontSize="14px" onChange={(e) => setActiveInterest(e.target.value)}>
+            <option value="-1"> --Plaese Select--</option>
+            <option value="active-interest-yes">Yes</option>
+            <option value="active-interest-no">No</option>
+         </Select>
+         </FormControl>
   )}
   </SimpleGrid>
+{/* interest calculation  */}
+  {activeinterestyes && (
+        <CreateLedgerInterestParameter/>
+       )}
+
   {/* invertory values are affectd  */}
   {InventryValuesEffect &&(
   <FormControl isRequired mt={5}> 
@@ -181,8 +198,8 @@ const CreateLedger = () => {
    {Gst_un_Panno  && ( <CreateLedgerGst/>)}
    {OnlyGst && (
   <Box w="100%"   borderRadius="lg" mt={5}  border="1px" >
-  <HStack justifyContent='space-between'  bg="#e9f2ff" borderBottom="1px solid #d9e5f8"  borderTopRadius="lg" p={1} pl={6}>
-  <Breadcrumb  padding='10px 0px 1rem 0px' >
+  <HStack justifyContent='space-between'  bg="#e9f2ff" borderBottom="1px solid #d9e5f8"  borderTopRadius="lg" pt={1} pl={6}>
+  <Breadcrumb  padding='5px 0px 1rem 0px' >
   <BreadcrumbItem>
   <BreadcrumbLink  color='#000000' size="lg" >Tax Registration Details :</BreadcrumbLink>
   </BreadcrumbItem>
@@ -231,7 +248,11 @@ const CreateLedger = () => {
           </Box>
                   
 </Box>
+
 </Box>
+</>
+
+
 
     );
 }   

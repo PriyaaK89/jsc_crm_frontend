@@ -106,6 +106,9 @@ padding: 40px;
   width:100%;
   height:auto;
 }
+.disagr{box-sizing: border-box;
+  page-break-after: always;
+  break-after: page;}
 
 .page-break {
   page-break-before: always;

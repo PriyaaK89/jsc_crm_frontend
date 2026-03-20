@@ -156,7 +156,8 @@ const Newsidebar = () => {
             {label:"Pending Collection Report",path:"/report/pending-collection-report",icon:MdPendingActions},
             {label:"Employee Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
           ]
-      },{
+      },
+      {
         label:"Inventory Master",key:"inventory",icon:MdInventory,
         children:[
           {label:"Create Stock Group",path:"/inventory/create-stock-group",icon:MdAddBox},

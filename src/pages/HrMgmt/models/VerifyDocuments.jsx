@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 
-const VerifyDocumentModel = ({ isVerifyModelOpen, onVerifyModalClose, selectedId,}) => {
+const VerifyDocumentModel = ({ isVerifyModelOpen, onVerifyModalClose, selectedId,empName}) => {
 
   const toast = useToast();
   const [documents, setDocuments] = useState([]);
@@ -36,9 +36,9 @@ const VerifyDocumentModel = ({ isVerifyModelOpen, onVerifyModalClose, selectedId
         doc.leegality_document_id
       ) {
         checkDocumentStatus(doc.leegality_document_id);
-        console.log(doc.leegality_document_id, "asdfghj")
+        // console.log(doc.leegality_document_id, "asdfghj")
       }
-      console.log(doc.leegality_document_id, "asdfghj")
+      // console.log(doc.leegality_document_id, "asdfghj")
     });
   }, [ selectedId,legID]);
 
@@ -72,10 +72,46 @@ const VerifyDocumentModel = ({ isVerifyModelOpen, onVerifyModalClose, selectedId
   };
 
 
-  const viewDocument = (url) => {
-    const fileURL = `${import.meta.env.get_emp_docs}/${url}`;
-    window.open(fileURL, "_blank");
-  };
+ const viewDocument = (url) => {
+  if (!url) return;
+  window.open(url, "_blank");
+};
+
+const downloadDocument = async (url, doc) => {
+  try {
+    if (!url) return;
+
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    // Create custom filename
+    const status = ["signed", "completed"].includes(doc.signing_status)
+      ? "signed"
+      : "pending";
+
+    const fileName = `${doc.employee_name}_${doc.employee_id}_${doc.document_type}_${status}.pdf`
+      .replace(/\s+/g, "_")
+      .toLowerCase();
+
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(blob);
+    link.download = fileName;
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(link.href);
+
+  } catch (error) {
+    console.error("Download failed", error);
+    toast({
+      title: "Download failed",
+      description: "Unable to download file",
+      status: "error",
+    });
+  }
+};
 
   const sendForESign = async (docId) => {
     try {
@@ -157,6 +193,64 @@ const handleSendForESignDigio = async (docId) => {
   }
 };
 
+const handleCheckDigioStatus = async (docId) => {
+  try {
+    const response = await API.get(
+      `${API_ENDPOINTS.check_digio_Status}/${docId}`
+    );
+
+    if (response?.data?.success) {
+      const status = response?.data?.data?.agreement_status;
+
+      //  If signed → fetch signed PDF
+      if (status === "completed" || status === "signed") {
+        await handleFetchSignedDoc(docId);
+      } else {
+        console.log("Still pending:", docId);
+      }
+    }
+  } catch (error) {
+    console.log("Status check failed", error);
+  }
+};
+
+const handleFetchSignedDoc = async (docId) => {
+  try {
+    const response = await API.get(
+      `${API_ENDPOINTS.download_Signed_Letter_digio}/${docId}`
+    );
+
+    if (response?.data?.success) {
+      console.log("Signed document fetched & stored");
+
+      //  Refresh documents so signed_file_url comes
+      getEmployeeDocs();
+    } else {
+      console.log("Failed to fetch signed document");
+    }
+
+  } catch (error) {
+    console.log("Fetch signed PDF failed", error);
+  }
+};
+
+useEffect(() => {
+  if (!documents.length) return;
+
+  documents.forEach((doc) => {
+    const isDigioDoc =
+      doc.document_type === "joining_letter" ||
+      doc.document_type === "agreement_letter";
+
+    const isPending =
+      !["signed", "completed"].includes(doc.signing_status);
+
+    if (isDigioDoc && isPending && doc.id) {
+      handleCheckDigioStatus(doc.id);
+    }
+  });
+}, [documents]);
+
   return (
     <Modal isOpen={isVerifyModelOpen} onClose={onVerifyModalClose} size="xl">
       <ModalOverlay />
@@ -164,7 +258,7 @@ const handleSendForESignDigio = async (docId) => {
       <ModalContent width={{base: "90%",sm: "90%", md: "100%"}}>
         <Flex bg="#2e89c1" padding="12px" borderRadius="5px 5px 0px 0px">
           <Text fontSize={{sm:"14px",md: "18px", lg:"18px"}} color="white" marginBottom="0px" mb="0" fontWeight="600" >
-            Employee Documents
+            Employee Document ({empName})
           </Text>
         <ModalCloseButton color="white"/>
         </Flex>
@@ -202,14 +296,13 @@ const handleSendForESignDigio = async (docId) => {
                   </Flex>
 
                   {/* RIGHT ACTIONS */}
-                  <Flex gap="8px">
+                  <Flex gap="8px">  
                     {/* VIEW DOCUMENT */}
                     <Tooltip label="View Document">
                       <IconButton
                         icon={<FaEye />}
                         size="sm"
-                        onClick={() => viewDocument(doc.file_url)}
-                      />
+                        onClick={() => viewDocument(doc?.file_url)}/>
                     </Tooltip>
 
                     {doc.signed_file_url && (
@@ -218,7 +311,7 @@ const handleSendForESignDigio = async (docId) => {
                           icon={<FaDownload />}
                           size="sm"
                           colorScheme="green"
-                          onClick={() => viewDocument(doc.signed_file_url)}
+                          onClick={() => downloadDocument(doc.signed_file_url, doc)}
                         />
                       </Tooltip>
                     )}
@@ -227,6 +320,7 @@ const handleSendForESignDigio = async (docId) => {
                       <Button
                         size="sm"
                         leftIcon={<FiSend />} isLoading={esignLoading === doc.id}
+                        isDisabled={["signed", "completed"].includes(doc.signing_status)}
                         colorScheme="blue" onClick={() => sendForESign(doc.id)} fontSize={{base: "11px", md: "14px"}}>
                         Send eSign
                       </Button>
@@ -238,7 +332,7 @@ const handleSendForESignDigio = async (docId) => {
                           size="sm"
                           leftIcon={<FiSend />}
                           isLoading={esignLoading === doc.id}
-                          colorScheme="blue"
+                          colorScheme="blue" fontSize={{base: "11px", md: "14px"}}
                           isDisabled={["signed", "completed"].includes(doc.signing_status)}
                           onClick={() => handleSendForESignDigio(doc.id)}
                         >

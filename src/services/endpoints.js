@@ -29,5 +29,7 @@ export const API_ENDPOINTS = {
   get_emp_docs: `get-employee-documents`,
   document_status:`document-status`,
   send_esign: "documents/send-esign",
-  digio_send_eSign: "letters/send-esign"
+  digio_send_eSign: "letters/send-esign",
+  check_digio_Status: `letters/document-status`,
+  download_Signed_Letter_digio: `download-signed-pdf`
 };

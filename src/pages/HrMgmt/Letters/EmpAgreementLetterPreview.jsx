@@ -515,7 +515,7 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
                                                 </HStack>
                                             </Box>
                                             <VStack alignItems="end" spacing={0}>
-                                                {formData.show_stamp && ( <Image src={jsc_stamp} alt="Company Stamp" boxSize="120px" /> )}</VStack>
+                                                {formData.show_stamp && ( <Image src={jsc_stamp} alt="Company Stamp" boxSize="94px" /> )}</VStack>
                                         </Box>
                                     </VStack>
                                     <Box>

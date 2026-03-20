@@ -27,6 +27,8 @@ const AddEmployee = () => {
   const [loading, setLoading] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [jobRole, setJobRole] = useState([]);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(100)
   const navigate = useNavigate();
 
   const [error, setError] = useState({
@@ -147,7 +149,7 @@ const AddEmployee = () => {
   const fetchEmployeeList = async () => {
     try {
       setLoading(true);
-      const response = await API.get(API_ENDPOINTS.GET_USERS, {});
+      const response = await API.get(`${API_ENDPOINTS.GET_USERS}?page=${page}&limit=${limit}`, {});
 
       if (response.status === 200) {
         setEmpList(response.data.data);

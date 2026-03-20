@@ -34,7 +34,7 @@ const TrackEmpLayout = () => {
                   pt={4}
                   mx={3}
                 >
-                  <Topbar />
+                  <DesktopTopbar />
                 </Box>
         
                 {/* Mobile Topbar */}

@@ -2,10 +2,12 @@ import { Box, Button, HStack, Image, Modal, ModalBody, ModalContent, ModalOverla
 import React from "react";
 import top_ele from "../../../assets/images/top_left_ele.png";
 import bottom_ele from "../../../assets/images/bottom_right_ele.png";
-import company_logo from "../../../assets/images/logo-removebg-preview.png";
+import top_ele1 from "../../../assets/images/pdf_logo__1.png";
+import bottom_ele1 from "../../../assets/images/pdf_logo__2.png";
+import company_logo from "../../../assets/images/jsc_logo_.png";
 import r_logo from "../../../assets/images/jamidara_logo.png";
-import emailIcon from "../../../assets/images/email.png";
-import webIcon from "../../../assets/images/web.png";
+import emailIcon from "../../../assets/images/email_pdf.png";
+import webIcon from "../../../assets/images/web_pdf.png";
 import { formatDate, formatTime } from "../../../components/common/helper";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png"
 import API from "../../../services/api";
@@ -169,12 +171,12 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
             <Box id="joining-letter-preview" fontFamily="serif" borderTop="1px" borderColor="gray.300">
               <Box className="pdf-page">
                 {/* Decorative Images */}
-                <Image src={top_ele} position="absolute" top="0" left="0" width="175px" />
-                <Image src={bottom_ele} position="absolute" bottom="0" right="0" width="175px" />
+                <Image src={top_ele1} position="absolute" top="0" right="0" width="250px" />
+                <Image src={bottom_ele1} position="absolute" bottom="0" left="0" width="250px" />
 
                 {/* Header */}
                 <VStack spacing={0} align="center" ml="1rem">
-                  <HStack spacing={4} alignItems="baseline" mb="4px">
+                  <HStack spacing={4} alignItems="center" mb="4px">
                     <Image src={company_logo} width="260px" />
                     <Image src={r_logo} width="120px" />
                   </HStack>
@@ -256,19 +258,19 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
               <Box className="pdf-page page-break">
                 {/* Decorative Images */}
                 <Image
-                  src={top_ele}
+                  src={top_ele1}
                   position="absolute"
                   top="0"
-                  left="0"
-                  width="175px"
+                  right="0"
+                  width="250px"
                 />
 
                 <Image
-                  src={bottom_ele}
+                  src={bottom_ele1}
                   position="absolute"
                   bottom="0"
-                  right="0"
-                  width="175px"
+                  left="0"
+                  width="250px"
                 />
 
                 <VStack
@@ -363,8 +365,8 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
               <Box className="pdf-page page-break">
                 {/* Decorative Images */}
-                <Image src={top_ele} position="absolute" top="0" left="0" width="175px" />
-                <Image src={bottom_ele} position="absolute" bottom="0" right="0" width="175px" />
+                <Image src={top_ele1} position="absolute" top="0" right="0" width="250px" />
+                <Image src={bottom_ele1} position="absolute" bottom="0" left="0" width="250px" />
 
                 <VStack
                   align="flex-start"
@@ -431,8 +433,8 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
               </Box>
               <Box className="pdf-page page-break">
                 {/* Decorative Images */}
-                <Image src={top_ele} position="absolute" top="0" left="0" width="175px" />
-                <Image src={bottom_ele} position="absolute" bottom="0" right="0" width="175px" />
+                <Image src={top_ele1} position="absolute" top="0" right="0" width="250px" />
+                <Image src={bottom_ele1} position="absolute" bottom="0" left="0" width="250px" />
 
                 <VStack
                   align="flex-start"
@@ -486,8 +488,8 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
               <Box className="pdf-page page-break">
                 {/* Decorative Images */}
-                <Image src={top_ele} position="absolute" top="0" left="0" width="175px" />
-                <Image src={bottom_ele} position="absolute" bottom="0" right="0" width="175px" />
+                <Image src={top_ele1} position="absolute" top="0" right="0" width="250px" />
+                <Image src={bottom_ele1} position="absolute" bottom="0" left="0" width="250px" />
 
                 <VStack
                   align="flex-start"
@@ -545,8 +547,8 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
                <Box className="pdf-page page-break">
                 {/* Decorative Images */}
-                <Image src={top_ele} position="absolute" top="0" left="0" width="175px" />
-                <Image src={bottom_ele} position="absolute" bottom="0" right="0" width="175px" />
+                <Image src={top_ele1} position="absolute" top="0" right="0" width="250px" />
+                <Image src={bottom_ele1} position="absolute" bottom="0" left="0" width="250px" />
 
                 <VStack
                   align="flex-start"
@@ -560,7 +562,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     className="watermark_img1"
                   />
                   <Text textAlign="center" mt="1.5rem" mb="1.5rem" width="84%">
-                    CONTD:-5
+                    CONTD:-6
                   </Text>
 
                   <VStack width="100%">
@@ -702,27 +704,18 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     </VStack>
                     <VStack alignItems="end">
                       {formData.show_stamp && (
-                        <Image src={jsc_stamp} alt="Company Stamp" boxSize="120px" />)}
+                        <Image src={jsc_stamp} alt="Company Stamp" boxSize="94px" />)}
                     </VStack>
                   </Box>
                 </VStack>
-                <VStack alignItems="flex-start"  spacing="4px" width="81%"
-                  position="absolute" bottom="68px" left="0px">
-                  <Divider borderColor="blue.600" borderWidth="1px" w="100%" mt="1rem" />
-                  <Divider borderColor="blue.300" borderWidth="2px" w="90%" mt="0px" />
-                  <Flex ml="1rem" gap="1rem" mt="2px">
-                    <Flex alignItems="center" gap="8px">
-                      <Image src={emailIcon} width="24px" mt="12px" />
-                      <Text fontSize="14px" mt="12px">
-                        jamidaraseedscorporation@gmail.com
-                      </Text>
-                    </Flex>
-                    <Flex alignItems="center" gap="8px">
-                      <Image src={webIcon} width="24px" mt="12px" />
-                      <Text fontSize="14px" mt="12px">www.jamidaraseeds.com</Text>
-                    </Flex>
-                  </Flex>
-                </VStack>
+                <VStack alignItems="flex-end" mt="10rem" spacing="4px" width="76%" position='absolute' right='0px'>
+                                 <Divider borderColor="green.600" borderWidth="1px" w="100%" mt="1rem" />
+                                 <Divider borderColor="green.300" borderWidth="2px" w="90%" mt="0px" />
+                                 <Flex mr="1rem" gap="1rem" mt="2px">
+                                   <Flex alignItems="center" gap="8px" ><Image src={emailIcon} width="24px" mt="12px" /><Text fontSize="14px">jamidaraseedscorporation@gmail.com</Text></Flex>
+                                   <Flex alignItems="center" gap="8px"><Image src={webIcon} width="24px" mt="12px" /><Text fontSize="14px">www.jamidaraseeds.com</Text></Flex>
+                                 </Flex>
+                               </VStack>
               </Box>
             </Box>
             <Flex p={1} justifyContent="center" borderTop="1px" borderColor="#bdbcbc">

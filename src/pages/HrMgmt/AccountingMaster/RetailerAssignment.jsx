@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import useUsersapi from '../../../Apis/GetUsersapi';
+import {Link} from "react-router-dom";
 
 function RetailerAssignment() {
   const {users}=useUsersapi();
@@ -24,7 +25,7 @@ function RetailerAssignment() {
       <HStack justifyContent='space-between'>
         <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px'>
           <BreadcrumbItem>
-            <BreadcrumbLink href='/dashboard'>
+            <BreadcrumbLink as={Link} to='/dashboard'>
               <GoHomeFill color="#5570F1" />
             </BreadcrumbLink>
           </BreadcrumbItem>

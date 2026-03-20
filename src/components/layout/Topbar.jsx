@@ -20,6 +20,9 @@ import {  HStack } from "@chakra-ui/react";
 import { Bell } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { FiLogOut } from "react-icons/fi";
+import {Link} from "react-router-dom"
+
 
 // import { toast } from "react-toastify";
 
@@ -54,7 +57,7 @@ const Topbar = () => {
 
     // Redirect after delay
     setTimeout(() => {
-      window.location.href = "/login";
+      window.location.Link = "/login";
     }, 1500);
   };
 
@@ -121,7 +124,7 @@ const Topbar = () => {
           w="100%"
           justifyContent="flex-start"
           onClick={() =>
-            (window.location.href = `/dashboard/profile/${auth?.user?.id}`)
+            (window.location.Link = `/dashboard/profile/${auth?.user?.id}`)
           }
         >
           My Account
@@ -131,12 +134,17 @@ const Topbar = () => {
 
         <Button
           size="sm"
+          rightIcon={<FiLogOut/>}
           fontSize="xs"
           variant="ghost"
           w="100%"
+                   border="1px solid gray"
+
           justifyContent="flex-start"
-          colorScheme="red"
           onClick={logout}
+                   _hover={{bgColor:"#f4bfbf", border:"1px solid #e48f8f", color:"#971345"}}
+
+
         >
           Logout
         </Button>

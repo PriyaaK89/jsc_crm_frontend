@@ -21,7 +21,7 @@ const CreateGroup = () => {
                 <HStack justifyContent='space-between'>
                       <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                          <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>

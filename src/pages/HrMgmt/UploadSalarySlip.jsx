@@ -4,6 +4,7 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 import { Box, Button, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Input, HStack, Breadcrumb, BreadcrumbItem, BreadcrumbLink,} from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import useUsersapi from "../../Apis/GetUsersapi";
+import { Link } from "react-router-dom";
 
 const UploadSalarySlip = () => {
   const toast = useToast();
@@ -125,7 +126,7 @@ const UploadSalarySlip = () => {
       <HStack justifyContent="space-between" flexWrap="wrap">
         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">
+            <BreadcrumbLink as={Link} to="/dashboard">
               <GoHomeFill color="#5570F1" />
             </BreadcrumbLink>
           </BreadcrumbItem>

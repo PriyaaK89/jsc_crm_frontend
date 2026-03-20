@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel } from "@chakra-ui/react";
+import { Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Breadcrumb,BreadcrumbItem,BreadcrumbLink, HStack } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
+import { Link } from "react-router-dom";
 
 const EditEmployee = () => {
     const { empId } = useParams();
@@ -209,6 +210,16 @@ const EditEmployee = () => {
     /* ---------------- UI ---------------- */
     return (
         <Box p={6} bg="white" borderRadius="10px" boxShadow="sm" >
+           <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+                                 <BreadcrumbItem>
+                                   <BreadcrumbLink as={Link} to='/hr-mgmt/view-employee-list' fontSize="13px">Employee List</BreadcrumbLink>
+                                 </BreadcrumbItem>
+                     
+                                 <BreadcrumbItem>
+                                   <BreadcrumbLink isCurrentPage  color='#8B8D97' fontSize='13px'>Edit Employee</BreadcrumbLink>
+                                 </BreadcrumbItem>
+                     
+                               </Breadcrumb>
             <Text fontSize="2xl" fontWeight="bold" mb={6}>
                 Edit Employee
             </Text>

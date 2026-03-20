@@ -1,4 +1,4 @@
-import {Box,VStack,Text,Button,Collapse,Icon, Image } from "@chakra-ui/react";
+import {Box,VStack,Text,Button,Collapse,Icon, Image, useToast } from "@chakra-ui/react";
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
@@ -31,13 +31,15 @@ import { FaShoppingCart } from "react-icons/fa";
 import { FaReceipt } from "react-icons/fa";
 import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg'
 import { useState, useContext, useEffect ,memo } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation} from "react-router-dom";
+import { FiLogOut } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 
 
 const Newsidebar = () => {
   const location = useLocation();
-  const { auth } = useContext(AuthContext);
+  const { auth, logoutUser } = useContext(AuthContext);
   const role = auth?.user?.role;
 
   const [openMenu, setOpenMenu] = useState(null);
@@ -45,6 +47,26 @@ const Newsidebar = () => {
   const toggleMenu = (menu) => {
     setOpenMenu((prev) => (prev === menu ? null : menu));
   };
+
+  const toast = useToast();
+  
+  const logout = () =>{
+    logoutUser();
+
+   //  show toast
+    toast({
+      title: "Logged out",
+      description: "You are logged out successfully",
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+    });
+    // Redirect after delay
+     setTimeout(()=>{
+       window.location.Link  = "/login"
+     },1500)
+ 
+  }
 
   const sidebarButtonStyle = {
     variant: "ghost",
@@ -250,6 +272,7 @@ useEffect(() => {
           if (!menu.children) {
             return (
               <Button
+              w="100%"
                 key={index}
                 leftIcon={<IconComponent />}
                 as={NavLink}
@@ -270,6 +293,7 @@ useEffect(() => {
           return (
             <Box key={index}>
               <Button
+              w="100%"
                 leftIcon={<IconComponent />}
                 rightIcon={
                   <Icon
@@ -293,6 +317,7 @@ useEffect(() => {
                     const ChildIcon = item.icon;
                     return (
                       <Button
+                      w="100%"
                         key={i}
                         leftIcon={<ChildIcon size={17}/>}
                         size="sm"
@@ -323,6 +348,7 @@ useEffect(() => {
 {/* ip request  */}
         {(role === "ADMIN" || role === "SUPER_ADMIN") && (
           <Button
+          w="100%"
             leftIcon={<RiUserAddLine />}
             {...sidebarButtonStyle}
             as={NavLink}
@@ -332,7 +358,19 @@ useEffect(() => {
             IP Request
           </Button>
         )}
-      </VStack>
+      <Button
+         rightIcon={<FiLogOut/>}
+         variant="ghost"
+         size="md"  
+         onClick={logout}
+         border="1px solid gray"
+         w="100%"
+         _hover={{bgColor:"#f4bfbf", border:"1px solid #e48f8f", color:"#971345"}}
+      >
+        Logout
+      </Button>
+          </VStack>
+
     </Box>
   );
 };

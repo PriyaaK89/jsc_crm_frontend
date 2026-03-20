@@ -25,6 +25,7 @@ import {
 import { GoHomeFill } from "react-icons/go";
 import { IoMdAdd } from "react-icons/io";
 import { IoMdRemove } from "react-icons/io";
+import { Link } from 'react-router-dom';
 
  const Receipt = () => {
    const [rows, setRows] = useState([
@@ -54,10 +55,10 @@ import { IoMdRemove } from "react-icons/io";
         borderRadius="lg"
         boxShadow="md"
      >
-         <HStack justifyContent="space-between" flexWrap="wrap" spacing="space-between">
+         <HStack justifyContent="space-between" >
                   <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
                     <BreadcrumbItem>
-                      <BreadcrumbLink href="/dashboard"> 
+                      <BreadcrumbLink as={Link} to="/dashboard"> 
                         <GoHomeFill color="#5570F1" />
                       </BreadcrumbLink>
                     </BreadcrumbItem>

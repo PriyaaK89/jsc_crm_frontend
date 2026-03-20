@@ -23,6 +23,7 @@ import OfferLetterPreviewModal from "./OfferLetterPreviewModal";
 import CustomDatePicker from "../../../components/common/CustomDatepicker";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png"
 import { GoHomeFill } from "react-icons/go";
+import {Link} from "react-router-dom";
 const OfferLetterPage = () => {
   const { id } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -87,12 +88,12 @@ const OfferLetterPage = () => {
        <HStack justifyContent='space-between'>
                                   <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                                     <BreadcrumbItem>
-                                      <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                                      <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
                                     </BreadcrumbItem>
 
                                     
                                     <BreadcrumbItem>
-                                      <BreadcrumbLink href="/hr-mgmt/view-employee-list"  fontSize='13px'>Employee List</BreadcrumbLink>
+                                      <BreadcrumbLink as={Link} to="/hr-mgmt/view-employee-list"  fontSize='13px'>Employee List</BreadcrumbLink>
                                     </BreadcrumbItem>
                         
                                     <BreadcrumbItem>

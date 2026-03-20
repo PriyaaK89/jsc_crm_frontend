@@ -37,7 +37,7 @@ import EmployeeImageModal from "./EmployeeImageModal";
 import { GoHomeFill } from "react-icons/go";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import useUsersapi from "../../Apis/GetUsersapi";
-
+import { Link } from "react-router-dom";
 
 
 const EmpAttendance = () => {
@@ -171,7 +171,7 @@ const EmpAttendance = () => {
         <HStack justifyContent="space-between" flexWrap="wrap">
           <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">
+              <BreadcrumbLink as={Link} href="/dashboard">
                 <GoHomeFill color="#5570F1" />
               </BreadcrumbLink>
             </BreadcrumbItem>

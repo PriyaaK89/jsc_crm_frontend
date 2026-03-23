@@ -41,7 +41,7 @@ import { Link } from "react-router-dom";
 
 
 const EmpAttendance = () => {
-  const {users,fetchUsers}=useUsersapi();
+  const { users, fetchUsers } = useUsersapi();
   // const [users, setUsers] = useState([]);
   const [attendance, setAttendance] = useState([]);
   const [empRep, setEmpRep] = useState([]);
@@ -62,7 +62,7 @@ const EmpAttendance = () => {
   });
 
   // Fetch Users
- 
+
 
   useEffect(() => {
     fetchUsers();
@@ -167,11 +167,18 @@ const EmpAttendance = () => {
   return (
     <>
       <EmployeeImageModal isOpen={isOpen} onClose={onClose} selectedUserId={selectedUserId} selectedDate={selectedDate} />
-      <Box bg="white" p={6} borderRadius="md">
+      <Box
+        bg="white"
+        mt={{ base: 2, md: 5 }}
+        px={{ base: 3, md: 6 }}
+        py={{ base: 3, md: 4 }}
+        borderRadius="lg"
+        boxShadow="md"
+      >
         <HStack justifyContent="space-between" flexWrap="wrap">
           <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
             <BreadcrumbItem>
-              <BreadcrumbLink as={Link} href="/dashboard">
+              <BreadcrumbLink as={Link} to="/dashboard">
                 <GoHomeFill color="#5570F1" />
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -192,7 +199,7 @@ const EmpAttendance = () => {
 
         <VStack spacing={6} align="stretch">
           {/* Filters */}
-          <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4}>
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
             <FormControl>
               <FormLabel {...labelStyles}>User Name</FormLabel>
               <Select
@@ -220,15 +227,15 @@ const EmpAttendance = () => {
                 }
               /> */}
               <CustomDatePicker
-              label="Start Date"
-              name="startDate"
-              value={filters.startDate}
-              onChange={(date)=>{
-                setFilters((prev)=>({
+                label="Start Date"
+                name="startDate"
+                value={filters.startDate}
+                onChange={(date) => {
+                  setFilters((prev) => ({
                     ...prev,
                     startDate: date
-                }))
-              }}
+                  }))
+                }}
               />
             </FormControl>
 
@@ -241,16 +248,16 @@ const EmpAttendance = () => {
                   setFilters({ ...filters, endDate: e.target.value })
                 }
               /> */}
-               <CustomDatePicker
-              label="End Date"
-              name="endDate"
-              value={filters.endDate}
-              onChange={(date)=>{
-                setFilters((prev)=>({
+              <CustomDatePicker
+                label="End Date"
+                name="endDate"
+                value={filters.endDate}
+                onChange={(date) => {
+                  setFilters((prev) => ({
                     ...prev,
                     endDate: date
-                }))
-              }}
+                  }))
+                }}
               />
 
             </FormControl>
@@ -269,7 +276,7 @@ const EmpAttendance = () => {
 
         {/* Summary Cards */}
         {empRep.length > 0 && (
-          <SimpleGrid columns={{ base: 1, md: 5 }} spacing={6} mt={5} mb={5} >
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 5 }} spacing={6} mt={5} mb={5} >
             {empRep.map((emp, index) => (
               <Fragment key={index}>
                 <Card border="1px solid" borderColor="gray.300">
@@ -338,91 +345,93 @@ const EmpAttendance = () => {
         <Box
           bg="white"
           borderRadius="md">
-          
+
           {loading ? (
             <Flex justify="center" align="center" py={10}>
               <Spinner size="lg" />
             </Flex>
           ) : attendance.length > 0 ? (
             <TableContainer>
-            <TableContainer>
-            <Table
-                borderWidth="1px"
-         borderColor="gray.200"
-         borderRadius="lg"
-              variant="striped"
-              colorScheme="gray"
-              size="sm"
-              minW="900px"
-              className="productsTable"
-            >
+              <TableContainer>
+                <Table
+                  borderWidth="1px"
+                  borderColor="gray.200"
+                  borderRadius="lg"
+                  variant="striped"
+                  colorScheme="gray"
+                  size="sm"
+                  minW="900px"
+                  className="productsTable"
+                >
 
 
-              <Thead>
-                <Tr>
-                  {[
-                    "Employee Id",
-                    "Employee Name",
-                    "Attendance Date",
-                    "Login Time",
-                    "Logout Time",
-                    "Working Hours",
-                    "Status",
-                    "Action",
-                  ].map((header, index) => (
-                    <Th
-                      key={index}
-                      fontSize="14px"
-                      fontWeight="500"
-                      color="#2C2D33"
-                      textTransform="capitalize"
-                      borderColor="#D9D9D9"
-                    >
-                      <Flex align="center" gap="7px">
-                        <Text
+                  <Thead>
+                    <Tr>
+                      {[
+                        "Employee Id",
+                        "Employee Name",
+                        "Attendance Date",
+                        "Login Time",
+                        "Logout Time",
+                        "Working Hours",
+                        "Status",
+                        "Action",
+                      ].map((header, index) => (
+                        <Th
+                          key={index}
                           fontSize="14px"
+                          fontWeight="500"
                           color="#2C2D33"
-                          fontWeight="400"
-                          fontFamily="InterRegular"
+                          textTransform="capitalize"
+                          borderColor="#D9D9D9"
                         >
-                          {header}
-                        </Text>
-                        <Img src={sort_icon} alt="sort_icon" />
-                      </Flex>
-                    </Th>
-                  ))}
-                </Tr>
-              </Thead>
+                          <Flex align="center" gap="7px">
+                            <Text
+                              fontSize="14px"
+                              color="#2C2D33"
+                              fontWeight="400"
+                              fontFamily="InterRegular"
+                            >
+                              {header}
+                            </Text>
+                            <Img src={sort_icon} alt="sort_icon" />
+                          </Flex>
+                        </Th>
+                      ))}
+                    </Tr>
+                  </Thead>
 
-              <Tbody>
-                {attendance.map((item, index) => (
-                  <Tr key={index}>
-                    <Td fontWeight="medium">
-                      CRM - {item.employee_id}
-                    </Td>
-                    <Td>{item.employee_name}</Td>
-                    <Td>{formatDate(item.attendance_date)}</Td>
-                    <Td>{formatToIST(item.attendance_date, item.check_in_time)}</Td>
-                    <Td>{formatToIST(item.attendance_date, item.check_out_time)}</Td>
-                    <Td>
-                      {formatMinutesToHours(item.working_minutes)}
-                    </Td>
-                    <Td>{item.status}</Td>
-                    <Td>
-                      <Button
-                        size="sm"
-                        colorScheme="blue"
-                        onClick={() => handleImage(item.employee_id, item.attendance_date)
-                        }
-                      >
-                        View
-                      </Button>
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-            </TableContainer>
+                  <Tbody>
+                    {attendance.map((item, index) => (
+                      <Tr key={index}>
+                        <Td fontWeight="medium">
+                          CRM - {item.employee_id}
+                        </Td>
+                        <Td>{item.employee_name}</Td>
+                        <Td>{formatDate(item.attendance_date)}</Td>
+                        <Td>{formatToIST(item.attendance_date, item.check_in_time)}</Td>
+                        <Td>{formatToIST(item.attendance_date, item.check_out_time)}</Td>
+                        <Td>
+                          {formatMinutesToHours(item.working_minutes)}
+                        </Td>
+                        <Td>{item.status}</Td>
+                        <Td>
+                          <Button
+                            size="sm"
+                            colorScheme="blue"
+                            alignSelf={{ base: "stretch", md: "end" }}
+                            mt={{ base: 4, md: 0 }} 
+                            onClick={() => handleImage(item.employee_id, item.attendance_date)
+                            }
+                          >
+                            View
+                          </Button>
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
             </TableContainer>
           ) : ""
           }

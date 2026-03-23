@@ -5,6 +5,7 @@ import { Box, Button, Select, Text, SimpleGrid, VStack, useToast, FormControl, F
 import { GoHomeFill } from "react-icons/go";
 import useUsersapi from "../../Apis/GetUsersapi";
 import { Link } from "react-router-dom";
+import { FiUpload } from "react-icons/fi";
 
 const UploadSalarySlip = () => {
   const toast = useToast();
@@ -177,11 +178,47 @@ const UploadSalarySlip = () => {
 
           {/* File */}
           <FormControl isRequired>
-            <FormLabel {...labelStyles}>
-              Upload Salary Slip (PDF/Image)
-            </FormLabel>
-            <Input type="file" accept=".pdf,.jpg,.png" onChange={handleFileChange} p={1}/>
-          </FormControl>
+  <FormLabel {...labelStyles}>
+    Upload Salary Slip (PDF/Image)
+  </FormLabel>
+
+  <Box
+    border="2px dashed #CBD5E0"
+    borderRadius="lg"
+    p={6}
+    textAlign="center"
+    cursor="pointer"
+    _hover={{ borderColor: "blue.400" }}
+    position="relative"
+  >
+    {/* Hidden Input */}
+    <Input
+      type="file"
+      accept=".pdf,.jpg,.png"
+      onChange={handleFileChange}
+      position="absolute"
+      top="0"
+      left="0"
+      width="100%"
+      height="100%"
+      opacity="0"
+      cursor="pointer"
+    />
+
+    {/* UI Content */}
+    <VStack spacing={2}>
+      <FiUpload size={24} color="#4A5568" />
+      
+      <Text fontSize="sm" color="gray.600">
+        {file ? file.name : "Click to upload or drag & drop"}
+      </Text>
+
+      <Text fontSize="xs" color="gray.400">
+        PDF, JPG, PNG allowed
+      </Text>
+    </VStack>
+  </Box>
+</FormControl>
         </SimpleGrid>
 
         <Button colorScheme="blue" alignSelf="center" isLoading={isSubmitting} onClick={handleSubmit}>

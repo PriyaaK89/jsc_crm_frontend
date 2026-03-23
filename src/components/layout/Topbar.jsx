@@ -133,22 +133,26 @@ const Topbar = () => {
 
         <Divider my={2} />
 
-        <Button
-          size="sm"
-          rightIcon={<FiLogOut/>}
-          fontSize="xs"
-          variant="ghost"
-          w="100%"
-                   border="1px solid gray"
+      <Button
+  size="sm"
+  rightIcon={<FiLogOut />}
+  fontSize="xs"
+  variant="ghost"
+  w="100%"
+  border="1px solid gray"
+  textAlign="center"
+  justifyContent="center"   
 
-          justifyContent="flex-start"
-          onClick={logout}
-                   _hover={{bgColor:"#f4bfbf", border:"1px solid #e48f8f", color:"#971345"}}
+  onClick={logout}
 
-
-        >
-          Logout
-        </Button>
+  _hover={{
+    bgColor: "#f4bfbf",
+    border: "1px solid #e48f8f",
+    color: "#971345"
+  }}
+>
+  Logout
+</Button>
       </PopoverBody>
     </PopoverContent>
   </Portal>

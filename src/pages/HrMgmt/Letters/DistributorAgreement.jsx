@@ -28,6 +28,20 @@ const AddressForm = ({ data, onChange, index = 0, label }) => {
 
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} p={4}>
         <FormControl>
+          <FormLabel>NAME.</FormLabel>
+          <Input
+            value={data.name || ""}
+            onChange={(e) => onChange(index, "name", e.target.value)}
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>FATHER NAME.</FormLabel>
+          <Input
+            value={data.father_name || ""}
+            onChange={(e) => onChange(index, "father_name", e.target.value)}
+          />
+        </FormControl>
+        <FormControl>
           <FormLabel>PAN NO.</FormLabel>
           <Input
             value={data.pan_no || ""}
@@ -143,11 +157,14 @@ function DistributorAgreement() {
     aadhar_no: "",
     mobile_no: "",
     alt_mobile_no: "",
+    name:"",
+    father_name:"",
     upload_img: null,
   });
 
   const [partners, setPartners] = useState([
-    { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "", mobile_no: "", alt_mobile_no: "", upload_img: null },
+    { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "", mobile_no: "", alt_mobile_no: "",  name:"",
+    father_name:"", upload_img: null },
   ]);
   // image for partners 
   const handlePartnerImage = (index, file) => {
@@ -185,7 +202,8 @@ function DistributorAgreement() {
   const addPartner = () => {
     setPartners([
       ...partners,
-      { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "" },
+      { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "", name:"",
+    father_name:"", },
     ]);
   };
 
@@ -218,7 +236,7 @@ function DistributorAgreement() {
 
   };
 
-  
+
 
   return (
     <>
@@ -289,6 +307,17 @@ function DistributorAgreement() {
             </Select>
           </FormControl>
 
+          {formData?.firm_type ==="partnership" &&(
+            <FormControl>
+          <FormLabel>Upload Authority latter </FormLabel>
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleChange( "authoratyfile", e.target.files[0])}
+          />
+        </FormControl>
+          )}
+
           {/* Business Address */}
           <Box border="1px" borderColor="gray.900" gridColumn={{ base: "span 1", md: "span 2" }} p={4} borderRadius="lg">
 
@@ -297,6 +326,16 @@ function DistributorAgreement() {
               <Input
                 name="business_address"
                 value={formData.business_address || ""}
+                onChange={handleChange}
+
+              />
+
+            </FormControl>
+            <FormControl mt={3}>
+              <FormLabel>Business Tarritory</FormLabel>
+              <Input
+                name="tarritory"
+                value={formData.tarritory || ""}
                 onChange={handleChange}
 
               />
@@ -482,12 +521,7 @@ function DistributorAgreement() {
                 );
               })}
             </Select>
-            {/* <Input type="date"
 
-              name="firm_start_date"
-              value={formData.firm_since_date}
-              onChange={handleChange}
-            /> */}
           </FormControl>
 
           <FormControl>
@@ -508,6 +542,19 @@ function DistributorAgreement() {
               onChange={handleChange}
             // placeholder="Enter Firm Aadhar Card No."
             />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel> JURISDICTION AREA</FormLabel>
+            <Select
+              name="jurisdiction_district"
+              value={formData.jurisdiction_district || ""}
+              onChange={handleChange} placeholder="--please select--"
+            >
+              <option value="alwar">ALWAR</option>
+              <option value="jaipur">JAIPUR</option>
+            </Select>
+
           </FormControl>
 
 
@@ -607,6 +654,23 @@ function DistributorAgreement() {
               onChange={handleChange}
             />
           </FormControl>
+          <FormControl>
+            <FormLabel>Security Amount</FormLabel>
+            <Input
+              name="security_amount"
+              value={formData.security_amount}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>Credit Duration Period</FormLabel>
+            <Input
+              name="credit_duration_period"
+              value={formData.credit_duration_period}
+              onChange={handleChange}
+            />
+          </FormControl>
+
           <FormControl>
             <FormLabel>Firm Annual Turnover</FormLabel>
             <Input
@@ -710,10 +774,10 @@ function DistributorAgreement() {
 
               <Input
                 type="date"
-                name="approvering_date"   
+                name="approvering_date"
                 value={formData.approvering_date || ""}
                 onChange={handleChange}
-                max={new Date().toISOString().split("T")[0]} 
+                max={new Date().toISOString().split("T")[0]}
               />
             </FormControl>
             <FormControl>

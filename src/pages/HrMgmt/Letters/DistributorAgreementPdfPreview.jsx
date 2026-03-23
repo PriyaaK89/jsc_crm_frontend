@@ -82,15 +82,15 @@ const DistributorAgreementPreview = ({ isOpen, onClose, formData, partners, owne
 
   const [line1, line2, line3] = splitIntoThreeLines(address);
   // formate date 
- const formatDate = (date) => {
-  if (!date) return "";
+  const formatDate = (date) => {
+    if (!date) return "";
 
-  return new Date(date).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-};
+    return new Date(date).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="5xl">
@@ -113,8 +113,8 @@ const DistributorAgreementPreview = ({ isOpen, onClose, formData, partners, owne
 
                 <Box w="100%" textAlign="center" position="absolute" top="500" >
                   <Text fontSize="40px" fontWeight="bold" mt={7}>An ISO 9001:2008 Certified Company</Text>
-                  <Text fontSize="50px" fontWeight="black" letterSpacing="1px" color="#08750f" mt={6}>DISTRIBUTOR </Text>
-                  <Text fontSize="50px" fontWeight="black" letterSpacing="1px" color="#083d15">AGREEMENT FORM</Text>
+                  <Text fontSize="50px" fontWeight="black" letterSpacing="1px" color="#08750f" mt={6}>DISTRIBUTORSHIP </Text>
+                  <Text fontSize="50px" fontWeight="black" letterSpacing="1px" color="#083d15">AGREEMENT </Text>
                 </Box>
               </VStack>
               <Image src={bottomleft_img} position="absolute" bottom="0" left="0" w="350px" marginLeft="0px" marginBottom="0px" />
@@ -468,8 +468,8 @@ const DistributorAgreementPreview = ({ isOpen, onClose, formData, partners, owne
 
             {/* PAGE 4: DOCUMENT CHECKLIST */}
             <Box className="pdf-page" w="210mm" h="297mm" p="20mm">
-               <VStack justifyContent="space-between"  flexDirection="column" mt={14} w="100%">
-                <Text borderBottom="dotted" w="100%"> I AM AGREE {formData?.firm_name } DATE ON  {formatDate(formData?.approvering_date)} </Text><br />
+              <VStack justifyContent="space-between" flexDirection="column" mt={14} w="100%">
+                <Text borderBottom="dotted" w="100%"> I AM AGREE {formData?.firm_name} DATE ON  {formatDate(formData?.approvering_date)} </Text><br />
                 <Text borderBottom="dotted" w="100%"> BEHALF OF THIS AGREEMENT ALL CONDITIONS AND RULES REGULATIONI</Text>
               </VStack>
 
@@ -497,18 +497,23 @@ const DistributorAgreementPreview = ({ isOpen, onClose, formData, partners, owne
               </VStack>
 
               {formData?.firm_type === "partnership" && (
-                <VStack justifyContent="space-evenly" spacing={3} flexDirection="row" mb={5} >
+                <VStack justifyContent="space-evenly" spacing={3} flexDirection="row" mb={5}  >
 
                   {partners.map((partner, index) => (
                     partner?.upload_img && (
-                      <Box key={index} border="1px solid black"   borderRadius="lg">
+                      <Box key={index} border="1px solid black" borderRadius="lg" height="200px" overflow="hidden" width="170px">
 
-                        <Text fontSize="sm" bg="#d2f1f9" p={1}  borderTopRadius="lg">Partner {index + 1}</Text>
+                        <Text fontSize="sm" bg="#d2f1f9" p={1} borderTopRadius="lg">Partner {index + 1}</Text>
 
                         <img
                           src={URL.createObjectURL(partner.upload_img)}
                           alt={`partner-${index}`}
-                         width="200px" borderRadius="lg"
+                          style={{
+                            width: "100%",
+                            height: "calc(100% - 30px)", // minus header height
+                            objectFit: "cover"
+                          }}
+
                         />
 
                       </Box>
@@ -518,10 +523,7 @@ const DistributorAgreementPreview = ({ isOpen, onClose, formData, partners, owne
                 </VStack>
               )}
 
-
-
-
-              <Text fontWeight="bold" fontSize="18px"  mt={5}>REQUIRED DOCUMENTS (PHOTOCOPIES):</Text>
+              <Text fontWeight="bold" fontSize="18px" mt={5}>REQUIRED DOCUMENTS (PHOTOCOPIES):</Text>
               <VStack align="flex-start" spacing={2} fontSize="14px">
                 <Text textTransform="uppercase" mt={2}>1. Seeds Licence of the Firm.</Text>
                 <Text textTransform="uppercase">2. Pan Card of Firm/Proprietor.</Text>
@@ -531,12 +533,13 @@ const DistributorAgreementPreview = ({ isOpen, onClose, formData, partners, owne
                 <Text textTransform="uppercase">6. Letter Head of the Firm.</Text>
               </VStack>
 
-               <Text spacing={2} fontSize="14px" justifyContent="end" display="flex" mt={5}>
-                 SIGNATURE OF SR/SO/SM/AASM <br />{formData?.approver_name}
+              <Text spacing={2} fontSize="14px" justifyContent="end" display="flex" mt={5}>
+                SIGNATURE OF SR/SO/SM/AASM <br />{formData?.approver_name}
               </Text>
-             
+            </Box>
 
-          
+
+            <Box className="pdf-page" w="210mm" h="297mm" p="20mm">
 
               <Box p={4} border="1px solid black" bg="gray.50" mt="70px">
                 <Text fontWeight="bold">FOR OFFICE USE ONLY:</Text>
@@ -547,7 +550,10 @@ const DistributorAgreementPreview = ({ isOpen, onClose, formData, partners, owne
                 <Text mt={10}>Authorised Signatory: _________________________________________</Text>
                 <Text mt={10}> Signature of ASM/manager/ <br />(sales)/RM(sales)(with name): _________________________________</Text>
               </Box>
+
             </Box>
+
+
           </Box>
 
           <Flex p={4} justifyContent="center" bg="white" borderTop="1px solid #eee">

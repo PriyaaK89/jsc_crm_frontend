@@ -65,7 +65,6 @@ const EmpAttendance = () => {
  
 
   useEffect(() => {
-    fetchUsers();
 
     const today = new Date();
     setFilters((prev) => ({

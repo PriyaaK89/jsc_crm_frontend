@@ -5,18 +5,25 @@ import {
   FormControl,
   FormLabel,
   Input, useDisclosure,
-  Heading,
+  Heading, Flex,
   SimpleGrid,
   VStack,
   Select,
-  Divider
+  Divider,
+  Image,             
+  Modal,              
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  ModalCloseButton
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { CloseIcon } from "@chakra-ui/icons";
 import { GoHomeFill } from "react-icons/go";
 import DistributorAgreementPdfPreview from "./DistributorAgreementPdfPreview";
-import DistributorAgreementPreview from './DistributorAgreementpreview'
+import DistributorAgreementPreview from './DistributorAgreementpreview';
 import useUsersapi from "../../../Apis/GetUsersapi";
+import DistributorDocuments from "./DistributorDocuments";
 
 
 // ✅ Address Component
@@ -127,11 +134,21 @@ const AddressForm = ({ data, onChange, index = 0, label }) => {
     </Box>
   );
 };
-
+// -------------------------main function------------------------------------------------------
 function DistributorAgreement() {
+  
+    const handleChildData = (data) => {
+    console.log("Data from child:", data);
+    setFormData(data);
+  };
+ 
+
+ 
   const { users } = useUsersapi();
   const previewModal = useDisclosure();
   const generateModal = useDisclosure();
+
+
 
   const [firmtype, setFirmtype] = useState("");
   const [formData, setFormData] = useState({});
@@ -139,13 +156,13 @@ function DistributorAgreement() {
     { name: "", turnover: "" }
   ]);
 
-  const [firmAddress, setFirmAddress] = useState({
-    address: "",
-    state: "",
-    district: "",
-    tehsil: "",
-    pincode: "",
-  });
+  // const [firmAddress, setFirmAddress] = useState({
+  //   address: "",
+  //   state: "",
+  //   district: "",
+  //   tehsil: "",
+  //   pincode: "",
+  // });
 
   const [ownerAddress, setOwnerAddress] = useState({
     address: "",
@@ -157,21 +174,23 @@ function DistributorAgreement() {
     aadhar_no: "",
     mobile_no: "",
     alt_mobile_no: "",
-    name:"",
-    father_name:"",
+    name: "",
+    father_name: "",
     upload_img: null,
   });
 
   const [partners, setPartners] = useState([
-    { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "", mobile_no: "", alt_mobile_no: "",  name:"",
-    father_name:"", upload_img: null },
+    {
+      address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "", mobile_no: "", alt_mobile_no: "", name: "",
+      father_name: "", upload_img: null
+    },
   ]);
   // image for partners 
-  const handlePartnerImage = (index, file) => {
-    const updated = [...partners];
-    updated[index].upload_img = file;
-    setPartners(updated);
-  };
+  // const handlePartnerImage = (index, file) => {
+  //   const updated = [...partners];
+  //   updated[index].upload_img = file;
+  //   setPartners(updated);
+  // };
 
   // add mulyiple comapny
   const handleOtherCompanyChange = (index, field, value) => {
@@ -202,8 +221,10 @@ function DistributorAgreement() {
   const addPartner = () => {
     setPartners([
       ...partners,
-      { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "", name:"",
-    father_name:"", },
+      {
+        address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "", name: "",
+        father_name: "",
+      },
     ]);
   };
 
@@ -299,23 +320,20 @@ function DistributorAgreement() {
             >
               <option value="">Select</option>
               <option value="proprietorship">Proprietorship</option>
-              <option value="partnership">Partnership</option>
-              {/* <option value="llp">LLP</option>
+              <option value="partnership">Partnership</option>     
               <option value="private_limited">Private Limited</option>
-              <option value="public_limited">Public Limited</option>
-              <option value="opc">OPC</option> */}
             </Select>
           </FormControl>
 
-          {formData?.firm_type ==="partnership" &&(
+          {formData?.firm_type === "partnership" && (
             <FormControl>
-          <FormLabel>Upload Authority latter </FormLabel>
-          <Input
-            type="file"
-            accept="image/*"
-            onChange={(e) => handleChange( "authoratyfile", e.target.files[0])}
-          />
-        </FormControl>
+              <FormLabel>Upload Authority latter </FormLabel>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleChange("authoratyfile", e.target.files[0])}
+              />
+            </FormControl>
           )}
 
           {/* Business Address */}
@@ -586,6 +604,22 @@ function DistributorAgreement() {
             />
           </FormControl>
 
+          <FormControl >
+  <FormLabel>Seed License Expiry Date</FormLabel>
+
+  <Input
+    type="date"
+    name="seed_license_expiry"
+    value={formData.seed_license_expiry || ""}
+    onChange={(e) =>
+      setFormData((prev) => ({
+        ...prev,
+        seed_license_expiry: e.target.value
+      }))
+    }
+  />
+</FormControl>
+
           <FormControl>
             <FormLabel>Fertilizer License No.</FormLabel>
             <Input
@@ -720,7 +754,7 @@ function DistributorAgreement() {
                   />
 
                   {/* Turnover */}
-                  <Input ml={3}
+                  <Input ml={{base:0,md:3}}
                     placeholder="Turnover"
                     value={company.turnover}
                     onChange={(e) =>
@@ -757,7 +791,7 @@ function DistributorAgreement() {
                 onChange={(e) => {
                   setFormData((prev) => ({
                     ...prev,
-                    approver_name: e.target.value, // ✅ only ID
+                    approver_name: e.target.value,
                   }));
                 }}
               >
@@ -801,10 +835,15 @@ function DistributorAgreement() {
                 📷 Upload Approver Image
               </Button>
             </FormControl>
-
           </SimpleGrid>
         </Box>
 
+    
+      {/* upload documents  */}
+      <DistributorDocuments 
+       formData={formData}
+       onSendData={handleChildData}/>
+ 
       </Box>
 
       <Box textAlign="center">

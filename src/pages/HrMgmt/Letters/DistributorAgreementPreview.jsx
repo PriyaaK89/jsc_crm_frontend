@@ -19,6 +19,9 @@ import { Bold } from "lucide-react";
 const DistributorAgreementPreview = ({ isOpen, onClose, formData, employee, partners, ownerAddress, otherCompanies }) => {
 
 
+    //    for check firm type 
+    const isSolo = formData?.firm_type === "proprietorship";
+
     const handleClose = () => {
         onClose(true);
     };
@@ -605,7 +608,7 @@ const DistributorAgreementPreview = ({ isOpen, onClose, formData, employee, part
                                     <HStack mt={4} justify="space-between">
                                         <Box>
                                             <Text>Through its PROPRIETOR</Text>
-                                            <Text mt={6}>______________________</Text>
+                                            <Text mt={6}>______________________ </Text>
                                         </Box>
 
                                         <Box textAlign="right">
@@ -681,23 +684,10 @@ const DistributorAgreementPreview = ({ isOpen, onClose, formData, employee, part
 
                                                     ["Account No.", formData?.bank_account],
 
-                                                    [
-                                                      
-                                                            "Bank Guarantee, if any",
-                                                            
-                                                                 "Na"]
-                                                       
-
-                                                      ,  [
-                                                        [
-                                                            "Authority Letter for signing the Agreement (if applicable)",
-                                                            formData?.firm_type === "partnership"
-                                                                ? (formData?.authoratyfile || null)
-                                                                : "NA"
-                                                        ]
-                                                    ],
-
-                                                    ["Authority Letter for signing the Agreement", "NA"]
+                                                    ["Bank Guarantee, if any", "Na"]  ,
+                                                    [ "Authority Letter for signing the Agreement (if applicable)",
+                                                        isSolo ? "NA" : "YES" ],
+                                   
                                                 ].map((row, i) => (
                                                     <Tr key={i}>
                                                         <Td border="1px solid black" p="6px" w="50%">

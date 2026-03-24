@@ -144,7 +144,7 @@ function UserLogin() {
                 top="50%"
                 right="12px"
                 transform="translateY(-50%)"
-                cursor="pointer"
+                cursor="pointer" zIndex={11}
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

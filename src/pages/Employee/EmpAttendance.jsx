@@ -1,35 +1,13 @@
 import React, { useEffect, useState, Fragment } from "react";
 import {
-  Box,
-  Button,
-  Select,
-  Text,
-  SimpleGrid,
-  FormControl,
-  FormLabel,
-  VStack,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Card,
-  CardHeader,
-  CardBody,
-  Heading,
-  Spinner,
-  Input,
-  Flex,
-  Img,
-  useDisclosure,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  HStack,
-  TableContainer
+    Box, Button, Select, Text, SimpleGrid, FormControl, FormLabel, VStack, Table, Thead, Tbody, Tr, Th, Td, Card, CardHeader, CardBody, Heading, Spinner,
+    Input, Flex, Img, useDisclosure, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack, TableContainer
 } from "@chakra-ui/react";
-
+import { Badge } from "@chakra-ui/react";
+import { useMemo } from "react";
+import { InputGroup, InputRightElement } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
+import { SearchIcon } from "@chakra-ui/icons";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import sort_icon from "../../assets/sort.svg";
@@ -38,399 +16,355 @@ import { GoHomeFill } from "react-icons/go";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import useUsersapi from "../../Apis/GetUsersapi";
 
-
-
 const EmpAttendance = () => {
-  const {users,fetchUsers}=useUsersapi();
-  // const [users, setUsers] = useState([]);
-  const [attendance, setAttendance] = useState([]);
-  const [empRep, setEmpRep] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(null);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-
-
-  const [filters, setFilters] = useState({
-    userId: "",
-    startDate: "",
-    endDate: "",
-    month: "",
-    year: "",
-  });
-
-  // Fetch Users
- 
-
-  useEffect(() => {
-    fetchUsers();
-
-    const today = new Date();
-    setFilters((prev) => ({
-      ...prev,
-      month: today.getMonth() + 1,
-      year: today.getFullYear(),
-    }));
-  }, []);
-  const formatToIST = (date, time) => {
-    if (!date || !time) return "-";
-
-    const onlyDate = date.split("T")[0]; // 2026-02-25
-    const utcDateTime = new Date(`${onlyDate}T${time}Z`); // treat as UTC
-
-    return utcDateTime.toLocaleTimeString("en-IN", {
-      timeZone: "Asia/Kolkata",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
+    const { users } = useUsersapi();
+    const [attendance, setAttendance] = useState([]);
+    const memoizedData = useMemo(() => attendance, [attendance]);
+    const [loading, setLoading] = useState(false);
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState(search);
+    const [filters, setFilters] = useState({
+        userId: "",
+        startDate: "",
+        endDate: "",
     });
-  };
-  const handleImage = (id, date) => {
-    setSelectedUserId(id);
-    setSelectedDate(date);
-    onOpen();
 
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total_pages: 1,
+    });
 
-  }
+    const [selectedUserId, setSelectedUserId] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(null);
 
-  const handleViewAttendance = async () => {
-    if (!filters.userId) {
-      alert("Please select user");
-      return;
-    }
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
-    setLoading(true);
-    setAttendance([]);
-    setEmpRep([]);
+    //  Fetch API
+    const fetchAttendance = async (page = 1) => {
+        setLoading(true);
 
-    try {
-      const attendanceRes = await API.get(
-        `${API_ENDPOINTS.get_Emp_Attendance}/${filters.userId}`,
-        {
-          params: {
-            start_date: filters.startDate,
-            end_date: filters.endDate,
-          },
+        try {
+            const res = await API.get(
+                API_ENDPOINTS.get_Emp_Attendance_filter_search,
+                {
+                    params: {
+                        employee_id: filters.userId || null,
+                        search: debouncedSearch || null, // change here
+                        start_date: filters.startDate || null,
+                        end_date: filters.endDate || null,
+                        page,
+                        limit: pagination.limit,
+                    },
+                }
+            );
+
+            if (res.status === 200) {
+                setAttendance(res.data.attendance || []);
+
+                setPagination({
+                    page: res.data.pagination.page,
+                    limit: res.data.pagination.limit,
+                    total_pages: res.data.pagination.total_pages,
+                });
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
-      );
+    };
 
-      if (attendanceRes.status === 200) {
-        setAttendance(attendanceRes.data.attendance || []);
-      }
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 500); // 500ms delay
 
-      const summaryRes = await API.get(
-        `${API_ENDPOINTS.get_Emp_Attendance_Summary}/${filters.userId}`,
-        {
-          params: {
-            month: filters.month,
-            year: filters.year,
-          },
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    //  ONLY ON LOAD
+    // useEffect(() => {
+    //     fetchUsers();
+    // }, []);
+
+    //FILTER CHANGE ONLY
+    useEffect(() => {
+        fetchAttendance(1);
+    }, [debouncedSearch, filters.userId, filters.startDate, filters.endDate]);
+
+    const handleImage = (id, date) => {
+        setSelectedUserId(id);
+        setSelectedDate(date);
+        onOpen();
+    };
+
+    // 🧠 Utils
+    const formatDate = (date) =>
+        date ? new Date(date).toISOString().split("T")[0] : "-";
+
+    const formatTime = (date, time) => {
+        if (!date || !time) return "-";
+        const d = new Date(`${date.split("T")[0]}T${time}Z`);
+        return d.toLocaleTimeString("en-IN", {
+            timeZone: "Asia/Kolkata",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        });
+    };
+
+    const formatMinutes = (min) => {
+        if (!min) return "0h 0m";
+        return `${Math.floor(min / 60)}h ${min % 60}m`;
+    };
+
+
+    const formatStatus = (status) => {
+        if (!status) return "-";
+
+        switch (status) {
+            case "present":
+                return "Present";
+            case "day_over":
+                return "Day Over";
+            case "absent":
+                return "Absent";
+            case "leave":
+                return "On Leave";
+            default:
+                return status;
         }
-      );
+    };
+    const getStatusColor = (status) => {
+        switch (status) {
+            case "present":
+                return "green";
+            case "day_over":
+                return "orange";
+            case "absent":
+                return "red";
+            case "leave":
+                return "purple";
+            default:
+                return "gray";
+        }
+    };
 
-      if (summaryRes.status === 200 && summaryRes.data?.summary) {
-        setEmpRep([summaryRes.data.summary]);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    return (
+        <>
+            <EmployeeImageModal
+                isOpen={isOpen}
+                onClose={onClose}
+                selectedUserId={selectedUserId}
+                selectedDate={selectedDate}
+            />
 
+            <Box bg="white" p={6} borderRadius="md">
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    const date = new Date(dateString);
-
-    return `${date.getFullYear()}-${String(
-      date.getMonth() + 1
-    ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-  };
-
-  const formatMinutesToHours = (minutes) => {
-    if (!minutes) return "0h 0m";
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    return `${hours}h ${remainingMinutes}m`;
-  };
-
-  const labelStyles = {
-    fontSize: "12px",
-    color: "#686868",
-    marginBottom: "3px",
-  };
-
-  return (
-    <>
-      <EmployeeImageModal isOpen={isOpen} onClose={onClose} selectedUserId={selectedUserId} selectedDate={selectedDate} />
-      <Box bg="white" p={6} borderRadius="md">
-        <HStack justifyContent="space-between" flexWrap="wrap">
-          <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">
-                <GoHomeFill color="#5570F1" />
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-
-            <BreadcrumbItem isCurrentPage>
-              <BreadcrumbLink fontSize="13px">
-                Attendace Report
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
-        </HStack>
-
-        <Text fontSize="lg" fontWeight="bold" mb={6}>
-          Attendace Report
-        </Text>
-
-
-
-        <VStack spacing={6} align="stretch">
-          {/* Filters */}
-          <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4}>
-            <FormControl>
-              <FormLabel {...labelStyles}>User Name</FormLabel>
-              <Select
-                placeholder="Select User"
-                value={filters.userId}
-                onChange={(e) =>
-                  setFilters({ ...filters, userId: e.target.value })
-                }
-              >
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl>
-              {/* <FormLabel {...labelStyles}>Start Date</FormLabel> */}
-              {/* <Input
-                type="date"
-                value={filters.startDate}
-                onChange={(e) =>
-                  setFilters({ ...filters, startDate: e.target.value })
-                }
-              /> */}
-              <CustomDatePicker
-              label="Start Date"
-              name="startDate"
-              value={filters.startDate}
-              onChange={(date)=>{
-                setFilters((prev)=>({
-                    ...prev,
-                    startDate: date
-                }))
-              }}
-              />
-            </FormControl>
-
-            <FormControl>
-              {/* <FormLabel {...labelStyles}>End Date</FormLabel> */}
-              {/* <Input
-                type="date"
-                value={filters.endDate}
-                onChange={(e) =>
-                  setFilters({ ...filters, endDate: e.target.value })
-                }
-              /> */}
-               <CustomDatePicker
-              label="End Date"
-              name="endDate"
-              value={filters.endDate}
-              onChange={(date)=>{
-                setFilters((prev)=>({
-                    ...prev,
-                    endDate: date
-                }))
-              }}
-              />
-
-            </FormControl>
-
-            <Button
-              colorScheme="blue"
-              alignSelf="end"
-              isLoading={loading}
-              onClick={handleViewAttendance}
-            >
-              View
-            </Button>
-          </SimpleGrid>
-        </VStack>
-
-
-        {/* Summary Cards */}
-        {empRep.length > 0 && (
-          <SimpleGrid columns={{ base: 1, md: 5 }} spacing={6} mt={5} mb={5} >
-            {empRep.map((emp, index) => (
-              <Fragment key={index}>
-                <Card border="1px solid" borderColor="gray.300">
-                  <CardHeader bg="green.100">
-                    <Heading size="sm" textAlign="center" lineHeight="1.4">
-                      Full Days
-                    </Heading>
-                  </CardHeader>
-                  <CardBody>
-                    <Text textAlign="center">{emp.full_days}</Text>
-                  </CardBody>
-                </Card>
-
-                <Card border="1px solid" borderColor="gray.300">
-                  <CardHeader bg="yellow.100">
-                    <Heading size="sm" textAlign="center" lineHeight="1.4">
-                      Half Days
-                    </Heading>
-                  </CardHeader>
-                  <CardBody>
-                    <Text textAlign="center">{emp.half_days}</Text>
-                  </CardBody>
-                </Card>
-
-                <Card border="1px solid" borderColor="gray.300">
-                  <CardHeader bg="red.100">
-                    <Heading size="sm" textAlign="center" lineHeight="1.4">
-                      Absent Days
-                    </Heading>
-                  </CardHeader>
-                  <CardBody>
-                    <Text textAlign="center">{emp.absent_days}</Text>
-                  </CardBody>
-                </Card>
-
-                <Card border="1px solid" borderColor="gray.300">
-                  <CardHeader bg="blue.100">
-                    <Heading size="sm" textAlign="center" lineHeight="1.4">
-                      Leave Days
-                    </Heading>
-                  </CardHeader>
-                  <CardBody>
-                    <Text textAlign="center">{emp.leave_days}</Text>
-                  </CardBody>
-                </Card>
-
-                <Card border="1px solid" borderColor="gray.300">
-                  <CardHeader bg="purple.100">
-                    <Heading size="sm" textAlign="center" lineHeight="1.4">
-                      Total Work Days
-                    </Heading>
-                  </CardHeader>
-                  <CardBody>
-                    <Text textAlign="center">
-                      {emp.total_working_days}
-                    </Text>
-                  </CardBody>
-                </Card>
-              </Fragment>
-            ))}
-          </SimpleGrid>
-        )}
-
-        {/* Attendance Table */}
-
-        <Box
-          bg="white"
-          borderRadius="md">
-          
-          {loading ? (
-            <Flex justify="center" align="center" py={10}>
-              <Spinner size="lg" />
-            </Flex>
-          ) : attendance.length > 0 ? (
-            <TableContainer>
-            <TableContainer>
-            <Table
-                borderWidth="1px"
-         borderColor="gray.200"
-         borderRadius="lg"
-              variant="striped"
-              colorScheme="gray"
-              size="sm"
-              minW="900px"
-              className="productsTable"
-            >
-
-
-              <Thead>
-                <Tr>
-                  {[
-                    "Employee Id",
-                    "Employee Name",
-                    "Attendance Date",
-                    "Login Time",
-                    "Logout Time",
-                    "Working Hours",
-                    "Status",
-                    "Action",
-                  ].map((header, index) => (
-                    <Th
-                      key={index}
-                      fontSize="14px"
-                      fontWeight="500"
-                      color="#2C2D33"
-                      textTransform="capitalize"
-                      borderColor="#D9D9D9"
-                    >
-                      <Flex align="center" gap="7px">
-                        <Text
-                          fontSize="14px"
-                          color="#2C2D33"
-                          fontWeight="400"
-                          fontFamily="InterRegular"
+                {/* Header */}
+                <Breadcrumb mb={4}>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href="/dashboard">
+                            <GoHomeFill color="blue" />
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbItem isCurrentPage>
+                        <BreadcrumbLink
+                            as={Link}
+                            to="/report/emp-attendance-report"
+                            cursor="pointer"
                         >
-                          {header}
-                        </Text>
-                        <Img src={sort_icon} alt="sort_icon" />
-                      </Flex>
-                    </Th>
-                  ))}
-                </Tr>
-              </Thead>
+                            Attendance Report
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                </Breadcrumb>
 
-              <Tbody>
-                {attendance.map((item, index) => (
-                  <Tr key={index}>
-                    <Td fontWeight="medium">
-                      CRM - {item.employee_id}
-                    </Td>
-                    <Td>{item.employee_name}</Td>
-                    <Td>{formatDate(item.attendance_date)}</Td>
-                    <Td>{formatToIST(item.attendance_date, item.check_in_time)}</Td>
-                    <Td>{formatToIST(item.attendance_date, item.check_out_time)}</Td>
-                    <Td>
-                      {formatMinutesToHours(item.working_minutes)}
-                    </Td>
-                    <Td>{item.status}</Td>
-                    <Td>
-                      <Button
+                <Heading size="md" mb={6}>
+                    Attendance Report
+                </Heading>
+
+                {/* 🔍 Filters */}
+                <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4} mb={6}>
+
+                    <FormControl >
+                        <FormLabel>Search Employee</FormLabel>
+
+                        <InputGroup>
+                            <Input
+                                placeholder="Search Employee..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                pr="40px" // space for icon
+                            />
+
+                            <InputRightElement pointerEvents="none">
+                                <SearchIcon color="gray.400" />
+                            </InputRightElement>
+                        </InputGroup>
+                    </FormControl>
+
+                    <FormControl>
+                        <FormLabel>Employee List</FormLabel>
+                        <Select
+                            placeholder="Select Employee"
+                            value={filters.userId}
+                            onChange={(e) =>
+                                setFilters({ ...filters, userId: e.target.value })
+                            }
+                        >
+                            {users.map((u) => (
+                                <option key={u.id} value={u.id}>
+                                    {u.name}
+                                </option>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <FormControl>
+
+                        <CustomDatePicker
+                            label="Start Date"
+                            value={filters.startDate}
+                            onChange={(d) =>
+                                setFilters((p) => ({ ...p, startDate: d }))
+                            }
+                        />
+                    </FormControl>
+
+
+                    <FormControl>
+
+                        <CustomDatePicker
+                            label="End Date"
+                            value={filters.endDate}
+                            onChange={(d) =>
+                                setFilters((p) => ({ ...p, endDate: d }))
+                            }
+                        />
+                    </FormControl>
+                    {/* <FormControl mt={5}>
+                        <Button onClick={() => fetchAttendance(1)}>
+                            Refresh
+                        </Button>
+                    </FormControl> */}
+                </SimpleGrid>
+
+                {/* 📊 Table */}
+                <Box bg="white" borderRadius="md" boxShadow="sm" border="1px solid #e5e5e5" width="100%">
+                    {loading ? (
+                        <Flex justify="center" py={10}>
+                            <Spinner />
+                        </Flex>
+                    )  : (
+                        <Box overflowX="auto"  >
+                            <TableContainer overflowX="auto" whiteSpace="nowrap" sx={{
+                                "&::-webkit-scrollbar": { width: "8px", height: '8px' },
+                                "&::-webkit-scrollbar-thumb": {
+                                    width: "8px", backgroundColor: "#7A7A7A", borderRadius: "4px",
+                                },
+                                "&::-webkit-scrollbar-track": {
+                                    background: "#E8E8E8", borderRadius: "4px",
+                                },
+                            }}>
+                                <Table variant="striped" size={{ base: "md", md: "sm" }} minW="1200px">
+                                    <Thead>
+                                        <Tr>
+                                            {["Serial No.",
+                                                "Employee Id",
+                                                "Name",
+                                                "Date",
+                                                "Login",
+                                                "Logout",
+                                                "Hours",
+                                                "Status",
+                                                "Attendance Time",
+                                                "Action",
+                                            ].map((h) => (
+                                                <Th key={h}  >
+                                                    <Flex gap={2} pt={3} pb={3}>
+                                                        <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' overflow="hidden">{h}</Text>
+
+                                                        <Img src={sort_icon} />
+                                                    </Flex>
+                                                </Th>
+                                            ))}
+                                        </Tr>
+                                    </Thead>
+                                   
+
+                                    <Tbody>
+                                          {attendance.length === 0 ? (
+            <Tr>
+                <Td colSpan={10} textAlign="center" py={6}>
+                    <Text fontSize="md" color="gray.500">
+                        No Data Found
+                    </Text>
+                </Td>
+            </Tr>
+        ) : (
+                                        memoizedData.map((item, i) => (
+                                            <Tr key={i}>
+                                                <Td>{i + 1}</Td>
+                                                <Td>CRM-{item.employee_id}</Td>
+                                                <Td>{item.employee_name}</Td>
+                                                <Td>{formatDate(item.attendance_date)}</Td>
+                                                <Td>{formatTime(item.attendance_date, item.check_in_time)}</Td>
+                                                <Td>{formatTime(item.attendance_date, item.check_out_time)}</Td>
+                                                <Td>{formatMinutes(item.working_minutes)}</Td>
+                                                <Td>
+                                                    <Badge colorScheme={getStatusColor(item.status)}
+                                                        variant="subtle" px={2} py={1}
+                                                        borderRadius="md" >
+                                                        {formatStatus(item.status)}
+                                                    </Badge>
+                                                </Td>
+                                                <Td>{item.attendance_unit}</Td>
+                                                <Td>
+                                                    <Button size="xs" colorScheme="blue" onClick={() =>
+                                                        handleImage(item.employee_id, item.attendance_date)
+
+                                                    }>
+                                                        View
+                                                    </Button>
+                                                </Td>
+                                            </Tr>
+                                        )))}
+                                    </Tbody>
+                                </Table>
+                            </TableContainer>
+                        </Box>
+                    )}
+                </Box>
+
+                {/* 🔄 Pagination */}
+                <HStack justify="end" mt={4}>
+                    <Button
                         size="sm"
-                        colorScheme="blue"
-                        onClick={() => handleImage(item.employee_id, item.attendance_date)
-                        }
-                      >
-                        View
-                      </Button>
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-            </TableContainer>
-            </TableContainer>
-          ) : ""
-          }
-        </Box>
-      </Box>
-    </>
+                        onClick={() => fetchAttendance(pagination.page - 1)}
+                        isDisabled={pagination.page === 1}
+                    >
+                        Prev
+                    </Button>
 
-  );
+                    <Text>
+                        {pagination.page} / {pagination.total_pages}
+                    </Text>
+
+                    <Button
+                        size="sm"
+                        onClick={() => fetchAttendance(pagination.page + 1)}
+                        isDisabled={pagination.page === pagination.total_pages}
+                    >
+                        Next
+                    </Button>
+                </HStack>
+            </Box>
+        </>
+    );
 };
+
+
 
 export default EmpAttendance;

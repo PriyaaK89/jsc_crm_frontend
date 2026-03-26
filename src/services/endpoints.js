@@ -32,6 +32,6 @@ export const API_ENDPOINTS = {
   digio_send_eSign: "letters/send-esign",
   check_digio_Status: `letters/document-status`,
   download_Signed_Letter_digio: `download-signed-pdf`,
-  set_expense_allocation:  `set-expense-allocation`
-  
+  set_expense_allocation:  `set-expense-allocation`,
+  get_uploaded_exp: `admin-expense-summary`,
 };

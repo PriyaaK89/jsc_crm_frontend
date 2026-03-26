@@ -300,6 +300,8 @@ const AddEmployee = () => {
     }
   };
 
+  
+
   const fetchDepartmentList = async () => {
     try {
       const response = await API.get(API_ENDPOINTS?.get_department);
@@ -866,7 +868,7 @@ const AddEmployee = () => {
                 fontSize="13px"
                 color="gray.400"
                 placeholder="Select Week Off"
-                value={formData.week_off}
+                value={formData.week_off || "Sunday"}
                 onChange={handleChange}
               >
                 <option value="Monday">Monday</option>
@@ -911,12 +913,13 @@ const AddEmployee = () => {
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
             <FormControl>
               <FormLabel {...lableStyles}>Login Time</FormLabel>
-              <Input type="time" name="login_time" onChange={handleChange} />
+              <Input type="time" name="login_time" onChange={handleChange} value={formData.login_time || "10:00:P.M"}
+ />
             </FormControl>
 
             <FormControl>
               <FormLabel {...lableStyles}>Logout Time</FormLabel>
-              <Input type="time" name="logout_time" onChange={handleChange} />
+              <Input type="time" name="logout_time" onChange={handleChange} value={formData.logout_time}/>
             </FormControl>
 
             <FormControl>

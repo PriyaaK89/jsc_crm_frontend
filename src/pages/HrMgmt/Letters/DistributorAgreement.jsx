@@ -15,11 +15,12 @@ import { AddIcon } from "@chakra-ui/icons";
 import { CloseIcon } from "@chakra-ui/icons";
 import { GoHomeFill } from "react-icons/go";
 import DistributorAgreementPdfPreview from "./DistributorAgreementPdfPreview";
-import DistributorAgreementPreview from './DistributorAgreementpreview'
+
 import useUsersapi from "../../../Apis/GetUsersapi";
+import DistributorAgreementPreview from "./DistributorAgreementPreview";
 
 
-// ✅ Address Component
+//  Address Component
 const AddressForm = ({ data, onChange, index = 0, label }) => {
 
   return (
@@ -170,14 +171,14 @@ function DistributorAgreement() {
     setOtherCompanies(updated);
   };
 
-  // ✅ Partner change
+  //  Partner change
   const handlePartnerChange = (index, field, value) => {
     const updated = [...partners];
     updated[index][field] = value;
     setPartners(updated);
   };
 
-  // ✅ Add Partner
+  //  Add Partner
   const addPartner = () => {
     setPartners([
       ...partners,
@@ -185,7 +186,7 @@ function DistributorAgreement() {
     ]);
   };
 
-  // ✅ Remove Partner
+  //  Remove Partner
   const removePartner = (index) => {
     const updated = partners.filter((_, i) => i !== index);
     setPartners(updated);

@@ -33,8 +33,7 @@ import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg'
 import { useState, useContext, useEffect ,memo } from "react";
 import { NavLink, useLocation,useNavigate} from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
-
-
+import { MdUploadFile } from "react-icons/md";
 
 const Newsidebar = () => {
   const location = useLocation();
@@ -109,6 +108,7 @@ const Newsidebar = () => {
         {label: "Employee List", path: "/hr-mgmt/view-employee-list",icon: RiUser3Line,},
         {label: "Create Job Role", path: "/hr-mgmt/roles/add-job-role",icon: HiUserGroup,},
         {label: "Create Department",path: "/hr-mgmt/dept/add-department",icon: MdAccountTree,},
+        {label: "Upload Employee Expenses", path: "/upload-employee-expenses", icon: MdUploadFile },
         {label:"Upload Salary Slip",path:'/hr-mgmt/upload-emp-salary',icon: RiFileList3Line,},
        
 

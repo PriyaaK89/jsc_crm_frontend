@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Breadcrumb,BreadcrumbItem,BreadcrumbLink, HStack } from "@chakra-ui/react";
+import { Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import { Link } from "react-router-dom";
+import useUsersapi from "../../Apis/GetUsersapi";
+
 
 const EditEmployee = () => {
     const { empId } = useParams();
@@ -14,13 +16,14 @@ const EditEmployee = () => {
     const [loading, setLoading] = useState(false);
     const [departments, setDepartments] = useState([]);
     const [jobRole, setJobRole] = useState([]);
+    const { users = [], fetchUsers } = useUsersapi();
 
     const [formData, setFormData] = useState({
+        user_id: "",
         name: "",
         gender: "",
         contact_no: "",
         date_of_birth: "",
-
         address_line1: "",
         address_line2: "",
         country: "India",
@@ -37,7 +40,7 @@ const EditEmployee = () => {
 
         department_id: "",
         job_role_id: "",
-        job_role_name:"",
+        job_role_name: "",
         date_of_joining: "",
         salary: "",
 
@@ -89,6 +92,9 @@ const EditEmployee = () => {
                     ...data,
                     date_of_birth: formatDateForApi(data.date_of_birth),
                     date_of_joining: formatDateForApi(data.date_of_joining),
+                    login_time: data.login_time || "10:00",
+                    logout_time: data.logout_time || "06:00",
+                    week_off: data.week_off || "Sunday"
                 });
 
             }
@@ -121,28 +127,30 @@ const EditEmployee = () => {
     }, []);
 
     /* ---------------- HANDLE CHANGE ---------------- */
-   const handleChange = (e) => {
-   const { name, value } = e.target;
+    const handleChange = (e) => {
+        const { name, value } = e.target;
 
-   setFormData((prev) => ({
-      ...prev,
-      [name]: value
-   }));
-};
-     const handleJobRole = (e) => {
-        const {name,value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+    const handleJobRole = (e) => {
+        const { name, value } = e.target;
         const label = e.target.selectedOptions[0].text;
-        
-      
+
+
         setFormData(prev => ({
             ...prev,
-            job_role_id:value,
+            job_role_id: value,
             job_role_name: label,
         }));
     };
 
-    
 
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
     /* ---------------- DEPARTMENT CHANGE ---------------- */
     const handleDepartmentChange = (e) => {
@@ -170,6 +178,10 @@ const EditEmployee = () => {
                 job_role_id: Number(formData.job_role_id),
                 date_of_birth: formatDateForApi(formData.date_of_birth),
                 date_of_joining: formatDateForApi(formData.date_of_joining),
+                  approver_name: formData.approver_name, 
+                login_time: formData.login_time || "10:00",
+                logout_time: formData.logout_time || "06:00",
+                weak_off: formData.week_off || "Sunday",
                 salary: Number(formData.salary),
                 travelling_allowance_per_km: Number(formData.travelling_allowance_per_km),
                 avg_travel_km_per_day: Number(formData.avg_travel_km_per_day),
@@ -210,16 +222,16 @@ const EditEmployee = () => {
     /* ---------------- UI ---------------- */
     return (
         <Box p={6} bg="white" borderRadius="10px" boxShadow="sm" >
-           <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
-                                 <BreadcrumbItem>
-                                   <BreadcrumbLink as={Link} to='/hr-mgmt/view-employee-list' fontSize="13px">Employee List</BreadcrumbLink>
-                                 </BreadcrumbItem>
-                     
-                                 <BreadcrumbItem>
-                                   <BreadcrumbLink isCurrentPage  color='#8B8D97' fontSize='13px'>Edit Employee</BreadcrumbLink>
-                                 </BreadcrumbItem>
-                     
-                               </Breadcrumb>
+            <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+                <BreadcrumbItem>
+                    <BreadcrumbLink as={Link} to='/hr-mgmt/view-employee-list' fontSize="13px">Employee List</BreadcrumbLink>
+                </BreadcrumbItem>
+
+                <BreadcrumbItem>
+                    <BreadcrumbLink isCurrentPage color='#8B8D97' fontSize='13px'>Edit Employee</BreadcrumbLink>
+                </BreadcrumbItem>
+
+            </Breadcrumb>
             <Text fontSize="2xl" fontWeight="bold" mb={6}>
                 Edit Employee
             </Text>
@@ -248,12 +260,12 @@ const EditEmployee = () => {
                     </FormControl>
 
                     <CustomDatePicker label="Date of Birth" name="date_of_birth" value={formData.date_of_birth} onChange=
-                    {(date)=>{
-                        setFormData((prev)=>({
-                            ...prev,
-                            date_of_birth: date
-                        }))
-                    }} />
+                        {(date) => {
+                            setFormData((prev) => ({
+                                ...prev,
+                                date_of_birth: date
+                            }))
+                        }} />
                     <FormControl>
                         <FormLabel {...labelStyles}>Email</FormLabel>
                         <Input name="email" value={formData.email} onChange={handleChange} />
@@ -354,7 +366,7 @@ const EditEmployee = () => {
                             onChange={handleJobRole}
                         >
                             {jobRole.map((r) => (
-                                
+
                                 <option key={r.id} value={r.id} >{r.name}</option>
                             ))}
                         </Select>
@@ -367,10 +379,10 @@ const EditEmployee = () => {
                         label="Date of Joining"
                         name="date_of_joining"
                         value={formData.date_of_joining}
-                        onChange={(date)=>{
-                            setFormData((prev)=>({
-                             ...prev,
-                             date_of_joining: date
+                        onChange={(date) => {
+                            setFormData((prev) => ({
+                                ...prev,
+                                date_of_joining: date
                             }))
                         }}
                     />
@@ -412,14 +424,14 @@ const EditEmployee = () => {
 
                     <FormControl>
                         <FormLabel {...labelStyles}>Week Off</FormLabel>
-                        <Select name="week_off" fontSize="13px" color="gray.400" placeholder="Select Week Off" value={formData.week_off} onChange={handleChange} >
+                        <Select name="week_off" fontSize="13px" color="gray.400" placeholder="Select Week Off" value={formData.week_off || "Sunday"} onChange={handleChange} >
                             <option value="Monday">Monday</option>
                             <option value="Tuesday">Tuesday</option>
                             <option value="Wednesday">Wednesday</option>
                             <option value="Thursday">Thursday</option>
                             <option value="Friday">Friday</option>
-                            <option value="Saturday">Saturday</option>
-                            <option value="Sunday">Sunday</option>
+                            <option  value="Saturday">Saturday</option>
+                            <option  value="Sunday">Sunday</option>
                         </Select>
                     </FormControl>
 
@@ -435,7 +447,27 @@ const EditEmployee = () => {
 
                     <FormControl>
                         <FormLabel {...labelStyles}>Approver Name</FormLabel>
-                        <Input name="approver_name" value={formData.approver_name} onChange={handleChange} />
+                        <Select
+                            placeholder="Select User"
+                            value={formData.user_id}
+                            onChange={(e) => {
+                                const selectedUser = users.find(
+                                    (u) => u.id === Number(e.target.value)
+                                );
+
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    user_id: e.target.value,
+                                    approver_name: selectedUser?.name || "",
+                                }));
+                            }}
+                        >
+                            {users.map((user) => (
+                                <option key={user.id} value={user.id}>
+                                    {user.name}
+                                </option>
+                            ))}
+                        </Select>
                     </FormControl>
 
 
@@ -448,12 +480,12 @@ const EditEmployee = () => {
 
                     <FormControl>
                         <FormLabel>Login Time</FormLabel>
-                        <Input type="time" name="login_time" value={formData?.login_time} onChange={handleChange} />
+                        <Input type="time" name="login_time" value={formData?.login_time ||"10:00"} onChange={handleChange} />
                     </FormControl>
 
                     <FormControl>
                         <FormLabel>Logout Time</FormLabel>
-                        <Input type="time" name="logout_time" value={formData?.logout_time} onChange={handleChange} />
+                        <Input type="time" name="logout_time" value={formData?.logout_time || "06:00"} onChange={handleChange} />
                     </FormControl>
                     <FormControl>
                         <FormLabel {...labelStyles}>Authentication Amount</FormLabel>

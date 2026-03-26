@@ -9,15 +9,22 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
-  DrawerHeader,
   DrawerBody,
   VStack,
   Button,
   Collapse,
   Icon,
   Box,
+  Divider,
   Image,
- useToast
+ useToast,
+ PopoverTrigger,
+ PopoverContent,
+ PopoverBody,
+ PopoverArrow,
+ Popover,
+ Portal
+
   
 } from "@chakra-ui/react";
 
@@ -27,7 +34,7 @@ import {
   ChevronRightIcon,
 } from "@chakra-ui/icons";
 
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation ,useNavigate, useNavigation} from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
 import {
@@ -95,7 +102,8 @@ import {
 
 import { FaUser, FaUserPlus, FaWallet } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
-import logo1 from "../../assets/images/logo1.jpg"
+import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg'
+
 
 
 
@@ -108,6 +116,7 @@ const MobileTopbar = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
     const toast = useToast();
+    const navigate = useNavigate();
   
 
   const onOpen = () => setIsDrawerOpen(true);
@@ -488,8 +497,60 @@ const MobileTopbar = () => {
         <Text fontWeight="bold">Dashboard</Text>
 
         <Spacer />
-
-        <Avatar name={auth?.user?.name || "User"} size="sm" />
+            <Popover placement="bottom-end">
+             <PopoverTrigger>
+               <Avatar name={auth?.user?.name} size="sm" cursor="pointer" />
+             </PopoverTrigger>
+           
+             <Portal>
+               <PopoverContent w="170px" boxShadow="lg">
+                 <PopoverArrow  bg="white" borderColor="gray.200" />
+           
+                 <PopoverBody p={2}>
+                   <Text fontSize="sm" fontWeight="bold" color="#747A80" px={2} py={1}>
+                     {auth?.user?.name}
+                   </Text>
+           
+                   <Button
+                     size="sm"
+                     fontSize="xs"
+                     variant="ghost"
+                     w="100%"
+                     justifyContent="flex-start"
+                     onClick={() =>
+                       (navigate(`/dashboard/profile/${auth?.user?.id}`))
+                     }
+                   >
+                     My Account
+                   </Button>
+           
+                   <Divider my={2} />
+           
+                 <Button
+             size="sm"
+             rightIcon={<FiLogOut />}
+             fontSize="xs"
+             variant="ghost"
+             w="100%"
+             border="1px solid gray"
+             textAlign="center"
+             justifyContent="center"   
+           
+             onClick={logout}
+           
+             _hover={{
+               bgColor: "#f4bfbf",
+               border: "1px solid #e48f8f",
+               color: "#971345"
+             }}
+           >
+             Logout
+           </Button>
+                 </PopoverBody>
+               </PopoverContent>
+             </Portal>
+           </Popover>
+        {/* <Avatar name={auth?.user?.name || "User"} size="sm" /> */}
       </Flex>
 
       {/* Drawer Sidebar */}
@@ -500,7 +561,7 @@ const MobileTopbar = () => {
         <DrawerContent>
 
   <Flex align="center" justify="space-between" p={4} borderBottom="1px solid #eee">
-    <Image src={logo1} alt="logo" w="115px" h="54px" />
+    <Image src={logo} alt="logo" w="115px" h="54px" />
     <DrawerCloseButton position="static" />
   </Flex>
 
@@ -512,6 +573,7 @@ const MobileTopbar = () => {
                 if (!menu.children) {
                   return (
                     <Button
+                     w="90%"
                       key={index}
                       leftIcon={<IconComponent />}
                       as={NavLink}
@@ -531,6 +593,7 @@ const MobileTopbar = () => {
                 return (
                   <Box key={index}>
                     <Button
+                    w="90%"
                       leftIcon={<IconComponent />}
                       rightIcon={
                         <Icon
@@ -555,6 +618,7 @@ const MobileTopbar = () => {
 
                           return (
                             <Button
+                             w="90"
                               key={i}
                               size="sm"
                               leftIcon={<ChildIcon />}
@@ -577,6 +641,7 @@ const MobileTopbar = () => {
 
               {(role === "ADMIN" || role === "SUPER_ADMIN") && (
                 <Button
+                 w="90%"
                   leftIcon={<RiUserAddLine />}
                   as={NavLink}
                   to="/approve-ip-user-list"
@@ -585,21 +650,27 @@ const MobileTopbar = () => {
                   IP Request
                 </Button>
               )}
-               <Button
-               w="80%"
-                        size="md"
-                        rightIcon={<FiLogOut/>}
-                        fontSize="xs"
-                        variant="ghost"
-                                 border="1px solid gray"
-              
-                        justifyContent="flex-start"
-                        onClick={logout}
-                                 _hover={{bgColor:"#f4bfbf", border:"1px solid #e48f8f", color:"#971345"}}
-                       textAlign="center"
-                      >
-                        Logout
-                      </Button>
+               
+                     <Button
+                 size="sm"
+                 rightIcon={<FiLogOut />}
+                 fontSize="xs"
+                 variant="ghost"
+                 w="100%"
+                 border="1px solid gray"
+                 textAlign="center"
+                 justifyContent="center"   
+               
+                 onClick={logout}
+               
+                 _hover={{
+                   bgColor: "#f4bfbf",
+                   border: "1px solid #e48f8f",
+                   color: "#971345"
+                 }}
+               >
+                 Logout
+               </Button>
             </VStack>
           </DrawerBody>
         </DrawerContent>

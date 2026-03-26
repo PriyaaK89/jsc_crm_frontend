@@ -19,7 +19,7 @@ import {
   Textarea,
   Button,
   Flex,
-  TableContainer
+  
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import { Link } from "react-router-dom";
@@ -40,7 +40,7 @@ const Debit = () => {
     boxShadow="md"
  >
       {/* Breadcrumb */}
-      <HStack justifyContent="space-between" flexWrap="wrap" spacing="space-between">
+      <HStack justifyContent="space-between"  spacing="space-between">
         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
 
           <BreadcrumbItem>

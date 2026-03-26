@@ -34,7 +34,7 @@ import r_logo from "../../../assets/images/jamidara_logo.png";
 import jsPDF from "jspdf";
 import { toJpeg } from "html-to-image";
 
-const DistributorAgreementPreview = ({ isOpen, onClose, formData, partners, ownerAddress, otherCompanies }) => {
+const DistributorAgreementPdfPreview = ({ isOpen, onClose, formData, partners, ownerAddress, otherCompanies }) => {
   const toast = useToast();
 
   const handleDownloadPDF = async () => {
@@ -490,4 +490,4 @@ const DistributorAgreementPreview = ({ isOpen, onClose, formData, partners, owne
   );
 };
 
-export default DistributorAgreementPreview;
+export default DistributorAgreementPdfPreview;

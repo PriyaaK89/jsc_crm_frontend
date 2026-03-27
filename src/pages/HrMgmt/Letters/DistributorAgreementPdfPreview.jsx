@@ -567,5 +567,5 @@ const DistributorAgreementPdfPreview = ({ isOpen, onClose, formData, partners, o
   );
 };
 
-export default DistributorAgreementPdfPreview;
+
 export default DistributorAgreementPdfPreview;

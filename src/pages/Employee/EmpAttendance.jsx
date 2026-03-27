@@ -6,6 +6,7 @@ import {
 import { Badge } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { InputGroup, InputRightElement } from "@chakra-ui/react";
+import { RepeatIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
 import { SearchIcon } from "@chakra-ui/icons";
 import API from "../../services/api";
@@ -100,9 +101,12 @@ const EmpAttendance = () => {
         onOpen();
     };
 
-    // 🧠 Utils
-    const formatDate = (date) =>
-        date ? new Date(date).toISOString().split("T")[0] : "-";
+    // Utils
+
+     const formatDate = (date) => {
+    if (!date) return "-";
+    return new Date(date).toLocaleDateString("en-IN");
+  };
 
     const formatTime = (date, time) => {
         if (!date || !time) return "-";
@@ -151,6 +155,23 @@ const EmpAttendance = () => {
                 return "gray";
         }
     };
+     const handleRefresh = () => {
+    setSearch("");
+    setDebouncedSearch("");
+
+    setFilters({
+      userId: "",
+      startDate: "",
+      endDate: "",
+    });
+
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+    }));
+
+    fetchAttendance(1); //  reload data
+  };
 
     return (
         <>
@@ -185,8 +206,8 @@ const EmpAttendance = () => {
                     Attendance Report
                 </Heading>
 
-                {/* 🔍 Filters */}
-                <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4} mb={6}>
+                {/*  Filters */}
+                <SimpleGrid columns={{ base: 1, md: 5 }} spacing={4} mb={6}>
 
                     <FormControl >
                         <FormLabel>Search Employee</FormLabel>
@@ -244,11 +265,12 @@ const EmpAttendance = () => {
                             }
                         />
                     </FormControl>
-                    {/* <FormControl mt={5}>
-                        <Button onClick={() => fetchAttendance(1)}>
-                            Refresh
-                        </Button>
-                    </FormControl> */}
+                     <FormControl mt={5}>
+                    
+                              <Button onClick={handleRefresh} leftIcon={<RepeatIcon />}>Reset</Button>
+                            </FormControl>
+
+                 
                 </SimpleGrid>
 
                 {/* 📊 Table */}
@@ -322,7 +344,7 @@ const EmpAttendance = () => {
                                                 </Td>
                                                 <Td>{item.attendance_unit}</Td>
                                                 <Td>
-                                                    <Button size="xs" colorScheme="blue" onClick={() =>
+                                                    <Button size="md" colorScheme="blue" onClick={() =>
                                                         handleImage(item.employee_id, item.attendance_date)
 
                                                     }>
@@ -338,7 +360,7 @@ const EmpAttendance = () => {
                     )}
                 </Box>
 
-                {/* 🔄 Pagination */}
+                {/*  Pagination */}
                 <HStack justify="end" mt={4}>
                     <Button
                         size="sm"

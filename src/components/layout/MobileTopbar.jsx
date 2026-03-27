@@ -102,8 +102,8 @@ import {
 
 import { FaUser, FaUserPlus, FaWallet } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
-import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg'
-
+import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg';
+import { MdUploadFile } from "react-icons/md";
 
 
 
@@ -187,6 +187,8 @@ const MobileTopbar = () => {
           path: "/hr-mgmt/dept/add-department",
           icon: MdAccountTree,
         },
+       {label: "Upload Employee Expenses", path: "/upload-employee-expenses", icon: MdUploadFile },
+        
         {
           label: "Upload Salary Slip",
           path: "/hr-mgmt/upload-emp-salary",

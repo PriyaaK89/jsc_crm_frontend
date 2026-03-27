@@ -29,6 +29,7 @@ import sort_icon from "../../assets/sort.svg";
 import useUsersapi from "../../Apis/GetUsersapi";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import { Link } from "react-router-dom";
 
 const EmpSalaryReport = () => {
   const { users } = useUsersapi();

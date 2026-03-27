@@ -23,6 +23,7 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import useUserapi    from '../../Apis/GetUsersapi'
 import { GoHomeFill } from "react-icons/go";
+import {Link} from "react-router-dom";
 
 
 
@@ -138,15 +139,15 @@ const [selectedUserId, setSelectedUserId] = useState("");
     boxShadow="md"
       >
         <HStack justifyContent="space-between" flexWrap="wrap" spacing="space-between">
-                <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+                <Breadcrumb  color="#8B8D97" padding="10px 0px 1rem 0px">
         
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/dashboard">
+                    <BreadcrumbLink as={Link} to="/dashboard">
                       <GoHomeFill color="#5570F1" />
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbItem>
-                    <BreadcrumbLink fontSize="13px" href="/hr-mgmt/view-employee-list">
+                    <BreadcrumbLink as={Link} fontSize="13px" to="/hr-mgmt/view-employee-list">
                       Employee List
                     </BreadcrumbLink>
                   </BreadcrumbItem>

@@ -3,6 +3,7 @@ import { Select } from '@chakra-ui/react'
 import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack,VStack,Heading,Button,SimpleGrid} from "@chakra-ui/react";
 
 import { GoHomeFill } from "react-icons/go";
+import { Link } from "react-router-dom";
 
 
 
@@ -21,7 +22,7 @@ const DeleteGroup = () => {
                 <HStack justifyContent='space-between'>
                       <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                          <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
+import { Link } from "react-router-dom";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import {
   Box,
@@ -59,9 +60,6 @@ const AddEmployee = () => {
     pan_number: "",
   });
 
-
-
-  const [areas, setAreas] = useState([]);
   const requiredFields = [
     "name",
     "gender",
@@ -75,8 +73,6 @@ const AddEmployee = () => {
     "department_id",
     "job_role_id",
     "date_of_joining",
-    "date_of_joining",
-    "travelling_allowance_per_km",
     "travelling_allowance_per_km",
     "avg_travel_km_per_day",
     "city_allowance_per_km",
@@ -88,6 +84,8 @@ const AddEmployee = () => {
     "headquarter",
     "approver_name",
   ];
+
+  const [areas, setAreas] = useState([]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -302,6 +300,8 @@ const AddEmployee = () => {
     }
   };
 
+  
+
   const fetchDepartmentList = async () => {
     try {
       const response = await API.get(API_ENDPOINTS?.get_department);
@@ -392,6 +392,12 @@ const AddEmployee = () => {
       job_role_id: "",
     }));
 
+    setError((prev) => ({
+      ...prev,
+      department_id: "",
+      job_role_id: "",
+    }));
+
     if (deptId) {
       fetchRoleList(deptId);
     }
@@ -445,14 +451,15 @@ const AddEmployee = () => {
         <HStack justifyContent="space-between">
           <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">
+              <BreadcrumbLink as={Link} to="/dashboard">
                 <GoHomeFill color="#5570F1" />
               </BreadcrumbLink>
             </BreadcrumbItem>
 
             <BreadcrumbItem>
               <BreadcrumbLink
-                href="/hr-mgmt/view-employee-list"
+                as={Link}
+                to="/hr-mgmt/view-employee-list"
                 color="#8B8D97"
                 fontSize="13px"
               >
@@ -509,7 +516,7 @@ const AddEmployee = () => {
                     setFormData((prev) => ({
                       ...prev, contact_no: value,
                     }))
-                    setError((prev)=>({
+                    setError((prev) => ({
                       ...prev, contact_no: "",
                     }))
                   }
@@ -520,26 +527,23 @@ const AddEmployee = () => {
             </FormControl>
 
             <CustomDatePicker
-                            label="Date of Birth"
-                            name="date_of_birth"
-                            value={formData.date_of_birth}
-                            onChange={(date)=>{
-                              setFormData((prev)=>({
-                                 ...prev,
-                                 date_of_birth: date,
-                              }))
-                            }}
-                            placeholder="Select date of Birth"
-                        />
+              label="Date of Birth"
+              name="date_of_birth"
+              value={formData.date_of_birth}
+              onChange={(date) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  date_of_birth: date,
+                }));
+                setError((prev) => ({
+                  ...prev,
+                  date_of_joining: "",
+                }))
+              }}
+              placeholder="Select date of Birth"
+            />
             <FormControl isRequired isInvalid={error.date_of_birth}>
-              {/* <FormLabel>Date of Birth</FormLabel>
-              <Input
-                type="date"
-                name="date_of_birth"
-                value={formData.date_of_birth}
-                onChange={handleChange}
-              /> */}
-              {/* <FormErrorMessage>{error.date_of_birth}</FormErrorMessage> */}
+
             </FormControl>
 
             <FormControl isRequired isInvalid={error.email}>
@@ -553,7 +557,7 @@ const AddEmployee = () => {
                   setFormData((prev) => ({
                     ...prev, email: value,
                   }))
-                  setError((prev)=>({
+                  setError((prev) => ({
                     ...prev,
                     email: ""
                   }))
@@ -624,12 +628,17 @@ const AddEmployee = () => {
                 placeholder="Select Area"
                 value={formData.area}
                 isDisabled={!areas.length}
-                onChange={(e) =>
+                onChange={(e) => {
                   setFormData((prev) => ({
                     ...prev,
                     area: e.target.value,
-                  }))
-                }
+                  }));
+
+                  setError((prev) => ({
+                    ...prev,
+                    area: "",
+                  }));
+                }}
               >
                 {areas.map((a, index) => (
                   <option key={index} value={a.officename}>
@@ -764,17 +773,23 @@ const AddEmployee = () => {
 
             <FormControl isRequired isInvalid={error.date_of_joining}>
               <CustomDatePicker
-    label="Date of Joining"
-    name="date_of_joining"
-    value={formData.date_of_joining}
-    onChange={(date) =>
-      setFormData((prev) => ({
-        ...prev,
-        date_of_joining: date,
-      }))
-    }
-    placeholder="Select date of joining"
-  />
+                label="Date of Joining"
+                name="date_of_joining"
+                value={formData.date_of_joining}
+                onChange={(date) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    date_of_joining: date,
+                  }));
+
+                  setError((prev) => ({
+                    ...prev,
+                    date_of_joining: "",
+                  }));
+                }}
+                placeholder="Select date of joining"
+              />
+
               <FormErrorMessage>{error.date_of_joining}</FormErrorMessage>
             </ FormControl>
             <FormControl isRequired isInvalid={error.salary}>
@@ -854,7 +869,7 @@ const AddEmployee = () => {
                 fontSize="13px"
                 color="gray.400"
                 placeholder="Select Week Off"
-                value={formData.week_off}
+                value={formData.week_off || "Sunday"}
                 onChange={handleChange}
               >
                 <option value="Monday">Monday</option>
@@ -899,12 +914,13 @@ const AddEmployee = () => {
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
             <FormControl>
               <FormLabel {...lableStyles}>Login Time</FormLabel>
-              <Input type="time" name="login_time" onChange={handleChange} />
+              <Input type="time" name="login_time" onChange={handleChange} value={formData.login_time || "10:00:P.M"}
+ />
             </FormControl>
 
             <FormControl>
               <FormLabel {...lableStyles}>Logout Time</FormLabel>
-              <Input type="time" name="logout_time" onChange={handleChange} />
+              <Input type="time" name="logout_time" onChange={handleChange} value={formData.logout_time}/>
             </FormControl>
 
             <FormControl>

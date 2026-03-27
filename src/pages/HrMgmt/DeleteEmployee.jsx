@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
-
+ 
 const DeleteEmployeeModel = ({
   selectedId,
   isDeleteModalOpen,

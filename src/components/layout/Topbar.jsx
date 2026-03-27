@@ -20,12 +20,16 @@ import {  HStack } from "@chakra-ui/react";
 import { Bell } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { FiLogOut } from "react-icons/fi";
+import { useNavigate  } from "react-router-dom";
+
 
 // import { toast } from "react-toastify";
 
 const Topbar = () => {
   // full screen function 
   const [full, setFull] = useState(false);
+  const navigate = useNavigate();
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
@@ -54,7 +58,7 @@ const Topbar = () => {
 
     // Redirect after delay
     setTimeout(() => {
-      window.location.href = "/login";
+      navigate("/login")
     }, 1500);
   };
 
@@ -121,7 +125,7 @@ const Topbar = () => {
           w="100%"
           justifyContent="flex-start"
           onClick={() =>
-            (window.location.href = `/dashboard/profile/${auth?.user?.id}`)
+            (navigate(`/dashboard/profile/${auth?.user?.id}`))
           }
         >
           My Account
@@ -129,17 +133,26 @@ const Topbar = () => {
 
         <Divider my={2} />
 
-        <Button
-          size="sm"
-          fontSize="xs"
-          variant="ghost"
-          w="100%"
-          justifyContent="flex-start"
-          colorScheme="red"
-          onClick={logout}
-        >
-          Logout
-        </Button>
+      <Button
+  size="sm"
+  rightIcon={<FiLogOut />}
+  fontSize="xs"
+  variant="ghost"
+  w="100%"
+  border="1px solid gray"
+  textAlign="center"
+  justifyContent="center"   
+
+  onClick={logout}
+
+  _hover={{
+    bgColor: "#f4bfbf",
+    border: "1px solid #e48f8f",
+    color: "#971345"
+  }}
+>
+  Logout
+</Button>
       </PopoverBody>
     </PopoverContent>
   </Portal>

@@ -11,7 +11,7 @@ import CreateLedgerSundrydr_cr from "../../../components/Accountingmastercompone
 import useUsersapi from '../../../Apis/GetUsersapi';
 import DistributorAgreement from "../Letters/DistributorAgreement";
 import  CreateLedgerInterestParameter from '../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerInterestParameter';
-
+import { Link } from "react-router-dom";
 
 
 const CreateLedger = () => {
@@ -58,7 +58,7 @@ const CreateLedger = () => {
                 <HStack justifyContent='space-between'>
                       <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                          <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>

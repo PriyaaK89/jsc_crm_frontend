@@ -1,4 +1,4 @@
-import {Box,VStack,Text,Button,Collapse,Icon, Image } from "@chakra-ui/react";
+import {Box,VStack,Text,Button,Collapse,Icon, Image, useToast } from "@chakra-ui/react";
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
@@ -31,13 +31,13 @@ import { FaShoppingCart } from "react-icons/fa";
 import { FaReceipt } from "react-icons/fa";
 import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg'
 import { useState, useContext, useEffect ,memo } from "react";
-import { NavLink, useLocation } from "react-router-dom";
-
-
+import { NavLink, useLocation,useNavigate} from "react-router-dom";
+import { FiLogOut } from "react-icons/fi";
+import { MdUploadFile } from "react-icons/md";
 
 const Newsidebar = () => {
   const location = useLocation();
-  const { auth } = useContext(AuthContext);
+  const { auth, logoutUser } = useContext(AuthContext);
   const role = auth?.user?.role;
 
   const [openMenu, setOpenMenu] = useState(null);
@@ -46,14 +46,39 @@ const Newsidebar = () => {
     setOpenMenu((prev) => (prev === menu ? null : menu));
   };
 
+  const toast = useToast();
+  const navigate = useNavigate();
+  
+  const logout = () =>{
+    logoutUser();
+
+   //  show toast
+    toast({
+      title: "Logged out",
+      description: "You are logged out successfully",
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+    });
+    // Redirect after delay
+     setTimeout(()=>{
+       navigate("/login")
+     },1500)
+ 
+  }
+
   const sidebarButtonStyle = {
     variant: "ghost",
     justifyContent: "flex-start",
     fontWeight: "700",
     color: "#333333",
+    transition: "all 0.3s ease", 
+
     _hover: {
       bg: "gray.100",
       borderRadius: "28px",
+      transform: "translateX(5px)"
+
     },
     height: "39px",
   };
@@ -83,6 +108,7 @@ const Newsidebar = () => {
         {label: "Employee List", path: "/hr-mgmt/view-employee-list",icon: RiUser3Line,},
         {label: "Create Job Role", path: "/hr-mgmt/roles/add-job-role",icon: HiUserGroup,},
         {label: "Create Department",path: "/hr-mgmt/dept/add-department",icon: MdAccountTree,},
+        {label: "Upload Employee Expenses", path: "/upload-employee-expenses", icon: MdUploadFile },
         {label:"Upload Salary Slip",path:'/hr-mgmt/upload-emp-salary',icon: RiFileList3Line,},
        
 
@@ -250,6 +276,7 @@ useEffect(() => {
           if (!menu.children) {
             return (
               <Button
+              w="100%"
                 key={index}
                 leftIcon={<IconComponent />}
                 as={NavLink}
@@ -270,6 +297,7 @@ useEffect(() => {
           return (
             <Box key={index}>
               <Button
+              w="100%"
                 leftIcon={<IconComponent />}
                 rightIcon={
                   <Icon
@@ -293,6 +321,7 @@ useEffect(() => {
                     const ChildIcon = item.icon;
                     return (
                       <Button
+                      w="100%"
                         key={i}
                         leftIcon={<ChildIcon size={17}/>}
                         size="sm"
@@ -323,6 +352,7 @@ useEffect(() => {
 {/* ip request  */}
         {(role === "ADMIN" || role === "SUPER_ADMIN") && (
           <Button
+          w="100%"
             leftIcon={<RiUserAddLine />}
             {...sidebarButtonStyle}
             as={NavLink}
@@ -332,7 +362,19 @@ useEffect(() => {
             IP Request
           </Button>
         )}
-      </VStack>
+      <Button
+         rightIcon={<FiLogOut/>}
+         variant="ghost"
+         size="md"  
+         onClick={logout}
+         border="1px solid gray"
+         w="100%"
+         _hover={{bgColor:"#f4bfbf", border:"1px solid #e48f8f", color:"#971345"}}
+      >
+        Logout
+      </Button>
+          </VStack>
+
     </Box>
   );
 };

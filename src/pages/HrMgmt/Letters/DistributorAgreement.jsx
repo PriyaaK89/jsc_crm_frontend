@@ -26,7 +26,7 @@ import useUsersapi from "../../../Apis/GetUsersapi";
 import DistributorDocuments from "./DistributorDocuments";
 
 
-// ✅ Address Component
+//  Address Component
 const AddressForm = ({ data, onChange, index = 0, label }) => {
 
   return (
@@ -210,14 +210,14 @@ function DistributorAgreement() {
     setOtherCompanies(updated);
   };
 
-  // ✅ Partner change
+  //  Partner change
   const handlePartnerChange = (index, field, value) => {
     const updated = [...partners];
     updated[index][field] = value;
     setPartners(updated);
   };
 
-  // ✅ Add Partner
+  //  Add Partner
   const addPartner = () => {
     setPartners([
       ...partners,
@@ -228,7 +228,7 @@ function DistributorAgreement() {
     ]);
   };
 
-  // ✅ Remove Partner
+  //  Remove Partner
   const removePartner = (index) => {
     const updated = partners.filter((_, i) => i !== index);
     setPartners(updated);

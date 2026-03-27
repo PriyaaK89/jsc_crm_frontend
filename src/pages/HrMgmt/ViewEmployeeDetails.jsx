@@ -19,6 +19,7 @@ import React, { useEffect, useState } from "react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { useParams } from "react-router-dom";
+import {Link} from "react-router-dom";
 
 const InfoCard = ({ label, value }) => (
   <Box
@@ -82,17 +83,17 @@ const ViewEmployeeDetails = () => {
       {/* Breadcrumb */}
       <Breadcrumb mb={6}>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/dashboard">
+          <BreadcrumbLink as={Link} to="/dashboard">
             <GoHomeFill color="#5570F1" />
           </BreadcrumbLink>
         </BreadcrumbItem>
          <BreadcrumbItem>
-          <BreadcrumbLink fontSize="13px" href="/hr-mgmt/view-employee-list">
+          <BreadcrumbLink as={Link} fontSize="13px" to="/hr-mgmt/view-employee-list">
             Employee List
           </BreadcrumbLink>
         </BreadcrumbItem>
 
-        <BreadcrumbItem>
+        <BreadcrumbItem isCurrentPage>   
           <BreadcrumbLink fontSize="13px">
             Employee Details
           </BreadcrumbLink>

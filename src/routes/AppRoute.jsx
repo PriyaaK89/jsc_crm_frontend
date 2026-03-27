@@ -71,7 +71,7 @@ import StockTransferReportLayout from "../components/layout/Reports/StockTransfe
 import PendingCollectionReportLayout from "../components/layout/Reports/PendingCollectionReportLayout";
 import EmpPerformanceReportLayout from "../components/layout/Reports/EmpPerformanceReportLayout";
 import TrackEmpLayout from "../components/layout/Reports/TrackEmpLayout";
-
+import UploadEmployeeExpenses from  "../components/layout/UploadEmployeeExpensesLayout";
 
 function App() {
   return (
@@ -218,7 +218,8 @@ function App() {
          <Route path="/report/pending-collection-report" element={<PendingCollectionReportLayout/>}/>
          <Route path="/report/emp-performance-report" element={<EmpPerformanceReportLayout/>}/>
            <Route path="/report/track-employee" element={<TrackEmpLayout />} />
-      
+           <Route path="/upload-employee-expenses" element={<UploadEmployeeExpenses/>} />
+
       </Routes>
     </Router>
   );

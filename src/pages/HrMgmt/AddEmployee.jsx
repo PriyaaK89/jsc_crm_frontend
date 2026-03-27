@@ -22,6 +22,7 @@ import {
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import { GoHomeFill } from "react-icons/go";
 import { FormErrorMessage } from "@chakra-ui/react";
+import { validateEmail,validatePan,validateAadhar,validateContact,validateRequiredFields } from "../../hook/Validation";
 
 const AddEmployee = () => {
   const toast = useToast();
@@ -131,18 +132,7 @@ const AddEmployee = () => {
   });
   const [empList, setEmpList] = useState([]);
 
-  const validateRequiredFields = () => {
-    let newErrors = {};
-
-    requiredFields.forEach((field) => {
-      if (!formData[field]) {
-        newErrors[field] = "This field is required";
-      }
-    });
-
-    return newErrors;
-  };
-
+  
 
   const fetchEmployeeList = async () => {
     try {
@@ -181,7 +171,8 @@ const AddEmployee = () => {
   };
 
   const handleSubmit = async () => {
-    const requiredFieldErrors = validateRequiredFields();
+     const requiredFieldErrors = validateRequiredFields(formData, requiredFields); 
+
 
     const emailError = validateEmail(formData.email);
     const contactError = validateContact(formData.contact_no);
@@ -329,60 +320,11 @@ const AddEmployee = () => {
     }
   };
 
-  const validateEmail = (email) => {
-    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i;
+ 
+ 
+ 
 
-    if (!email) {
-      return "Email is required";
-    }
-
-    if (!regex.test(email)) {
-      return "Invalid email address";
-    }
-
-    return null;
-  };
-
-  const validateContact = (contact) => {
-    const regex = /^[0-9]{10}$/;
-
-    if (!contact) {
-      return "Contact number is required";
-    }
-
-    if (!regex.test(contact)) {
-      return "Contact number must be 10 digits";
-    }
-
-    return null;
-  };
-  const validateAadhar = (aadhar) => {
-    const regex = /^[0-9]{12}$/;
-
-    if (!aadhar) {
-      return "Aadhar number is required";
-    }
-
-    if (!regex.test(aadhar)) {
-      return "Aadhar number must be 12 digits";
-    }
-
-    return null;
-  };
-
-  const validatePan = (pan) => {
-    const regex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-
-    if (!pan) {
-      return "PAN number is required";
-    }
-
-    if (!regex.test(pan)) {
-      return "Invalid PAN number format";
-    }
-
-    return null;
-  };
+ 
   const handleDepartmentChange = (e) => {
     const deptId = e.target.value;
 

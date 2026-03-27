@@ -11,8 +11,7 @@ import ViewUploadedDocument from "./DocUpload/ViewDocuments";
 import UpdateEmpStatus from "../../utils/Emp/UpdateEmpStatus";
 import DeleteEmployeeModel from "./DeleteEmployee";
 import VerifyDocumentModel from "./models/VerifyDocuments";
-
-
+import Pagination from "../../Pagination/Pagination"
 
 const EmployeeList = () => {
 
@@ -21,7 +20,6 @@ const EmployeeList = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
-
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const { onOpen, onClose, isOpen } = useDisclosure();
@@ -60,7 +58,6 @@ const EmployeeList = () => {
 
 
 
-  const headers = ["Name", "Email", "Department", "Role", "Contact", "City / State", "Salary(Rs.)", "DOJ", "Leaves", "Login", "Logout", "Approver",];
 
   const formatTime = (time) => {
     if (!time) return "-";
@@ -136,7 +133,8 @@ const EmployeeList = () => {
               <Input placeholder="Search by Employee Name" border='1px solid #CFD3D4' borderRadius='32px' _placeholder={{ fontSize: '16px', color: '#8C8C91' }} boxShadow='0px 2px 2px #e5e5e5'
                 value={search} onChange={(e) => setSearch(e.target.value)} />
             </InputGroup>
-          </Box></Flex>
+          </Box>
+          </Flex>
 
         {/* Table */}
         <Box bg="white" borderRadius="md" boxShadow="sm" border="1px solid #e5e5e5" width="100%" >
@@ -159,7 +157,7 @@ const EmployeeList = () => {
                 <Thead>
                   <Tr>
                     {["Name", "Email", "Department", "Role", "Contact", "City / State", "Salary(Rs.)", "DOJ", "Leaves", "Login", "Logout", "Approver", "View Doc", "Action", "Generate Letters"].map((header, index) => (
-                      <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize'
+                      <Th key={index} fontSize='14px' fntWeight='500' color='#2C2D33' textTransform='capitalize'
                         width={
                           header === "Name"
                             ? "150px"
@@ -300,80 +298,14 @@ const EmployeeList = () => {
               </Table></Box>
           )}
         </Box>
-
-       <Flex justify="space-between" align="center" mt={3}>
-
-  {/* LEFT SIDE */}
-  <Flex align="center" gap="4px">
-    <Select
-      w="69px"
-      h="25px"
-      size="sm"
-      value={limit}
-      border="none"
-      bg="#5e63661a"
-      color="#8B8D97"
-      borderRadius="10px"
-      onChange={(e) => {
-        setLimit(Number(e.target.value));
-        setPage(1);
-      }}
-    >
-      <option value="10">10</option>
-      <option value="20">20</option>
-      <option value="50">50</option>
-      <option value="100">100</option>
-    </Select>
-
-    <Flex gap="18px" ml={2}>
-      <Text fontSize="14px" color="#A6A8B1">Items per page</Text>
-      <Text fontSize="14px" color="#666">
-        {(page - 1) * limit + 1}–
-        {Math.min(page * limit, totalItems)} of {totalItems} items
-      </Text>
-    </Flex>
-  </Flex>
-
-  {/* ✅ RIGHT SIDE PAGINATION */}
-  <Flex align="center" gap={2}>
-
-    {/* Prev */}
-    <Button
-      size="sm"
-      onClick={() => setPage((p) => Math.max(p - 1, 1))}
-      isDisabled={page === 1}
-    >
-      ‹
-    </Button>
-
-    {/* Pages */}
-    {Array.from({ length: totalPages }, (_, i) => {
-      const pageNumber = i + 1;
-      return (
-        <Button
-          key={pageNumber}
-          size="sm"
-          variant={page === pageNumber ? "solid" : "outline"}
-          colorScheme={page === pageNumber ? "blue" : "gray"}
-          onClick={() => setPage(pageNumber)}
-        >
-          {pageNumber}
-        </Button>
-      );
-    })}
-
-    {/* Next */}
-    <Button
-      size="sm"
-      onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-      isDisabled={page === totalPages}
-    >
-      ›
-    </Button>
-
-  </Flex>
-
-</Flex>
+      <Pagination
+  page={page}
+  setPage={setPage}
+  limit={limit}
+  setLimit={setLimit}
+  totalItems={totalItems}
+  totalPages={totalPages}
+/>
 
       </Box>
     </>

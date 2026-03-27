@@ -5,19 +5,25 @@ import {
   FormControl,
   FormLabel,
   Input, useDisclosure,
-  Heading,
+  Heading, Flex,
   SimpleGrid,
   VStack,
   Select,
-  Divider
+  Divider,
+  Image,             
+  Modal,              
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  ModalCloseButton
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { CloseIcon } from "@chakra-ui/icons";
 import { GoHomeFill } from "react-icons/go";
 import DistributorAgreementPdfPreview from "./DistributorAgreementPdfPreview";
-
+import DistributorAgreementPreview from './DistributorAgreementpreview';
 import useUsersapi from "../../../Apis/GetUsersapi";
-import DistributorAgreementPreview from "./DistributorAgreementPreview";
+import DistributorDocuments from "./DistributorDocuments";
 
 
 //  Address Component
@@ -28,6 +34,20 @@ const AddressForm = ({ data, onChange, index = 0, label }) => {
       <Text fontWeight="bold" mb={3} bg="#e9f2ff" p={3} borderTopRadius="lg" borderBottom="1px solid #f3f3f3"> {label}</Text>
 
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} p={4}>
+        <FormControl>
+          <FormLabel>NAME.</FormLabel>
+          <Input
+            value={data.name || ""}
+            onChange={(e) => onChange(index, "name", e.target.value)}
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>FATHER NAME.</FormLabel>
+          <Input
+            value={data.father_name || ""}
+            onChange={(e) => onChange(index, "father_name", e.target.value)}
+          />
+        </FormControl>
         <FormControl>
           <FormLabel>PAN NO.</FormLabel>
           <Input
@@ -102,16 +122,10 @@ const AddressForm = ({ data, onChange, index = 0, label }) => {
 
         <FormControl>
           <FormLabel>Upload owner Passport size Photo</FormLabel>
-
           <Input
             type="file"
             accept="image/*"
-
-            onChange={(e) => {
-              e.target.files[0];
-
-            }}
-
+            onChange={(e) => onChange(index, "upload_img", e.target.files[0])}
           />
 
 
@@ -120,11 +134,21 @@ const AddressForm = ({ data, onChange, index = 0, label }) => {
     </Box>
   );
 };
-
+// -------------------------main function------------------------------------------------------
 function DistributorAgreement() {
+  
+    const handleChildData = (data) => {
+    console.log("Data from child:", data);
+    setFormData(data);
+  };
+ 
+
+ 
   const { users } = useUsersapi();
   const previewModal = useDisclosure();
   const generateModal = useDisclosure();
+
+
 
   const [firmtype, setFirmtype] = useState("");
   const [formData, setFormData] = useState({});
@@ -132,13 +156,13 @@ function DistributorAgreement() {
     { name: "", turnover: "" }
   ]);
 
-  const [firmAddress, setFirmAddress] = useState({
-    address: "",
-    state: "",
-    district: "",
-    tehsil: "",
-    pincode: "",
-  });
+  // const [firmAddress, setFirmAddress] = useState({
+  //   address: "",
+  //   state: "",
+  //   district: "",
+  //   tehsil: "",
+  //   pincode: "",
+  // });
 
   const [ownerAddress, setOwnerAddress] = useState({
     address: "",
@@ -150,11 +174,23 @@ function DistributorAgreement() {
     aadhar_no: "",
     mobile_no: "",
     alt_mobile_no: "",
+    name: "",
+    father_name: "",
+    upload_img: null,
   });
 
   const [partners, setPartners] = useState([
-    { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "", mobile_no: "", alt_mobile_no: "" },
+    {
+      address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "", mobile_no: "", alt_mobile_no: "", name: "",
+      father_name: "", upload_img: null
+    },
   ]);
+  // image for partners 
+  // const handlePartnerImage = (index, file) => {
+  //   const updated = [...partners];
+  //   updated[index].upload_img = file;
+  //   setPartners(updated);
+  // };
 
   // add mulyiple comapny
   const handleOtherCompanyChange = (index, field, value) => {
@@ -164,7 +200,10 @@ function DistributorAgreement() {
   };
 
   const addOtherCompany = () => {
-    setOtherCompanies([...otherCompanies, ""]);
+    setOtherCompanies([
+      ...otherCompanies,
+      { name: "", turnover: "" } // ✅ correct object
+    ]);
   };
   const removeOtherCompany = (index) => {
     const updated = otherCompanies.filter((_, i) => i !== index);
@@ -182,7 +221,10 @@ function DistributorAgreement() {
   const addPartner = () => {
     setPartners([
       ...partners,
-      { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "" },
+      {
+        address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadhar_no: "", name: "",
+        father_name: "",
+      },
     ]);
   };
 
@@ -192,6 +234,19 @@ function DistributorAgreement() {
     setPartners(updated);
   };
 
+  const Approvername = () => {
+    // const approvername = e.target.value;
+    const selectedApprover = users?.find(
+      (u) => u.id === formData.approver_name
+    );
+    // console.log(approvername)
+
+    setFormData((prev) => ({
+      ...prev,
+      approver_name: selectedApprover, // ✅ proper key
+    }));
+  };
+  // habndle change 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -201,6 +256,9 @@ function DistributorAgreement() {
     }));
 
   };
+
+
+
   return (
     <>
       <Box bg="white" p={6} borderRadius="lg">
@@ -262,13 +320,21 @@ function DistributorAgreement() {
             >
               <option value="">Select</option>
               <option value="proprietorship">Proprietorship</option>
-              <option value="partnership">Partnership</option>
-              {/* <option value="llp">LLP</option>
+              <option value="partnership">Partnership</option>     
               <option value="private_limited">Private Limited</option>
-              <option value="public_limited">Public Limited</option>
-              <option value="opc">OPC</option> */}
             </Select>
           </FormControl>
+
+          {formData?.firm_type === "partnership" && (
+            <FormControl>
+              <FormLabel>Upload Authority latter </FormLabel>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleChange("authoratyfile", e.target.files[0])}
+              />
+            </FormControl>
+          )}
 
           {/* Business Address */}
           <Box border="1px" borderColor="gray.900" gridColumn={{ base: "span 1", md: "span 2" }} p={4} borderRadius="lg">
@@ -278,6 +344,16 @@ function DistributorAgreement() {
               <Input
                 name="business_address"
                 value={formData.business_address || ""}
+                onChange={handleChange}
+
+              />
+
+            </FormControl>
+            <FormControl mt={3}>
+              <FormLabel>Business Tarritory</FormLabel>
+              <Input
+                name="tarritory"
+                value={formData.tarritory || ""}
                 onChange={handleChange}
 
               />
@@ -463,12 +539,7 @@ function DistributorAgreement() {
                 );
               })}
             </Select>
-            {/* <Input type="date"
 
-              name="firm_start_date"
-              value={formData.firm_since_date}
-              onChange={handleChange}
-            /> */}
           </FormControl>
 
           <FormControl>
@@ -489,6 +560,19 @@ function DistributorAgreement() {
               onChange={handleChange}
             // placeholder="Enter Firm Aadhar Card No."
             />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel> JURISDICTION AREA</FormLabel>
+            <Select
+              name="jurisdiction_district"
+              value={formData.jurisdiction_district || ""}
+              onChange={handleChange} placeholder="--please select--"
+            >
+              <option value="alwar">ALWAR</option>
+              <option value="jaipur">JAIPUR</option>
+            </Select>
+
           </FormControl>
 
 
@@ -519,6 +603,22 @@ function DistributorAgreement() {
               onChange={handleChange}
             />
           </FormControl>
+
+          <FormControl >
+  <FormLabel>Seed License Expiry Date</FormLabel>
+
+  <Input
+    type="date"
+    name="seed_license_expiry"
+    value={formData.seed_license_expiry || ""}
+    onChange={(e) =>
+      setFormData((prev) => ({
+        ...prev,
+        seed_license_expiry: e.target.value
+      }))
+    }
+  />
+</FormControl>
 
           <FormControl>
             <FormLabel>Fertilizer License No.</FormLabel>
@@ -589,6 +689,23 @@ function DistributorAgreement() {
             />
           </FormControl>
           <FormControl>
+            <FormLabel>Security Amount</FormLabel>
+            <Input
+              name="security_amount"
+              value={formData.security_amount}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>Credit Duration Period</FormLabel>
+            <Input
+              name="credit_duration_period"
+              value={formData.credit_duration_period}
+              onChange={handleChange}
+            />
+          </FormControl>
+
+          <FormControl>
             <FormLabel>Firm Annual Turnover</FormLabel>
             <Input
               name="firm_anual_turnover"
@@ -606,7 +723,7 @@ function DistributorAgreement() {
           </FormControl>
 
 
-          <FormControl gridColumn={{ base: "span 1", md: "span 2" }}  border="1px solid #413e3e" p={4} borderRadius="lg" >
+          <FormControl gridColumn={{ base: "span 1", md: "span 2" }} border="1px solid #413e3e" p={4} borderRadius="lg" >
             <FormLabel>Other Company Detail</FormLabel>
 
             {otherCompanies.map((company, index) => (
@@ -626,24 +743,24 @@ function DistributorAgreement() {
                 </Button>
 
                 {/* Company Name */}
-                <SimpleGrid columns={{base:1,md:2}}>
-                <Input
-                  mb={2}
-                  placeholder={`Company ${index + 1}`}
-                  value={company.name}
-                  onChange={(e) =>
-                    handleOtherCompanyChange(index, "name", e.target.value)
-                  }
-                />
+                <SimpleGrid columns={{ base: 1, md: 2 }}>
+                  <Input
+                    mb={2}
+                    placeholder={`Company ${index + 1}`}
+                    value={company.name}
+                    onChange={(e) =>
+                      handleOtherCompanyChange(index, "name", e.target.value)
+                    }
+                  />
 
-                {/* Turnover */}
-                <Input ml={3}
-                  placeholder="Turnover"
-                  value={company.turnover}
-                  onChange={(e) =>
-                    handleOtherCompanyChange(index, "turnover", e.target.value)
-                  }
-                />
+                  {/* Turnover */}
+                  <Input ml={{base:0,md:3}}
+                    placeholder="Turnover"
+                    value={company.turnover}
+                    onChange={(e) =>
+                      handleOtherCompanyChange(index, "turnover", e.target.value)
+                    }
+                  />
                 </SimpleGrid>
 
               </Box>
@@ -670,24 +787,31 @@ function DistributorAgreement() {
 
               <Select
                 name="approver_name"
-                value={formData.approver_name}
-                onChange={handleChange}
-                _placeholder="--Select Approver Name--"
-
-              >{users?.map((e) => (
-                <option key={e.id} value={e.id}>{e.name}</option>
-              ))}
-
+                value={formData.approver_name || ""}
+                onChange={(e) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    approver_name: e.target.value,
+                  }));
+                }}
+              >
+                {users?.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.name}
+                  </option>
+                ))}
               </Select>
             </FormControl>
 
             <FormControl>
               <FormLabel>Approvering Date</FormLabel>
 
-              <Input type="date"
-                name="approveringdate"
-                value={formData.approvering_date}
+              <Input
+                type="date"
+                name="approvering_date"
+                value={formData.approvering_date || ""}
                 onChange={handleChange}
+                max={new Date().toISOString().split("T")[0]}
               />
             </FormControl>
             <FormControl>
@@ -711,10 +835,15 @@ function DistributorAgreement() {
                 📷 Upload Approver Image
               </Button>
             </FormControl>
-
           </SimpleGrid>
         </Box>
 
+    
+      {/* upload documents  */}
+      <DistributorDocuments 
+       formData={formData}
+       onSendData={handleChildData}/>
+ 
       </Box>
 
       <Box textAlign="center">
@@ -751,6 +880,7 @@ function DistributorAgreement() {
         formData={formData}
         ownerAddress={ownerAddress}
         partners={partners}
+        otherCompanies={otherCompanies}
       />
 
 

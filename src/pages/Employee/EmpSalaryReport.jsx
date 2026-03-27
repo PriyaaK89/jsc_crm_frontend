@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import {
   Box,
   Button,
@@ -7,7 +7,7 @@ import {
   SimpleGrid,
   FormControl,
   FormLabel,
-  VStack,Heading,
+  VStack, Heading,
   Table,
   Thead,
   Tbody,
@@ -17,12 +17,13 @@ import {
   Flex,
   Spinner,
   Input,
-   Breadcrumb,
+  Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  HStack,Img,useToast, 
+  HStack, Img, useToast,
   TableContainer
 } from "@chakra-ui/react";
+import { FiUpload  } from "react-icons/fi";
 import { GoHomeFill } from "react-icons/go";
 import sort_icon from "../../assets/sort.svg";
 import useUsersapi from "../../Apis/GetUsersapi";
@@ -31,7 +32,7 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 import { Link } from "react-router-dom";
 
 const EmpSalaryReport = () => {
-  const {users} = useUsersapi();
+  const { users } = useUsersapi();
   const [dailySalry, setdailySalry] = useState([]);
   const [hasDatafind, setDatafind] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -43,37 +44,37 @@ const EmpSalaryReport = () => {
     endDate: "",
   });
 
-   const toast = useToast()
+  const toast = useToast()
   const toastIdRef = React.useRef()
 
   const validateForm = () => {
-  const newErrors = {};
+    const newErrors = {};
 
-  // tost function 
-  function showToast() {
-  if (!toast.isActive(toastIdRef.current)) {
-    toastIdRef.current = toast({
-      title: "Validation Error",
-      description: "Please select User, Start Date, or End Date",
-      status: "warning",
-      duration: 2000,
-      isClosable: true,
-    });
-  }
-}
+    // tost function 
+    function showToast() {
+      if (!toast.isActive(toastIdRef.current)) {
+        toastIdRef.current = toast({
+          title: "Validation Error",
+          description: "Please select User, Start Date, or End Date",
+          status: "warning",
+          duration: 2000,
+          isClosable: true,
+        });
+      }
+    }
 
-  // Check if all filters are empty
-  if (!filters.userId && !filters.startDate && !filters.endDate) {
-    newErrors.userId = "Please select at least one filter";
-     showToast()
-  }
+    // Check if all filters are empty
+    if (!filters.userId && !filters.startDate && !filters.endDate) {
+      newErrors.userId = "Please select at least one filter";
+      showToast()
+    }
 
-  setErrors(newErrors);
+    setErrors(newErrors);
 
-  return Object.keys(newErrors).length === 0;
-};
+    return Object.keys(newErrors).length === 0;
+  };
 
-  // ✅ Handle Search
+  //  Handle Search
   const handleViewDailySalary = async () => {
     if (!validateForm()) return;
 
@@ -107,35 +108,98 @@ const EmpSalaryReport = () => {
     fontWeight: "500",
   };
 
+
+
+  const downloadCSV = () => {
+    if (!dailySalry.length) {
+      toast({
+        title: "No Data",
+        description: "No data available to download",
+        status: "warning",
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    // CSV Headers
+    const headers = [
+      "Employee Id",
+      "Salary Date",
+      "Attendance Type",
+      "Working Hours",
+      "Per Day Salary",
+      "Basic Salary",
+      "Travelling Allowance",
+      "Daily Allowance",
+      "Gross Salary",
+      "Net Salary",
+      "Created At",
+    ];
+
+    // Convert data to rows
+    const rows = dailySalry.map((emp, index) => [
+      index + 1,
+      new Date(emp.salary_date).toLocaleDateString(),
+      emp.attendance_type,
+      emp.working_hours,
+      emp.per_day_salary,
+      emp.basic_salary,
+      emp.travelling_allowance,
+      emp.daily_allowance,
+      emp.gross_salary,
+      emp.net_salary,
+      new Date(emp.created_at).toLocaleDateString(),
+    ]);
+
+    // Combine headers + rows
+    const csvContent =
+      [headers, ...rows]
+        .map((row) => row.join(","))
+        .join("\n");
+
+    // Create Blob
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+    // Create download link
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "salary_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
-    <Box bg="white"  borderRadius="lg" >
-        <HStack justifyContent="space-between" flexWrap="wrap">
-                        <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
-                          <BreadcrumbItem>
-                            <BreadcrumbLink as={Link} to="/dashboard">
-                              <GoHomeFill color="#5570F1" />
-                            </BreadcrumbLink>
-                          </BreadcrumbItem>
-              
-                          <BreadcrumbItem isCurrentPage>
-                            <BreadcrumbLink fontSize="13px">
-                            Daily Salary Report
-                            </BreadcrumbLink>
-                          </BreadcrumbItem>
-                        </Breadcrumb>
-                      </HStack>
+    <Box bg="white" borderRadius="lg" >
+      <HStack justifyContent="space-between" flexWrap="wrap">
+        <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">
+              <GoHomeFill color="#5570F1" />
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+
+          <BreadcrumbItem isCurrentPage>
+            <BreadcrumbLink fontSize="13px">
+              Daily Salary Report
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </Breadcrumb>
+      </HStack>
 
       <Heading fontSize="xl" fontWeight="bold" mb={6}>
         Daily Salary Report
       </Heading>
-      
 
-      <VStack spacing={6} align="stretch"  className="empsalryreportsection" w="100%" maxW="100%" >
+
+      <VStack spacing={6} align="stretch" className="empsalryreportsection" w="100%" maxW="100%" >
         {/* Filters */}
         <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4} alignItems="flex-end">
           <FormControl isInvalid={!!errors.userId}  >
             <FormLabel {...labelStyles}>User Name</FormLabel>
-            <Select 
+            <Select
               placeholder="Select User"
               value={filters.userId}
               onChange={(e) => setFilters({ ...filters, userId: e.target.value })}
@@ -147,7 +211,7 @@ const EmpSalaryReport = () => {
               ))}
             </Select>
 
-            
+
           </FormControl>
 
           <FormControl isInvalid={!!errors.startDate}>
@@ -157,7 +221,7 @@ const EmpSalaryReport = () => {
               value={filters.startDate}
               onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
             />
-         
+
           </FormControl>
 
           <FormControl isInvalid={!!errors.endDate}>
@@ -174,13 +238,13 @@ const EmpSalaryReport = () => {
             isLoading={loading}
             onClick={handleViewDailySalary}
             w="full"
-            p={{base:"2px",md:"1px"}}
+            p={{ base: "2px", md: "1px" }}
           >
             View Report
 
           </Button>
         </SimpleGrid>
-
+       
         {/* Table Section */}
         {hasDatafind && (
           <>
@@ -189,81 +253,107 @@ const EmpSalaryReport = () => {
                 <Spinner size="lg" color="blue.500" />
               </Flex>
             ) : (
+              <Box>
+
+               <Box textAlign="end" mr={5}>
+                  <Button 
+                  rightIcon={<FiUpload  />}
+                    colorScheme="green"
+                    onClick={downloadCSV}
+                   
+                  >
+                 Export
+                  </Button>
+                </Box>
+
               <Box
-  borderWidth="1px"
-  borderColor="gray.200"
-  borderRadius="lg"
-  mt={5}
-  maxW="100%"
-  overflowX="auto"
->
+                borderWidth="1px"
+                borderColor="gray.200"
+                borderRadius="lg"
+                mt={5}
+                maxW="100%"
+                overflowX="auto"
+              >
+           
 
-  <TableContainer  overflowX="auto" >
-    
-    <Table
-      size="sm"
-      minW="1000px"
-      variant="simple"
-      whiteSpace="nowrap"
-     
-    >
-    
-      <Thead bg="gray.50" >
-        <Tr >
-          {[
-            "Employee Id",
-            "Salary Date",
-            "Attendance Type",
-            "Working Hours",
-            "Per Day Salary",
-            "Basic Salary",
-            "Travelling Allowance",
-            "Daily Allowance",
-            "Gross Salary",
-            "Net Salary",
-            "Created At"
-          ].map((header, index) => (
-            <Th key={index}>
-              <Flex align="center" gap="4px">
-                <Text>{header}</Text>
-                <Img src={sort_icon} alt="sort" />
-              </Flex>
-            </Th>
-          ))}
-        </Tr>
-      </Thead>
+                <TableContainer overflowX="auto" whiteSpace="nowrap" sx={{
+                  "&::-webkit-scrollbar": { width: "8px", height: '8px' },
+                  "&::-webkit-scrollbar-thumb": {
+                    width: "8px", backgroundColor: "#7A7A7A", borderRadius: "4px",
+                  },
+                  "&::-webkit-scrollbar-track": {
+                    background: "#E8E8E8", borderRadius: "4px",
+                  },
+                }}>
 
-      <Tbody>
-        {dailySalry.length > 0 ? (
-          dailySalry.map((emp) => (
-            <Tr key={emp.id}>
-              <Td>{emp.employee_id}</Td>
-              <Td>{new Date(emp.salary_date).toLocaleDateString()}</Td>
-              <Td>{emp.attendance_type}</Td>
-              <Td>{emp.working_hours}</Td>
-              <Td>{emp.per_day_salary}</Td>
-              <Td>{emp.basic_salary}</Td>
-              <Td>{emp.travelling_allowance}</Td>
-              <Td>{emp.daily_allowance}</Td>
-              <Td>{emp.gross_salary}</Td>
-              <Td>{emp.net_salary}</Td>
-              <Td>{new Date(emp.created_at).toLocaleDateString()}</Td>
-            </Tr>
-          ))
-        ) : (
-          <Tr>
-            <Td colSpan={11} textAlign="center" py={10}>
-              No data found for the selected criteria.
-            </Td>
-          </Tr>
-        )}
-      </Tbody>
+                  <Table
+                    size="sm"
+                    minW="1000px"
+                    variant="simple"
+                    whiteSpace="nowrap"
+                    overflowX="auto"
 
-    </Table>
+                  >
 
-  </TableContainer>
+                    <Thead bg="gray.50" p={5}>
+                      <Tr >
+                        {[
+                          "Employee Id",
+                          "Salary Date",
+                          "Attendance Type",
+                          "Working Hours",
+                          "Per Day Salary",
+                          "Basic Salary",
+                          "Travelling Allowance",
+                          "Daily Allowance",
+                          "Gross Salary",
+                          "Net Salary",
+                          "Created At"
+                        ].map((header, index) => (
+                          <Th key={index} p={5} color='#2C2D33' textTransform='capitalize' >
+                            <Flex align="center" gap="4px">
+                              <Text fontSize={{ base: "14px", md: "16px" }} fontWeight='500'>{header}</Text>
+                              <Img src={sort_icon} alt="sort" />
+                            </Flex>
+                          </Th>
+                        ))}
+                      </Tr>
+                    </Thead>
 
-</Box>
+                    <Tbody >
+                      {dailySalry.length > 0 ? (
+                        dailySalry.map((emp, index) => (
+                          <Tr key={emp.id} className="empsalaryreporttablebodytd" >
+                            <Td>{index + 1}</Td>
+                            <Td>{new Date(emp.salary_date).toLocaleDateString()}</Td>
+                            <Td>{emp.attendance_type}</Td>
+                            <Td>{emp.working_hours}</Td>
+                            <Td>{emp.per_day_salary}</Td>
+                            <Td>{emp.basic_salary}</Td>
+                            <Td>{emp.travelling_allowance}</Td>
+                            <Td>{emp.daily_allowance}</Td>
+                            <Td>{emp.gross_salary}</Td>
+                            <Td>{emp.net_salary}</Td>
+                            <Td>{new Date(emp.created_at).toLocaleDateString()}</Td>
+                          </Tr>
+                        ))
+                      ) : (
+                        <Tr>
+                          <Td colSpan={11} textAlign="center" py={10}>
+                            No data found for the selected criteria.
+                          </Td>
+                        </Tr>
+                      )}
+                    </Tbody>
+
+                  </Table>
+
+                </TableContainer>
+
+                
+
+              </Box>
+              </Box>
             )}
           </>
         )}

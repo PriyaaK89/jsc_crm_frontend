@@ -1,41 +1,31 @@
-import { Box, Button, Divider, Heading, HStack, Flex, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, useToast, VStack, TableContainer, Table, Thead, Tr, Th, Tbody, Td } from "@chakra-ui/react";
+import {
+    Box, Button, Divider, Heading,
+    Text,
+    Table,
+    Tbody,
+    Tr,
+    Td, HStack, Flex, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, useToast, VStack, TableContainer, Thead, Th,
+} from "@chakra-ui/react";
+import { toWords } from "number-to-words";
 import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
 import React from "react";
-import jsc_stamp from "../../../assets/images/stamp_jsc.png"
+// import jsc_stamp from "../../../assets/images/stamp_jsc.png";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import { CloseButton } from "@chakra-ui/react";
+import { Bold } from "lucide-react";
 
-const DistributorAgreementPreview = ({ isOpen, onClose, employee, formData, age, probationDays }) => {
+const DistributorAgreementPreview = ({ isOpen, onClose, formData, employee, partners, ownerAddress, otherCompanies }) => {
 
+
+    //    for check firm type 
+    const isSolo = formData?.firm_type === "proprietorship";
 
     const handleClose = () => {
         onClose(true);
     };
 
-    const salaryPolicy = [
-    {
-      target: "Below 60% Target Achievement",
-      payout: "Only the basic component of the salary will be payable",
-    },
-    {
-      target: "60% – 70% Target Achievement",
-      payout: "Basic salary plus 20% of applicable allowances will be payable",
-    },
-    {
-      target: "70% – 80% Target Achievement",
-      payout: "Basic salary plus 30% of applicable allowances will be payable",
-    },
-    {
-      target: "80% – 90% Target Achievement",
-      payout: "Basic salary plus 40% of applicable allowances will be payable",
-    },
-    {
-      target: "90% – 100% Target Achievement",
-      payout: "Full salary payout along with applicable allowances will be payable",
-    },
-  ];
 
     const toast = useToast();
     const handleDownloadAgreementPDF = async () => {
@@ -128,16 +118,26 @@ const DistributorAgreementPreview = ({ isOpen, onClose, employee, formData, age,
         }
     };
 
-    const formatDateLong = (value) => {
-        if (!value) return "";
-        const date = new Date(value);
 
-        return date.toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-        });
-    };
+
+    const isPartner = formData?.firm_type === "partnership";
+
+    const personName = isPartner
+        ? partners?.[0]?.name
+        : formData?.name;
+
+    const personAadhar = isPartner
+        ? partners?.[0]?.aadhar_no
+        : ownerAddress?.aadhar_no;
+
+    const personAddress = isPartner
+        ? partners?.[0]?.address
+        : formData?.responsile_person_address;
+
+    const personContact = isPartner
+        ? partners?.[0]?.contact_no
+        : formData?.responsile_person_no;
+
 
     return (
         <>
@@ -150,363 +150,561 @@ const DistributorAgreementPreview = ({ isOpen, onClose, employee, formData, age,
                     <ModalBody p={0}>
                         <Flex justifyContent="flex-end" m={4} ><CloseButton bg="#d3d2d2" p={3} onClick={handleClose} /></Flex>
 
-                        <Box id="agre-letter-preview" fontFamily="Georgia">
+                        <Box id="agre-letter-preview" fontFamily="Georgia" >
                             <VStack spacing={0}>
-                                <Box className="pdf-page" textAlign="justify" >
-                                    <Text fontWeight="bold" fontSize="22px" textAlign="center" mt="7rem">EMPLOYMENT AGREEMENT</Text>
-                                    <Text color="gray.500" mt="1rem" textAlign="center">This agreement lays down the terms of employment, agreed upon by the employer and employee. Whether stated explicitly in the agreement or not, both the employee and the employer have the duty of mutual confidence and trust, and to make only lawful and reasonable demands on each other.</Text>
-                                    <Divider borderColor="black"
-                                        borderWidth="1px"
-                                        w="92%"
-                                        mt="2rem" mb="1rem" />
-                                    <Text textAlign="center" wordSpacing="1px">This EMPLOYMENT AGREEMENT (Hereinafter, the “Agreement”) is entered into on this <br /> {formatDateLong(formData?.date_of_issue)}</Text>
-                                    <VStack gap="1.5rem" alignItems="center" >
-                                        <Text fontWeight="600" mt="2rem">BY AND BETWEEN</Text>
-                                        <Text overflow="hidden"> <strong style={{ textDecoration: "underline" }}>JAMIDARA SEEDS CORPORATION</strong>, - FORM A UNDER SECTION 58 OF THE INDIAN PARTNER-SHIP ACT.1932 having its registered office at_ <strong style={{ textDecoration: "underline" }}>105,NEMI CHAND MARKET ALWAR RAJ.</strong>(hereinafter referred to as the “Company” or “Employer”, which expression shall, unless repugnant to the meaning or context hereof, be deemed to include all permitted successors and assigns), </Text>
-                                        <Text fontWeight="600">AND</Text>
-                                        <Text overflow="hidden"><strong style={{ textDecoration: "underline" }}>{employee?.name} son/of  {employee?.father_name}, aged {age} years </strong> and residing at <strong style={{ textDecoration: "underline" }}> S/0 {employee?.father_name}, {employee?.address_line1}, {employee?.area}, DIST.- {employee?.district} - {employee?.pincode} ({employee?.state})</strong> (Hereinafter referred to as the "Employee", which expression shall, unless repugnant to the meaning or context hereof, be deemed to include all permitted successors and assigns). </Text>
+                                {/* part 1st  */}
+                                {/* page 1 */}
+                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="13px" lineHeight="1.6">
 
-                                        <Text overflow="hidden"><strong>WHEREAS,</strong> the parties hereto desire to enter into this Agreement to define and set forth the terms and conditions of the employment of the Employee by the Company;</Text>
-                                        <Text overflow="hidden"><strong>NOW, THEREFORE,</strong> in consideration of the mutual covenants and agreements set forth below, it is hereby covenanted and agreed by the Company and the Employee as follows:</Text>
-                                    </VStack>
-                                    <Box>
-                                        <Text textAlign="center" fontSize="12px" color="#a8b9d2 !important" mt="6rem">1</Text>
-                                    </Box>
+                                    <Text textAlign="center" fontWeight="bold" textDecoration="underline" fontSize="20px" mt={40}  >
+                                        DISTRIBUTOR   AGREEMENT FORM
+                                    </Text>
+
+                                    <Text mt={10}>
+                                        This Distributorship Agreement (“Agreement”) is made and entered into this ____________________ by and between
+                                    </Text>
+
+                                    <Text mt={4}>
+                                        <mark> <strong>JAMIDARA SEEDS CORPORATION </strong>  </mark>, a Company INDIAN PARTNER-SHIP ACT,1932,  and having its ZONEL registered office at, <strong> JAMIDARA SEEDS CORPORATION 73,GANESH NAGAR-||, MURLIPURA JAIPUR (RAJ)-302039, </strong> registered office at JAMIDARA SEEDS CORPORATION 105 NEMI CHNAD MARKET ALWAR-301001, (hereinafter referred to as “the Company”) which expression shall, unless repugnant to the subject or context or meaning thereof, include, if applicable, successors and assigns) of the ONE PART.
+                                    </Text>
+
+                                    <Text mt={4} textAlign="center" fontSize="15px">And</Text>
+
+                                    <Text mt={4}>
+                                        <mark><strong>  {formData?.firm_name} </strong> </mark>,  a {formData?.firm_type} concern having its place of business at <strong> {formData?.business_address}. </strong>Represented through its proprietor.<strong>{ownerAddress?.name}{partners?.name} </strong> residing at S/O-<strong>{ownerAddress?.father_name}{partners?.father_name}</strong> address <strong> {ownerAddress?.address}{partners?.address}</strong> (hereinafter collectively referred to as “Distributor” ) which expression shall unless repugnant to the context or meaning thereof be deemed to include his /her heirs, executors, administrators, permitted assigns and successors of the OTHER PART.
+                                    </Text>
+
+                                    <Text mt={4}>
+                                        Company and Distributor both hereinafter referred individually as “Party” or collectively as the “Parties”.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold">WHEREAS:</Text>
+
+                                    <Text mt={4}>
+                                        (A)  Company carries on the business of manufacturing, marketing, distribution of various SEEDS like  VEGETABLE SEEDS, CROPS SEEDS , FODDER SEEDS ,crop protection chemicals etc. (hereinafter referred to as “the Products”);
+                                    </Text>
+
+                                    <Text mt={3}>
+                                        (B)  Distributor had approached and represented to the Company that it has got the required valid  Seeds, pesticide ,license, skill and experience to market the  seeds & agro chemical products and has shown interest to act as a Distributor of the said Products on non-exclusive basis for the Company at <strong>{formData?.tarritory}</strong>(“Territory”);
+                                    </Text>
+
+                                    <Text mt={3}>
+                                        (C)  Company, based on the representation of the Distributor and documents / details submitted / agreed to submit (more specifically detailed in Annexure “A” herein) appointed it as a Distributor for <strong> {formData?.tarritory}</strong>  marketing the said Products in the said  <strong>{formData?.district} </strong> Territory;
+                                    </Text>
+
+                                    <Text mt={3}>
+                                        (D)  The Parties herein now agrees to reduce in writing the terms and conditions under which the Distributor was engaged by the Company, which are as follows.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold">
+                                        NOW THIS AGREEMENT WITHNESSETH AND IT IS HEREBY AGREED BY AND BETWEEN THE PARTIES HERETO AS FOLLOWS;
+                                    </Text>
                                 </Box>
-                                <Box className="pdf-page page-break">
-                                    <VStack width="95%" margin="auto" gap="1rem">
-                                        <Box mt="4rem" overflow="hidden">
-                                            <Box overflow="hidden">
-                                                <Text fontSize="24px" fontWeight="bold" mb="1rem">1.	Interpretation</Text>
-                                                <Text fontSize="15px">In this agreement the following terms shall have the following meanings:</Text>
-                                            </Box>
-                                            <HStack alignItems="baseline" mb="1.2rem" overflow="hidden">
-                                                <Text width="34%">a)  “Confidential  Information”</Text>
-                                                <Text textAlign="justify" width="100%" fontSize="15px">Any trade secret or other information which is confidential or commercially sensitive and which is not in the public domain (other than through the wrongful disclosure by the Employee) and which belongs to any Group Company (whether stored or recorded in documentary or electronic form) and which (without limitation) relates to the business methods, management systems, marketing plans, strategic plans, finances, new or maturing business opportunities, marketing activities, processes, inventions, designs or similar of any Group Company, or to which any Group Company owes a duty of confidentiality to any third party and including in particular [insert specific named items of Confidential Information];</Text>
-                                            </HStack>
-                                            <HStack alignItems="baseline" mb="1.2rem" overflow="hidden">
-                                                <Text width="34%">b) “The Employment”</Text>
-                                                <Text textAlign="justify" width="100%" fontSize="15px">The employment of the Employee by the Company in accordance with the terms of this agreement;</Text>
-                                            </HStack>
-                                            <HStack alignItems="baseline" mb="1.2rem" overflow="hidden">
-                                                <Text width="34%">c) “Group Company”</Text>
-                                                <Text textAlign="justify" width="100%" fontSize="15px">The Company, any company of which it is a Subsidiary (being a holding company of the Company) and any Subsidiaries of the Company or any holding company, from time to time;</Text>
-                                            </HStack>
-                                            <HStack alignItems="baseline" mb="1.2rem" overflow="hidden">
-                                                <Text width="34%">d) “Subsidiary”</Text>
-                                                <Text textAlign="justify" width="100%" fontSize="15px">A company as defined in section 1159 of the Companies Act 2006;</Text>
-                                            </HStack>
-                                            <HStack alignItems="baseline" mb="1.2rem" overflow="hidden">
-                                                <Text width="34%">e) “Termination Date”</Text>
-                                                <Text textAlign="justify" width="100%" fontSize="15px">The date on which the Employment ceases.</Text>
-                                            </HStack>
-                                        </Box>
+                                {/* 1 st page end here  */}
 
+                                {/* 2second page start  */}
+                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="13px" lineHeight="1.6">
+
+                                    <Text mt={6} fontWeight="bold" textDecorationLine="underline"> 1. ENGAGEMENT</Text>
+
+                                    <Text mt={3}>
+                                        Company have granted to Distributor and Distributor have accepts from Company the non-exclusive right to distribute the Products in the Territory, upon and subject to all terms and conditions set forth in this Agreement. Company shall sell and the Distributor shall purchase on a principal to principal basis the Products offered by the Company. Distributor covenants and agrees to purchase the said products for its own account exclusively from Company and to market, distribute and sell the same only in the Territory based on the label claim of the Product and in compliance with all statutory provisions.
+                                    </Text>
+
+                                    <Text mt={3}>
+                                        Company reserves its right to appoint more than one Distributor at its own discretion in the Territory in which the Distributor shall operate under this Agreement. The Company shall also have the right to sell the Products directly to any other person / party in the Territory of the Distributor or appoint additional Distributors/dealers (s) in the Territory.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 2. TERM</Text>
+
+                                    <Text mt={3}>
+                                        This appointment (unless otherwise terminated as provided in Termination clause) shall be effective from 8ST APRIL,2023. This Aagreement shall remain valid until terminated in terms of this present.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">3. TERMS OF SECURITY DEPOSIT</Text>
+
+                                    <Text mt={3}>
+                                        (i)  Distributor has furnished an amount of Rs.<mark> <strong> {formData?.security_amount} {toWords(formData?.security_amount || 0)}/- </strong> (Rupees) </mark> as and by way of interest free Security Deposit for due performance of the terms and conditions mentioned in this Agreement.
+                                    </Text>
+
+                                    <Text mt={3}>
+                                        (ii)  Distributor shall furnish all necessary security documents as per requirement of Company from time to time. Further, Distributor will keep as a security its secured assets which will depend goods/ stocks made available to it. Company will not have any right over said assets but if Distributor defaults its payment then Company will use its right to lien over said assets to the extent of amount of default.
+                                    </Text>
+
+                                    <Text fontWeight="bold" textDecoration="underline"> 4. PRICE</Text>
+
+                                    <Text mt={3}>
+                                        (i) Products will be sold to Distributor at a price in force. All levies, duties, Octopi or any other taxes etc, as may be applicable from time to time will be charged extra. No other discount like quantity, etc will be allowed unless explicitly specified in writing by Company. Company reserves the right to change the price of the Products or vary/ alter the terms and conditions of sale, if necessary from time to time.
+                                    </Text>
+
+                                    <Text mt={3}>
+                                        (ii)  The said prices shall be carriage Pay to (CPT) basis at the Company’s premises and shall be exclusive of GST payable on the Products or in respect of the sale or purchase thereof.
+                                    </Text>
+
+                                    <Text mt={3}>
+                                        (iii)  Company further reserve to itself the absolute right to revise the prices of the Products and or the term and conditions for delivery and payment from time to time and such revised prices terms and conditions shall come into effect from the date announced by the Company to the Distributor.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold">5. PAYMENT</Text>
+
+                                    <Text mt={3}>
+                                        (a)  Distributor shall make payment to Company in accordance with the terms and conditions specified in the Invoice accompanying each consignment of the Products supplied to it. Any delay in payment would make Distributor liable to pay interest from the due date till the date of realization of payment, at such rate as may be specified in the Invoice.
+                                    </Text>
+
+                                    <Text mt={3}>
+                                        (b)  Company shall have lien over the Products sold and supplied by Company until Distributor pays the entire sale price of the same to the Company. The Company shall have right to take back entire or part of the Products as it deems fit and proper to recover its dues.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 6. CASH DISCOUNT</Text>
+
+                                    <Text mt={3}>
+                                        Cash Discount, if any shall be as mentioned in prevailing price list or any cash discount scheme as offered by Company in writing,
+                                    </Text>
+                                </Box>
+
+                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="13px" lineHeight="1.6">
+
+
+                                    <Text mt={3}>such cash discount will only be considered on that amount which has been received by Company within the stipulated time. Date of demand draft and / or day of deposit of Cash /cheques / online transfer will be considered by the Company to offer Cash Discount, if any.</Text>
+
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">7. THE MAXIMUM CREDIT PERIOD</Text>
+
+                                    <Text mt={3}>
+                                        The maximum credit period will be <mark> <strong>
+                                            {formData?.credit_duration_period} ( {toWords(formData?.credit_duration_period || 0)})
+                                        </strong></mark> days from the date of Invoice. In case of any delay in payment over the stipulated time, interest at the rate of 24 % per annum shall be charged by the Company.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 8. PAYMENT TERMS FOR CREDIT SALE</Text>
+
+                                    <Text mt={3}>
+                                        (i)  Payment towards credit sales shall be made within the stipulated period by way of RTGS/NEFT transfer/DD/Cheque.
+                                    </Text>
+
+                                    <Text mt={3}>
+                                        (ii)  No cash to be handed over to any of Company’s sales or development staff. No reimbursement to Distributor will be made by the Company for any cash given to the Sales / development staff under any circumstances.
+                                    </Text>
+
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 9.DELIVERY</Text>
+
+                                    <Text mt={3}>
+                                        Company’s liability shall cease when the Products are delivered by the Company to the carrier at despatching point for delivery to the Distributor’s place. However, Company may at its discretion deliver the Products to the Distributor premises at its cost.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 10. SALES PROMOTION</Text>
+
+                                    <Text mt={3}>
+                                        Apart from adequate stock keeping it is clearly understood that the Distributor shall engage itself in active selling, including participation in local and/ or regional agricultural fairs and exhibitions and in general, contribute to the promotion of sales of the Products in co-operation with Company’s representatives.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">11. STOCK RETURNS</Text>
+
+                                    <Text mt={3}>
+                                        For any stock returns or replacement, to and fro fright charges will be debited to the Distributor within 15 days from the date of Invoicing for replacement subject to the approval of the Zonal head of Company.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">12. DAMAGED/ LEAKAGE STOCKS</Text>
+
+                                    <Text mt={3}>
+                                        (i)  Any damage or leakage stocks should be intimated by the Distributor within 15 days from the date of receipt:
+                                    </Text>
+
+                                    <Text mt={3}>
+                                        (ii)  Copy of Company’s area manager/ area officer’s verification report, which is obtained by the Distributor during his first visit to Distributor after being advised of the damage/ leakage and duly counter signed by the area manager/ regional head.
+                                    </Text>
+
+                                    <Text mt={3}>
+                                        (iii)  All the defective containers and stored material shall have to be forwarded to the depot within 7 days after the above verification.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">13. CLAIMS</Text>
+
+                                    <Text mt={3}>
+                                        Claims based on verbal commitments made by the sales/ field staff without the prior sanction in writing from Zonal Heads, will not be entertained or passed under any circumstance.
+                                    </Text>
+
+                                    <Text mt={5} fontWeight="bold" textDecoration="underline"> 14. POLICY ON DISHONORED CHEQUES</Text>
+
+                                    <Text mt={3}>
+                                        A service chares @ 2.6% of the cheque value per dishonoured cheques will be levied in case of dishonour of cheques issued against any Invoice issued for the supplies made. The Company reserves the right to discontinue the supplies if more than 3 cheques are dishonoured. In case, more than 2 cheques are dishonoured, during a financial year then the Company shall have the right to withdraw or reduce any discounts or schemes incentives that are offered from time to time and may also result in a downward revision of the credit ceiling offered to the Distributor.
+                                    </Text>
+                                </Box>
+
+                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="13px" lineHeight="1.6">
+                                    <Text mt={3}>Distributor shall honour each cheque on presentation and no excuse will be considered. The Company shall have the absolute right to initiate any proceedings which includes but not limited to proceedings under section 138 of the Negotiable Instruments Act and any amendment thereof in the event of dishonour of cheque.</Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">15. CONFIDENTIALITY</Text>
+
+                                    <Text mt={3}>
+                                        Distributor recognizes and agrees that the information to which it has access as a result of the present Agreement have a relevant commercial value, and that its non-authorized disclosure may result in substantial damages to the Company. Therefore, except when previously and expressly authorized by Company, the Distributor agrees not to disclose, even after the termination or cancellation of the present.
+                                    </Text>
+                                    <Text fontWeight="bold" textDecoration="underline"> 16. INDEMNITY</Text>
+
+                                    <Text mt={3}>
+                                        Distributor shall indemnify and keep harmless at all times the Company and its officials,  representatives from and/ or against all claims, demands, actions, proceedings, fines, expense, penalties and other liabilities of whatsoever nature made or brought against Company and its officials,  representatives etc. as a consequence of any non-compliance on the part of the Distributor.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 17. FORCE MAJEURE</Text>
+
+                                    <Text mt={3}>
+                                        Neither party shall be held responsible for non- fulfilment of its respective obligations under this Agreement due to the existence of one or more of the force majeure events such as but not limited to acts of God, war, flood, earthquakes, strikes not confirmed to the premises of the party, lockouts beyond the control of the party claiming force majeure.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 18. WARRANTY</Text>
+
+                                    <Text mt={3}>
+                                        The Company manufactures the Products as per the highest available quality standards. The Products manufactured and then sold by the Company are duly tested and are suitable for the purpose recommended, if correctly applied in conformity with the label claim / instructions / leaflet. However, since the Company cannot exercise sufficient control over the end use or application by the user, the Company accepts no responsibility for any damage arising directly or indirectly from their inappropriate use. Company shall not be responsible for any legal action initiated by the department of agriculture against the Company in Distributor’s designated area due to inappropriate use of the Products.
+                                    </Text>
+
+
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 19. TRADEMARKS</Text>
+
+                                    <Text mt={3}>
+                                        Distributor shall not use or be deemed to have the right to use any Trade Mark, trade name, colour scheme or legend of Company under which the Products are sold to Distributor. On the termination of this Agreement, Distributor shall immediately discontinue the use in any manner whatsoever all such Trade Mark, trade names, designs, colour, schemes or legends.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 20. PRINCIPAL TO PRINCIPAL AGREEMENT</Text>
+
+                                    <Text mt={3}>
+                                        This Agreement is on a principal to principal basis and Distributor shall not in any way represent itself to be a Company’s agent. Company shall not be liable for any act or any omission on Distributor’s part. Distributor shall give an undertaking that it will market the Products supplied to it by Company and it shall not alter the labels of the containers or packages in any way and shall not deface, remove, obliterate or in any manner modify or alter the Trade Marks, grade indications and other matters appearing thereon.
+                                    </Text>
+
+                                </Box>
+
+
+                                {/* fourh 4page  */}
+                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="13px" lineHeight="1.6">
+                                    {/* part 4 */}
+
+
+                                    <Text fontWeight="bold" textDecoration="underline"> 21. DISPUTES AND JURISDICTION</Text>
+
+                                    <Text mt={3}>
+                                        Any disputes arising between the Distributor and the Company shall be resolved by mutual discussion. Unresolved disputes, if any shall be referred to Arbitration by a sole Arbitrator to be appointed by the Company under the provisions of the Arbitration and Conciliation Act, 1996. The venue of Arbitration shall be ALWAR. This Agreement shall be governed by the laws of India and subject to the jurisdiction of courts of ALWAR.
+                                    </Text>
+
+                                    <Text mt={8}>
+                                        IN WITHNESS WHEREOF the parties hereto have subscribed their hands to these presents on the day and month herein above first entered
+                                    </Text>
+
+
+
+
+
+                                    <Text fontWeight="bold" textDecoration="underline">
+                                        21. DUTIES / OBLIGATIONS OF DISTRIBUTOR
+                                    </Text>
+
+                                    <Text mt={3}>
+                                        The Distributor shall:
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        i) use its best efforts to sell and promote Products in the Territory, including (i) attendance by Distributor at trade shows at which Distributor shall promote the Products, (ii) listing the products in Distributor’s product lists and other marketing information.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        ii) protect Copyrights, Trade Marks and other proprietary rights of Company in the Products.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        iii) offer technical support of the products to its customers and to advise Company immediately if it is unable to respond to customer inquiries / complaints effectively.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        iv) Comply with all applicable laws and ordinances in performing its duties under this Agreement and in any of its dealings with Company or the Products. Distributor agrees that it will not export or re-export any products.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        v) sell the Products in compliance with the approved label claims.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        vi) not re sell the Products at prices higher than the maximum recommended retail prices stipulated by the Company from time to time.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        vii) when required by the Company, the distributor shall execute on its own behalf and or/on behalf of its associate/affiliate/subsidiary concerns guarantee/s in favour of the Company, in the form/s and for the amount/s determined by the Company and shall also renew such guarantee/s whenever due. Notwithstanding anything herein contained the Distributor shall furnish any additional Security, Bond or undertaking as may be required by the Company at its sole discretion.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        viii) being fully aware of the hazardous/toxic nature of the Products and shall undertake to comply with all statutory precautions and shall be solely responsible and liable for their safe custody at its storage points and their safe transportation and handling. Company shall not be liable or responsible for any loss, damage or injury incurred or suffered by the Distributor or any of its employee or workmen or contractor engage by it in the course of handling or transportation of the Products or otherwise however and the distributor shall at all times, indemnify and keep indemnified the Company from and against all claims, demands, fines, penalties, actions, proceedings and liabilities of whatsoever nature made, imposed, brought against or suffered by the Company by reason of any such loss, damage or injury aforesaid.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        ix) always maintain adequate stock during the term of this Agreement and shall submit Products inventory in detail to the Company within eight 8 (Eight) days from the end of each calendar month recording detail of the Inventory Products / stocked by the Distributor in the preceding colander month together with a statement showing the Products sold by it during such calendar month. The Distributor shall follow an annual marketing plan as per the requirement of the Company.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        x) from time to time advise the Company in writing of all local laws and regulations relating to the storage, sale and use of the Products.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        xi) observe and comply with all the applicable laws, orders, ordinances, notifications, rules, regulations, legislations or other enactments, or modifications thereof for the time being in force relating or in any wise appertaining to the performance by the Distributor of its duties and obligations under the Agreement.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        xii) maintain at his/its office / Shops / Godowns all Registers, books, Records as would be statutorily required under various laws and maintain infrastructure like computers/printer as may be required of him/it for facilitating the transfer of data/information to the Company.
+                                    </Text>
+
+                                    <Text mt={4}>
+                                        xiii) rotate the said Products on a first-in-first out basis. If any quantities of the said Products remain unsold and expired, then the same will be to the account of the Distributor only. The Distributor cannot force the Company to take back any expired stocks.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        xiv) not tamper with or in any way alter, modify, change, process, reprocess, adapt, or treat the Products and/or their packing and shall not sell / keep for sale or offer to sell/barter/ supply the said Products, as supplied by the Company, after the Expiry Date mentioned on the container, mark or label.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        xv) forthwith intimate the Company in the event of seizure of any Products by statutory Authority in the Territory and send all the documents in respect of the same.
+                                    </Text>
+
+                                </Box>
+
+                                {/* 5th page  */}
+                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="12px" lineHeight="1.5">
+
+                                    <Text mt={2}>
+                                        xvi) forthwith intimate the Company in the event of receipt of any Notice from the statutory Authority concerning misbranding etc.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        xvii) assist the Company in any matter as and when required by the Company in the Territory
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">
+                                        22. LEGAL REQUIREMENTS / COMPLIANCE
+                                    </Text>
+
+                                    <Text mt={3}>
+                                        Distributor shall be obliged to take all requisite registrations, licenses, permissions, etc., including but not limited to under the provisions of Seeds ACT-1966 & Seed act 1983,Insecticides Act,1968 & Rules framed there under, Fertilizer (Control) Orders, Legal Metrology Act, 2009 & Rules framed there under, Goods and Service Tax & Rules framed there under, any and all Central and State Acts or Rules which is mandatorily required for doing business for stocking, exhibiting, transporting, selling of the Products, before commencement of operations and submit copies of such registrations/licenses/permissions to the Company and should renew and keep the same valid from time to time. In case of any change of statutory provisions by way of any Acts, Order, Notifications etc. then it will be the sole responsibility of the Distributor to comply such provisions and to immediately intimate to the Company. Further, Distributor will also arrange a proper godown for storage of the said products and if any storage license is necessary such license from the concerned authority shall also be obtained by the Distributor in its own name and at its own cost.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">
+                                        23. PROHIBITION AGAINST RE-FORMULATION OF THE PRODUCTS
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        Distributor under no circumstances breaks open the packages, containing the Products and re-sell them in their existing form or re-formulated, mixed or blended with any other goods.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">
+                                        24. PROHIBITION AGAINST COMPETITIVE MANUFACTURE
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        Distributor undertake not to, directly or indirectly, manufacture the Products or any of them by itself or through any third party / related party.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">
+                                        25. ASSIGNMENT:-
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        Distributor shall not assign, delegate or transfer any of the rights, duties or obligations under this Agreement without Company’s prior written consent.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">
+                                        26. NOTICE
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        Distributor shall forthwith inform Company of any change in its status (Proprietary, Partnership, Company etc.) location, telephone or fax number by giving written notice of such change.
+                                    </Text>
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">
+                                        27. TERMINATION:-
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        a) Company reserves the right to terminate this Agreement by giving 30 (Thirty) days’ notice in writing without assigning any reason. Distributor also has right to terminate this Agreement by giving 90 (Ninety) days’ notice subject to the entire outstanding payments being cleared along with interest, if any, pertaining to all the supplies made to Distributor.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        b) Company shall be entitled to terminate this Agreement forthwith without any notice if Distributor is found to be violating the terms & conditions of this Agreement including dishonour of cheque or non – payment of any cheque / Invoice amount.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        c) Any termination or expiration of this Agreement shall be without prejudice to any claim, remedy or right of action, previously accrued to either party against the other. Provided further Company shall not be liable or responsible for payment of any compensation to the Distributor on this Agreement being terminated as per the provisions herein above.
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        d) Upon expiration or termination of this Agreement, the Distributor shall forthwith return to the Company all Samples, display, photographs, brochures, and other printed sales promotional material and literature and other property to the Company. The Distributor further agrees to remove all signs or evidences of his/its relationship with Company on such expiration or termination.
+                                    </Text>
+                                    <Text>
+                                        e) Upon termination of this Agreement for any reason the Company shall make and prepare a final account in respect of its dealings with the Distributor and shall submit such account statement in duplicate to the Distributor, any amount to be due payable under such account by the Distributor to Company shall be paid by Distributor within 8 (Eight) days from the date of submission of such account to the Distributor. The final account prepared by Company as aforesaid shall be final and binding upon the Distributor and shall not be called in question, except for any manifest error which may be apparent on the face thereof.
+                                    </Text>
+                                    <Text>f)Any notice contemplated hereunder shall be deemed to be properly made if served on its last known address in Distributor’s record.</Text>
+
+                                </Box>
+
+                                {/* sixth page 6 */}
+                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="12px" lineHeight="1.5">
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">
+                                        28. DISPUTES AND JURISDICTION
+                                    </Text>
+
+                                    <Text mt={6}>
+                                        Any disputes arising between the Distributor and the Company shall be resolved by mutual discussion. Unresolved disputes, if any shall be referred to Arbitration by a sole Arbitrator to be appointed by the Company under the provisions of the Arbitration and Conciliation Act, 1996. The venue of Arbitration shall be<strong> {formData?.jurisdiction_district}</strong>. This Agreement shall be governed by the laws of India and subject to the jurisdiction of courts of <strong>{formData?.jurisdiction_district}</strong>.
+                                    </Text>
+                                    <Text mt={6}>
+                                        IN WITHNESS WHEREOF the parties hereto have subscribed their hands to these presents on the day and month herein above first entered
+                                    </Text>
+
+                                    <Text mt={10}>
+                                        SIGNED and DELLIVERED for and on<strong> Jamidara SEEDS CORPORATION </strong>
+                                    </Text>
+                                    <Text mt={5}>Behalf of the with named Company<strong> Jamidara SEEDS CORPORATION </strong></Text>
+                                    <Text mt={10}>Through its M.D:– Supply Chain_________________________________</Text>
+                                    <Text mt={10}>GM – Supply Chain                         )</Text>
+
+                                    <Text>In the presence of (witnesses) </Text>
+
+                                    <Text>1. ____________________________________ </Text>
+                                    <Text>2. ____________________________________ </Text>
+
+
+
+
+
+                                    <Text>
+                                        SIGNED and DELIVERED for and on Jamindara SEEDS CORPORATION
+                                    </Text>
+
+                                    <Text>
+                                        Behalf of the with named Company Jamindara seeds Corporation
+                                    </Text>
+
+                                    <Text mt={2}>
+                                        Through its M.D – Supply Chain
+                                    </Text>
+
+                                    <Text mt={4}>
+                                        GM – Supply Chain
+                                    </Text>
+
+                                    <Text mt={6}>
+                                        In the presence of (witnesses)
+                                    </Text>
+
+                                    <HStack mt={4} spacing="80px">
+                                        <Text>1. ____________________</Text>
+                                        <Text>2. ____________________</Text>
+                                    </HStack>
+
+
+                                    <Text mt={10}>
+                                        SIGNED and DELIVERED for and on For
+                                    </Text>
+
+                                    <Text>
+                                        Behalf of the with named Distributor
+                                    </Text>
+
+                                    <HStack mt={4} justify="space-between">
                                         <Box>
-                                            <Text fontSize="20px" fontWeight="bold" mb="10px">2. Position</Text>
-                                            <Text mb="18px" fontSize="15px" textAlign="justify">a)  Upon execution of this Agreement, the employee would be posted as the <strong style={{ textDecoration: "underline" }}> {employee?.job_role_name} </strong>of the Company. <strong style={{ textDecoration: 'underline' }}> H.Q. {employee?.headquarter} OFFICE  Area: {employee?.area}.</strong></Text>
-                                            <Text mb="18px" fontSize="15px" textAlign="justify">b)  During the term period of this Agreement, the Company may change the employee's above mentioned post (or position) or location based on the Company's production, operation or working requirements or according to the employee's working capacities and performance, including but not limited to adjustments made to the employee's job description or work place, promotion, work transfer at the same level, and demotion, etc., or adjustments made to the employee's responsibilities without any change to employee's post (or position).</Text>
+                                            <Text>Through its PROPRIETOR</Text>
+                                            <Text mt={6}>______________________ </Text>
                                         </Box>
 
-
-                                    </VStack>
-                                    <Box>
-                                        <Text textAlign="center" fontSize="12px" color="#a8b9d2 !important" mt="3.5rem">2</Text>
-                                    </Box>
-                                </Box>
-                                <Box className="pdf-page page-break">
-                                    <VStack width="95%" margin="auto" gap="1rem">
-                                        <Box mt="4rem">
-                                            <Box>
-
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">3. Term and Probation Period</Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">a) It is understood and agreed that the first {formData?.probitionary_period} MONTH ({probationDays}) days of employment shall constitute a probationary period (“Probationary Period”) during which period the Employer may, in its absolute discretion, terminate the Employee's employment, without assigning any reasons and without notice or cause.</Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">b)  After the end of the Probationary Period, the Employer may decide to confirm the Employment of the Employee, in its sole discretion.</Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">c)  After the end of the Probationary Period, this Agreement may be terminated in accordance with Clause 12 of this Agreement.</Text>
-                                            </Box>
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px"> 4. Performance of Duties </Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">a)  The Employee agrees that during the Employment Period, he/she shall devote his/her full business time to the business affairs of the Company and shall perform the duties assigned to him/her faithfully and efficiently, and shall endeavor, to the best of his/her abilities to achieve the goals and adhere to the parameters set by the Company. </Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">b)  The Employee shall be responsible for:</Text>
-                                                <Box ml="1rem">
-                                                    <Text mb="18px" fontSize="15px" textAlign="justify">i.  Achieving the performance targets and measurable goals assigned by the Company from time to time. The Employee understands that his/her work will be evaluated based on defined performance indicators, and salary revisions, incentives, confirmation, or continued employment will depend on satisfactory performance.</Text>
-                                                    <Text mb="18px" fontSize="15px" textAlign="justify">ii. Properly carrying out the duties and responsibilities related to his/her role, including timely completion of assigned tasks, maintaining quality standards, taking ownership of work, and contributing to the overall objectives of the department. These responsibilities shall form part of the Employee’s defined areas of responsibility.</Text>
-                                                    <Text mb="18px" fontSize="15px" textAlign="justify">iii. Following all Company policies, rules, reporting systems, and Standard Operating Procedures (SOPs), and ensuring that all work is performed in accordance with the processes, guidelines, and ethical standards set by the Company from time to time.</Text>
-                                                </Box>
-                                            </Box>
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">  5.  Compensation </Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">Subject to the following provisions of this Agreement, during the Employment Period, the Employee shall be compensated for his services as follows:</Text>
-                                            </Box>
+                                        <Box textAlign="right">
+                                            <Text>Name:{formData?.customername}</Text>
+                                            <Text mt={2}>Designation: PROPRIETOR</Text>
                                         </Box>
-                                    </VStack>
-                                    <Box>
-                                        <Text textAlign="center" fontSize="12px" color="#a8b9d2 !important" mt="3.6rem">3</Text>
+                                    </HStack>
+
+
+                                    <Text mt={10}>
+                                        In the presence of (witnesses)
+                                    </Text>
+
+                                    <HStack mt={4} spacing="80px">
+                                        <Text>1. ____________________</Text>
+                                        <Text>2. ____________________</Text>
+                                    </HStack>
+                                </Box>
+
+
+
+                                <Box
+                                    className="pdf-page"
+                                    p="40px"
+                                    fontFamily="Times New Roman"
+                                    fontSize="12px"
+                                    lineHeight="1.6"
+                                >
+
+                                    <Box mt={16} border="2px solid black">
+
+                                        <Text textAlign="center" fontWeight="bold" mt={2}>
+                                            Annexure "A"
+                                        </Text>
+
+                                        <Text textAlign="center" mb={2}>
+                                            List of Documents of the Distributor
+                                        </Text>
+                                        <Table variant="simple" size="sm" sx={{ borderCollapse: "collapse" }}>
+                                            <Tbody>
+                                                {[
+                                                    [
+                                                        "Name and Address of the Distributor (with valid address document)",
+                                                        `${formData?.firm_name || ""}, ${formData?.business_address || ""}`
+                                                    ],
+
+                                                    [
+                                                        "Name of Key Person/s with Aadhaar No.",
+                                                        `${personName || ""}, ${personAadhar || ""}`
+                                                    ],
+
+                                                    [
+                                                        "Residential Address (with supporting documents)",
+                                                        personAddress
+                                                    ],
+
+                                                    [
+                                                        "Contact No. (Official & Residential)",
+                                                        `${personContact || ""}, ${formData?.responsile_Alternat_person_no || ""}`
+                                                    ],
+
+                                                    ["E-mail Id", formData?.firm_email_id],
+
+                                                    ["SEED License No.", formData?.seed_license],
+
+                                                    ["PESTICIDE License No.", formData?.pesticide_license],
+
+                                                    ["FERTILIZER SEED License No.", formData?.fertilizer_license],
+
+                                                    ["GST Registration No.", formData?.firm_gstn_no],
+
+                                                    ["Name of the Banker", formData?.bank_name],
+
+                                                    ["Account No.", formData?.bank_account],
+
+                                                    ["Bank Guarantee, if any", "Na"]  ,
+                                                    [ "Authority Letter for signing the Agreement (if applicable)",
+                                                        isSolo ? "NA" : "YES" ],
+                                   
+                                                ].map((row, i) => (
+                                                    <Tr key={i}>
+                                                        <Td border="1px solid black" p="6px" w="50%">
+                                                            {row[0]}
+                                                        </Td>
+                                                        <Td border="1px solid black" p="6px" w="50%">
+                                                            {row[1] || " "}
+                                                        </Td>
+                                                    </Tr>
+                                                ))}
+                                            </Tbody>
+                                        </Table>
+
                                     </Box>
                                 </Box>
-                                <Box className="pdf-page page-break">
-                                    <VStack width="95%" margin="auto" gap="1rem">
-                                        <Box mt="4rem">
-                                            <Text mb="18px" fontSize="15px" textAlign="justify">a) &nbsp; The Employee shall receive an annual salary, payable in monthly or more frequent installments, as per the convenience of the Employer, an amount of {employee?.salary}/- per annum/ month, subject to such increases from time to time, as determined by the Employer. Such payments shall be subject to such normal statutory deductions by the Employer.</Text>
-                                            <Text mb="18px" fontSize="15px" textAlign="justify">b) &nbsp; During the term of this Agreement, the Employee's salary shall be paid by means of bank transfer, cheque, or any other method convenient to the Employer, and consented to by the Employee.</Text>
-                                            <Text mb="14px" textAlign="justify">c) &nbsp; All reasonable expenses arising out of employment shall be reimbursed assuming that the same have been authorized prior to being incurred and with the provision of appropriate receipts.</Text>
-                                            <Text mb="14px" textAlign="justify">d) The compensation specified in the Salary Annexure represents the full and final consideration payable to the Employee for services rendered. No other compensation, monetary or otherwise, shall be payable by the Company unless expressly agreed upon in writing by the Company.</Text>
-                                            <Text fontSize="20px" fontWeight="bold" mb="10px">  6.	Obligations of the Employee</Text>
-                                            <Text mb="14px" textAlign="justify">a) &nbsp; Upon execution of agreement, the Employee shall not engage in any sort of theft, fraud, misrepresentation or any other illegal act neither in the employment space nor outside the premise of employment. If he/she shall do so, the Company shall not be liable for such an act done at his own risk.</Text>
-                                            <Text mb="14px" textAlign="justify">b) &nbsp; The Employee further promises to never engage in any theft of the Employer’s property or attempt to defraud the Employer in any manner.</Text>
-                                            <Text mb="14px" textAlign="justify">c) &nbsp; The Employee shall always ensure that his/her conduct is in accordance with all the rules, regulations and policies of the Company as notified from time to time.</Text>
-                                            <Text mb="14px" textAlign="justify">d) &nbsp; The Employee shall not take up part-time or full-time employment or consultation with any other party or be involved in any other business during the term of his/her employment with the Company. In the event the Employee is found to be engaged in any such unauthorized employment, consultancy, or business activity, it shall be considered a material breach of this Agreement. In such circumstances, the Company shall have the legal right to take appropriate action, including but not limited to termination of employment and recovery of all salary, compensation, and benefits paid to the Employee from the date of joining until the date of discovery of such breach, subject to applicable laws.</Text>
-
-                                        </Box>
-                                    </VStack>
-                                    <Box>
-                                        <Text textAlign="center" fontSize="12px" color="#a8b9d2 !important" mt="3.5rem">4</Text>
-                                    </Box>
-                                </Box>
-                                <Box className="pdf-page page-break">
-                                    <VStack width="95%" margin="auto" gap="1rem">
-                                        <Box mt="4rem">
-                                            <Text mb="14px" textAlign="justify">e) &nbsp; The Employee shall always ensure that his/her conduct is in accordance with all the rules, regulations and policies of the Company as notified from time to time, including but not limited to Leave Policy and Sexual Harassment Policy.</Text>
-                                            <Text mb="14px" textAlign="justify">f) &nbsp; The Employer hereby prohibits the Employee from engaging in any sexual harassment and the Employee promises to refrain from any form of sexual harassment during the course of employment in and around the premise of employment. If the Employee violates this term in the agreement, he shall be fully responsible for his/her actions and the Employer shall not be held responsible for any illegal acts committed at the discretion of the Employee.</Text>
-                                            <Text mb="14px" textAlign="justify">h) &nbsp; Upon resignation or termination of employment, the Employee shall immediately return all Company property, including but not limited to laptop, mobile phone, SIM card, ID card, documents, and any other assets provided by the Company. The Employee shall also submit all required NOCs and complete handover formalities with dealers, distributors, or other relevant parties, as applicable. The Company reserves the right to withhold the full and final settlement, including salary and other dues, until all Company property is returned and all clearance and handover requirements are satisfactorily completed.</Text>
-                                            <Text mb="14px" textAlign="justify" textDecoration="underline" fontWeight="600">g) &nbsp; If  an  employee  receives  any  goods  or  cash  from  any  distributor  or  dealer and  pays  the  goods  and cash is  not  credited  to  the  account  of    the     concerned dealer   or  distributor  &  company,  the  company  shall,  in  that  case  be entitled to  pay  the  employees  security  checks  by  putting  the  money  and   obtaining the  payment  of  the  distributor  and  will  be  entitled  to take all type of legal action file  a  case  against  Employee  in  the  court.</Text>
-
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">  7. Leave Policy</Text>
-                                                <Text mb="14px" textAlign="justify">a) &nbsp; The Employee is entitled to ____ (_12__) days of paid casual leaves in a year including (_4_) days of sick leave and (_4_) day of injury leave. In addition, the Employee will be entitled to public holidays mentioned under the Leave Policy of the Employer.</Text>
-                                            </Box>
-                                            <Text mb="14px" textAlign="justify">b) &nbsp; The Employee may not carry forward or en cash any holiday to the next holiday year.</Text>
-                                            <Text mb="14px" textAlign="justify">c) &nbsp; In the event that the Employee is absent from work due to sickness or injury, he/she will follow the Leave Policy and inform the designated person as soon as possible and will provide regular updates as to his/her recovery and as far as practicable will inform the designated person of the Employer of his/her expected date of return to work.</Text>
-                                        </Box>
-
-                                    </VStack>
-                                    <Box>
-                                        <Text textAlign="center" fontSize="12px" color="#a8b9d2 !important" mt="3.5rem">5</Text>
-                                    </Box>
-                                </Box>
-                                <Box className="pdf-page page-break">
-                                    <VStack width="95%" margin="auto" gap="1rem">
-                                        <Box mt="4rem">
-                                            <Box>
-                                                <Text mb="14px" textAlign="justify">d) &nbsp; If the Employee is absent from work due to sickness or injury for more than three consecutive days he/she must submit to the Employer a self-certification form. If such absence lasts for more than seven consecutive days the Employee must obtain a medical certificate from his/her doctor and submit it to the employer.</Text>
-                                                <Text mb="14px" textAlign="justify">e) &nbsp; For any period of absence due to sickness or injury the Employee will be paid statutory sick pay only, provided that he satisfies the relevant requirements. The Employee’s qualifying days for statutory sick pay purposes are Monday to Friday.</Text>
-                                                <Text mb="14px" textAlign="justify">f) &nbsp; During any period or day when the Employee is authorized to work from home, the Employee shall be entitled to receive only the Basic Salary, and no other allowances, reimbursements, or additional compensation shall be payable unless expressly approved in writing by the Company.</Text>
-                                                <Text mb="14px" textAlign="justify">g) &nbsp; If the Employee avails any leave other than approved paid leave, the salary for such day(s) shall be deducted on a prorated basis. The remaining salary and eligible payments shall be made accordingly. Any travel or business-related expenses, if applicable, shall be reimbursed strictly in accordance with the Company’s Travel and Expense Policy.</Text>
-                                            </Box>
-                                            <Box>
-
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">  8.	Assignment</Text>
-                                                <Text mb="14px" textAlign="justify">a) &nbsp; The Employee acknowledges that any work including without limitation inventions, designs, ideas, concepts, drawings, working notes, artistic works that the Employee may individually or jointly conceive or develop during the term of Employment are “works made for hire” and to the fullest extent permitted by law, Employee shall assign, and does hereby assign, to the Employer all of Employee's right, title and interest in and to all Intellectual Property improved, developed, discovered or written in such works.</Text>
-                                                <Text mb="14px" textAlign="justify">b) &nbsp; Employee shall, upon request of the Employer, execute, acknowledge, deliver and file any and all documents necessary or useful to vest in the Employer all of Employee's right, title and interest in and to all such matters.</Text>
-                                            </Box>
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">9. Roles and Responsibilities</Text>
-                                                <Text mb="14px" textAlign="justify">The Employee shall perform duties and responsibilities related to sales and marketing as assigned by the Company from time to time. These responsibilities shall include, but are not limited to, achieving assigned sales targets, promoting the Company’s products and services, developing and maintaining relationships with dealers, distributors, and customers, identifying new business opportunities, and supporting business growth.
-                                                </Text>
-                                            </Box>
-
-                                        </Box>
-
-                                    </VStack>
-                                    <Box>
-                                        <Text textAlign="center" fontSize="12px" color="#a8b9d2 !important" mt="3.5rem">6</Text>
-                                    </Box>
-                                </Box>
-                                <Box className="pdf-page page-break">
-                                    <VStack width="95%" margin="auto" gap="1rem">
-                                        <Box mt="4rem">
-                                            <Text mb="14px" textAlign="justify">The Employee shall regularly visit assigned market areas, maintain proper communication with clients, and provide timely updates and reports to the Company. The Employee shall act in the best interest of the Company and perform all duties diligently, professionally, and in accordance with Company policies and instructions.</Text>
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">10. Indent and Reporting</Text>
-                                                <Text mb="14px" textAlign="justify">The Employee shall be responsible for preparing and submitting accurate indent reports, sales reports, visit reports, and other required documents in the prescribed format and within the specified timelines.
-                                                    The Employee shall ensure that all orders, market information, and business data submitted to the Company are accurate and genuine. Any delay, negligence, or submission of incorrect or false information shall be considered a breach of duties and may result in disciplinary action.</Text>
-                                            </Box>
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">11. Code of Conduct</Text>
-                                                <Text mb="14px" textAlign="justify">The Employee shall maintain professional behavior and uphold the highest standards of integrity, honesty, and discipline during the course of employment.
-                                                    The Employee shall comply with all Company policies, rules, and procedures, and shall not engage in any activity that may harm the reputation, business, or interests of the Company.
-                                                    The Employee shall maintain confidentiality of all Company information, including business strategies, client details, pricing, and internal communications, and shall not disclose such information to any third party without prior written permission from the Company.</Text>
-                                            </Box>
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">  12.	Competing Businesses  </Text>
-                                                <Text mb="14px" textAlign="justify"> During the Term of this Agreement and for a period of one (1) year after the termination of this Agreement, the Employee agrees not to engage in any employment, consulting, or other activity involving_______________ that competes with the business, proposed business or business interests of the Employer, without the Employer’s prior written consent. </Text>
-                                            </Box>
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">  13.	Confidentiality  </Text>
-                                                <Text mb="14px" textAlign="justify">a) &nbsp; The Employee acknowledges that, in the course of performing and fulfilling his duties hereunder, he may have access to and be entrusted with confidential information concerning the present and contemplated financial status and activities of the Employer, the disclosure of any of which confidential information to the competitors of the Employer would be highly detrimental to the interests of the Employer.</Text>
-
-                                            </Box>
 
 
-
-                                        </Box>
-                                    </VStack>
-                                    <Box>
-                                        <Text textAlign="center" fontSize="12px" color="#a8b9d2 !important" mt="3.5rem">7</Text>
-                                    </Box>
-
-                                </Box>
-                                <Box className="pdf-page page-break">
-                                    <VStack width="95%" margin="auto" gap="1rem">
-                                        <Box mt="4rem">
-                                            <Text mb="14px" textAlign="justify">b) &nbsp; The Employee further acknowledges and agrees that the right to maintain the confidentiality of trade secrets, source code, website information, business plans or client information or other confidential or proprietary information, for the purpose of enabling the other party such information constitutes a proprietary right which the Employer is entitled to protect.</Text>
-
-                                            <Text mb="14px" textAlign="justify">c) &nbsp; Accordingly, the Employee covenants and agrees with the Employer that he will not, under any circumstance during the continuance of this agreement, disclose any such confidential information to any person, firm or corporation, nor shall he use the same, except as required in the normal course of his engagement hereunder, and even after the termination of employment, he shall not disclose or make use of the same or cause any of confidential information to be disclosed in any manner.</Text>
-
-                                            <Text mb="14px" textAlign="justify">d) &nbsp; The Employer owns any intellectual property created by the Employee during the course of the employment, or in relation to a certain field, and he shall thereon have all the necessary rights to retain it. After termination of employment, Employee shall not impose any rights on the intellectual property created. Any source code, software or other intellectual property developed, including but not limited to website design or functionality that was created by the employee, during the course of employment under this Agreement, shall belong to the Employer.</Text>
-
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">  14.  Remedies </Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">If at any time the Employee violates to a material extent any of the covenants or agreements set forth in paragraphs 6 and 9, the Company shall have the right to terminate all of its obligations to make further payments under this Agreement. The Employee acknowledges that the Company would be irreparably injured by a violation of paragraph 6 or 9 and agrees that the Company
-                                                    shall be entitled to an injunction restraining the Employee from any actual or threatened breach of paragraph 6 or 9 or to any other appropriate equitable remedy without any bond or other security being required.</Text>
-                                            </Box>
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">  15.  Amendment and Termination </Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">a) In case the Employer terminates the employment without just cause, in which case the Employer shall provide the Employee with advance notice of termination or compensation in lieu of notice equal to <strong> 15 DAY (HALF) month(s)</strong>.</Text>
-                                            </Box>
-                                            <Box>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">b) The Employee may terminate his employment at any time by providing the Employer with at least <strong> 30 DAYS (ONE) month(s) </strong> advance notice of his intention to resign.</Text>
-
-                                            </Box>
-
-                                        </Box>
-                                    </VStack>
-                                    <Box>
-                                        <Text textAlign="center" fontSize="12px" color="#a8b9d2 !important" mt="2.5rem">8</Text>
-                                    </Box>
-                                </Box>
-                                <Box className="pdf-page page-break">
-                                    <VStack width="95%" margin="auto" gap="1rem">
-                                        <Box mt="4rem">
-                                            <Text mb="18px" fontSize="15px" textAlign="justify">c) The Employee may terminate on the last day of the month in which the date of the Employee’s death occurs; or the date on which the Company gives notice to the Employee if such termination is for Cause or Disability.</Text>
-                                            <Text mb="18px" fontSize="15px" textAlign="justify">d) For purposes of this Agreement, "Cause" means the Employee's gross misconduct resulting in material damage to the Company, willful insubordination or disobedience, theft, fraud or dishonesty, willful damage or loss of Employer’s property, bribery and habitual lateness or absence, or any other willful and material breach of this Agreement.</Text>
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">  16.  Restrictive Covenant  </Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">Following the termination of employment of the Employee by the Employer,
-                                                    with or without cause, or the voluntary withdrawal by the Employee from the Employer, the  Employee shall,
-                                                    for a period of three years following the said termination or voluntary  withdrawal, refrain from either directly
-                                                    or indirectly soliciting or attempting to solicit the business of any client or customer of the Employer for his own
-                                                    benefit or that of any third person or organization, and shall refrain from either directly or indirectly attempting
-                                                    to obtain the withdrawal from the employment by the Employer of any other Employee of the Employer having regard to
-                                                    the same geographic and temporal restrictions. The Employee shall not directly or indirectly divulge any financial information relating to the Employer or any of its affiliates or clients to any person whatsoever.</Text>
-                                            </Box>
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">  17.  Notices </Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">a) Any notice required to be given hereunder shall be deemed to have been properly given if delivered personally or sent by pre-paid registered mail as follows: </Text>
-                                                <Text mb="18px" fontSize="15px" ml="10px">•	To the Employee: ______________________________</Text>
-                                                <Text mb="18px" fontSize="15px" ml="10px">•	To the Employer: ______________________________</Text>
-                                            </Box>
-                                            <Text mb="18px" fontSize="15px" textAlign="justify">b) And if sent by registered mail shall be deemed to have been received on the 4th business day of uninterrupted postal service following the date of mailing. Either party may change its address for notice at any time, by giving notice in writing to the other party pursuant to the provisions of this agreement.</Text>
-
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">  18. Non-Assignment </Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">The interests of the Employee under this Agreement are not subject to the claims of his creditors and may not be voluntarily or involuntarily assigned, alienated or encumbered.</Text>
-                                            </Box>
-
-
-                                        </Box>
-                                    </VStack>
-
-                                    <Box>
-                                        <Text textAlign="center" fontSize="12px" color="#a8b9d2 !important" mt="2.5rem">9</Text>
-                                    </Box>
-                                </Box>
-                                <Box className="pdf-page page-break">
-                                    <VStack width="95%" margin="auto" gap="1rem">
-                                        <Box mt="4rem">
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">  19. Successors </Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">This agreement shall be assigned by the Employer to any successor employer and be binding upon the successor employer. The Employer shall ensure that the successor employer shall continue the provisions of this agreement as if it were the original party of the first part.</Text>
-                                            </Box>
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">  20. Indemnification </Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">The Employee shall indemnify the employer against any and all expenses, including amounts paid upon judgments, counsel fees, environmental penalties and fines, and amounts paid in settlement (before or after suit is commenced), incurred by the employer in connection with his/her defense or settlement of any claim, action, suit or proceeding in which he/she is made a party or which may be asserted against his/her by reason of his/her employment or the performance of duties in this Agreement. Such indemnification shall be in addition to any other rights to which those indemnified may be entitled under any law, by-law, agreement, or otherwise.</Text>
-                                            </Box>
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">  21. Modification </Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">Any modification of this Agreement or additional obligation assumed by either party in connection with this Agreement shall be binding only if evidenced in writing signed by each party or an authorized representative of each party.</Text>
-                                            </Box>
-
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">22. Severability</Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">Each paragraph of this agreement shall be and remain separate from and independent of and severable from all and any other paragraphs herein except where otherwise indicated by the context of the agreement. The decision or declaration that one or more of the paragraphs are null and void shall have no effect on the remaining paragraphs of this agreement.</Text>
-                                            </Box>
-
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">23. Paragraph headings</Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">The titles to the paragraphs of this Agreement are solely for the convenience of the parties and shall not be used to explain, modify, simplify, or aid in the interpretation of the provisions of this Agreement.</Text>
-                                            </Box>
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">24. Applicable Law  and Jurisdiction</Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">This Agreement shall be governed by and construed in accordance with the laws of _____, _______. Each party hereby irrevocably submits to the exclusive jurisdiction of the courts of ALWAR,_(RAJ.), for the adjudication of any dispute hereunder or in connection herewith.</Text>
-                                            </Box>
-
-                                        </Box>
-                                    </VStack>
-                                    <Box>
-                                        <Text textAlign="center" fontSize="12px" color="#a8b9d2 !important" mt="2.5rem">10</Text>
-                                    </Box>
-                                </Box>
-                                <Box className="pdf-page page-break">
-                                    <VStack width="95%" margin="auto" gap="1rem">
-                                        <Box mt="3rem">
-                                               <VStack align="flex-start" width="100%" mb="2rem">
-                                                                <Text fontSize="14px" textAlign="justify"><Text fontSize="20px" fontWeight="bold" mb="10px">25. Performance Linked Compensation Policy:</Text></Text>
-                                                                <Text mb="10px" fontSize="15px" textAlign="justify">As part of the employee’s role in the organization, the employee will be assigned annual and monthly performance targets aligned with the company’s business objectives.</Text>
-                                                                <Text mb="10px" fontSize="15px" textAlign="justify">The employee’s monthly salary payout will be linked to the percentage of the assigned monthly target achieved, and the payout will be determined as per the following performance criteria:</Text>
-                                                                {/* <TableContainer borderTop="1px solid black" borderRight="1px solid black" borderLeft="1px solid black"> */}
-                                                                  <Table variant="simple" className="performancePayoutTable" border="1px solid black">
-                                                                    <Thead>
-                                                                      <Tr>
-                                                                        <Th style={{borderRight: '1px solid black', borderBottom: "1px solid black"}}>Target Achievement</Th>
-                                                                        <Th style={{borderBottom: "1px solid black"}}>Salary Payout</Th>
-                                                                      </Tr>
-                                                                    </Thead>
-                                            
-                                                                    <Tbody>
-                                                                      {salaryPolicy.map((item, index) => (
-                                                                        <Tr key={index}>
-                                                                          <Td style={{borderBottom: "1px solid black", borderRight: '1px solid black', fontSize:"14px", padding: "10px"}} whiteSpace="normal" wordBreak="break-word">{item.target}</Td>
-                                                                          <Td style={{borderBottom: "1px solid black", fontSize:"14px", padding: "10px"}} whiteSpace="normal" wordBreak="break-word">{item.payout}</Td>
-                                                                        </Tr>
-                                                                      ))}
-                                                                    </Tbody>
-                                                                  </Table>
-                                                                {/* </TableContainer> */}
-                                                              </VStack>
-                                            <Box>
-                                                <Text fontSize="20px" fontWeight="bold" mb="10px">26. Counterparts</Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">The Agreement may be executed in two or more counterparts, any one of which shall be deemed the original without reference to the others.</Text>
-                                                <Text mb="18px" fontSize="15px" textAlign="justify">IN WITNESS WHEREOF, the Employee has hereunto set his hand, and the Company has caused these presents to be executed in its name and on its behalf, all as of the day and year first above written.</Text>
-                                            </Box>
-                                            <Box>
-                                                <HStack width="93%" justifyContent="space-between" marginTop="3rem">  <Text>____________________	</Text>
-                                                    <Text>___________________</Text>
-                                                </HStack>
-                                                <HStack width="79%" justifyContent="space-between" >
-                                                    <Text mb="18px" fontSize="15px" fontWeight="600" color="#3d3d3d">(Employee)</Text>
-                                                    <Text mb="18px" fontSize="15px" fontWeight="600" color="#3d3d3d">(The Employer)</Text>
-                                                </HStack>
-                                            </Box>
-                                            <Box>
-                                                <HStack width="93%" justifyContent="space-between">
-                                                    <Text mb="18px" fontSize="15px">Name: _________________	</Text>
-                                                    <Box>
-                                                        <Text fontSize="15px">Represented	By:</Text>
-                                                        <Text mb="18px" fontSize="15px">
-                                                            Designation: _________________
-                                                        </Text>
-                                                    </Box>
-                                                </HStack>
-                                            </Box>
-                                            <VStack alignItems="end" spacing={0}>
-                                                {formData.show_stamp && ( <Image src={jsc_stamp} alt="Company Stamp" boxSize="120px" /> )}</VStack>
-                                        </Box>
-                                    </VStack>
-                                    <Box>
-                                        <Text textAlign="center" fontSize="12px" color="#a8b9d2 !important" mt={formData?.jsc_stamp ? "0rem" : "6rem"}>11</Text>
-                                    </Box>
-                                </Box>
                             </VStack>
                         </Box>
                     </ModalBody>

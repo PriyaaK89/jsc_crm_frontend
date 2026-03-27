@@ -11,9 +11,9 @@ const EmployeeVisitReportLayout = () => {
          
          {/* Desktop Sidebar */}
          <Box
-          position = "fixed"
-          top="0"
-          left="0"
+          // position = "fixed"
+          // top="0"
+          // left="0"
            w="268px"
            display={{ base: "none", md: "block" }}
          >
@@ -24,7 +24,8 @@ const EmployeeVisitReportLayout = () => {
          <Flex
            direction="column"
            flex="1"
-           ml={{ base: 0, md: "268px" }}
+           width={{base:"100%",md:"60%",lg:"75%"}}
+           ml={{base:0,md:"10px",lg:"0"}}
          >
            {/* Desktop Topbar */}
            <Box

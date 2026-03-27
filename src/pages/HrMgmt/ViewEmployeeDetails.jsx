@@ -78,7 +78,7 @@ const ViewEmployeeDetails = () => {
   if (!employee) return null;
 
   return (
-    <Box  minH="100vh" p={8}>
+    <Box  minH="100vh" >
 
       {/* Breadcrumb */}
       <Breadcrumb mb={6}>
@@ -103,7 +103,7 @@ const ViewEmployeeDetails = () => {
       {/* Profile Header */}
       <Box
         bg="white"
-        p={6}
+        p={4}
         borderRadius="12px"
         boxShadow="sm"
         mb={6}
@@ -139,7 +139,7 @@ const ViewEmployeeDetails = () => {
       </Box>
 
       {/* PERSONAL INFORMATION */}
-      <Box bg="white" p={6} borderRadius="12px" boxShadow="sm" mb={6}>
+      <Box bg="white" p={4} borderRadius="12px" boxShadow="sm" mb={6}>
         <Heading size="sm" mb={4}>Personal Information</Heading>
 
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
@@ -189,6 +189,8 @@ const ViewEmployeeDetails = () => {
           <InfoCard label="Headquarter" value={employee.headquarter} />
           <InfoCard label="Approver" value={employee.approver_name} />
         </SimpleGrid>
+
+        
       </Box>
 
       {/* ALLOWANCES */}

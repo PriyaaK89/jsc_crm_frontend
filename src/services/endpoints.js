@@ -21,6 +21,9 @@ export const API_ENDPOINTS = {
   approve_ip: `auth/approve-ip`,
   get_Emp_Attendance: `/attendance/daywise`,
   get_Emp_Attendance_Summary:  `attendance/monthly-summary`,
+  get_Emp_Attendance_filter_search:`get-emp-attendance`,
+  get_emp_visit_report:`get-emp-visit`,
+  get_city:`get-districts`,
   upload_salary_slip:`upload-emp-salary`,
   get_attendance_images: `get-attendance-images`,
    get_daily_salary_report:`daily-salary-range`,
@@ -32,6 +35,7 @@ export const API_ENDPOINTS = {
   digio_send_eSign: "letters/send-esign",
   check_digio_Status: `letters/document-status`,
   download_Signed_Letter_digio: `download-signed-pdf`,
+  Gst_verify:`verify-gst`,
   set_expense_allocation:  `set-expense-allocation`,
   get_uploaded_exp: `admin-expense-summary`,
 };

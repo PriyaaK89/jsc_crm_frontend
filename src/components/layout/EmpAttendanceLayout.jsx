@@ -1,9 +1,11 @@
+//  EmpAttendanceLayout.js
 import React from "react";
 import { Flex, Box } from "@chakra-ui/react";
-import Sidebar from "../Sidebar";
-import Topbar from "../Topbar";
-import MobileTopbar from "../MobileTopbar";
-import EmpAttendance from "../../../pages/Employee/EmpAttendance";
+import Sidebar from "../layout/Sidebar";
+import Topbar from "../layout/Topbar";
+import MobileTopbar from "../layout/MobileTopbar";
+import EmpAttendance from '../../pages/Employee/EmpAttendance';
+
 
 const EmpAttendanceLayout = () => {
   return (
@@ -24,7 +26,7 @@ const EmpAttendanceLayout = () => {
           <Flex
             direction="column"
             flex="1"
-          width="83.5%">
+          width={{base:"100%",md:"67%",sm:"67%",lg:"74%"}}>
             {/* Desktop Topbar */}
             <Box
               display={{ base: "none", md: "block" }}

@@ -604,6 +604,7 @@ const AddEmployee = () => {
               />
               <FormErrorMessage>{error.father_name}</FormErrorMessage>
             </FormControl>
+            
             <FormControl isRequired isInvalid={error.pan_number}>
               <FormLabel {...lableStyles}>Pan Number</FormLabel>
               <Input

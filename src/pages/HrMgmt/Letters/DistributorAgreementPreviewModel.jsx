@@ -16,7 +16,7 @@ import { API_ENDPOINTS } from "../../../services/endpoints";
 import { CloseButton } from "@chakra-ui/react";
 import { Bold } from "lucide-react";
 
-const DistributorAgreementPreview = ({ isOpen, onClose, formData, employee, partners, ownerAddress, otherCompanies }) => {
+const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee, partners, ownerAddress, otherCompanies }) => {
 
 
     //    for check firm type 
@@ -723,4 +723,4 @@ const DistributorAgreementPreview = ({ isOpen, onClose, formData, employee, part
 
 
 
-export default DistributorAgreementPreview
+export default DistributorAgreementPreviewModel

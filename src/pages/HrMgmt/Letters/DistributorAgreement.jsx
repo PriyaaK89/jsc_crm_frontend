@@ -12,14 +12,14 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { CloseIcon } from "@chakra-ui/icons";
-import { GoHomeFill } from "react-icons/go";
 import DistributorAgreementPdfPreview from "./DistributorAgreementPdfPreview";
 
 import useUsersapi from "../../../Apis/GetUsersapi";
 import DistributorDocuments from "./DistributorDocuments";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
-import DistributorAgreementPreview from "./DistributorAgreementpreview";
+import DistributorAgreementPreview from "./DistributorAgreementPreviewModel";
+
 
 
 //  Address Component

@@ -172,22 +172,29 @@ const EmpSalaryReport = () => {
   };
 
   return (
-    <Box bg="white" borderRadius="lg" >
-      <HStack justifyContent="space-between" flexWrap="wrap">
-        <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">
-              <GoHomeFill color="#5570F1" />
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-
-          <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink fontSize="13px">
-              Daily Salary Report
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-      </HStack>
+       <Box
+          bg="white"
+          mt={{base:2, md:5}}
+          px={{base:3, md:6}}
+          py={{base:3, md:4}}
+         borderRadius="lg"
+         boxShadow="md"
+      >
+        <HStack justifyContent="space-between" flexWrap="wrap">
+                        <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+                          <BreadcrumbItem>
+                            <BreadcrumbLink as={Link} to="/dashboard">
+                              <GoHomeFill color="#5570F1" />
+                            </BreadcrumbLink>
+                          </BreadcrumbItem>
+              
+                          <BreadcrumbItem isCurrentPage>
+                            <BreadcrumbLink fontSize="13px">
+                            Daily Salary Report
+                            </BreadcrumbLink>
+                          </BreadcrumbItem>
+                        </Breadcrumb>
+                      </HStack>
 
       <Heading fontSize="xl" fontWeight="bold" mb={6}>
         Daily Salary Report

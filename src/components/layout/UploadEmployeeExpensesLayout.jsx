@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import UploadEmployeeExpenses from "../../components/UploadEmployeeExpensives/UploadEmployeeExpensives";
+import NotificationBtn from '../NotificationBtn/NotificationBtn';
 
 const UploadEmployeeExpensesLayout = () => {
   return (
@@ -23,7 +24,8 @@ const UploadEmployeeExpensesLayout = () => {
         mr={{base:5, md:5}}
         pt="5rem"
         pb={6}
-      >                 
+      >  
+      <NotificationBtn/>            
         <UploadEmployeeExpenses/>
       </Box>
     </Box>

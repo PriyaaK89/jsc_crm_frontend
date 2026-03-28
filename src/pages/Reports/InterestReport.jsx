@@ -19,9 +19,16 @@ import { Link } from 'react-router-dom';
 
 function InterestReport() {
   return (
-    <Box p={6}>
-           
-                 {/* Breadcrumb */}
+     <Box
+         bg="white"
+         mt={{base:2, md:5}}
+         px={{base:3, md:6}}
+         py={{base:3, md:4}}
+        borderRadius="lg"
+        boxShadow="md"
+     >
+
+                {/* Breadcrumb */}
                  <Breadcrumb mb={6} fontSize="sm">
                   <BreadcrumbItem>
                                 <BreadcrumbLink as={Link} to="/dashboard">

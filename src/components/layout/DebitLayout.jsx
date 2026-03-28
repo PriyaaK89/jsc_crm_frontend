@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import Debit from "../../pages/Order Vochar/Debit";
+import NotificationBtn from '../NotificationBtn/NotificationBtn';
 
 const DebitLayout = () => {
   return (
@@ -24,6 +25,7 @@ const DebitLayout = () => {
         pt="5rem"
         pb={6}
       >
+        <NotificationBtn/>
         <Debit />
       </Box>
     </Box>

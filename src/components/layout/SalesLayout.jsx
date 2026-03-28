@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import Sales from "../../pages/Order Vochar/Sales";
+import NotificationBtn from '../NotificationBtn/NotificationBtn';
 
 const SalesLayout = () => {
   return (
@@ -24,6 +25,7 @@ const SalesLayout = () => {
                 pt="5rem"
                 pb={6}
               >
+              < NotificationBtn/>
                 <Sales />
               </Box>
             </Box>

@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import AddEmployee from "../../pages/HrMgmt/AddEmployee";
+import NotificationBtn from "../NotificationBtn/NotificationBtn";
 const AddEmpLayout = () => {
   return (
     <Flex bg="#f4f4f4" minH="100vh">
@@ -45,21 +46,30 @@ const AddEmpLayout = () => {
         >
           <MobileTopbar />
         </Box>
+        <Box
+                ml={{ base: 5, md: "258px" }}
+                mr={{ base: 5, md:0 }}
+                pt="5rem"
+               >
+                          <NotificationBtn/>
+            </Box>
 
         {/* Content */}
         <Box
           flex="1"
           px={{ base: 3, md: 6 }}
-          pt={{ base: "20px", md: 4 }}
+          pt={{ base: "20px", md: 0 }}
+          ml={{base:0, md: 1}}
         >
           <Box
             bg="white"
             borderRadius="20px"
             boxShadow="sm"
             p={{ base: 3, md: 6 }} 
-            mt="75px"
+            // mt="75px"
             mb={5}
           >
+
             <AddEmployee />
           </Box>
         </Box>

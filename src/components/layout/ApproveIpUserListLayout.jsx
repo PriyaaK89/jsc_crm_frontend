@@ -5,6 +5,7 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import ApproveIpUserList from "../../pages/ApproveIp/ApproveIpUserList";
+import NotificationBtn from "../NotificationBtn/NotificationBtn";
 
 const ApproveIpUserListLayout = () => {
   return (
@@ -25,6 +26,7 @@ const ApproveIpUserListLayout = () => {
             pt="5rem"
             pb={6}
           >
+            <NotificationBtn/>
             <ApproveIpUserList />
           </Box>
         </Box> 

@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import Payment from "../../pages/Order Vochar/Payment";
+import NotificationBtn from "../NotificationBtn/NotificationBtn";
 
 const PaymentLayout = ()=>{
     return(
@@ -24,6 +25,7 @@ const PaymentLayout = ()=>{
               pt="5rem"
               pb={6}
             >
+              <NotificationBtn/>
               <Payment />
             </Box>
           </Box>

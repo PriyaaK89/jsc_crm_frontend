@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import CreateJobRole from "../../pages/SAdminMgmt/Scope/CreateJobRole";
+import NotificationBtn from "../NotificationBtn/NotificationBtn";
 
 const JobRoleLayout = ()=>{
     return(
@@ -52,13 +53,15 @@ const JobRoleLayout = ()=>{
                  flex="1"
                  px={{ base: 3, md: 6 }}
                  pt={{ base: "20px", md: 4 }}
+                                    mt="75px"
+
                >
+                <NotificationBtn/>
                  <Box
                    bg="white"
                    borderRadius="20px"
                    boxShadow="sm"
                    p={{ base: 3, md: 6 }} 
-                   mt="75px"
                    mb={5}
                  >
                    <CreateJobRole/>

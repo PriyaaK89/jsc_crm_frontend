@@ -4,6 +4,7 @@ import Topbar from './Topbar';
 import { Flex,Box } from '@chakra-ui/react';
 import MobileTopbar from "./MobileTopbar";
 import ChangePassword from "../../pages/ChangePassword/ChangeUserPassword";
+import NotificationBtn from '../NotificationBtn/NotificationBtn';
 
 
 const ChangePasswordLayout = ()=>{
@@ -25,6 +26,7 @@ const ChangePasswordLayout = ()=>{
                  pt="5rem"
                  pb={6}
                >
+                <NotificationBtn/>
                  <ChangePassword />
                </Box>
              </Box>

@@ -58,19 +58,19 @@ function UserLogin() {
   };
 
   return (
-    <Flex direction={{ base: "column", md: "row" }} minH="100vh" bgGradient={{ base: "linear(to-b, #e0f2fe, #f8fafc)", md: "transpart" }}
 
-    >
+    <Flex direction={{ base: "column", md: "row" }} minH="100vh" bgGradient={{ base: "linear(to-b, #e0f2fe, #f8fafc)", md: "transpart" }} >
 
       {/* LEFT IMAGE (Desktop only) */}
       <Flex
-        flex="1"
         display={{ base: "none", md: "flex" }}
+        flex="1"
         align="center"
         justify="center"
-        p={5}
+        // px={{ base: 4, md: 10 }}
+        // py={{ base: 2, md: 6 }}
       >
-        <Image src={login_img} alt="CRM" maxW="100%" />
+        <Image src={login_img} alt="CRM" maxW="100%" minH="100%" />
       </Flex>
 
       {/* MOBILE HEADER ( Center Logo) */}

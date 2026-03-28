@@ -36,7 +36,7 @@ const DashboardLayout = ({ children }) => {
         ml={{ base: 5, md: "295px" }}
         mr={{ base: 5, md: 5 }}
         pt="5rem"
-        pb={6}
+        // pb={6}
        >
                   <NotificationBtn/>
     </Box>

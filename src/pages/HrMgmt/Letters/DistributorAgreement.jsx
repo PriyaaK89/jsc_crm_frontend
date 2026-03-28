@@ -1,32 +1,25 @@
 import React, { useState } from "react";
 import {
-  Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink,
+  Box,
   Button, Text,
   FormControl,
   FormLabel,
   Input, useDisclosure,
-  Heading, Flex,
+   Flex,
   SimpleGrid,
-  VStack,
   Select,
-  Divider,
-  Image,             
-  Modal,              
-  ModalOverlay,
-  ModalContent,
-  ModalBody,
-  ModalCloseButton,
   useToast
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { CloseIcon } from "@chakra-ui/icons";
-import { GoHomeFill } from "react-icons/go";
 import DistributorAgreementPdfPreview from "./DistributorAgreementPdfPreview";
-import DistributorAgreementPreview from './DistributorAgreementpreview';
+
 import useUsersapi from "../../../Apis/GetUsersapi";
 import DistributorDocuments from "./DistributorDocuments";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
+import DistributorAgreementPreview from "./DistributorAgreementPreviewModel";
+
 
 
 //  Address Component

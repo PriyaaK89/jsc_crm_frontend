@@ -15,7 +15,8 @@ import {
   ModalOverlay,
   ModalContent,
   ModalBody,
-  ModalCloseButton
+  ModalCloseButton,
+  useToast
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { CloseIcon } from "@chakra-ui/icons";
@@ -24,6 +25,8 @@ import DistributorAgreementPdfPreview from "./DistributorAgreementPdfPreview";
 import DistributorAgreementPreview from './DistributorAgreementpreview';
 import useUsersapi from "../../../Apis/GetUsersapi";
 import DistributorDocuments from "./DistributorDocuments";
+import API from "../../../services/api";
+import { API_ENDPOINTS } from "../../../services/endpoints";
 
 
 //  Address Component
@@ -137,10 +140,14 @@ const AddressForm = ({ data, onChange, index = 0, label }) => {
 // -------------------------main function------------------------------------------------------
 function DistributorAgreement() {
   
-    const handleChildData = (data) => {
-    console.log("Data from child:", data);
-    setFormData(data);
-  };
+  const [loading, setLoading] = useState(false);
+  const toast = useToast();
+const handleChildData = (data) => {
+  setFormData((prev) => ({
+    ...prev,
+    documents: data, //  keep separate
+  }));
+};
  
 
  
@@ -151,7 +158,7 @@ function DistributorAgreement() {
 
 
   const [firmtype, setFirmtype] = useState("");
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({firm_gstn_no: ''});
   const [otherCompanies, setOtherCompanies] = useState([
     { name: "", turnover: "" }
   ]);
@@ -185,12 +192,76 @@ function DistributorAgreement() {
       father_name: "", upload_img: null
     },
   ]);
-  // image for partners 
-  // const handlePartnerImage = (index, file) => {
-  //   const updated = [...partners];
-  //   updated[index].upload_img = file;
-  //   setPartners(updated);
-  // };
+
+const handleGSTverification = async () => {
+  try {
+    // setLoading(true);
+    if (!formData.firm_gstn_no) {
+      toast({
+        description: "Enter your gst number",
+        duration: 2000,
+        status: 'error'
+      });
+      return;
+    }
+console.log("GST VALUE:", formData.firm_gstn_no);
+    const response = await API.post(API_ENDPOINTS.Gst_verify, {
+      gst_number: formData.firm_gstn_no,
+    });
+
+    const data = response?.data;
+
+    if (data?.success && data?.isVerified) {
+
+      setFormData((prev) => ({
+        ...prev,
+
+        firm_name: data.business_name || "",
+        firm_type: data.business_type?.toLowerCase() || "",
+
+        business_address: `${data.address?.building || ""}, ${data.address?.street || ""}, ${data.address?.location || ""}`,
+        state: data.address?.state || "",
+        district: data.address?.district || "",
+        pin_code: data.address?.pincode || "",
+
+        frim_gstn_type: data.business_type === "Proprietorship"
+          ? "Regular"
+          : prev.frim_gstn_type,
+
+        customername: data.legal_name || "",
+      }));
+
+      if (data.business_type === "Proprietorship") {
+        setOwnerAddress((prev) => ({
+          ...prev,
+          name: data.legal_name || "",
+          address: `${data.address?.building || ""}, ${data.address?.street || ""}`,
+          state: data.address?.state || "",
+          district: data.address?.district || "",
+          pincode: data.address?.pincode || "",
+        }));
+      }
+
+      toast({
+        description: "GST verified and Values are auto filled",
+        duration: 2000,
+        status: 'success'
+      })
+
+    } else {
+      toast({
+        description: "GST not verified",
+        duration: 1500,
+        status: 'error'
+      })
+    }
+    // setLoading(false);
+
+  } catch (error) {
+    console.log(error);
+    alert("Something went wrong");
+  }
+};
 
   // add mulyiple comapny
   const handleOtherCompanyChange = (index, field, value) => {
@@ -202,7 +273,7 @@ function DistributorAgreement() {
   const addOtherCompany = () => {
     setOtherCompanies([
       ...otherCompanies,
-      { name: "", turnover: "" } // ✅ correct object
+      { name: "", turnover: "" } //  correct object
     ]);
   };
   const removeOtherCompany = (index) => {
@@ -256,6 +327,12 @@ function DistributorAgreement() {
     }));
 
   };
+  const handleFileChange = (name, file) => {
+  setFormData((prev) => ({
+    ...prev,
+    [name]: file,
+  }));
+};
 
 
 
@@ -308,7 +385,7 @@ function DistributorAgreement() {
             <FormLabel>Firm Type</FormLabel>
             <Select
               name="firm_type"
-              value={firmtype}
+             value={formData.firm_type || ""}
               onChange={(e) => {
                 handleChange(e);
                 const value = e.target.value;
@@ -338,7 +415,7 @@ function DistributorAgreement() {
               <Input
                 type="file"
                 accept="image/*"
-                onChange={(e) => handleChange("authoratyfile", e.target.files[0])}
+                onChange={(e) => handleFileChange("authoratyfile", e.target.files[0])}
               />
             </FormControl>
           )}
@@ -503,14 +580,25 @@ function DistributorAgreement() {
           </FormControl>
 
           <FormControl>
-            <FormLabel>Firm GSTN</FormLabel>
-            <Input
-              name="firm_gstn_no"
-              value={formData.firm_gstn_no}
-              onChange={handleChange}
-            // placeholder="Enter Firm GSTN"
-            />
-          </FormControl>
+  <FormLabel>Firm GSTN</FormLabel>
+
+  <Flex gap={2}>
+    <Input
+      name="firm_gstn_no"
+      value={formData.firm_gstn_no }
+      onChange={handleChange}
+      placeholder="Enter GST Number"
+    />
+
+    <Button
+      colorScheme="blue"
+      onClick={handleGSTverification}
+      // isDisabled={!formData.firm_gstn_no}
+    >
+      Verify
+    </Button>
+  </Flex>
+</FormControl>
 
           <FormControl>
             <FormLabel>Firm GSTN type</FormLabel>

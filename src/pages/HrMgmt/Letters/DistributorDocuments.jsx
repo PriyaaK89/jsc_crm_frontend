@@ -96,7 +96,11 @@ function DistributorDocuments({ onChange ,formData,onSendData }) {
     }, [docs.cheque_photos]);
 
 
-     onSendData(docs); //  send to parent
+    useEffect(() => {
+  if (onSendData) {
+    onSendData(docs);
+  }
+}, [docs]);
 
     return (
         <Box border="1px solid #313131" mt={5} borderRadius="lg">

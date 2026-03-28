@@ -15,7 +15,6 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { GoHomeFill } from "react-icons/go";
-import { Form } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 
@@ -27,7 +26,7 @@ const CreateStockGroup = () => {
 
            <Breadcrumb color="#8B8D97">
            <BreadcrumbItem>
-           <BreadcrumbLink as={Link} href="/dashboard"><GoHomeFill color="#5570F1"/></BreadcrumbLink>
+           <BreadcrumbLink as={Link} to="/dashboard"><GoHomeFill color="#5570F1"/></BreadcrumbLink>
            </BreadcrumbItem>
            <BreadcrumbItem>
             <BreadcrumbLink isCurrentPage>Create Stock Group</BreadcrumbLink>

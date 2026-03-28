@@ -13,7 +13,7 @@ const ViewStockCategory = () => {
       
                  <Breadcrumb color="#8B8D97">
                  <BreadcrumbItem>
-                 <BreadcrumbLink as={Link} href="/dashboard"><GoHomeFill color="#5570F1"/></BreadcrumbLink>
+                 <BreadcrumbLink as={Link} to="/dashboard"><GoHomeFill color="#5570F1"/></BreadcrumbLink>
                  </BreadcrumbItem>
                  <BreadcrumbItem>
                   <BreadcrumbLink isCurrentPage>View Stock Category</BreadcrumbLink>

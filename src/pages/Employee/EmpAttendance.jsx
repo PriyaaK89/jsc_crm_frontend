@@ -16,6 +16,8 @@ import EmployeeImageModal from "./EmployeeImageModal";
 import { GoHomeFill } from "react-icons/go";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import useUsersapi from "../../Apis/GetUsersapi";
+import { FaRegEye } from "react-icons/fa";
+
 
 const EmpAttendance = () => {
 
@@ -193,15 +195,12 @@ const EmpAttendance = () => {
                 {/* Header */}
                 <Breadcrumb mb={4}>
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard">
+                        <BreadcrumbLink as={Link} to="/dashboard">
                             <GoHomeFill color="blue" />
                         </BreadcrumbLink>
                     </BreadcrumbItem>
-                    <BreadcrumbItem isCurrentPage>
-                        <BreadcrumbLink
-                            as={Link}
-                            to="/report/emp-attendance-report"
-                            cursor="pointer"
+                    <BreadcrumbItem >
+                        <BreadcrumbLink isCurrentPage fontSize="13px"
                         >
                             Attendance Report
                         </BreadcrumbLink>
@@ -350,11 +349,11 @@ const EmpAttendance = () => {
                                                 </Td>
                                                 <Td>{item.attendance_unit}</Td>
                                                 <Td>
-                                                    <Button size="md" colorScheme="blue" onClick={() =>
+                                                    <Button size="md"  color="purple.600" bg="white"  border="1px solid blue" onClick={() =>
                                                         handleImage(item.employee_id, item.attendance_date)
 
                                                     }>
-                                                        View
+                                                          <FaRegEye />
                                                     </Button>
                                                 </Td>
                                             </Tr>

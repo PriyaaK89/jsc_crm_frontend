@@ -138,7 +138,7 @@ const Newsidebar = () => {
         {label:"Create Ledger",path:"/accounting-master/create-ledger", icon:FaFileInvoiceDollar},
         {label:"View Ledger",path:"/accounting-master/view-ledger", icon:FaFileInvoice},
         {label:"Delete Ledger",path:"/accounting-master/delete-ledger", icon:FaTrash},
-        {label:"Create Voucher",path:"/accounting-master/create-vouche", icon:FaMoneyCheckAlt},
+        {label:"Create Voucher",path:"/accounting-master/create-voucher", icon:FaMoneyCheckAlt},
         {label:"View Voucher", path:"/accounting-master/view-voucher", icon:FaFileInvoice },
         {label:"Delete Voucher",path:"/accounting-master/delete-voucher", icon:FaTrash},
         {label:"Edit Ledger Assignment",path:"/accounting-master/edit-ledger-assignment",  icon:FaEdit },

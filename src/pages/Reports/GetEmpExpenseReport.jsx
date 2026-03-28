@@ -18,7 +18,14 @@ import { Link } from 'react-router-dom';
 
 function GetEmpExpenseReport() {
   return (
-    <Box p={6}>
+    <Box
+         bg="white"
+         mt={{base:2, md:5}}
+         px={{base:3, md:6}}
+         py={{base:3, md:4}}
+        borderRadius="lg"
+        boxShadow="md"
+     >
   
         {/* Breadcrumb */}
         <Breadcrumb mb={6} fontSize="sm">

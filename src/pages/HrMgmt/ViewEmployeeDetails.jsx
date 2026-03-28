@@ -78,7 +78,14 @@ const ViewEmployeeDetails = () => {
   if (!employee) return null;
 
   return (
-    <Box  minH="100vh" >
+     <Box
+         bg="white"
+         mt={{base:2, md:5}}
+         px={{base:3, md:6}}
+         py={{base:3, md:4}}
+        borderRadius="lg"
+        boxShadow="md"
+     >
 
       {/* Breadcrumb */}
       <Breadcrumb mb={6}>

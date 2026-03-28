@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import Credit from "../../pages/Order Vochar/Credit";
+import NotificationBtn from '../NotificationBtn/NotificationBtn';
 
 const CreditLayout = () => {
  return (
@@ -24,6 +25,7 @@ const CreditLayout = () => {
          pt="5rem"
          pb={6}
        >
+        <NotificationBtn/>
          <Credit/>
        </Box>
      </Box>

@@ -117,7 +117,14 @@ const TrackEmployee = () => {
   };
 
   return (
-   <Box >
+      <Box
+          bg="white"
+          mt={{base:2, md:5}}
+          px={{base:3, md:6}}
+          py={{base:3, md:4}}
+         borderRadius="lg"
+         boxShadow="md"
+      >
       <VStack align="start" spacing={6}>
 
         <Heading size="md">Employee Route Tracking</Heading>

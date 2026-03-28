@@ -261,7 +261,14 @@ function DistributorAgreement() {
 
   return (
     <>
-      <Box bg="white" p={6} borderRadius="lg">
+       <Box
+           bg="white"
+           mt={{base:2, md:5}}
+           px={{base:3, md:6}}
+           py={{base:3, md:4}}
+          borderRadius="lg"
+          boxShadow="md"
+       >
 
         <Text fontSize={{ base: "lg", md: "xl" }} mb={6} fontWeight="bold">
           Distributor Agreement Form

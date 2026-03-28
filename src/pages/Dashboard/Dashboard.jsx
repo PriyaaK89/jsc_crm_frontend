@@ -10,8 +10,8 @@ const Dashboard = () => {
      w="100%"
       bg="white"
      mt={{base:2, md:0}}
-     px={{base:3, md:6}}
-     py={{base:3, md:4}}
+     px={{base:3, md:4}}
+     py={{base:3, md:7}}
     borderRadius="lg"
     boxShadow="md" >
       <SimpleGrid  bg="white"  columns={{ base: 1, md: 3 }}  spacing={6} >

@@ -7,7 +7,7 @@ const RightSidebar = () => {
     w="100%"
     h="140px"
        bg="white"
-     mt={{base:2, md:5}}
+     mt={{base:2, md:0}}
      px={{base:3, md:6}}
      py={{base:3, md:4}}
     borderRadius="lg"

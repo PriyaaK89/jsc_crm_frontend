@@ -44,7 +44,7 @@ const DashboardLayout = ({ children }) => {
 
         ml={{ base: 5, md: "295px" }}
         mr={{ base: 5, md: 5 }}
-        pb={6}
+        pb={5}
         display={{ base: "column", lg: "flex" }}
         gap={{ base: 0, lg: 6 }}
       >

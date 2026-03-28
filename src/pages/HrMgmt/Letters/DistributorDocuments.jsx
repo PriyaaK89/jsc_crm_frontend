@@ -29,7 +29,7 @@ function DistributorDocuments({ onChange ,formData,onSendData }) {
     const shopModal = useDisclosure();
     const chequeModal = useDisclosure();
 
-    // ✅ ALL DATA IN ONE STATE
+    //  ALL DATA IN ONE STATE
     const [docs, setDocs] = useState({
         shop_images: [],
         partnership_deed: null,

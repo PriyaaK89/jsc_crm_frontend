@@ -4,10 +4,10 @@ import {
   Button, FormControl, FormLabel, Heading,
   Input, Select, HStack, SimpleGrid, InputGroup,
   InputRightElement, Modal, ModalOverlay, ModalContent,
-  ModalHeader, ModalBody, ModalCloseButton,
+  ModalHeader, ModalBody, ModalCloseButton, useDisclosure,
   Table, Thead, Tbody, Tr, Th, Td, Img,
   Flex, Spinner, Text,
-  TableContainer,
+  TableContainer,Image ,
   VStack
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
@@ -25,14 +25,17 @@ function EmployeeVisitReport() {
   // const { users } = useUsersapi();
 
   const [visits, setVisits] = useState([]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   //   const [city, setCity] = useState([]);
   // const [cityLoading, setCityLoading] = useState(false);
   // const [cityFetched, setCityFetched] = useState(false);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [issOpen, setIssOpen] = useState(false);
   const [selectedComment, setSelectedComment] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const [filters, setFilters] = useState({
     userId: "",
@@ -47,35 +50,47 @@ function EmployeeVisitReport() {
   });
 
   //  Fetch API
-  const fetchVisits = async (page = 1) => {
-    setLoading(true);
-    try {
-      const res = await API.get(API_ENDPOINTS.get_emp_visit_report, {
-        params: {
-          // user_id: filters.userId || null,
-          //  district: filters.city || null, 
-          search: debouncedSearch || null,
-          from_date: filters.from_date || null,
-          to_date: filters.to_date || null,
-          page,
-          limit: pagination.limit,
-        },
+ const fetchVisits = async (page = 1) => {
+  setLoading(true);
+
+  try {
+    const res = await API.get(API_ENDPOINTS.get_emp_visit_report, {
+      params: {
+        search: debouncedSearch || undefined,
+        from_date: filters.from_date || undefined,
+        to_date: filters.to_date || undefined,
+        page,
+        limit: pagination?.limit || 10,
+      },
+    });
+
+    //  Validate response
+    if (res?.status === 200 && res?.data) {
+      const { data = [], pagination: pg = {} } = res.data;
+
+      setVisits(data);
+
+      setPagination({
+        page: pg.page ?? 1,
+        limit: pg.limit ?? 10,
+        total_pages: pg.total_pages ?? 1,
       });
 
-      if (res.data.success) {
-        setVisits(res.data.data || []);
-        setPagination({
-          page: res.data.pagination.page,
-          limit: res.data.pagination.limit,
-          total_pages: res.data.pagination.total_pages,
-        });
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+    } else {
+      console.warn("Unexpected API response:", res);
+      setVisits([]);
     }
-  };
+
+  } catch (error) {
+    console.error("Fetch Visits Error:", error);
+
+    //  Optional: show user-friendly error
+    setVisits([]);
+
+  } finally {
+    setLoading(false);
+  }
+};
 
   // On Load
   useEffect(() => {
@@ -166,11 +181,17 @@ function EmployeeVisitReport() {
   };
 
   const formatVisitPurpose = (value) => {
-  if (!value) return "-";
+    if (!value) return "-";
 
-  return visitPurposeMap[value] ||
-    value.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
-};
+    return visitPurposeMap[value] ||
+      value.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
+
+  const modelviewimg = (image) => {
+    setSelectedImage(image);
+    onOpen();
+  };
 
 
   return (
@@ -247,8 +268,8 @@ function EmployeeVisitReport() {
   </Select>
 </FormControl> */}
 
-        <FormControl  >
-          <FormLabel>Search Employee / District / Mobile</FormLabel>
+        <FormControl mt={5}>
+          {/* <FormLabel>Search Employee / District / Mobile</FormLabel> */}
 
           <InputGroup>
             <Input
@@ -265,7 +286,7 @@ function EmployeeVisitReport() {
         </FormControl>
 
         <FormControl>
-          <FormLabel>Start Date</FormLabel>
+          <FormLabel>From Date</FormLabel>
           <Input
             type="date"
             value={filters.from_date}
@@ -276,7 +297,7 @@ function EmployeeVisitReport() {
         </FormControl>
 
         <FormControl>
-          <FormLabel>End Date</FormLabel>
+          <FormLabel>To Date</FormLabel>
           <Input
             type="date"
             value={filters.to_date}
@@ -286,9 +307,9 @@ function EmployeeVisitReport() {
           />
         </FormControl>
 
-        <FormControl mt={5}>
+        <FormControl mt={{ base: "", md: 5 }}>
 
-          <Button onClick={handleRefresh} leftIcon={<RepeatIcon />}>Reset</Button>
+          <Button onClick={handleRefresh} leftIcon={<RepeatIcon />} >Reset</Button>
         </FormControl>
 
       </SimpleGrid>
@@ -365,7 +386,8 @@ function EmployeeVisitReport() {
                             px={3}
                             py={1}
                             borderRadius="full"
-                            fontSize="14px"
+                            fontSize="13px"
+                            fontWeight="400"
                             textTransform="capitalize"
                             colorScheme={
                               item.visit_purpose === "sales_return"
@@ -375,8 +397,8 @@ function EmployeeVisitReport() {
                                   : item.visit_purpose === "new_dist_planning"
                                     ? "purple"
                                     : item.visit_purpose === "sales_order"
-                                    ? "blue"
-                                    : "Orange"
+                                      ? "blue"
+                                      : "orange"
                             }
                           >
                             {formatVisitPurpose(item.visit_purpose)}
@@ -394,7 +416,7 @@ function EmployeeVisitReport() {
                                 size="xs"
                                 onClick={() => {
                                   setSelectedComment(item.comment);
-                                  setIsOpen(true);
+                                  setIssOpen(true);
                                 }}
                               >
                                 <ViewIcon />
@@ -418,11 +440,14 @@ function EmployeeVisitReport() {
 
                         <Td>
                           {item.image_url ? (
-                            <Button colorScheme="blue" size="sm">
-                              <a href={item.image_url} target="_blank" rel="noreferrer">
-                                View
-                              </a>
+                            <Button
+                              colorScheme="blue"
+                              size="sm"
+                              onClick={() => modelviewimg(item.image_url)}
+                            >
+                              View
                             </Button>
+                           
                           ) : (
                             "-"
                           )}
@@ -460,7 +485,7 @@ function EmployeeVisitReport() {
       </HStack>
 
       {/* model for comment  */}
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} isCentered size="lg">
+      <Modal isOpen={issOpen} onClose={() => setIssOpen(false)} isCentered size="lg">
         <ModalOverlay bg="blackAlpha.400" backdropFilter="blur(6px)" />
 
         <ModalContent borderRadius="2xl" p={2}>
@@ -529,6 +554,47 @@ function EmployeeVisitReport() {
 
         </ModalContent>
       </Modal>
+
+      {/* second model for image show  */}
+      <Modal isOpen={isOpen} onClose={onClose} size="xl" isCentered>
+        <ModalOverlay />
+
+        <ModalContent borderRadius="12px" mx="12px" overflow="hidden">
+          {/* Header */}
+          <Flex
+            bg="blue.500"
+            color="white"
+            px={4}
+            py={3}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Text fontWeight="bold">Image Preview</Text>
+
+            <ModalCloseButton position="static" color="white" />
+          </Flex>
+
+          {/* Body */}
+          <ModalBody p={4}>
+            {selectedImage ? (
+              <Img
+                src={selectedImage}
+                alt="Preview"
+                w="100%"
+                maxH="80vh"
+                objectFit="contain"
+                borderRadius="lg"
+              />
+            ) : (
+              <Flex justify="center" align="center" h="200px">
+                <Text color="gray.400">No Image Available</Text>
+              </Flex>
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {/* main box  */}
     </Box>
 
 

@@ -364,6 +364,27 @@ console.log("GST VALUE:", formData.firm_gstn_no);
               onChange={handleChange}
             />
           </FormControl>
+          
+          <FormControl>
+  <FormLabel>Firm GSTN</FormLabel>
+
+  <Flex gap={2}>
+    <Input
+      name="firm_gstn_no"
+      value={formData.firm_gstn_no }
+      onChange={handleChange}
+      placeholder="Enter GST Number"
+    />
+
+    <Button
+      colorScheme="blue"
+      onClick={handleGSTverification}
+      // isDisabled={!formData.firm_gstn_no}
+    >
+      Verify
+    </Button>
+  </Flex>
+</FormControl>
 
           <FormControl>
             <FormLabel>Firm Name</FormLabel>
@@ -571,27 +592,6 @@ console.log("GST VALUE:", formData.firm_gstn_no);
             // placeholder="Enter Firm GSTN"
             />
           </FormControl>
-
-          <FormControl>
-  <FormLabel>Firm GSTN</FormLabel>
-
-  <Flex gap={2}>
-    <Input
-      name="firm_gstn_no"
-      value={formData.firm_gstn_no }
-      onChange={handleChange}
-      placeholder="Enter GST Number"
-    />
-
-    <Button
-      colorScheme="blue"
-      onClick={handleGSTverification}
-      // isDisabled={!formData.firm_gstn_no}
-    >
-      Verify
-    </Button>
-  </Flex>
-</FormControl>
 
           <FormControl>
             <FormLabel>Firm GSTN type</FormLabel>

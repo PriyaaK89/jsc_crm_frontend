@@ -25,8 +25,8 @@ function AssignTargetRSMLayout() {
            pt="5rem"
            pb={6}
          >
-           <AssignTargetRSM/>
-           <CreditDaysReminderReport />
+           <NotificationBtn/>
+           <AssignTargetRSM />
          </Box>
        </Box>
   )

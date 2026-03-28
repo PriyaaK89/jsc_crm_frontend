@@ -1,80 +1,42 @@
-import React from 'react'
+
+  import React from 'react'
 import Sidebar from "../Sidebar";
 import Topbar from "../Topbar";
 import MobileTopbar from "../MobileTopbar";
 import { Flex,Box } from '@chakra-ui/react';
 import CreateLedger from '../../../pages/HrMgmt/AccountingMaster/CreateLedger';
 import DistributorAgreement from '../../../pages/HrMgmt/Letters/DistributorAgreement';
+import NotificationBtn from '../../NotificationBtn/NotificationBtn';
 
 function CreateLedgerLayout() {
-  return (
-    <Flex bg="#f4f4f4" minH="100vh">
-          
-          {/* Desktop Sidebar */}
-          <Box
-           position = "fixed"
-           top="0"
-           left="0"
-            w="268px"
-            display={{ base: "none", md: "block" }}
-          >
-            <Sidebar />
-          </Box>
-    
-          {/* Main Area */}
-          <Flex
-            direction="column"
-            flex="1"
-            ml={{ base: 0, md: "268px" }}
-          >
-            {/* Desktop Topbar */}
-            <Box
-              display={{ base: "none", md: "block" }}
-                px={{ base: 4, md: 6 }}
-              pt={4}
-              mx={3}
-            >
-              <Topbar />
-            </Box>
-    
-            {/* Mobile Topbar */}
-            <Box
-              display={{ base: "block", md: "none" }}
-              position="fixed"
-              top="0"
-              w="100%"
-              zIndex="10"
-            >
-              <MobileTopbar />
-            </Box>
-    
-            {/* Content */}
-            <Box
-              flex="1"
-              px={{ base: 3, md: 6 }}
-              pt={{ base: "20px", md: 4 }}
-            >
-              <Box
-                bg="white"
-                borderRadius="20px"
-                boxShadow="sm"
-                p={{ base: 3, md: 6 }} 
-                mt="75px"
-                mb={5}
-              >
-                <CreateLedger />
-                
-              </Box>
-              <Box bg="white"
-                borderRadius="20px"
-                boxShadow="sm"
-                p={{ base: 3, md: 6 }} mt={5} >
-              <DistributorAgreement />
-              </Box>
-            </Box>
-          </Flex>
-        </Flex>
+
+  return(
+    <Box bg="#F3F3F3" h="100%" >
+      <Box display={{ base: "none", md: "block" }}>
+        <Sidebar />
+
+      </Box>
+      <Box display={{ base: "none", md: "block" }}>
+        <Topbar />
+      </Box>
+      <Box display={{ base: "block", md: "none" }}>
+        <MobileTopbar />
+      </Box>
+      <Box
+        ml={{ base: 5, md: "295px" }}
+        mr={{base:5, md:5}}
+        pt="5rem"
+        pb={6}
+      >
+        <NotificationBtn/>
+        <CreateLedger />
+        <DistributorAgreement/>
+      </Box>
+    </Box>
   )
+  
 }
 
 export default CreateLedgerLayout
+
+

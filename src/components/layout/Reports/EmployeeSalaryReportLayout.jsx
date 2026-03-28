@@ -6,6 +6,7 @@ import MobileTopbar from "../MobileTopbar";
 // import EmpAttendance from "../../../pages/Employee/EmpAttendance";
 import EmpSalaryReport from "../../../pages/Employee/EmpSalaryReport";
 import EmployeeBalanceSheet from "../../../pages/Reports/EmployeeBalanceSheet";
+import NotificationBtn from "../../NotificationBtn/NotificationBtn";
 
 const EmployeeSalaryReportLayout = () => {
   return (

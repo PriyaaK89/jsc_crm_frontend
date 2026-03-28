@@ -25,8 +25,8 @@ const ViewEmpDetailsLayout = () => {
            pt="5rem"
            pb={6}
          >
+          <NotificationBtn/>
            <ViewEmployeeDetails/>
-           <Debit />
          </Box>
        </Box>
   );

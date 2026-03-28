@@ -182,8 +182,14 @@ const EmpAttendance = () => {
                 selectedDate={selectedDate}
             />
 
-            <Box bg="white" p={6} borderRadius="md">
-
+  <Box
+      bg="white"
+      mt={{base:2, md:5}}
+      px={{base:3, md:6}}
+      py={{base:3, md:4}}
+     borderRadius="lg"
+     boxShadow="md"
+  >
                 {/* Header */}
                 <Breadcrumb mb={4}>
                     <BreadcrumbItem>

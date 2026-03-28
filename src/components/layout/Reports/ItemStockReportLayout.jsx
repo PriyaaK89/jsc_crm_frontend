@@ -25,8 +25,9 @@ const ItemStockReportLayout = () => {
                pt="5rem"
                pb={6}
              >
+                             <NotificationBtn/>
+
                <ItemStockReport/>
-               <CreditDaysReminderReport />
              </Box>
            </Box>
   )

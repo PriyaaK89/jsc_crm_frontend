@@ -25,8 +25,8 @@ const FrightReportLayout = () => {
              pt="5rem"
              pb={6}
            >
+            <NotificationBtn/>
              <FrightReport/>
-             <CreditDaysReminderReport />
            </Box>
          </Box>
   );

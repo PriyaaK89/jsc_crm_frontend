@@ -1,16 +1,20 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Box,
   Button, Text,
   FormControl,
   FormLabel,
-  Input, useDisclosure,
-   Flex,
-  SimpleGrid,
+  Input, useDisclosure,InputGroup,Tooltip,
+  InputRightElement,IconButton,
+  InputLeftElement,
+  Flex,
+  SimpleGrid, Badge,
   Select,
   useToast
 } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon,CheckIcon } from "@chakra-ui/icons";
+import {  WarningIcon } from "@chakra-ui/icons";
+import { FiCheckCircle } from "react-icons/fi";
 import { CloseIcon } from "@chakra-ui/icons";
 import DistributorAgreementPdfPreview from "./DistributorAgreementPdfPreview";
 
@@ -132,18 +136,18 @@ const AddressForm = ({ data, onChange, index = 0, label }) => {
 };
 // -------------------------main function------------------------------------------------------
 function DistributorAgreement() {
-  
+
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-const handleChildData = (data) => {
-  setFormData((prev) => ({
-    ...prev,
-    documents: data, //  keep separate
-  }));
-};
- 
+  const handleChildData = (data) => {
+    setFormData((prev) => ({
+      ...prev,
+      documents: data, //  keep separate
+    }));
+  };
 
- 
+
+
   const { users } = useUsersapi();
   const previewModal = useDisclosure();
   const generateModal = useDisclosure();
@@ -151,7 +155,8 @@ const handleChildData = (data) => {
 
 
   const [firmtype, setFirmtype] = useState("");
-  const [formData, setFormData] = useState({firm_gstn_no: ''});
+  const [formData, setFormData] = useState({ firm_gstn_no: '' });
+  const [gstStatus, setGstStatus] = useState("");
   const [otherCompanies, setOtherCompanies] = useState([
     { name: "", turnover: "" }
   ]);
@@ -186,44 +191,44 @@ const handleChildData = (data) => {
     },
   ]);
 
-const handleGSTverification = async () => {
+  const handleGSTverification = async () => {
   try {
-    // setLoading(true);
+    setLoading(true);
+
     if (!formData.firm_gstn_no) {
       toast({
-        description: "Enter your gst number",
+        description: "Enter your GST number",
         duration: 2000,
-        status: 'error'
+        status: "error",
       });
       return;
     }
-console.log("GST VALUE:", formData.firm_gstn_no);
+
     const response = await API.post(API_ENDPOINTS.Gst_verify, {
       gst_number: formData.firm_gstn_no,
     });
 
     const data = response?.data;
 
-    if (data?.success && data?.isVerified) {
-
+    if (data?.success) {
+    
+      const status = (data?.status || data?.gst_status || "unknown").toLowerCase();
+      setGstStatus(status);
+//  data set replace of formdata
       setFormData((prev) => ({
         ...prev,
-
         firm_name: data.business_name || "",
         firm_type: data.business_type?.toLowerCase() || "",
-
         business_address: `${data.address?.building || ""}, ${data.address?.street || ""}, ${data.address?.location || ""}`,
         state: data.address?.state || "",
         district: data.address?.district || "",
         pin_code: data.address?.pincode || "",
-
-        frim_gstn_type: data.business_type === "Proprietorship"
-          ? "Regular"
-          : prev.frim_gstn_type,
-
+        frim_gstn_type:
+          data.business_type === "Proprietorship" ? "Regular" : prev.frim_gstn_type,
         customername: data.legal_name || "",
       }));
 
+      //  proprietorship extra data
       if (data.business_type === "Proprietorship") {
         setOwnerAddress((prev) => ({
           ...prev,
@@ -235,26 +240,52 @@ console.log("GST VALUE:", formData.firm_gstn_no);
         }));
       }
 
-      toast({
-        description: "GST verified and Values are auto filled",
-        duration: 2000,
-        status: 'success'
-      })
+      //  TOAST LOGIC 
+      if (status === "active") {
+        toast({
+          title:"GST VERIFICTION",
+          description: `GST ${status.toUpperCase()} verified successfully`,
+          duration: 2000,
+          status: "success",
+        });
+      } else if (status === "suspended" || status === "cancelled") {
+        toast({
+          description: `GST is ${status.toUpperCase()}`,
+          duration: 2000,
+          status: "warning",
+        });
+      } else {
+        toast({
+          description: `GST status: ${status.toUpperCase()}`,
+          duration: 2000,
+          status: "info",
+        });
+      }
 
     } else {
       toast({
         description: "GST not verified",
         duration: 1500,
-        status: 'error'
-      })
+        status: "error",
+      });
     }
-    // setLoading(false);
 
   } catch (error) {
     console.log(error);
-    alert("Something went wrong");
+    toast({
+      description: "Something went wrong!",
+      duration: 2000,
+      status: "error",
+    });
+  } finally {
+    setLoading(false);
   }
 };
+
+
+  // example: "active", "suspended", "cancelled"
+
+
 
   // add mulyiple comapny
   const handleOtherCompanyChange = (index, field, value) => {
@@ -307,12 +338,15 @@ console.log("GST VALUE:", formData.firm_gstn_no);
 
     setFormData((prev) => ({
       ...prev,
-      approver_name: selectedApprover, // ✅ proper key
+      approver_name: selectedApprover, //  proper key
     }));
   };
   // habndle change 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "firm_gstn_no") {
+      setGstStatus("");
+    }
 
     setFormData((prev) => ({
       ...prev,
@@ -321,24 +355,24 @@ console.log("GST VALUE:", formData.firm_gstn_no);
 
   };
   const handleFileChange = (name, file) => {
-  setFormData((prev) => ({
-    ...prev,
-    [name]: file,
-  }));
-};
+    setFormData((prev) => ({
+      ...prev,
+      [name]: file,
+    }));
+  };
 
 
 
   return (
     <>
-       <Box
-           bg="white"
-           mt={{base:2, md:5}}
-           px={{base:3, md:6}}
-           py={{base:3, md:4}}
-          borderRadius="lg"
-          boxShadow="md"
-       >
+      <Box
+        bg="white"
+        mt={{ base: 2, md: 5 }}
+        px={{ base: 3, md: 6 }}
+        py={{ base: 3, md: 4 }}
+        borderRadius="lg"
+        boxShadow="md"
+      >
 
         <Text fontSize={{ base: "lg", md: "xl" }} mb={6} fontWeight="bold">
           Distributor Agreement Form
@@ -364,26 +398,108 @@ console.log("GST VALUE:", formData.firm_gstn_no);
               onChange={handleChange}
             />
           </FormControl>
-          
-          <FormControl>
+
+
+          {/* <FormControl>
+            <FormLabel>Firm GSTN</FormLabel>
+
+            <Flex gap={2}>
+              <Input
+                name="firm_gstn_no"
+                value={formData.firm_gstn_no || ""}
+                onChange={handleChange}
+
+                placeholder="Enter GST Number"
+              />
+
+              <Button
+                colorScheme="blue" size="sm"
+                onClick={handleGSTverification}
+
+              >
+                Verify
+              </Button>
+            </Flex>
+
+            {gstStatus && (
+              <Box mt={1}>
+                <Badge
+                  fontSize="0.8em"
+                  px={2}
+                  py={1}
+                  borderRadius="full"
+
+                  fontWeight="600"
+                
+                >
+                  {gstStatus.toUpperCase()}
+                </Badge>
+              </Box>
+            )}
+          </FormControl> */}
+      
+  
+
+
+<FormControl>
   <FormLabel>Firm GSTN</FormLabel>
 
-  <Flex gap={2}>
+  <InputGroup>
+    
+  
+    {gstStatus && (
+      <InputLeftElement width="auto" ml={2}>
+        <Badge
+           colorScheme={
+            gstStatus === "active"
+              ? "green"
+              : gstStatus === "suspended"
+              ? "red"
+              : gstStatus === "cancelled"
+              ? "orange"
+              : "gray"
+          }
+          fontSize="0.7em"
+          px={2}
+          py={0.5}
+          borderRadius="full"
+        >
+          {gstStatus.toUpperCase()}
+        </Badge>
+      </InputLeftElement>
+    )}
+
+   
     <Input
       name="firm_gstn_no"
-      value={formData.firm_gstn_no }
+      value={formData.firm_gstn_no || ""}
       onChange={handleChange}
       placeholder="Enter GST Number"
+      pl={gstStatus ? "90px" : "12px"} 
     />
 
-    <Button
-      colorScheme="blue"
-      onClick={handleGSTverification}
-      // isDisabled={!formData.firm_gstn_no}
-    >
-      Verify
-    </Button>
-  </Flex>
+   
+     <InputRightElement >
+      <Tooltip label="Verify GST">
+        <IconButton
+          size="sm"
+          colorScheme="blue"
+          icon={
+            gstStatus === "error" ? (
+              <WarningIcon />
+            ) : (
+              <FiCheckCircle />
+            )
+          }
+          onClick={handleGSTverification}
+          // isLoading={loading}
+          aria-label="Verify GST"
+          isDisabled={formData.firm_gstn_no.length !== 15}
+        />
+      </Tooltip>
+    </InputRightElement>
+
+  </InputGroup>
 </FormControl>
 
           <FormControl>
@@ -399,7 +515,7 @@ console.log("GST VALUE:", formData.firm_gstn_no);
             <FormLabel>Firm Type</FormLabel>
             <Select
               name="firm_type"
-             value={formData.firm_type || ""}
+              value={formData.firm_type || ""}
               onChange={(e) => {
                 handleChange(e);
                 const value = e.target.value;
@@ -418,7 +534,7 @@ console.log("GST VALUE:", formData.firm_gstn_no);
             >
               <option value="">Select</option>
               <option value="proprietorship">Proprietorship</option>
-              <option value="partnership">Partnership</option>     
+              <option value="partnership">Partnership</option>
               <option value="private_limited">Private Limited</option>
             </Select>
           </FormControl>
@@ -693,20 +809,20 @@ console.log("GST VALUE:", formData.firm_gstn_no);
           </FormControl>
 
           <FormControl >
-  <FormLabel>Seed License Expiry Date</FormLabel>
+            <FormLabel>Seed License Expiry Date</FormLabel>
 
-  <Input
-    type="date"
-    name="seed_license_expiry"
-    value={formData.seed_license_expiry || ""}
-    onChange={(e) =>
-      setFormData((prev) => ({
-        ...prev,
-        seed_license_expiry: e.target.value
-      }))
-    }
-  />
-</FormControl>
+            <Input
+              type="date"
+              name="seed_license_expiry"
+              value={formData.seed_license_expiry || ""}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  seed_license_expiry: e.target.value
+                }))
+              }
+            />
+          </FormControl>
 
           <FormControl>
             <FormLabel>Fertilizer License No.</FormLabel>
@@ -842,7 +958,7 @@ console.log("GST VALUE:", formData.firm_gstn_no);
                   />
 
                   {/* Turnover */}
-                  <Input ml={{base:0,md:3}}
+                  <Input ml={{ base: 0, md: 3 }}
                     placeholder="Turnover"
                     value={company.turnover}
                     onChange={(e) =>
@@ -926,12 +1042,12 @@ console.log("GST VALUE:", formData.firm_gstn_no);
           </SimpleGrid>
         </Box>
 
-    
-      {/* upload documents  */}
-      <DistributorDocuments 
-       formData={formData}
-       onSendData={handleChildData}/>
- 
+
+        {/* upload documents  */}
+        <DistributorDocuments
+          formData={formData}
+          onSendData={handleChildData} />
+
       </Box>
 
       <Box textAlign="center">

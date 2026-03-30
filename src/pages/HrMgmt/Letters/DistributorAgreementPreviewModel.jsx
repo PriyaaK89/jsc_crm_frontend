@@ -212,11 +212,13 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                         (b)  Company shall have lien over the Products sold and supplied by Company until Distributor pays the entire sale price of the same to the Company. The Company shall have right to take back entire or part of the Products as it deems fit and proper to recover its dues.
                                     </Text>
                                     <Text mt={3}>
-                                        (c)   It is strictly prohibited for any distributor.to give cash, goods, or any other form of benefit from a employee.If any distributor engages in such activities and suffers any financial loss, they will be solely responsible for it. The company will not be responsible in any manner.The company will not make any kind of payment adjustment from the employee’s salary on behalf of the distributor.In such transactions, the company shall bear no responsibility whatsoever.
+                                        (c)   It is strictly prohibited for any distributor.to give cash, goods, or any other form of benefit from our employee.If any distributor engages in such activities and suffers any financial loss, they will be solely responsible for it.
                                     </Text>
                                 </Box>
                                 <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="13px" lineHeight="1.6">
-
+                            <Text> 
+                                  Company shall have the right to set off any amount due and payable by the Distributor to the Company against any amount payable by the Company to the Distributor.
+                            </Text>
 
                                     <Text mt={3} fontWeight="bold" textDecoration="underline">6. ADVANCE PAYMENT RELATED</Text>
                                     <Text mt={3}>
@@ -290,13 +292,14 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                         (ii)  Copy of Company’s area manager/ area officer’s verification report, which is obtained by the Distributor during his first visit to Distributor after being advised of the damage/ leakage and duly counter signed by the area manager/ regional head.
                                     </Text>
 
-                                    <Text mt={2}>
-                                        (iii)  All the defective containers and stored material shall have to be forwarded to the depot within 7 days after the above verification.
-                                    </Text>
-                                </Box>
+ </Box>
 
                                 <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="13px" lineHeight="1.6">
 
+                                    <Text mt={2}>
+                                        (iii)  All the defective containers and stored material shall have to be forwarded to the depot within 7 days after the above verification.
+                                    </Text>
+                               
                                     <Text mt={6} fontWeight="bold" textDecoration="underline">14. CLAIMS</Text>
 
                                     <Text mt={3}>
@@ -343,15 +346,16 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                     </Text>
 
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 21. PRINCIPAL TO PRINCIPAL AGREEMENT</Text>
-
 
                                 </Box>
 
 
                                 {/* fourh 4page  */}
                                 <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="13px" lineHeight="1.6">
-                                    <Text mt={3}>
+                                    <Text mt={5} fontWeight="bold" textDecoration="underline"> 21. PRINCIPAL TO PRINCIPAL AGREEMENT</Text>
+
+
+                                    <Text mt={2}>
                                         This Agreement is on a principal to principal basis and Distributor shall not in any way represent itself to be a Company’s agent. Company shall not be liable for any act or any omission on Distributor’s part. Distributor shall give an undertaking that it will market the Products supplied to it by Company and it shall not alter the labels of the containers or packages in any way and shall not deface, remove, obliterate or in any manner modify or alter the Trade Marks, grade indications and other matters appearing thereon.
                                     </Text>
 
@@ -359,19 +363,15 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                     {/* part 4 */}
 
 
-                                    <Text fontWeight="bold" textDecoration="underline"> 22. DISPUTES AND JURISDICTION</Text>
+                                    <Text fontWeight="bold" textDecoration="underline" mt={2}> 22. DISPUTES AND JURISDICTION</Text>
 
                                     <Text mt={3}>
                                         Any disputes arising between the Distributor and the Company shall be resolved by mutual discussion. Unresolved disputes, if any shall be referred to Arbitration by a sole Arbitrator to be appointed by the Company under the provisions of the Arbitration and Conciliation Act, 1996. The venue of Arbitration shall be ALWAR. This Agreement shall be governed by the laws of India and subject to the jurisdiction of courts of ALWAR.
                                     </Text>
 
-                                    <Text mt={8}>
+                                    <Text mt={3}>
                                         IN WITHNESS WHEREOF the parties hereto have subscribed their hands to these presents on the day and month herein above first entered
                                     </Text>
-
-
-
-
 
                                     <Text fontWeight="bold" textDecoration="underline">
                                         23. DUTIES / OBLIGATIONS OF DISTRIBUTOR
@@ -458,7 +458,7 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                         xvii) assist the Company in any matter as and when required by the Company in the Territory
                                     </Text>
 
-                                    <Text mt={4} fontWeight="bold" textDecoration="underline">
+                                    <Text mt={3} fontWeight="bold" textDecoration="underline">
                                         24. LEGAL REQUIREMENTS / COMPLIANCE
                                     </Text>
 
@@ -466,7 +466,7 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                         Distributor shall be obliged to take all requisite registrations, licenses, permissions, etc., including but not limited to under the provisions of Seeds ACT-1966 & Seed act 1983,Insecticides Act,1968 & Rules framed there under, Fertilizer (Control) Orders, Legal Metrology Act, 2009 & Rules framed there under, Goods and Service Tax & Rules framed there under, any and all Central and State Acts or Rules which is mandatorily required for doing business for stocking, exhibiting, transporting, selling of the Products, before commencement of operations and submit copies of such registrations/licenses/permissions to the Company and should renew and keep the same valid from time to time. In case of any change of statutory provisions by way of any Acts, Order, Notifications etc. then it will be the sole responsibility of the Distributor to comply such provisions and to immediately intimate to the Company. Further, Distributor will also arrange a proper godown for storage of the said products and if any storage license is necessary such license from the concerned authority shall also be obtained by the Distributor in its own name and at its own cost.
                                     </Text>
 
-                                    <Text mt={4} fontWeight="bold" textDecoration="underline">
+                                    <Text mt={3} fontWeight="bold" textDecoration="underline">
                                         25. PROHIBITION AGAINST RE-FORMULATION OF THE PRODUCTS
                                     </Text>
 
@@ -692,7 +692,8 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
 
                                     
                                         <Text mt={2} fontSize="sm" ><strong>1. </strong>  कंपनी के खाते में भुगतान जमा होने के पश्चात 60 दिनों के भीतर माल उठाना अनिवार्य होगा। 60 दिनों के बाद बकाया राशि पर 24% वार्षिक ब्याज लागू किया जाएगा।</Text>
-                                        <Text mt={2} fontSize="sm" ><strong>2. </strong> ₹50,000 तक के ऑरडर पर ₹500 अतिरिक्त शुल्क लिया जाएगा। ₹50,000 से अधिक के ऑर्डर पर प्रत्येक ₹1000 पर ₹10 अतिरिक्त शुल्क देय होगा।</Text>
+                                        <Text mt={2} fontSize="sm" ><strong>2. </strong>यदि ₹50,000 तक की राशि का कोई चेक बाउंस होता है, तो ₹500 का चेक बाउंस शुल्क लगाया जाएगा।
+                                            यदि ₹50,000 से अधिक राशि का चेक बाउंस होता है, तो ₹1000 का चेक बाउंस शुल्क लगाया जाएगा।</Text>
                                         <Text mt={2} fontSize="sm"><strong>3. </strong> यदि माल कूरियर/परिवहन के माध्यम से भेजा जाता है, तो उसका भाड़ा (फ्रेट चार्ज) वितरक द्वारा वहन किया जाएगा।</Text>
                                      <Text mt={2} fontSize="sm"> <strong>4. </strong>  माल भेजने की समस्त जिम्मेदारी वितरक की होगी। इस संबंध में कंपनी की कोई जिम्मेदारी नहीं होगी। </Text> 
                                        <Text mt={2} fontSize="sm"> <strong>5. </strong>  कूरियर/परिवहन के दौरान माल में किसी भी प्रकार की क्षति, देरी या हानि के लिए कंपनी उत्तरदायी नहीं होगी। </Text> 

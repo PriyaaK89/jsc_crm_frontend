@@ -57,33 +57,6 @@ const DistributorAgreementPdfPreview = ({ isOpen, onClose, formData, partners, o
     }
   };
 
-
-  // split into thre lines 
-  const splitIntoThreeLines = (text = "") => {
-    const words = text.split(" ");
-    const totalWords = words.length;
-
-    const perLine = Math.ceil(totalWords / 3);
-
-    const line1 = words.slice(0, perLine).join(" ");
-    const line2 = words.slice(perLine, perLine * 2).join(" ");
-    const line3 = words.slice(perLine * 2).join(" ");
-
-    return [line1, line2, line3];
-  };
-  const address = [
-    formData?.firm_name,
-    formData?.business_address,
-    formData?.state,
-    formData?.tehsil && `Teh: ${formData.tehsil}`,
-    formData?.district && `Dist: ${formData.district}`,
-    formData?.landmark && `Landmark: ${formData.Bussiness_landmark}`,
-    formData?.pin_code && `Pincode: ${formData.pin_code}`
-  ]
-    .filter(Boolean)    //if value not in form 
-    .join(", ");    //if value in form 
-
-  const [line1, line2, line3] = splitIntoThreeLines(address);
   // formate date 
   const formatDate = (date) => {
     if (!date) return "";
@@ -190,14 +163,17 @@ const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
                   </Text>
                   <VStack flex="1" spacing={6}>
                     <Box borderBottom="1px solid black" w="410px"
-                      noOfLines={3} textTransform="uppercase">{line1}
+                      textTransform="uppercase"> {formData?.firm_name}
                     </Box>
+
                     <Box borderBottom="1px solid black" w="410px"
-                      noOfLines={3} textTransform="uppercase"> {line2}
+                      textTransform="uppercase"> {formData?.business_address}  {formData?.state}  {formData?.tehsil && `Teh: ${formData.tehsil}`}  {formData?.district && `Dist: ${formData.district}`}  {formData?.pin_code && `Pincode: ${formData.pin_code}`}
 
                     </Box>
                     <Box borderBottom="1px solid black" w="410px"
-                      noOfLines={3} textTransform="uppercase">{line3}
+                      textTransform="uppercase">
+                        LANDMARK:
+                        {formData?.landmark && `Landmark: ${formData.Bussiness_landmark}`}
 
                     </Box>
 
@@ -270,13 +246,13 @@ const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
                 {/* hones emil and phone no  */}
 
 
-                <HStack align="flex-start">
+                <HStack align="flex-start" mt={4} spacing={4}>
                   <Text w="250px">
                     HONE NOS. E-MAIL ID :
                   </Text>
                   <VStack flex="1" spacing={3}>
                     <Box borderBottom="1px solid black" w="100%" textTransform="uppercase">
-                      {formData?.firm_email_id}
+                    Email: {formData?.firm_email_id}
                     </Box>
 
                     {/* ❌ NO BORDER HERE */}
@@ -299,10 +275,10 @@ const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
                   </Text>
                   <VStack flex="1" spacing={3}>
                     <Box borderBottom="1px solid black" w="100%" ><Text textTransform="uppercase">
-                      Name:   {formData?.responsile_person_name}
+                      Name: {formData?.responsile_person_name}
                     </Text>
                     </Box>
-                    <Box borderBottom="1px solid black" w="100%" textTransform="uppercase"> {formData?.responsile_person_address}</Box>
+                    <Box borderBottom="1px solid black" w="100%" textTransform="uppercase">Address: {formData?.responsile_person_address}</Box>
                     <Box borderBottom="1px solid black" w="100%" textTransform="uppercase">Mobile no. {formData?.responsile_person_no}, Alt mobile No.{formData?.responsile_Alternat_person_no}</Box>
                   </VStack>
                 </HStack>

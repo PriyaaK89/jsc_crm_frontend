@@ -158,13 +158,7 @@ function DistributorAgreement() {
     { name: "", turnover: "" }
   ]);
 
-  // const [firmAddress, setFirmAddress] = useState({
-  //   address: "",
-  //   state: "",
-  //   district: "",
-  //   tehsil: "",
-  //   pincode: "",
-  // });
+  
 
   const [ownerAddress, setOwnerAddress] = useState({
     address: "",

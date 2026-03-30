@@ -38,7 +38,7 @@ function ManuFacturingReport() {
    
              <Breadcrumb mb={6} fontSize="sm">
                            <BreadcrumbItem>
-                                         <BreadcrumbLink as={Link} href="/dashboard">
+                                         <BreadcrumbLink as={Link} to="/dashboard">
                                            <GoHomeFill color="#5570F1"  size={20}/>
                                          </BreadcrumbLink>
                                        </BreadcrumbItem>

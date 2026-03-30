@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import { Link } from "react-router-dom";
 import API from "../../services/api";
 import {
   Box,
@@ -8,9 +9,14 @@ import {
   Input,
   Button,
   HStack,
-  VStack
+  VStack,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink
 } from "@chakra-ui/react";
 import useUsersapi from "../../Apis/GetUsersapi";
+import { GoHomeFill } from "react-icons/go";
+
 
 const TrackEmployee = () => {
 
@@ -125,6 +131,21 @@ const TrackEmployee = () => {
          borderRadius="lg"
          boxShadow="md"
       >
+        <Breadcrumb mb={4}>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink as={Link} to="/dashboard">
+                                    <GoHomeFill color="blue" />
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem >
+                                <BreadcrumbLink
+                                fontSize="13px"
+                                isCurrentPage
+                                >
+                                  Employee Route Tracking
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                        </Breadcrumb>
       <VStack align="start" spacing={6}>
 
         <Heading size="md">Employee Route Tracking</Heading>

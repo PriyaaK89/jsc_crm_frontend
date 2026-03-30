@@ -6,6 +6,7 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import { Link } from "react-router-dom";
 import useUsersapi from "../../Apis/GetUsersapi";
+import { GoHomeFill } from "react-icons/go";
 
 
 const EditEmployee = () => {
@@ -229,9 +230,16 @@ const EditEmployee = () => {
             borderRadius="lg"
             boxShadow="md"
          >
+                        <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
 
-            <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
-                <BreadcrumbItem>
+                      <BreadcrumbItem>
+                      <BreadcrumbLink as={Link} to="/dashboard">
+                            <GoHomeFill color="#5570F1" />
+                          </BreadcrumbLink>
+                      </BreadcrumbItem>
+                          
+
+                        <BreadcrumbItem>
                     <BreadcrumbLink as={Link} to='/hr-mgmt/view-employee-list' fontSize="13px">Employee List</BreadcrumbLink>
                 </BreadcrumbItem>
 

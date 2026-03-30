@@ -9,7 +9,6 @@ import CreateLedgerbankconfi from '../../../components/Accountingmastercomponent
 import CreateLedgerGst from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerGst";
 import CreateLedgerSundrydr_cr from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerSundrydr_cr";
 import useUsersapi from '../../../Apis/GetUsersapi';
-import DistributorAgreement from "../Letters/DistributorAgreement";
 import  CreateLedgerInterestParameter from '../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerInterestParameter';
 import { Link } from "react-router-dom";
 

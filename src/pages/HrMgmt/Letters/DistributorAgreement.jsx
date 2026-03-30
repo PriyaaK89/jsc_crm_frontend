@@ -151,9 +151,6 @@ function DistributorAgreement() {
   const { users } = useUsersapi();
   const previewModal = useDisclosure();
   const generateModal = useDisclosure();
-
-
-
   const [firmtype, setFirmtype] = useState("");
   const [formData, setFormData] = useState({ firm_gstn_no: '' });
   const [gstStatus, setGstStatus] = useState("");
@@ -191,7 +188,7 @@ function DistributorAgreement() {
     },
   ]);
 
-  const handleGSTverification = async () => {
+ const handleGSTverification = async () => {
   try {
     setLoading(true);
 
@@ -201,6 +198,7 @@ function DistributorAgreement() {
         duration: 2000,
         status: "error",
       });
+      setLoading(false); // Don't forget to stop loading
       return;
     }
 
@@ -211,25 +209,25 @@ function DistributorAgreement() {
     const data = response?.data;
 
     if (data?.success) {
-    
       const status = (data?.status || data?.gst_status || "unknown").toLowerCase();
+      const businessType = data.business_type?.toLowerCase() || "";
+      
       setGstStatus(status);
-//  data set replace of formdata
+      setFirmtype(businessType);
+
       setFormData((prev) => ({
         ...prev,
         firm_name: data.business_name || "",
-        firm_type: data.business_type?.toLowerCase() || "",
+        firm_type: businessType,
         business_address: `${data.address?.building || ""}, ${data.address?.street || ""}, ${data.address?.location || ""}`,
         state: data.address?.state || "",
         district: data.address?.district || "",
         pin_code: data.address?.pincode || "",
-        frim_gstn_type:
-          data.business_type === "Proprietorship" ? "Regular" : prev.frim_gstn_type,
+        firm_start_date: data.reg_date || "",
         customername: data.legal_name || "",
       }));
 
-      //  proprietorship extra data
-      if (data.business_type === "Proprietorship") {
+      if (businessType === "proprietorship") {
         setOwnerAddress((prev) => ({
           ...prev,
           name: data.legal_name || "",
@@ -238,47 +236,41 @@ function DistributorAgreement() {
           district: data.address?.district || "",
           pincode: data.address?.pincode || "",
         }));
+      } else if (businessType === "partnership") {
+        setPartners((prev) => {
+          const partnerupdated = [...prev];
+          partnerupdated[0] = {
+            ...partnerupdated[0],
+            name: data.legal_name || "",
+            address: `${data.address?.building || ""}, ${data.address?.street || ""}`,
+            state: data.address?.state || "",
+            district: data.address?.district || "",
+            pincode: data.address?.pincode || "",
+          };
+          return partnerupdated; // Fixed: added return
+        });
       }
 
-      //  TOAST LOGIC 
       if (status === "active") {
         toast({
-          title:"GST VERIFICTION",
+          title: "GST VERIFICATION",
           description: `GST ${status.toUpperCase()} verified successfully`,
           duration: 2000,
           status: "success",
         });
-      } else if (status === "suspended" || status === "cancelled") {
-        toast({
-          description: `GST is ${status.toUpperCase()}`,
-          duration: 2000,
-          status: "warning",
-        });
-      } else {
-        toast({
-          description: `GST status: ${status.toUpperCase()}`,
-          duration: 2000,
-          status: "info",
-        });
       }
-
-    } else {
-      toast({
-        description: "GST not verified",
-        duration: 1500,
-        status: "error",
-      });
     }
-
   } catch (error) {
-    console.log(error);
+    // THIS PART WAS MISSING
+    console.error("GST Verification Error:", error);
     toast({
-      description: "Something went wrong!",
-      duration: 2000,
+      title: "Error",
+      description: "Failed to verify GST. Please try again.",
       status: "error",
+      duration: 3000,
     });
   } finally {
-    setLoading(false);
+    setLoading(false); // Ensures loading stops regardless of success or failure
   }
 };
 
@@ -360,6 +352,13 @@ function DistributorAgreement() {
       [name]: file,
     }));
   };
+  // date formate set 
+  const formatToInputDate = (dateStr) => {
+  if (!dateStr) return "";
+
+  const [day, month, year] = dateStr.split("/");
+  return `${year}-${month}-${day}`;
+};
 
 
 
@@ -398,47 +397,6 @@ function DistributorAgreement() {
               onChange={handleChange}
             />
           </FormControl>
-
-
-          {/* <FormControl>
-            <FormLabel>Firm GSTN</FormLabel>
-
-            <Flex gap={2}>
-              <Input
-                name="firm_gstn_no"
-                value={formData.firm_gstn_no || ""}
-                onChange={handleChange}
-
-                placeholder="Enter GST Number"
-              />
-
-              <Button
-                colorScheme="blue" size="sm"
-                onClick={handleGSTverification}
-
-              >
-                Verify
-              </Button>
-            </Flex>
-
-            {gstStatus && (
-              <Box mt={1}>
-                <Badge
-                  fontSize="0.8em"
-                  px={2}
-                  py={1}
-                  borderRadius="full"
-
-                  fontWeight="600"
-                
-                >
-                  {gstStatus.toUpperCase()}
-                </Badge>
-              </Box>
-            )}
-          </FormControl> */}
-      
-  
 
 
 <FormControl>
@@ -535,9 +493,12 @@ function DistributorAgreement() {
               <option value="">Select</option>
               <option value="proprietorship">Proprietorship</option>
               <option value="partnership">Partnership</option>
-              <option value="private_limited">Private Limited</option>
+              <option value="partnership">Private Limited</option>
             </Select>
           </FormControl>
+
+
+          
 
           {formData?.firm_type === "partnership" && (
             <FormControl>
@@ -589,6 +550,10 @@ function DistributorAgreement() {
                 <FormLabel>Tehsil</FormLabel>
                 <Input name="tehsil" value={formData.tehsil || ""} onChange={handleChange} />
               </FormControl>
+               <FormControl>
+                <FormLabel>Landmark</FormLabel>
+                <Input name="Bussiness_landmark" value={formData.Bussiness_landmark || ""} onChange={handleChange} />
+              </FormControl>
 
               <FormControl>
                 <FormLabel>Pincode</FormLabel>
@@ -615,8 +580,7 @@ function DistributorAgreement() {
             </SimpleGrid>
           </Box>
 
-          {/* Proprietorship */}
-          {firmtype === "proprietorship" && (
+         {firmtype === "proprietorship" && (
             <AddressForm
               data={ownerAddress}
               label="Owner Address"
@@ -625,6 +589,8 @@ function DistributorAgreement() {
               }
             />
           )}
+          {/* Proprietorship */}
+       
 
           {/* Partnership */}
           {firmtype === "partnership" && (
@@ -727,22 +693,15 @@ function DistributorAgreement() {
 
           <FormControl>
             <FormLabel> Firm Since</FormLabel>
-            <Select
-              name="firm_since_date"
-              value={formData.firm_start_date || ""}
+            <Input
+              name="firm_start_date"
+              value={formatToInputDate(formData.firm_start_date || "" )}
               onChange={handleChange}
-            >
-              <option value="">Select Year</option>
-
-              {Array.from({ length: 100 }, (_, i) => {
-                const year = new Date().getFullYear() - i;
-                return (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                );
-              })}
-            </Select>
+              type="date"
+              placeholder="Select Firm Start Date"
+            />
+             
+          
 
           </FormControl>
 
@@ -842,13 +801,68 @@ function DistributorAgreement() {
           </FormControl>
 
           <FormControl>
-            <FormLabel>Tranport Name</FormLabel>
+            <FormLabel>Tranport Name (A)</FormLabel>
             <Input
-              name="transportname"
-              value={formData.transport_name}
+              name="transport_a"
+              value={formData.transport_a}
               onChange={handleChange}
             />
           </FormControl>
+          <FormControl>
+            <FormLabel>Tranport Name (B)</FormLabel>
+            <Input
+              name="transport_b"
+              value={formData.transport_b}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>Source OF Funds For Bussiness</FormLabel>
+            <Select
+              name="source_of_funds"
+              value={formData.source_of_funds || ""}
+              onChange={handleChange}
+            >
+              <option value="">select Source of Funds</option>
+              <option value="own_funds">Own Funds</option>
+              <option value="loan">Loan</option>
+              <option value="investment">Investment</option>
+            </Select>
+
+          </FormControl>
+
+          {formData.source_of_funds === "loan" && (
+             <FormControl >
+             <FormLabel>Loan Details</FormLabel>
+              <Input
+                name="loan_details"
+                value={formData.loan_details}
+                onChange={handleChange} placeholder="Enter Loan Details"
+              />
+            </FormControl>
+          )}
+
+          {formData.source_of_funds === "own_funds" && (
+             <FormControl>
+             <FormLabel>Own Funds Details</FormLabel>
+              <Input
+                name="own_funds_details"
+                value={formData.own_funds_details}
+                onChange={handleChange} placeholder="Enter Own Funds Details"
+              />
+            </FormControl>
+          )}
+           {formData.source_of_funds === "investment" && (
+             <FormControl >
+             <FormLabel>Investment Details</FormLabel>
+              <Input
+                name="investment_details"
+                value={formData.investment_details}
+                onChange={handleChange} placeholder="Enter Investment Details"
+              />
+            </FormControl>
+          )}
+
           <FormControl>
             <FormLabel>Bank Name</FormLabel>
             <Input
@@ -993,6 +1007,7 @@ function DistributorAgreement() {
                 name="approver_name"
                 value={formData.approver_name || ""}
                 onChange={(e) => {
+                  
                   setFormData((prev) => ({
                     ...prev,
                     approver_name: e.target.value,
@@ -1093,5 +1108,6 @@ function DistributorAgreement() {
     </>
   )
 }
+
 
 export default DistributorAgreement

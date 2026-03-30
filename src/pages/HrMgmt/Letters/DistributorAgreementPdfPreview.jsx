@@ -72,10 +72,12 @@ const DistributorAgreementPdfPreview = ({ isOpen, onClose, formData, partners, o
     return [line1, line2, line3];
   };
   const address = [
+    formData?.firm_name,
     formData?.business_address,
     formData?.state,
     formData?.tehsil && `Teh: ${formData.tehsil}`,
     formData?.district && `Dist: ${formData.district}`,
+    formData?.landmark && `Landmark: ${formData.Bussiness_landmark}`,
     formData?.pin_code && `Pincode: ${formData.pin_code}`
   ]
     .filter(Boolean)    //if value not in form 
@@ -92,6 +94,20 @@ const DistributorAgreementPdfPreview = ({ isOpen, onClose, formData, partners, o
       year: "numeric",
     });
   };
+ 
+  const partner1 = partners?.[0] || {}; 
+
+  const getPanAadharDetails = (formData, partner1, ownerAddress) => {
+  const pan =
+    formData?.firm_pan_no?.trim() || partner1?.pan_no?.trim() || ownerAddress?.pan_no?.trim() || "";
+
+  const aadhar =
+    formData?.firm_aadhar_no?.trim() || partner1?.aadhar_no?.trim() || ownerAddress?.aadhar_no?.trim() || "";
+
+  return { pan, aadhar };
+};
+const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
+
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="5xl">
@@ -191,13 +207,13 @@ const DistributorAgreementPdfPreview = ({ isOpen, onClose, formData, partners, o
                 {/* partner/ solo pro details */}
                 <HStack align="flex-start" mt={4} spacing={4}>
 
-                  {/* ✅ LEFT MAIN HEADING */}
+                  {/* LEFT MAIN HEADING */}
 
 
-                  {/* ✅ RIGHT SIDE CONTENT */}
+                  {/*  RIGHT SIDE CONTENT */}
                   <VStack flex="1" spacing={4} align="stretch">
 
-                    {/* ✅ Proprietorship */}
+                    {/* Proprietorship */}
                     {formData?.firm_type === "proprietorship" && (
                       <HStack align="flex-start">
                         <Text w="260px" >
@@ -205,8 +221,9 @@ const DistributorAgreementPdfPreview = ({ isOpen, onClose, formData, partners, o
                           WITH COMPLETE RESI. ADDRESS
                         </Text>
 
-                        <Box borderBottom="1px solid black" flex="1" mt={5} textTransform="uppercase">
+                        <Box borderBottom="1px solid black" flex="1" mt={3} textTransform="uppercase">
                           {[
+                            ownerAddress?.name,
                             ownerAddress?.address,
                             ownerAddress?.state,
                             ownerAddress?.tehsil && `Teh: ${ownerAddress.tehsil}`,
@@ -219,18 +236,18 @@ const DistributorAgreementPdfPreview = ({ isOpen, onClose, formData, partners, o
                       </HStack>
                     )}
 
-                    {/* ✅ Partnership */}
+                    {/*  Partnership */}
                     {formData?.firm_type === "partnership" &&
                       partners.map((partner, index) => (
                         <HStack key={index} align="flex-start">
 
-                          {/* 👉 LEFT SIDE (Partner Label) */}
+                          {/*  LEFT SIDE (Partner Label) */}
                           <Text w="260px" >
                             DETAIL OF THE PRO. PARTNER {index + 1} <br />
                             WITH COMPLETE RESI. ADDRESS :
                           </Text>
 
-                          {/* 👉 RIGHT SIDE (Address) */}
+                          {/*  RIGHT SIDE (Address) */}
                           <Box borderBottom="1px solid black" flex="1" mt={2} textTransform="uppercase">
                             {[
                               partner?.address,
@@ -299,7 +316,11 @@ const DistributorAgreementPdfPreview = ({ isOpen, onClose, formData, partners, o
                 {/* PAN */}
                 <HStack mt={5}>
                   <Text w="250px">PAN OR AADHAR OF THE FIRM/PROPRITOR</Text>
-                  <Box borderBottom="1px solid black" flex="1" textTransform="uppercase" >PAN NO: {formData?.firm_pan_no}, AADHAR NO.: {formData?.firm_aadhar_no}</Box>
+                  <Box borderBottom="1px solid black" flex="1" textTransform="uppercase" >
+                    
+                    {pan && `PAN NO: ${pan}`}
+    {pan && aadhar && " , "}
+    {aadhar && `AADHAR NO: ${aadhar}`}</Box>
                 </HStack>
 
                 {/* LICENSE */}
@@ -390,7 +411,7 @@ const DistributorAgreementPdfPreview = ({ isOpen, onClose, formData, partners, o
                 {/* years of bussines */}
                 <HStack >
                   <Text w="250px">YEARS OF BUSINESS :</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={1} > START AT : {formData?.firm_since_date}</Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={1} > START AT : {formData?.firm_start_date}</Box>
                 </HStack>
                 {/* name of dealing bannk */}
                 <HStack >
@@ -445,18 +466,23 @@ const DistributorAgreementPdfPreview = ({ isOpen, onClose, formData, partners, o
                 {/* source of funds  */}
                 <HStack >
                   <Text w="250px">SOURCES OF FUNDS FOR BUSINESS:</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={1} > RS. {formData?.expected_sale_per_year}</Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={1} > RS. {formData?.source_of_funds}</Box>
                 </HStack>
 
                 <HStack >
                   <Text w="250px">(A) OWN SOURCES:</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={1} > RS. {formData?.expected_sale_per_year}</Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={1} > RS. {formData?.own_funds_details}</Box>
                 </HStack>
 
                 <HStack >
                   <Text w="250px">(B) FROM BANK:</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={2} > </Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={2} >{formData?.loan_details} </Box>
                 </HStack>
+                 <HStack >
+                  <Text w="250px">(c) FROM INVESTMENT:</Text>
+                  <Box borderBottom="1px solid black" flex="1" mt={2} >{formData?.investment} </Box>
+                </HStack>
+                 
                 <Text
                   mt={10}
                   textAlign="right"
@@ -470,8 +496,10 @@ const DistributorAgreementPdfPreview = ({ isOpen, onClose, formData, partners, o
             {/* PAGE 4: DOCUMENT CHECKLIST */}
             <Box className="pdf-page" w="210mm" h="297mm" p="20mm">
               <VStack justifyContent="space-between" flexDirection="column" mt={14} w="100%">
-                <Text borderBottom="dotted" w="100%"> I AM AGREE {formData?.firm_name} DATE ON  {formatDate(formData?.approvering_date)} </Text><br />
-                <Text borderBottom="dotted" w="100%"> BEHALF OF THIS AGREEMENT ALL CONDITIONS AND RULES REGULATIONI</Text>
+                <Text borderBottom="dotted" w="100%"> I {formData?.customername} AGREE ON  BEHALF OF  {formData?.firm_name} </Text><br />
+                <Text borderBottom="dotted" w="100%"> DATE ON  {formatDate(formData?.approvering_date)}  THIS AGREEMENT ALL TERMS AND CONDITIONS</Text>
+                <Text borderBottom="dotted" w="100%" mt={4}>  AND RULES REGULATIONION  ARE ACCPTED</Text>
+
               </VStack>
 
               <VStack justifyContent="space-between" spacing={2} flexDirection="row" mt={16}>

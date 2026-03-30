@@ -4,10 +4,10 @@ import Sidebar from "../Sidebar";
 import Topbar from "../Topbar";
 import MobileTopbar from "../MobileTopbar";
 import { Flex,Box } from '@chakra-ui/react';
-import CreateLedger from '../../../pages/HrMgmt/AccountingMaster/CreateLedger';
 import NotificationBtn from '../../NotificationBtn/NotificationBtn';
+import DistributorAgreement from '../../../pages/HrMgmt/Letters/DistributorAgreement';
 
-function CreateLedgerLayout() {
+function ONBordingdistributoragreement() {
 
   return(
     <Box bg="#F3F3F3" h="100%" >
@@ -28,7 +28,7 @@ function CreateLedgerLayout() {
         pb={6}
       >
         <NotificationBtn/>
-        <CreateLedger />
+        <DistributorAgreement/>
       
       </Box>
     </Box>
@@ -36,6 +36,9 @@ function CreateLedgerLayout() {
   
 }
 
-export default CreateLedgerLayout
 
 
+
+
+
+export default ONBordingdistributoragreement

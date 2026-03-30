@@ -30,18 +30,16 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
     const toast = useToast();
     const handleDownloadAgreementPDF = async () => {
         try {
-
-            const pages = document.querySelectorAll(".pdf-page");
+            const pages = document.querySelectorAll("#agre-letter-preview .pdf-page");
             const pdf = new jsPDF("p", "mm", "a4");
 
             for (let i = 0; i < pages.length; i++) {
-
                 const page = pages[i];
 
                 const dataUrl = await toJpeg(page, {
                     quality: 0.9,
                     pixelRatio: 2,
-                    cacheBust: true
+                    cacheBust: true,
                 });
 
                 const imgProps = pdf.getImageProperties(dataUrl);
@@ -56,64 +54,22 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                 pdf.addImage(dataUrl, "JPEG", 0, 0, pdfWidth, pdfHeight);
             }
 
-            const pdfBlob = pdf.output("blob");
-
-            // Download
-
-            const url = URL.createObjectURL(pdfBlob);
-
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `Agreement_Letter_${employee?.name}.pdf`;
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Upload
-
-            const uploadFormData = new FormData();
-
-            uploadFormData.append(
-                "file",
-                pdfBlob,
-                `Agreement_Letter_${employee?.name}.pdf`
-            );
-
-            uploadFormData.append("employee_id", employee?.id);
-            uploadFormData.append("employee_name", employee?.name);
-            uploadFormData.append("document_type", "agreement_letter");
-
-            const res = await API.post(
-                API_ENDPOINTS.upload_emp_letters,
-                uploadFormData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data"
-                    }
-                }
-            );
-
-            if (res?.status === 200) {
-                toast({
-                    description: "Agreement Letter Uploaded Successfully!",
-                    duration: 2000,
-                    status: "success"
-                });
-            }
-
-        } catch (error) {
-
-            console.error("Agreement PDF generation/upload error:", error);
+            //  Only Download (No API Upload)
+            pdf.save(`Agreement_Letter_${employee?.name || "user"}.pdf`);
 
             toast({
-                description:
-                    error?.response?.data?.message ||
-                    "Something went wrong, Please try again!",
+                description: "PDF Downloaded Successfully!",
+                duration: 2000,
+                status: "success",
+            });
+
+        } catch (error) {
+            console.error("PDF generation error:", error);
+
+            toast({
+                description: "Something went wrong, Please try again!",
                 status: "error",
                 duration: 2000,
-                isClosable: true,
-                position: "top-right"
             });
         }
     };
@@ -171,7 +127,7 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                     <Text mt={4} textAlign="center" fontSize="15px">And</Text>
 
                                     <Text mt={4}>
-                                        <mark><strong>  {formData?.firm_name} </strong> </mark>,  a {formData?.firm_type} concern having its place of business at <strong> {formData?.business_address}. </strong>Represented through its proprietor.<strong>{ownerAddress?.name}{partners?.name} </strong> residing at S/O-<strong>{ownerAddress?.father_name}{partners?.father_name}</strong> address <strong> {ownerAddress?.address}{partners?.address}</strong> (hereinafter collectively referred to as “Distributor” ) which expression shall unless repugnant to the context or meaning thereof be deemed to include his /her heirs, executors, administrators, permitted assigns and successors of the OTHER PART.
+                                        <mark><strong>  {formData?.firm_name} </strong> </mark>,  a {formData?.firm_type} concern having its place of business at <strong> {formData?.business_address} {formData?.Bussiness_landmark} {formData?.district} {formData?.pin_code}. </strong>Represented through its proprietor.<strong>{ownerAddress?.name}{partners?.name} </strong> residing at S/O-<strong>{ownerAddress?.father_name}{partners?.father_name}</strong> address <strong> {ownerAddress?.address},{ownerAddress?.state},{ownerAddress?.district},{ownerAddress?.pincode}{partners?.address},{partners?.state}, {partners?.district}, {partners?.pincode}</strong> (hereinafter collectively referred to as “Distributor” ) which expression shall unless repugnant to the context or meaning thereof be deemed to include his /her heirs, executors, administrators, permitted assigns and successors of the OTHER PART.
                                     </Text>
 
                                     <Text mt={4}>
@@ -251,24 +207,43 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                         (a)  Distributor shall make payment to Company in accordance with the terms and conditions specified in the Invoice accompanying each consignment of the Products supplied to it. Any delay in payment would make Distributor liable to pay interest from the due date till the date of realization of payment, at such rate as may be specified in the Invoice.
                                     </Text>
 
+
                                     <Text mt={3}>
                                         (b)  Company shall have lien over the Products sold and supplied by Company until Distributor pays the entire sale price of the same to the Company. The Company shall have right to take back entire or part of the Products as it deems fit and proper to recover its dues.
                                     </Text>
+                                    <Text mt={3}>
+                                        (c)   It is strictly prohibited for any distributor.to give cash, goods, or any other form of benefit from a employee.If any distributor engages in such activities and suffers any financial loss, they will be solely responsible for it. The company will not be responsible in any manner.The company will not make any kind of payment adjustment from the employee’s salary on behalf of the distributor.In such transactions, the company shall bear no responsibility whatsoever.
+                                    </Text>
+                                </Box>
+                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="13px" lineHeight="1.6">
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 6. CASH DISCOUNT</Text>
+
+                                    <Text mt={3} fontWeight="bold" textDecoration="underline">6. ADVANCE PAYMENT RELATED</Text>
+                                    <Text mt={3}>
+                                        If any amount is deposited by the distributor under an advance payment scheme with the company, only goods equivalent to that amount will be provided by the company. The amount will not be refunded.
+                                    </Text>
+
+                                    <Text mt={3}>
+                                        If payment has been made for any product or scheme and any balance amount remains, or if any goods are returned, then the remaining amount will be adjusted only against the same goods.
+
+                                        The balance amount will be settled by providing the same goods in the following year. It will not be adjusted against any other scheme or product.
+                                    </Text>
+
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 7. CASH DISCOUNT</Text>
 
                                     <Text mt={3}>
                                         Cash Discount, if any shall be as mentioned in prevailing price list or any cash discount scheme as offered by Company in writing,
                                     </Text>
-                                </Box>
 
-                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="13px" lineHeight="1.6">
+
+
 
 
                                     <Text mt={3}>such cash discount will only be considered on that amount which has been received by Company within the stipulated time. Date of demand draft and / or day of deposit of Cash /cheques / online transfer will be considered by the Company to offer Cash Discount, if any.</Text>
 
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline">7. THE MAXIMUM CREDIT PERIOD</Text>
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">8. THE MAXIMUM CREDIT PERIOD</Text>
 
                                     <Text mt={3}>
                                         The maximum credit period will be <mark> <strong>
@@ -276,7 +251,7 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                         </strong></mark> days from the date of Invoice. In case of any delay in payment over the stipulated time, interest at the rate of 24 % per annum shall be charged by the Company.
                                     </Text>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 8. PAYMENT TERMS FOR CREDIT SALE</Text>
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 9. PAYMENT TERMS FOR CREDIT SALE</Text>
 
                                     <Text mt={3}>
                                         (i)  Payment towards credit sales shall be made within the stipulated period by way of RTGS/NEFT transfer/DD/Cheque.
@@ -287,72 +262,73 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                     </Text>
 
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 9.DELIVERY</Text>
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 10. DELIVERY</Text>
 
                                     <Text mt={3}>
                                         Company’s liability shall cease when the Products are delivered by the Company to the carrier at despatching point for delivery to the Distributor’s place. However, Company may at its discretion deliver the Products to the Distributor premises at its cost.
                                     </Text>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 10. SALES PROMOTION</Text>
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 11. SALES PROMOTION</Text>
 
                                     <Text mt={3}>
                                         Apart from adequate stock keeping it is clearly understood that the Distributor shall engage itself in active selling, including participation in local and/ or regional agricultural fairs and exhibitions and in general, contribute to the promotion of sales of the Products in co-operation with Company’s representatives.
                                     </Text>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline">11. STOCK RETURNS</Text>
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">12. STOCK RETURNS</Text>
 
                                     <Text mt={3}>
                                         For any stock returns or replacement, to and fro fright charges will be debited to the Distributor within 15 days from the date of Invoicing for replacement subject to the approval of the Zonal head of Company.
                                     </Text>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline">12. DAMAGED/ LEAKAGE STOCKS</Text>
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">13. DAMAGED/ LEAKAGE STOCKS</Text>
 
-                                    <Text mt={3}>
+                                    <Text mt={2}>
                                         (i)  Any damage or leakage stocks should be intimated by the Distributor within 15 days from the date of receipt:
                                     </Text>
 
-                                    <Text mt={3}>
+                                    <Text mt={2}>
                                         (ii)  Copy of Company’s area manager/ area officer’s verification report, which is obtained by the Distributor during his first visit to Distributor after being advised of the damage/ leakage and duly counter signed by the area manager/ regional head.
                                     </Text>
 
-                                    <Text mt={3}>
+                                    <Text mt={2}>
                                         (iii)  All the defective containers and stored material shall have to be forwarded to the depot within 7 days after the above verification.
                                     </Text>
+                                </Box>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline">13. CLAIMS</Text>
+                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="13px" lineHeight="1.6">
+
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">14. CLAIMS</Text>
 
                                     <Text mt={3}>
                                         Claims based on verbal commitments made by the sales/ field staff without the prior sanction in writing from Zonal Heads, will not be entertained or passed under any circumstance.
                                     </Text>
 
-                                    <Text mt={5} fontWeight="bold" textDecoration="underline"> 14. POLICY ON DISHONORED CHEQUES</Text>
+                                    <Text mt={5} fontWeight="bold" textDecoration="underline"> 15. POLICY ON DISHONORED CHEQUES</Text>
 
                                     <Text mt={3}>
                                         A service chares @ 2.6% of the cheque value per dishonoured cheques will be levied in case of dishonour of cheques issued against any Invoice issued for the supplies made. The Company reserves the right to discontinue the supplies if more than 3 cheques are dishonoured. In case, more than 2 cheques are dishonoured, during a financial year then the Company shall have the right to withdraw or reduce any discounts or schemes incentives that are offered from time to time and may also result in a downward revision of the credit ceiling offered to the Distributor.
                                     </Text>
-                                </Box>
 
-                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="13px" lineHeight="1.6">
                                     <Text mt={3}>Distributor shall honour each cheque on presentation and no excuse will be considered. The Company shall have the absolute right to initiate any proceedings which includes but not limited to proceedings under section 138 of the Negotiable Instruments Act and any amendment thereof in the event of dishonour of cheque.</Text>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline">15. CONFIDENTIALITY</Text>
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline">16. CONFIDENTIALITY</Text>
 
                                     <Text mt={3}>
                                         Distributor recognizes and agrees that the information to which it has access as a result of the present Agreement have a relevant commercial value, and that its non-authorized disclosure may result in substantial damages to the Company. Therefore, except when previously and expressly authorized by Company, the Distributor agrees not to disclose, even after the termination or cancellation of the present.
                                     </Text>
-                                    <Text fontWeight="bold" textDecoration="underline"> 16. INDEMNITY</Text>
+                                    <Text fontWeight="bold" textDecoration="underline"> 17. INDEMNITY</Text>
 
                                     <Text mt={3}>
                                         Distributor shall indemnify and keep harmless at all times the Company and its officials,  representatives from and/ or against all claims, demands, actions, proceedings, fines, expense, penalties and other liabilities of whatsoever nature made or brought against Company and its officials,  representatives etc. as a consequence of any non-compliance on the part of the Distributor.
                                     </Text>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 17. FORCE MAJEURE</Text>
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 18. FORCE MAJEURE</Text>
 
                                     <Text mt={3}>
                                         Neither party shall be held responsible for non- fulfilment of its respective obligations under this Agreement due to the existence of one or more of the force majeure events such as but not limited to acts of God, war, flood, earthquakes, strikes not confirmed to the premises of the party, lockouts beyond the control of the party claiming force majeure.
                                     </Text>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 18. WARRANTY</Text>
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 19. WARRANTY</Text>
 
                                     <Text mt={3}>
                                         The Company manufactures the Products as per the highest available quality standards. The Products manufactured and then sold by the Company are duly tested and are suitable for the purpose recommended, if correctly applied in conformity with the label claim / instructions / leaflet. However, since the Company cannot exercise sufficient control over the end use or application by the user, the Company accepts no responsibility for any damage arising directly or indirectly from their inappropriate use. Company shall not be responsible for any legal action initiated by the department of agriculture against the Company in Distributor’s designated area due to inappropriate use of the Products.
@@ -360,27 +336,30 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
 
 
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 19. TRADEMARKS</Text>
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 20. TRADEMARKS</Text>
 
                                     <Text mt={3}>
                                         Distributor shall not use or be deemed to have the right to use any Trade Mark, trade name, colour scheme or legend of Company under which the Products are sold to Distributor. On the termination of this Agreement, Distributor shall immediately discontinue the use in any manner whatsoever all such Trade Mark, trade names, designs, colour, schemes or legends.
                                     </Text>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 20. PRINCIPAL TO PRINCIPAL AGREEMENT</Text>
 
-                                    <Text mt={3}>
-                                        This Agreement is on a principal to principal basis and Distributor shall not in any way represent itself to be a Company’s agent. Company shall not be liable for any act or any omission on Distributor’s part. Distributor shall give an undertaking that it will market the Products supplied to it by Company and it shall not alter the labels of the containers or packages in any way and shall not deface, remove, obliterate or in any manner modify or alter the Trade Marks, grade indications and other matters appearing thereon.
-                                    </Text>
+                                    <Text mt={6} fontWeight="bold" textDecoration="underline"> 21. PRINCIPAL TO PRINCIPAL AGREEMENT</Text>
+
 
                                 </Box>
 
 
                                 {/* fourh 4page  */}
                                 <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="13px" lineHeight="1.6">
+                                    <Text mt={3}>
+                                        This Agreement is on a principal to principal basis and Distributor shall not in any way represent itself to be a Company’s agent. Company shall not be liable for any act or any omission on Distributor’s part. Distributor shall give an undertaking that it will market the Products supplied to it by Company and it shall not alter the labels of the containers or packages in any way and shall not deface, remove, obliterate or in any manner modify or alter the Trade Marks, grade indications and other matters appearing thereon.
+                                    </Text>
+
+
                                     {/* part 4 */}
 
 
-                                    <Text fontWeight="bold" textDecoration="underline"> 21. DISPUTES AND JURISDICTION</Text>
+                                    <Text fontWeight="bold" textDecoration="underline"> 22. DISPUTES AND JURISDICTION</Text>
 
                                     <Text mt={3}>
                                         Any disputes arising between the Distributor and the Company shall be resolved by mutual discussion. Unresolved disputes, if any shall be referred to Arbitration by a sole Arbitrator to be appointed by the Company under the provisions of the Arbitration and Conciliation Act, 1996. The venue of Arbitration shall be ALWAR. This Agreement shall be governed by the laws of India and subject to the jurisdiction of courts of ALWAR.
@@ -395,7 +374,7 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
 
 
                                     <Text fontWeight="bold" textDecoration="underline">
-                                        21. DUTIES / OBLIGATIONS OF DISTRIBUTOR
+                                        23. DUTIES / OBLIGATIONS OF DISTRIBUTOR
                                     </Text>
 
                                     <Text mt={3}>
@@ -441,16 +420,24 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                     <Text mt={2}>
                                         x) from time to time advise the Company in writing of all local laws and regulations relating to the storage, sale and use of the Products.
                                     </Text>
+                                </Box>
+
+                                {/* 5th page  */}
+                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="12px" lineHeight="1.5">
 
                                     <Text mt={2}>
                                         xi) observe and comply with all the applicable laws, orders, ordinances, notifications, rules, regulations, legislations or other enactments, or modifications thereof for the time being in force relating or in any wise appertaining to the performance by the Distributor of its duties and obligations under the Agreement.
                                     </Text>
 
+
+
                                     <Text mt={2}>
                                         xii) maintain at his/its office / Shops / Godowns all Registers, books, Records as would be statutorily required under various laws and maintain infrastructure like computers/printer as may be required of him/it for facilitating the transfer of data/information to the Company.
                                     </Text>
 
-                                    <Text mt={4}>
+
+
+                                    <Text mt={2}>
                                         xiii) rotate the said Products on a first-in-first out basis. If any quantities of the said Products remain unsold and expired, then the same will be to the account of the Distributor only. The Distributor cannot force the Company to take back any expired stocks.
                                     </Text>
 
@@ -462,10 +449,6 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                         xv) forthwith intimate the Company in the event of seizure of any Products by statutory Authority in the Territory and send all the documents in respect of the same.
                                     </Text>
 
-                                </Box>
-
-                                {/* 5th page  */}
-                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="12px" lineHeight="1.5">
 
                                     <Text mt={2}>
                                         xvi) forthwith intimate the Company in the event of receipt of any Notice from the statutory Authority concerning misbranding etc.
@@ -475,48 +458,48 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                         xvii) assist the Company in any matter as and when required by the Company in the Territory
                                     </Text>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline">
-                                        22. LEGAL REQUIREMENTS / COMPLIANCE
+                                    <Text mt={4} fontWeight="bold" textDecoration="underline">
+                                        24. LEGAL REQUIREMENTS / COMPLIANCE
                                     </Text>
 
                                     <Text mt={3}>
                                         Distributor shall be obliged to take all requisite registrations, licenses, permissions, etc., including but not limited to under the provisions of Seeds ACT-1966 & Seed act 1983,Insecticides Act,1968 & Rules framed there under, Fertilizer (Control) Orders, Legal Metrology Act, 2009 & Rules framed there under, Goods and Service Tax & Rules framed there under, any and all Central and State Acts or Rules which is mandatorily required for doing business for stocking, exhibiting, transporting, selling of the Products, before commencement of operations and submit copies of such registrations/licenses/permissions to the Company and should renew and keep the same valid from time to time. In case of any change of statutory provisions by way of any Acts, Order, Notifications etc. then it will be the sole responsibility of the Distributor to comply such provisions and to immediately intimate to the Company. Further, Distributor will also arrange a proper godown for storage of the said products and if any storage license is necessary such license from the concerned authority shall also be obtained by the Distributor in its own name and at its own cost.
                                     </Text>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline">
-                                        23. PROHIBITION AGAINST RE-FORMULATION OF THE PRODUCTS
+                                    <Text mt={4} fontWeight="bold" textDecoration="underline">
+                                        25. PROHIBITION AGAINST RE-FORMULATION OF THE PRODUCTS
                                     </Text>
 
                                     <Text mt={2}>
                                         Distributor under no circumstances breaks open the packages, containing the Products and re-sell them in their existing form or re-formulated, mixed or blended with any other goods.
                                     </Text>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline">
-                                        24. PROHIBITION AGAINST COMPETITIVE MANUFACTURE
+                                    <Text mt={4} fontWeight="bold" textDecoration="underline">
+                                        26. PROHIBITION AGAINST COMPETITIVE MANUFACTURE
                                     </Text>
 
                                     <Text mt={2}>
                                         Distributor undertake not to, directly or indirectly, manufacture the Products or any of them by itself or through any third party / related party.
                                     </Text>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline">
-                                        25. ASSIGNMENT:-
+                                    <Text mt={4} fontWeight="bold" textDecoration="underline">
+                                        27. ASSIGNMENT:-
                                     </Text>
 
                                     <Text mt={2}>
                                         Distributor shall not assign, delegate or transfer any of the rights, duties or obligations under this Agreement without Company’s prior written consent.
                                     </Text>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline">
-                                        26. NOTICE
+                                    <Text mt={4} fontWeight="bold" textDecoration="underline">
+                                        28. NOTICE
                                     </Text>
 
                                     <Text mt={2}>
                                         Distributor shall forthwith inform Company of any change in its status (Proprietary, Partnership, Company etc.) location, telephone or fax number by giving written notice of such change.
                                     </Text>
 
-                                    <Text mt={6} fontWeight="bold" textDecoration="underline">
-                                        27. TERMINATION:-
+                                    <Text mt={4} fontWeight="bold" textDecoration="underline">
+                                        29. TERMINATION:-
                                     </Text>
 
                                     <Text mt={2}>
@@ -531,21 +514,23 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                         c) Any termination or expiration of this Agreement shall be without prejudice to any claim, remedy or right of action, previously accrued to either party against the other. Provided further Company shall not be liable or responsible for payment of any compensation to the Distributor on this Agreement being terminated as per the provisions herein above.
                                     </Text>
 
+                                </Box>
+
+                                {/* sixth page 6 */}
+                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="12px" lineHeight="1.5">
                                     <Text mt={2}>
                                         d) Upon expiration or termination of this Agreement, the Distributor shall forthwith return to the Company all Samples, display, photographs, brochures, and other printed sales promotional material and literature and other property to the Company. The Distributor further agrees to remove all signs or evidences of his/its relationship with Company on such expiration or termination.
                                     </Text>
+
                                     <Text>
                                         e) Upon termination of this Agreement for any reason the Company shall make and prepare a final account in respect of its dealings with the Distributor and shall submit such account statement in duplicate to the Distributor, any amount to be due payable under such account by the Distributor to Company shall be paid by Distributor within 8 (Eight) days from the date of submission of such account to the Distributor. The final account prepared by Company as aforesaid shall be final and binding upon the Distributor and shall not be called in question, except for any manifest error which may be apparent on the face thereof.
                                     </Text>
                                     <Text>f)Any notice contemplated hereunder shall be deemed to be properly made if served on its last known address in Distributor’s record.</Text>
 
-                                </Box>
 
-                                {/* sixth page 6 */}
-                                <Box className="pdf-page" p="40px" fontFamily="Times New Roman" fontSize="12px" lineHeight="1.5">
 
                                     <Text mt={6} fontWeight="bold" textDecoration="underline">
-                                        28. DISPUTES AND JURISDICTION
+                                        30. DISPUTES AND JURISDICTION
                                     </Text>
 
                                     <Text mt={6}>
@@ -684,10 +669,10 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
 
                                                     ["Account No.", formData?.bank_account],
 
-                                                    ["Bank Guarantee, if any", "Na"]  ,
-                                                    [ "Authority Letter for signing the Agreement (if applicable)",
-                                                        isSolo ? "NA" : "YES" ],
-                                   
+                                                    ["Bank Guarantee, if any", "Na"],
+                                                    ["Authority Letter for signing the Agreement (if applicable)",
+                                                        isSolo ? "NA" : "YES"],
+
                                                 ].map((row, i) => (
                                                     <Tr key={i}>
                                                         <Td border="1px solid black" p="6px" w="50%">
@@ -702,6 +687,22 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                         </Table>
 
                                     </Box>
+
+                                    <Text mt={16} fontWeight="bold" textDecoration="underline"> TERMS AND CONDITIONS</Text>
+
+                                    
+                                        <Text mt={2} fontSize="sm" ><strong>1. </strong>  कंपनी के खाते में भुगतान जमा होने के पश्चात 60 दिनों के भीतर माल उठाना अनिवार्य होगा। 60 दिनों के बाद बकाया राशि पर 24% वार्षिक ब्याज लागू किया जाएगा।</Text>
+                                        <Text mt={2} fontSize="sm" ><strong>2. </strong> ₹50,000 तक के ऑरडर पर ₹500 अतिरिक्त शुल्क लिया जाएगा। ₹50,000 से अधिक के ऑर्डर पर प्रत्येक ₹1000 पर ₹10 अतिरिक्त शुल्क देय होगा।</Text>
+                                        <Text mt={2} fontSize="sm"><strong>3. </strong> यदि माल कूरियर/परिवहन के माध्यम से भेजा जाता है, तो उसका भाड़ा (फ्रेट चार्ज) वितरक द्वारा वहन किया जाएगा।</Text>
+                                     <Text mt={2} fontSize="sm"> <strong>4. </strong>  माल भेजने की समस्त जिम्मेदारी वितरक की होगी। इस संबंध में कंपनी की कोई जिम्मेदारी नहीं होगी। </Text> 
+                                       <Text mt={2} fontSize="sm"> <strong>5. </strong>  कूरियर/परिवहन के दौरान माल में किसी भी प्रकार की क्षति, देरी या हानि के लिए कंपनी उत्तरदायी नहीं होगी। </Text> 
+                                        <Text mt={2} fontSize="sm"> <strong>6. </strong>  केवल सीलबंद (Sealed) पैक ही वापसी के लिए स्वीकार किए जाएंगे। पैक पर कंपनी का मूल लेबल होना अनिवार्य है।</Text>
+                                        <Text mt={2} fontSize="sm"> <strong>7. </strong>  किसी भी स्थिति में जमा राशि का नकद/ऑनलाइन रिफंड नहीं दिया जाएगा। वापसी की स्थिति में केवल उसी माल का समायोजन अगले वर्ष किया जाएगा।</Text>
+                                        <Text mt={2} fontSize="sm"> <strong>8. </strong>  माल कंपनी की प्रचलित नीति एवं रेटिंग के अनुसार ही उपलब्ध कराया जाएगा। वितरक को प्रत्येक स्थिति में कंपनी की नीति का पालन करना अनिवार्य होगा।</Text>
+                                        <Text mt={2} fontSize="sm"> <strong>9. </strong>  किसी भी प्रकार के विवाद की स्थिति में कंपनी का निर्णय अंतिम एवं मान्य होगा।</Text>
+                                        <Text mt={2} fontSize="sm"> <strong>10. </strong>  क्षेत्र (Area) का निर्धारण कंपनी द्वारा किया जाएगा, जो सभी पक्षों पर बाध्यकारी होगा।</Text>
+                                    <Text mt={4} fontsize="14px" fontWeight="bold"> <strong> </strong> उपरोक्त सभी नियम एवं शर्तें दोनों पक्षों द्वारा स्वीकार की जाती हैं।</Text>
+
                                 </Box>
 
 

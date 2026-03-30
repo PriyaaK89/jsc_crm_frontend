@@ -5,7 +5,6 @@ import Topbar from "../Topbar";
 import MobileTopbar from "../MobileTopbar";
 import { Flex,Box } from '@chakra-ui/react';
 import CreateLedger from '../../../pages/HrMgmt/AccountingMaster/CreateLedger';
-import DistributorAgreement from '../../../pages/HrMgmt/Letters/DistributorAgreement';
 import NotificationBtn from '../../NotificationBtn/NotificationBtn';
 
 function CreateLedgerLayout() {
@@ -30,7 +29,7 @@ function CreateLedgerLayout() {
       >
         <NotificationBtn/>
         <CreateLedger />
-        <DistributorAgreement/>
+      
       </Box>
     </Box>
   )

@@ -25,6 +25,7 @@ import CreateGroupLayout from '../components/layout/AccountingMasterLayout/Creat
 import ViewGroupLayout from '../components/layout/AccountingMasterLayout/ViewGroupLayout';
 import DeleteGroupLayout from '../components/layout/AccountingMasterLayout/DeleteGroupLayout';
 import CreateLedgerLayout from '../components/layout/AccountingMasterLayout/CreateLedgerLayout';
+import ONBordingdistributoragreement from '../components/layout/AccountingMasterLayout/ONBordingdistributoragreement';
 import ViewLedgerLayout from "../components/layout/AccountingMasterLayout/ViewLedgerLayout";
 import DeleteLedgerLayout from '../components/layout/AccountingMasterLayout/DeleteLedgerLayout';
 import CreateVoucherLayout from '../components/layout/AccountingMasterLayout/CreateVoucherLayout';
@@ -118,6 +119,7 @@ function App() {
         <Route path='/accounting-master/view-group' element={<ViewGroupLayout/>}/>
         <Route path='/accounting-master/delete-group'   element={<DeleteGroupLayout/>}/>
         <Route path='/accounting-master/create-ledger' element={<CreateLedgerLayout/>}/>
+        <Route path='/accounting-master/onboarding-ledger' element={<ONBordingdistributoragreement/>}/>
         <Route path='/accounting-master/view-ledger' element={<ViewLedgerLayout/>}/>
         <Route path='/accounting-master/delete-ledger' element={<DeleteLedgerLayout/>}/>
         <Route path='/accounting-master/create-voucher' element={<CreateVoucherLayout/>}/>

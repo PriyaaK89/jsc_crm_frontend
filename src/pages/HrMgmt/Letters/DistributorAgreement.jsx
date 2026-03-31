@@ -1065,7 +1065,7 @@ function DistributorAgreement() {
           mt={6}
           onClick={previewModal.onOpen}
         >
-          Download Aggrement Latter
+          Download  Latter
         </Button>
 
         <Button ml={5}
@@ -1073,7 +1073,7 @@ function DistributorAgreement() {
           mt={6}
           onClick={generateModal.onOpen}
         >
-          Genrate  Disributor Aggrement
+          Genrate  Disributor Aggrement Latter
         </Button>
 
       </Box>

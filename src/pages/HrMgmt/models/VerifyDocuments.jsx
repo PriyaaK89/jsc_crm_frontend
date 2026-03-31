@@ -28,19 +28,24 @@ const VerifyDocumentModel = ({ isVerifyModelOpen, onVerifyModalClose, selectedId
   }
 };
 
-  useEffect(() => {
-     getEmployeeDocs();
-    documents.forEach((doc) => {
-      if (
-        doc.signing_status === "pending" &&
-        doc.leegality_document_id
-      ) {
-        checkDocumentStatus(doc.leegality_document_id);
-        // console.log(doc.leegality_document_id, "asdfghj")
-      }
-      // console.log(doc.leegality_document_id, "asdfghj")
-    });
-  }, [ selectedId,legID]);
+  // useEffect(() => {
+  //    getEmployeeDocs();
+  //   documents.forEach((doc) => {
+  //     if (
+  //       doc.signing_status === "pending" &&
+  //       doc.leegality_document_id
+  //     ) {
+  //       checkDocumentStatus(doc.leegality_document_id);
+  //       // console.log(doc.leegality_document_id, "asdfghj")
+  //     }
+  //     // console.log(doc.leegality_document_id, "asdfghj")
+  //   });
+  // }, [ selectedId,legID]);
+   useEffect(() => {
+  if (isVerifyModelOpen && selectedId) {
+    getEmployeeDocs();
+  }
+}, [isVerifyModelOpen, selectedId]);
 
   // ---------check legality status ----
  const checkDocumentStatus = async (legID) => {

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Box, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton, Text, useToast,} from "@chakra-ui/react";
+import { Box, Button, Modal, ModalOverlay, ModalContent, Flex, ModalHeader, ModalBody, ModalFooter, ModalCloseButton, Text, useToast,} from "@chakra-ui/react";
 import { FiUpload } from "react-icons/fi";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import API from "../../../services/api";
@@ -64,13 +64,17 @@ const UploadDocumentModal = ({ isOpen, onClose, userId, documentType }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
       <ModalOverlay />
-      <ModalContent borderRadius="12px" mx="10px" >
-        <ModalHeader bg="blue.500" color="white" border="12px" fontSize={{base:"15px",md:"lg"}}>Upload Document
-        </ModalHeader>
-        <ModalCloseButton />
+  
+ <ModalContent mx="12px" borderRadius="12px">
+        {/* <ModalHeader>Delete Employee</ModalHeader> */}
 
+        <Flex bg="blue.500" borderTopRadius="12px" color="white" py={2} px={4} justify="space-between" alignItems="center"  size="xl">
+         <Text fontWeight="bold">
+          Delete Employee
+         </Text>
+               <ModalCloseButton position="static" size="md"/>
       
-
+     </Flex>
 
 
         {/* Body */}

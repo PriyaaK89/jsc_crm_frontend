@@ -94,31 +94,12 @@ const EmployeeImageModal = ({
   >
     {src ? (
       <>
-        <Image
-          src={src}
-          alt={title}
-          objectFit="cover"
-          w="100%"
-          h="100%"
-        />
+        <Image src={src} alt={title} objectFit="cover" w="100%" h="100%"/>
 
         {/* Title + Icon */}
-        <Box
-          position="absolute"
-          top="0"
-          left="0"
-          w="100%"
-          bg="rgba(0,0,0,0.6)"
-          color="white"
-          px={3}
-          py={2}
-          fontSize="sm"
-          fontWeight="600"
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          zIndex="2"
-        >
+        <Box position="absolute" top="0" left="0" w="100%" bg="rgba(0,0,0,0.6)" 
+        color="white" px={3} py={2} fontSize="sm" fontWeight="600" display="flex" 
+        justifyContent="space-between" alignItems="center" zIndex="2">
           <Text fontSize="sm">
             {capitalize(title)}
           </Text>
@@ -147,7 +128,7 @@ const EmployeeImageModal = ({
   return (
     <>
       {/* Main Modal */}
-      <Modal isOpen={isOpen} onClose={onClose} size="sm" isCentered>
+      <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
         <ModalOverlay />
 
         <ModalContent borderRadius="xl" mx="12px">
@@ -157,7 +138,7 @@ const EmployeeImageModal = ({
             px={4}
             py={3}
             justifyContent="space-between"
-            alignItems="center"
+            alignItems="center" borderRadius="10px 0px"
           >
             <Text fontWeight="bold">
               Employee Attendance Images

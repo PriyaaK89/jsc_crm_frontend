@@ -11,6 +11,7 @@ const UploadDocumentModal = ({ isOpen, onClose, userId, documentType }) => {
   const [loading, setLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
 
+  console.log(userId, "userID123456")
   const handleBrowseClick = () => {
     fileInputRef.current.click();
   };

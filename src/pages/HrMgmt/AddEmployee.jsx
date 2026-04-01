@@ -111,7 +111,7 @@ const AddEmployee = () => {
     job_role_id: "",
     date_of_joining: "",
     salary: "",
-    week_off: "",
+    week_off: "Sunday",
 
     travelling_allowance_per_km: "",
     travelling_per_day: "",
@@ -163,6 +163,7 @@ const AddEmployee = () => {
       ...prev,
       [name]: value,
     }));
+    console.log(formData.week_off, "weekOfff124")
 
     setError((prev) => ({
       ...prev,
@@ -228,7 +229,7 @@ const AddEmployee = () => {
           formData.daily_allowance_without_doc,
         ),
         hotel_allowance: Number(formData.hotel_allowance),
-        week_off: formData.week_off,
+        week_off: formData.week_off ? formData.week_off : "Sunday",
         total_leaves: Number(formData.total_leaves),
         authentication_amount: Number(formData.authentication_amount),
         pf: Number(formData.pf),
@@ -290,8 +291,6 @@ const AddEmployee = () => {
       setLoading(false);
     }
   };
-
-  
 
   const fetchDepartmentList = async () => {
     try {
@@ -811,7 +810,7 @@ const AddEmployee = () => {
                 fontSize="13px"
                 color="gray.400"
                 placeholder="Select Week Off"
-                value={formData.week_off || "Sunday"}
+                value={formData.week_off ? formData.week_off : "Sunday"}
                 onChange={handleChange}
               >
                 <option value="Monday">Monday</option>

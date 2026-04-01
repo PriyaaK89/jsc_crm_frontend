@@ -10,6 +10,7 @@ const UploadDocumentModal = ({ isOpen, onClose, userId, documentType }) => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  console.log(userId, "userID123456")
   const handleBrowseClick = () => {
     fileInputRef.current.click();
   };
@@ -65,9 +66,10 @@ const UploadDocumentModal = ({ isOpen, onClose, userId, documentType }) => {
     <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
       <ModalOverlay />
       <ModalContent borderRadius="12px" mx="10px" >
-        <ModalHeader bg="blue.500" color="white" border="12px" fontSize={{base:"15px",md:"lg"}}>Upload Document
-        </ModalHeader>
+        <ModalHeader bg="blue.500" borderRadius="10px 10px 0px 0px" py="26px" color="white" border="12px" fontSize={{base:"15px",md:"lg"}}>
+          <Text>Upload Document</Text>
         <ModalCloseButton />
+        </ModalHeader>
 
       
 

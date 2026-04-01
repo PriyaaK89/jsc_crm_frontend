@@ -109,7 +109,7 @@ const AddEmployee = () => {
     job_role_id: "",
     date_of_joining: "",
     salary: "",
-    week_off: "sunday",
+    week_off: "Sunday",
 
     travelling_allowance_per_km: "",
     travelling_per_day: "",
@@ -273,6 +273,8 @@ const AddEmployee = () => {
           date_of_joining: "",
           salary: "",
           total_leaves: "",
+          week_off: "Sunday",
+
           approver_name: "",
           travelling_per_day: "",
         });

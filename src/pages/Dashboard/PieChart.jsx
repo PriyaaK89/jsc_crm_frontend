@@ -1,10 +1,17 @@
-import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+} from "recharts";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import API from "../../services/api";
 import { useEffect, useState } from "react";
 import { FormControl, FormLabel, Input, Box, Text } from "@chakra-ui/react";
 
-// ✅ More colors (no repeat issue)
+// ✅ Colors
 const COLORS = [
   "#0088FE",
   "#00C49F",
@@ -16,7 +23,7 @@ const COLORS = [
   "#FF4444",
 ];
 
-// ✅ Clean Custom Tooltip
+// ✅ Tooltip
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
@@ -54,35 +61,22 @@ export default function MyPieChart() {
       const summaryData = res.data.summary;
       setSummary(summaryData);
 
-      // ✅ Object → Array convert
-     
       const formattedData = [
-  { name: "Active Employees", value: summaryData.active_employees || 1 },
-  { name: "Checked In", value: summaryData.checked_in || 1 },
-  { name: "Half Day", value: summaryData.half_day || 1 },
-  { name: "Absent", value: summaryData.absent_count || 1 },
-  { name: "Leave", value: summaryData.leave_count || 1 },
-];
+        { name: "Active Employees", value: summaryData.active_employees || 1 },
+        { name: "Checked In", value: summaryData.checked_in || 1 },
+        { name: "Half Day", value: summaryData.half_day || 1 },
+        { name: "Absent", value: summaryData.absent_count || 1 },
+        { name: "Leave", value: summaryData.leave_count || 1 },
+      ];
 
       setChartData(formattedData);
     } catch (error) {
       console.error("Chart API Error:", error);
     }
   };
-  {chartData.map((entry, index) => (
-  <Cell
-    key={index}
-    fill={COLORS[index % COLORS.length]}
-    stroke="#fff"
-    strokeWidth={2}
-  />
-))}
-  
 
   useEffect(() => {
-    if (date) {
-      fetchChartData();
-    }
+    if (date) fetchChartData();
   }, [date]);
 
   return (
@@ -93,14 +87,16 @@ export default function MyPieChart() {
       borderRadius="lg"
       boxShadow="md"
       bg="white"
-      width={{base:"100%", md:"50%", lg:"40%"}}
-
+      width={{ base: "100%", md: "50%", lg: "40%" }}
+      overflow="hidden"
     >
+      {/* Title */}
       <Text fontSize="lg" fontWeight="bold" mb={4}>
         Employee Summary
       </Text>
-      {/* ✅ Date Picker */}
-      <FormControl maxW="300px" mb={4}>
+
+      {/* Date Picker */}
+      <FormControl maxW="200px" mb={4}>
         <FormLabel fontSize="11px">Select Date:</FormLabel>
         <Input
           fontSize="11px"
@@ -110,41 +106,57 @@ export default function MyPieChart() {
         />
       </FormControl>
 
-      {/* ✅ Pie Chart */}
-      <PieChart width={400} height={350}>
-        <Pie
-          data={chartData}
-          innerRadius={70}
-          outerRadius={110}
-          paddingAngle={3} // 🔥 gap between slices
-          dataKey="value"
-          label={({ name, value }) => `${name}: ${value}`}
-          fontSize="11px"
-        >
-           {chartData.map((entry, index) => (
-  <Cell
-    key={index}
-    fill={COLORS[index % COLORS.length]}
-    stroke="#fff"
-    strokeWidth={2}
-  />
-))}
-  </Pie>
+      {/* ✅ Chart */}
+      <Box width="100%" height={{ base: "320px", md: "350px" }}>
+        <ResponsiveContainer>
+          <PieChart margin={{ top: 20, right: 30, left: 30, bottom: 20 }}>
+            <Pie
+              data={chartData}
+              cx="50%"
+              cy="45%"   // 🔥 slightly up for spacing
+              innerRadius={60}
+              outerRadius={85}
+              paddingAngle={3}
+              dataKey="value"
+              label={({ name, value }) =>
+                window.innerWidth < 480
+                  ? `${name.split(" ")[0]}: ${value}` // short label for mobile
+                  : `${name}: ${value}`
+              }
+              labelLine={true}
+              fontSize={11}
+            >
+              {chartData.map((entry, index) => (
+                <Cell
+                  key={index}
+                  fill={COLORS[index % COLORS.length]}
+                  stroke="#fff"
+                  strokeWidth={2}
+                />
+              ))}
+            </Pie>
 
-        {/* ✅ Tooltip */}
-        <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip />} />
 
-        {/* ✅ Legend */}
-        <Legend wrapperStyle={{ fontSize: "11px" }} />
-      </PieChart>
+            <Legend
+              wrapperStyle={{
+                fontSize: "11px",
+                paddingTop: "10px", // space from chart
+              }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </Box>
 
-      {/* ✅ Extra Summary */}
-      <Text fontSize="11px">
-        Completed Day: {summary.completed_day || 0}
-      </Text>
-      <Text fontSize="11px">
-        Checked In: {summary.checked_in || 0}
-      </Text>
+      {/* ✅ Summary with spacing */}
+      <Box mt={4}>
+        <Text fontSize="11px">
+          Completed Day: {summary.completed_day || 0}
+        </Text>
+        <Text fontSize="11px">
+          Checked In: {summary.checked_in || 0}
+        </Text>
+      </Box>
     </Box>
   );
 }

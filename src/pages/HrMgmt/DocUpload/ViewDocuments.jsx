@@ -9,7 +9,7 @@ import {
   Text,
   VStack,
   SimpleGrid,
-  Image,
+  Image, 
   Divider,
   Button,
   Input,
@@ -18,11 +18,16 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
+import PreviewDocument from "./PreviewDocumentModal"; 
 import { FiUploadCloud } from "react-icons/fi";
+import { FiEye } from "react-icons/fi";
+import { useDisclosure } from "@chakra-ui/react";
+
 
 
 const DOCUMENT_LABELS = {
-  aadhar_card: "Aadhar Card",
+  aadhar_card: "Aadhar Card Front",
+  aadhar_card_back: "Aadhar Card Back",
   pan_card: "PAN Card",
   voter_card: "Voter ID",
   driving_licence: "Driving Licence",
@@ -38,7 +43,15 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
   const [userName, setUserName] = useState("");
   const [uploadingKey, setUploadingKey] = useState(null);
   const fileInputRef = useRef(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const toast = useToast();
+  const {
+    isOpen: isPreviewDocumentOpen,
+    onOpen: onPreviewDocumentOpen,
+    onClose: onPreviewDocumentClose,
+  } = useDisclosure();
+
+
 
   const getEmployeeDocuments = async () => {
     try {
@@ -99,11 +112,19 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="2xl" isCentered scrollBehavior="inside">
+    <>
+    <PreviewDocument
+  isOpen={isPreviewDocumentOpen}   
+  onClose={onPreviewDocumentClose}
+  image={previewImage}
+/>
+        <Modal isOpen={isOpen} onClose={onClose} size="2xl" isCentered scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent borderRadius="12px" mx="10px">
-        <ModalHeader bg="blue.500" textColor="white" p={7} fontSize={{ base: "15px", md: "lg" }} >Uploaded Documents</ModalHeader>
-        <ModalCloseButton color="white" p={5} size={{ base: "md", md: "lg" }} />
+        <ModalHeader bg="blue.500" textColor="white" p={7} fontSize={{ base: "15px", md: "lg" }}>Uploaded Documents
+          </ModalHeader>
+                  <ModalCloseButton color="white" p={5} size={{ base: "md", md: "lg" }} />
+
 
         <ModalBody pb={6}>
           {userName && (
@@ -138,20 +159,48 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
 
                   {url ? (
                     <>
-                      <Image
-                        src={url}
-                        alt={key}
-                        w="100%"
-                        maxH="450px"
-                        objectFit="contain"
-                        bg="gray.50"
-                        borderRadius="8px"
-                        border="1px solid"
-                        borderColor="gray.200"
-                        mb={3}
-                      />
+                    <Box position="relative" w="120px" h="80px">
+  <Image
+    src={url}
+    alt={key}
+    w="100%"
+    h="100%"
+    objectFit="cover"
+    borderRadius="8px"
+    border="1px solid"
+    borderColor="gray.200"
+  />
 
-                      <Button
+  <Box
+    position="absolute"
+    top="5px"
+    right="5px"
+    bg="blackAlpha.600"
+    borderRadius="50%"
+    p="5px"
+    cursor="pointer"
+
+ onClick={() => {
+  if (!url) return; // ✅ safety check
+
+  const isPdf = url.toLowerCase().includes(".pdf");
+
+  if (isPdf) {
+    window.open(url, "_blank", "noopener,noreferrer"); // ✅ secure open
+  } else {
+    setPreviewImage(url);
+    onPreviewDocumentOpen();
+    onClose(); // ✅ parent modal close
+  }
+}}
+  >
+    <FiEye size={16} color="white" />
+  </Box>
+</Box>
+
+                      <Button 
+                          // mx={{base: 3, md:0 }}
+                        marginLeft={{base:"4", md:"0"}}
                         size="sm"
                         colorScheme="blue"
                         onClick={() => handleUploadClick(key)}
@@ -175,6 +224,7 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
                           colorScheme="blue"
                           onClick={() => handleUploadClick(key)}
                           isLoading={uploadingKey === key}
+                          mx={{base: 2, md:0 }}
                         >
                           Upload
                         </Button>
@@ -190,6 +240,8 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
         </ModalBody>
       </ModalContent>
     </Modal>
+        </>
+
   );
 };
 

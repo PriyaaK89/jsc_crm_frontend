@@ -1,6 +1,6 @@
 import React, { useEffect, useState, Fragment } from "react";
 import {
-    Box, Button, Select, Text, SimpleGrid, FormControl, FormLabel, VStack, Table, Thead, Tbody, Tr, Th, Td, Card, CardHeader, CardBody, Heading, Spinner,
+    Box, Button, Select, Text, SimpleGrid, FormControl, FormLabel, Table, Thead, Tbody, Tr, Th, Td, Card, CardHeader, CardBody, Heading, Spinner,
     Input, Flex, Img, useDisclosure, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack, TableContainer
 } from "@chakra-ui/react";
 import { Badge } from "@chakra-ui/react";
@@ -32,6 +32,7 @@ const EmpAttendance = () => {
         startDate: "",
         endDate: "",
     });
+    const [attendanceSummary, setAttendanceSummary] = useState([]);   
 
     const [pagination, setPagination] = useState({
         page: 1,
@@ -120,6 +121,16 @@ const EmpAttendance = () => {
             hour12: true,
         });
     };
+    
+const getMonth = (date) => {
+    if (!date) return null;
+    return new Date(date).getMonth() + 1;
+};
+
+const getYear = (date) => {
+    if (!date) return null;
+    return new Date(date).getFullYear();
+};
 
     const formatMinutes = (min) => {
         if (!min) return "0h 0m";
@@ -175,6 +186,35 @@ const EmpAttendance = () => {
     fetchAttendance(1); //  reload data
   };
 
+   const FetchEmpAttendanceSummary = async () =>{
+    setLoading(true);
+    try {
+       const res = await API.get(`${API_ENDPOINTS.get_Emp_Attendance_Summary}/${filters.userId}?&month=${getMonth(filters.startDate)}&year=${getYear(filters.startDate)}`)
+        if (res.status === 200) {
+            setAttendanceSummary(res.data.summary);
+        }
+    } catch (err) {
+        console.error(err);
+    } finally {
+        setLoading(false);
+    }
+};
+useEffect(() => {
+    if (users.length > 0) {
+        setFilters((prev) => ({
+            ...prev,
+            userId: users[0].id, // first user auto select
+        }));
+    }
+}, [users]);
+
+useEffect(() => {
+    if (filters.startDate && filters.endDate) {
+        FetchEmpAttendanceSummary();
+    }
+}, [ filters.startDate, filters.endDate]);
+
+
     return (
         <>
             <EmployeeImageModal
@@ -206,6 +246,115 @@ const EmpAttendance = () => {
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                 </Breadcrumb>
+
+                  <Heading size="md" mb={2} color="#2C2D33" fontWeight="600">
+                                           Employee Attendance Summary Report
+                  </Heading>
+                     <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} mb={6}>
+
+                    <FormControl>
+                        <FormLabel>Employee List</FormLabel>
+                        <Select
+                            placeholder="Select Employee"
+                            value={filters.userId}
+                            onChange={(e) =>
+                                setFilters({ ...filters, userId: e.target.value })
+                            }
+                        >
+                            {users.map((u) => (
+                                <option key={u.id} value={u.id}>
+                                    {u.name}
+                                </option>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <FormControl>
+
+                        <CustomDatePicker
+                            label="Month"
+                            value={filters.startDate}
+                            onChange={(d) =>
+                                setFilters((p) => ({ ...p, startDate: d }))
+                            }
+                        />
+                    </FormControl>
+
+
+                    <FormControl>
+
+                        <CustomDatePicker
+                            label="Year"
+                            value={filters.endDate}
+                            onChange={(d) =>
+                                setFilters((p) => ({ ...p, endDate: d }))
+                            }
+                        />
+                    </FormControl>
+                    
+                 
+                </SimpleGrid>
+                 {attendanceSummary && (
+    <SimpleGrid columns={{ base: 1, md: 5 }} spacing={4} mb={6}>
+        
+        <Card border="1px solid" borderColor="gray.300"> 
+                            <CardHeader bg="green.100">
+
+                <Heading size="sm">Full Days</Heading>
+            </CardHeader>
+            <CardBody>
+                <Text fontSize="xl" fontWeight="bold">
+                    {attendanceSummary.full_days}
+                </Text>
+            </CardBody>
+        </Card>
+
+        <Card border="1px solid" borderColor="gray.300">
+            <CardHeader bg="blue.100">
+                <Heading size="sm">Half Days</Heading>
+            </CardHeader>
+            <CardBody>
+                <Text fontSize="xl" fontWeight="bold" color="green.500">
+                    {attendanceSummary.half_days}
+                </Text>
+            </CardBody>
+        </Card>
+
+        <Card border="1px solid" borderColor="gray.300">
+            <CardHeader bg="orange.100">
+                <Heading size="sm">Absent</Heading>
+            </CardHeader>
+            <CardBody>
+                <Text fontSize="xl" fontWeight="bold" color="red.500">
+                    {attendanceSummary.absent_days}
+                </Text>
+            </CardBody>
+        </Card>
+
+        <Card border="1px solid" borderColor="gray.300">
+            <CardHeader bg="blue.100">
+                <Heading size="sm">Leave Days</Heading>
+            </CardHeader>
+            <CardBody>
+                <Text fontSize="xl" fontWeight="bold" color="blue.500">
+                    {attendanceSummary.leave_days}
+                </Text>
+            </CardBody>
+        </Card>
+                 <Card border="1px solid" borderColor="gray.300">
+            <CardHeader bg="yellow.100">
+                <Heading size="sm">Total Working Days</Heading>
+            </CardHeader>
+            <CardBody>
+                <Text fontSize="xl" fontWeight="bold" color="blue.500">
+                    {attendanceSummary.total_working_days}
+                </Text>
+            </CardBody>
+        </Card>
+
+    </SimpleGrid>
+)}
+
 
                 <Heading size="md" mb={6}>
                     Attendance Report

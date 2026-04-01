@@ -166,13 +166,14 @@ const [selectedUserId, setSelectedUserId] = useState("");
           Change Password
         </Heading>
 
-       <SimpleGrid columns={2} spacing={5}>
+       <SimpleGrid columns={{base:1 , md:2}} spacing={5}>
           {mail ? (
   <FormControl>
     <FormLabel>Email</FormLabel>
     <Input
       type="email"
       value={mail}
+      
       isReadOnly
       bg="gray.50"
     />

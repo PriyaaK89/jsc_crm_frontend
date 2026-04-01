@@ -8,7 +8,7 @@ import NotificationBtn from "../../NotificationBtn/NotificationBtn";
 
 const EmpAttendanceLayout = () => {
   return (
-<Box bg="#F3F3F3" h="100vh" >
+<Box bg="#F3F3F3" h="100%" >
       <Box display={{ base: "none", md: "block" }}>
         <Sidebar />
 

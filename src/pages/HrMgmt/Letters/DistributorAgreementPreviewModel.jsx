@@ -88,11 +88,11 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
 
     const personAddress = isPartner
         ? partners?.[0]?.address
-        : formData?.responsile_person_address;
+        : formData?.responsible_person_address;
 
     const personContact = isPartner
         ? partners?.[0]?.contact_no
-        : formData?.responsile_person_no;
+        : formData?.responsible_person_contact;
 
 
     return (
@@ -127,7 +127,7 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                     <Text mt={4} textAlign="center" fontSize="15px">And</Text>
 
                                     <Text mt={4}>
-                                        <mark><strong>  {formData?.firm_name} </strong> </mark>,  a {formData?.firm_type} concern having its place of business at <strong> {formData?.business_address} {formData?.Bussiness_landmark} {formData?.district} {formData?.pin_code}. </strong>Represented through its proprietor.<strong>{ownerAddress?.name}{partners?.name} </strong> residing at S/O-<strong>{ownerAddress?.father_name}{partners?.father_name}</strong> address <strong> {ownerAddress?.address},{ownerAddress?.state},{ownerAddress?.district},{ownerAddress?.pincode}{partners?.address},{partners?.state}, {partners?.district}, {partners?.pincode}</strong> (hereinafter collectively referred to as “Distributor” ) which expression shall unless repugnant to the context or meaning thereof be deemed to include his /her heirs, executors, administrators, permitted assigns and successors of the OTHER PART.
+                                        <mark><strong>  {formData?.firm_name} </strong> </mark>,  a {formData?.firm_type} concern having its place of business at <strong> {formData?.business_address} {formData?.landmark} {formData?.district} {formData?.pincode}. </strong>Represented through its proprietor.<strong>{ownerAddress?.name}{partners?.name} </strong> residing at S/O-<strong>{ownerAddress?.father_name}{partners?.father_name}</strong> address <strong> {ownerAddress?.address},{ownerAddress?.state},{ownerAddress?.district},{ownerAddress?.pincode}{partners?.address},{partners?.state}, {partners?.district}, {partners?.pincode}</strong> (hereinafter collectively referred to as “Distributor” ) which expression shall unless repugnant to the context or meaning thereof be deemed to include his /her heirs, executors, administrators, permitted assigns and successors of the OTHER PART.
                                     </Text>
 
                                     <Text mt={4}>
@@ -141,11 +141,11 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                     </Text>
 
                                     <Text mt={3}>
-                                        (B)  Distributor had approached and represented to the Company that it has got the required valid  Seeds, pesticide ,license, skill and experience to market the  seeds & agro chemical products and has shown interest to act as a Distributor of the said Products on non-exclusive basis for the Company at <strong>{formData?.tarritory}</strong>(“Territory”);
+                                        (B)  Distributor had approached and represented to the Company that it has got the required valid  Seeds, pesticide ,license, skill and experience to market the  seeds & agro chemical products and has shown interest to act as a Distributor of the said Products on non-exclusive basis for the Company at <strong>{formData?.business_territory}</strong>(“Territory”);
                                     </Text>
 
                                     <Text mt={3}>
-                                        (C)  Company, based on the representation of the Distributor and documents / details submitted / agreed to submit (more specifically detailed in Annexure “A” herein) appointed it as a Distributor for <strong> {formData?.tarritory}</strong>  marketing the said Products in the said  <strong>{formData?.district} </strong> Territory;
+                                        (C)  Company, based on the representation of the Distributor and documents / details submitted / agreed to submit (more specifically detailed in Annexure “A” herein) appointed it as a Distributor for <strong> {formData?.business_territory}</strong>  marketing the said Products in the said  <strong>{formData?.district} </strong> Territory;
                                     </Text>
 
                                     <Text mt={3}>
@@ -249,7 +249,7 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
 
                                     <Text mt={3}>
                                         The maximum credit period will be <mark> <strong>
-                                            {formData?.credit_duration_period} ( {toWords(formData?.credit_duration_period || 0)})
+                                            {formData?.credit_duration} ( {toWords(formData?.credit_duration || 0)})
                                         </strong></mark> days from the date of Invoice. In case of any delay in payment over the stipulated time, interest at the rate of 24 % per annum shall be charged by the Company.
                                     </Text>
 
@@ -534,7 +534,7 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                     </Text>
 
                                     <Text mt={6}>
-                                        Any disputes arising between the Distributor and the Company shall be resolved by mutual discussion. Unresolved disputes, if any shall be referred to Arbitration by a sole Arbitrator to be appointed by the Company under the provisions of the Arbitration and Conciliation Act, 1996. The venue of Arbitration shall be<strong> {formData?.jurisdiction_district}</strong>. This Agreement shall be governed by the laws of India and subject to the jurisdiction of courts of <strong>{formData?.jurisdiction_district}</strong>.
+                                        Any disputes arising between the Distributor and the Company shall be resolved by mutual discussion. Unresolved disputes, if any shall be referred to Arbitration by a sole Arbitrator to be appointed by the Company under the provisions of the Arbitration and Conciliation Act, 1996. The venue of Arbitration shall be<strong> {formData?.jurisdiction_area}</strong>. This Agreement shall be governed by the laws of India and subject to the jurisdiction of courts of <strong>{formData?.jurisdiction_area}</strong>.
                                     </Text>
                                     <Text mt={6}>
                                         IN WITHNESS WHEREOF the parties hereto have subscribed their hands to these presents on the day and month herein above first entered
@@ -597,7 +597,7 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                         </Box>
 
                                         <Box textAlign="right">
-                                            <Text>Name:{formData?.customername}</Text>
+                                            <Text>Name:{formData?.customer_name}</Text>
                                             <Text mt={2}>Designation: PROPRIETOR</Text>
                                         </Box>
                                     </HStack>
@@ -652,22 +652,22 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
 
                                                     [
                                                         "Contact No. (Official & Residential)",
-                                                        `${personContact || ""}, ${formData?.responsile_Alternat_person_no || ""}`
+                                                        `${personContact || ""}, ${formData?.responsible_person_alt_contact || ""}`
                                                     ],
 
-                                                    ["E-mail Id", formData?.firm_email_id],
+                                                    ["E-mail Id", formData?.firm_email],
 
-                                                    ["SEED License No.", formData?.seed_license],
+                                                    ["SEED License No.", formData?.seed_license_no],
 
-                                                    ["PESTICIDE License No.", formData?.pesticide_license],
+                                                    ["PESTICIDE License No.", formData?.pesticide_license_no],
 
-                                                    ["FERTILIZER SEED License No.", formData?.fertilizer_license],
+                                                    ["FERTILIZER SEED License No.", formData?.fertilizer_license_no],
 
-                                                    ["GST Registration No.", formData?.firm_gstn_no],
+                                                    ["GST Registration No.", formData?.gst_number],
 
                                                     ["Name of the Banker", formData?.bank_name],
 
-                                                    ["Account No.", formData?.bank_account],
+                                                    ["Account No.", formData?.bank_account_no],
 
                                                     ["Bank Guarantee, if any", "Na"],
                                                     ["Authority Letter for signing the Agreement (if applicable)",

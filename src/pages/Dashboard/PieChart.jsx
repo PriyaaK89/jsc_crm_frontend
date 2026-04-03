@@ -62,11 +62,11 @@ export default function MyPieChart() {
       setSummary(summaryData);
 
       const formattedData = [
-        { name: "Active Employees", value: summaryData.active_employees || 1 },
-        { name: "Checked In", value: summaryData.checked_in || 1 },
-        { name: "Half Day", value: summaryData.half_day || 1 },
-        { name: "Absent", value: summaryData.absent_count || 1 },
-        { name: "Leave", value: summaryData.leave_count || 1 },
+        { name: "Active Employees", value: summaryData.active_employees },
+        { name: "Checked In", value: summaryData.checked_in },
+        { name: "Half Day", value: summaryData.half_day },
+        { name: "Absent", value: summaryData.absent_count },
+        { name: "Leave", value: summaryData.leave_count },
       ];
 
       setChartData(formattedData);
@@ -113,17 +113,19 @@ export default function MyPieChart() {
             <Pie
               data={chartData}
               cx="50%"
-              cy="45%"   // 🔥 slightly up for spacing
+              cy="40%"
               innerRadius={60}
-              outerRadius={85}
+              outerRadius={75}
               paddingAngle={3}
               dataKey="value"
               label={({ name, value }) =>
-                window.innerWidth < 480
-                  ? `${name.split(" ")[0]}: ${value}` // short label for mobile
-                  : `${name}: ${value}`
+                value > 0
+                  ? window.innerWidth < 480
+                    ? `${name.split(" ")[0]}: ${value}`
+                    : `${name}: ${value}`
+                  : ""
               }
-              labelLine={true}
+              labelLine={false}
               fontSize={11}
             >
               {chartData.map((entry, index) => (

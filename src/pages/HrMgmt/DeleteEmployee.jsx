@@ -65,7 +65,6 @@ const DeleteEmployeeModel = ({
     >
       <ModalOverlay />
       <ModalContent mx="12px" borderRadius="12px">
-        {/* <ModalHeader>Delete Employee</ModalHeader> */}
 
         <Flex bg="#E53E3E" borderTopRadius="12px" color="white" py={2} px={4} justify="space-between" alignItems="center"  size="xl">
          <Text fontWeight="bold">

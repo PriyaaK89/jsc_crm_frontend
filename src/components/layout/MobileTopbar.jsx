@@ -80,11 +80,13 @@ import {
   HiOfficeBuilding,
   HiOutlinePrinter,
 } from "react-icons/hi";
+import { FaKey } from "react-icons/fa";
 
 import { FiMapPin } from "react-icons/fi";
 import { BiPurchaseTagAlt } from "react-icons/bi";
 import { BsCreditCard2Front, BsUpcScan } from "react-icons/bs";
-
+import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
+import { HiOutlineDocumentReport } from "react-icons/hi";
 import {
   UserCheck,
   Receipt,
@@ -194,6 +196,8 @@ const MobileTopbar = () => {
           path: "/hr-mgmt/upload-emp-salary",
           icon: RiFileList3Line,
         },
+               {label:"Change Password", path:"/hr-mgmt/change-password", icon:FaKey}
+        
       ],
     },
 
@@ -373,6 +377,18 @@ const MobileTopbar = () => {
           path: "/report/item-stock-report",
           icon: Package,
         },
+         {label:"Track Employee",path:"/report/track-employee",icon:FiMapPin},
+                    {label:"Employee Visit Report",path:"/report/emp-visit-report",icon:HiOutlineDocumentReport},
+                    {label:"Employee Distributor Details",path:"/report/emp-distributor-details",icon:MdPeople},
+                    {label:"Super Cash Bill Report",path:"/report/supercash-bill-report",icon:MdReceiptLong},
+                    {label:"P & L Report",path:"/report/psl-report",icon:MdAssessment},
+                    {label:"Fright Report",path:"/report/fright-report",icon:MdLocalShipping},
+                    {label:"Transport Fright Report",path:"/report/transport-fright-report",icon:MdDirectionsBus},
+                    {label:"Item P & L Report",path:"/report/item-psl-report",icon:MdInventory},
+                    {label:"manufacturing Report",path:"/report/manufacturing-report",icon:MdFactory},
+                    {label:"Stock Transfer Report",path:"/report/stock-transfer-report",icon:MdSwapHoriz},
+                    {label:"Pending Collection Report",path:"/report/pending-collection-report",icon:MdPendingActions},
+                    {label:"Employee Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
       ],
     },
 
@@ -641,7 +657,7 @@ const MobileTopbar = () => {
 
               {/* Role Based Button */}
 
-              {(role === "ADMIN" || role === "SUPER_ADMIN") && (
+              {/* {(role === "ADMIN" || role === "SUPER_ADMIN") && (
                 <Button
                  w="90%"
                   leftIcon={<RiUserAddLine />}
@@ -651,7 +667,7 @@ const MobileTopbar = () => {
                 >
                   IP Request
                 </Button>
-              )}
+              )} */}
                
                      <Button
                  size="sm"

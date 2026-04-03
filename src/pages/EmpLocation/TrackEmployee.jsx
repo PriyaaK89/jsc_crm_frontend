@@ -8,8 +8,8 @@ import {
   Select,
   Input,
   Button,
-  HStack,
   VStack,
+  SimpleGrid,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink
@@ -149,14 +149,23 @@ const TrackEmployee = () => {
       <VStack align="start" spacing={6}>
 
         <Heading size="md">Employee Route Tracking</Heading>
+        <Box
+  display="flex"
+  flexDir={{ base: "column", md: "row" }}
+  gap={4}
+  w="100%"
+>
 
-        <HStack spacing={4}>
+
+        {/* <HStack spacing={4}> */}
+          <SimpleGrid columns={{base:1, md:2}} spacing={4} w="100%">
 
           <Select
             placeholder="Select Employee"
             value={selectedUser}
             onChange={(e) => setSelectedUser(e.target.value)}
-            width="250px"
+            // width="250px"
+            size={{base:"sm", md:"md"}}
           >
             {users.map((user) => (
               <option key={user.id} value={user.id}>
@@ -169,17 +178,22 @@ const TrackEmployee = () => {
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            width="200px"
+            size={{base:"sm", md:"md"}}
           />
-
+           {/* </HStack> */}
+        </SimpleGrid>
           <Button
             colorScheme="blue"
             onClick={fetchRoute}
+            px={10}
+            py={2}
+            fontSize={{base:"sm",md:"md"}}
           >
             Show Route
           </Button>
+</Box>
 
-        </HStack>
+              
 
         <Box
           id="map"

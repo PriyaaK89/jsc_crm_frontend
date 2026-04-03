@@ -312,10 +312,10 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                   <Text fontWeight="bold" mt="10px"> Other Terms </Text>
 
                   <Text>
-                    As per company norms your salary package is Rs. {employee?.salary} per annum with incentives.
+                    As per company norms your salary package is Rs. <strong style={{textDecoration: "underline"}}>{employee?.salary}</strong> per annum with incentives.
                   </Text>
 
-                  <Text fontWeight="bold" textDecoration="underline">Incentive in case you achieve your targets i.e. your target is {formData?.yearly_collection}/ year. You will be responsible to add {formData?.first_new_channel_partner} new distributor in first month and {formData?.second_new_channel_partner} in second month and {formData?.third_new_channel_partner} in third month & {formData?.monthly_collection} individual plus team per month minimum collection deposit in company account from date of joining. </Text>
+                  <Text fontWeight="bold" textDecoration="underline">Incentive in case you achieve your targets i.e. your sale target is {formData?.yearly_collection}/ year. You will be responsible to add {formData?.first_new_channel_partner} new distributor in first month and {formData?.second_new_channel_partner} in second month and {formData?.third_new_channel_partner} in third month & minimum collection {formData?.monthly_collection} individual plus team per month deposit in company account from date of joining. </Text>
                   <Text textDecoration="underline" fontWeight="bold">{formData?.salary_norms}</Text>
                   <Text textDecoration="underline" fontWeight="bold">{formData?.salary_norms1}</Text>
 
@@ -326,15 +326,16 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                   <Text>{formData?.sales_target}</Text>
 
                   {/* Footer */}
-                  <Box mt="60px">
+                  <Box mt="50px">
                     <Text>Warm Regards,</Text>
-                    <Text mt="30px" fontWeight="bold">
+                     {formData.show_stamp && (
+                      <Image src={jsc_stamp} alt="Company Stamp" boxSize="84px" mt={4} />)}
+                    <Text mt="10px" fontWeight="bold">
                       HR Department,
                       <br />
                       Jamidara Seeds Corporation
                     </Text>
-                    {formData.show_stamp && (
-                      <Image src={jsc_stamp} alt="Company Stamp" boxSize="94px" mt={4} />)}
+                   
                   </Box>
                 </VStack>
                 <VStack alignItems="flex-end" mt="10rem" spacing="4px" width="76%" position='absolute' right='0px'>

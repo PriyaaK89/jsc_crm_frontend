@@ -54,8 +54,8 @@ console.log(userId, "usersID")
           />
         ))}
       </VStack>
-        <Box mt={6} textAlign="right">
-        <Button colorScheme="blue" onClick={handleNext} mt={5}>
+        <Box mt={6} textAlign="center">
+        <Button colorScheme="blue" onClick={handleNext} mt={5} minW="200px">
           Next
         </Button>
       </Box>

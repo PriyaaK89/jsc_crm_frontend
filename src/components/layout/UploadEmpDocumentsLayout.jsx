@@ -9,7 +9,7 @@ import NotificationBtn from '../NotificationBtn/NotificationBtn';
 function UploadEmpDocumentsLayout() {
 
   return (
-  <Box bg="#F3F3F3" h="100vh" >
+  <Box bg="#F3F3F3"  >
          <Box display={{ base: "none", md: "block" }}>
            <Sidebar />
    

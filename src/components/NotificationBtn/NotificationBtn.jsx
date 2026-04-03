@@ -12,8 +12,8 @@ const NotificationBtn = () => {
         { label: "Sale Order", count: 0 },
         { label: "Purchase Order", count: 0 },
         { label: "Alert", count: 0 },
-        { label: "E-Way Bill",count: 0 },
-        { label: "Whatsapp", count:0 }
+        { label: "E-Way Bill" },
+        { label: "Whatsapp"}
     ];
 
     return (

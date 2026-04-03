@@ -34,6 +34,7 @@ import { useState, useContext, useEffect ,memo } from "react";
 import { NavLink, useLocation,useNavigate} from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import { MdUploadFile } from "react-icons/md";
+import { FaKey } from "react-icons/fa";
 
 const Newsidebar = () => {
   const location = useLocation();
@@ -110,7 +111,7 @@ const Newsidebar = () => {
         {label: "Create Department",path: "/hr-mgmt/dept/add-department",icon: MdAccountTree,},
         {label: "Upload Employee Expenses", path: "/upload-employee-expenses", icon: MdUploadFile },
         {label:"Upload Salary Slip",path:'/hr-mgmt/upload-emp-salary',icon: RiFileList3Line,},
-       
+       {label:"Change Password", path:"/hr-mgmt/change-password", icon:FaKey}
 
       ],},
 
@@ -269,7 +270,7 @@ useEffect(() => {
         <Image src={logo} alt="Company Logo" h="74px" w="224px" pl='2.5rem'  loading="eager" fetchpriority="high"/>
       </Box> 
 
-      <VStack spacing={2} align="stretch" mt="75px"  p={4}>
+      <VStack spacing={2} align="stretch" mt="75px" pt={4} px={1} >
         {menuSections.map((menu, index) => {
           const IconComponent = menu.icon;
 
@@ -351,7 +352,7 @@ useEffect(() => {
 
        
 {/* ip request  */}
-        {(role === "ADMIN" || role === "SUPER_ADMIN") && (
+        {/* {(role === "ADMIN" || role === "SUPER_ADMIN") && (
           <Button
           w="100%"
             leftIcon={<RiUserAddLine />}
@@ -362,7 +363,7 @@ useEffect(() => {
           >
             IP Request
           </Button>
-        )}
+        )} */}
       <Button
          rightIcon={<FiLogOut/>}
          variant="ghost"

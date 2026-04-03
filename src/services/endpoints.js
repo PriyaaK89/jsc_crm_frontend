@@ -11,7 +11,8 @@ export const API_ENDPOINTS = {
   get_department: `department/get-deparments`,
   create_jobRole: `create-jobRole`,
   get_jobRole_list: `get-jobRole`,
-  upload_img: `upload-image`,
+  // upload_img: `upload-image`,
+  upload_img: `upload-document`,
   get_user_docs: "get-documents",
   get_emp_details: `auth/get-employee-details`,
   update_emp_status: `/auth/user-status`,
@@ -36,6 +37,7 @@ export const API_ENDPOINTS = {
   check_digio_Status: `letters/document-status`,
   download_Signed_Letter_digio: `download-signed-pdf`,
   Gst_verify:`verify-gst`,
-  set_expense_allocation:  `set-expense-allocation`,
+  set_expense_allocation:`set-expense-allocation`,
   get_uploaded_exp: `admin-expense-summary`,
+  emp_daily_summary: `daily-summary`,
 };

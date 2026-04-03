@@ -71,7 +71,7 @@ const PreviewDocument = ({ isOpen, onClose, image }) => {
         </ModalFooter>
 
       </ModalContent>
-    </Modal>
+    </Modal>                                                               
   );
 };
 

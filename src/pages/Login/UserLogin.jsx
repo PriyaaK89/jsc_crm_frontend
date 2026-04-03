@@ -53,7 +53,7 @@ function UserLogin() {
   return (
     <Flex
       direction={{ base: "column", md: "row" }}
-      minH="100vh"
+      minH="100dvh"   
       w="100%"
       bg="white"
       overflow="hidden"
@@ -63,78 +63,77 @@ function UserLogin() {
         display={{ base: "block", md: "none" }}
         position="relative"
         w="100vw"
-        h="100vh"
+        h="100dvh"   // ✅ FIXED
         bg="gray.100"
+        overflow="hidden"
       >
-          
-
         {/* Background Image */}
-        <Image src={login_img} w="100%" h="100%" objectFit="fill" />
+        <Image src={login_img} w="100%" h="100%" objectFit="fit" />
+
+        {/* Title */}
         <Text
-              fontSize="xs"
-              color="white"
-              fontWeight="bold"
-              mb={2}
-              textShadow="1px 1px 2px black"
-            >
-              Welcome Back!
-            </Text>
+          position="absolute"
+          top="20px"
+          left="20px"
+          fontSize="sm"
+          color="white"
+          fontWeight="bold"
+          textShadow="1px 1px 2px black"
+        >
+          Welcome Back!
+        </Text>
 
         {/* Overlay Form */}
         <Box
           position="absolute"
-          top="76%"
+          bottom="30px"   // ✅ FIXED
           left="50%"
-          transform="translate(-50%, -50%)"
+          transform="translateX(-50%)"
           w="100%"
           maxW="400px"
+          px={4}
           zIndex={10}
-        > 
+        >
           <Box textAlign="center">
-          
             {/* Email */}
             <Input
               placeholder="Enter email"
-              size="xs"
-              h="32px"
+              size="sm"
+              h="40px"
               bg="white"
-              borderRadius="4px"
+              borderRadius="6px"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              w="70%"
-              mx="auto"
-              mt={10}
-              mb={5}
+              mb={4}
             />
 
             {/* Password */}
-            <InputGroup size="xs" w="70%" mx="auto" mb={5}>
+            <InputGroup size="sm" mb={4}>
               <Input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
-                h="32px"
+                h="40px"
                 bg="white"
-                borderRadius="4px"
+                borderRadius="6px"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
               <InputRightElement
-                h="32px"
+                h="40px"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </InputRightElement>
             </InputGroup>
 
             {/* Button */}
             <Button
-              w="70%"
+              w="100%"
               colorScheme="blue"
-              h="32px"
-              fontSize="xs"
+              h="40px"
+              fontSize="sm"
               onClick={handleLogin}
-              mb={4}
-              mt={3}
+              mb={3}
             >
               Login
             </Button>
@@ -153,8 +152,8 @@ function UserLogin() {
       </Box>
 
       {/* --- DESKTOP VIEW --- */}
-      <Flex display={{ base: "none", md: "flex" }} flex="1.2">
-        <Image src={login_img} w="100%" h="100vh" objectFit="cover" />
+      <Flex display={{ base: "none", md: "flex" }} flex="1" bg="#ffff" align="center" justify="flex-start">
+        <Image src={login_img} alt="CRM Illustration" maxW="93%" />
       </Flex>
 
       <Flex

@@ -27,8 +27,23 @@ import DistributorAgreementPreview from "./DistributorAgreementPreviewModel";
 
 
 //  Address Component
-const AddressForm = ({ data, onChange, index = 0, label }) => {
+const AddressForm = ({ 
+  data, 
+  onChange, 
+  index = 0, 
+  label,
+  panStatus,
+  handlePanVerification
+}) => {
 
+  const panKey = label.includes("Owner")
+  ? "owner_pan"
+  : `partner_${index}`;
+
+  const isValidPan = (pan) => {
+  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  return panRegex.test(pan);
+};
   return (
     <Box border="1px solid black" borderRadius="lg" mt={4} gridColumn={{ base: "span 1", md: "span 2" }}>
       <Text fontWeight="bold" mb={3} bg="#e9f2ff" p={3} borderTopRadius="lg" borderBottom="1px solid #f3f3f3"> {label}</Text>
@@ -48,13 +63,60 @@ const AddressForm = ({ data, onChange, index = 0, label }) => {
             onChange={(e) => onChange(index, "father_name", e.target.value)}
           />
         </FormControl>
-        <FormControl>
-          <FormLabel>PAN NO.</FormLabel>
-          <Input
-            value={data.pan_no || ""}
-            onChange={(e) => onChange(index, "pan_no", e.target.value)}
-          />
-        </FormControl>
+       <FormControl>
+  <FormLabel>PAN NO.</FormLabel>
+
+  <InputGroup>
+    {/*  STATUS BADGE */}
+    {panStatus?.[panKey] && (
+      <InputLeftElement width="auto" ml={2}>
+        <Badge
+          borderRadius="lg"
+         
+          colorScheme={
+            panStatus[panKey].status === "valid"
+              ? "green"
+              : panStatus[panKey].status === "verified"
+              ? "green"
+              : "red"
+          }
+        >
+          {panStatus[panKey].status.toUpperCase()}
+        </Badge>
+      </InputLeftElement>
+    )}
+
+    {/* INPUT */}
+    <Input
+      value={data.pan_no || ""}
+      onChange={(e) =>
+        onChange(index, "pan_no", e.target.value.toUpperCase())
+      }
+      pl={panStatus?.[panKey] ? "90px" : "12px"}
+    />
+
+    {/*  VERIFY BUTTON */}
+
+    <InputRightElement>
+      <IconButton
+        size="sm"
+        colorScheme="blue"
+        icon={<FiCheckCircle />}
+          isDisabled={!isValidPan(data.pan_no)}
+        onClick={() =>
+          handlePanVerification(
+            data.pan_no,
+            panKey,
+            index
+          )
+        }
+        
+      
+        
+      />
+    </InputRightElement>
+  </InputGroup>
+</FormControl>
 
         <FormControl>
           <FormLabel>Aadhar No.</FormLabel>
@@ -154,6 +216,7 @@ function DistributorAgreement() {
   const [firmtype, setFirmtype] = useState("");
   const [formData, setFormData] = useState({ gst_number: '' });
   const [gstStatus, setGstStatus] = useState("");
+  const [panStatus, setPanStatus] = useState({});
   const [otherCompanies, setOtherCompanies] = useState([{ name: "", turnover: "" }]);
   const [ownerAddress, setOwnerAddress] = useState({
     address: "",
@@ -203,7 +266,7 @@ function DistributorAgreement() {
     try {
       setLoading(true);
 
-      if (!formData.gst_number) {
+      if (!formData.gst_number ) {
         toast({
           description: "Enter your GST number",
           duration: 2000,
@@ -212,6 +275,7 @@ function DistributorAgreement() {
         setLoading(false);
         return;
       }
+
 
       const response = await API.post(API_ENDPOINTS.Gst_verify, {
         gst_number: formData.gst_number,
@@ -285,6 +349,91 @@ function DistributorAgreement() {
     }
   };
 
+  // ----------------------------pan verification------------------------------------------------------
+// pan valadition 
+ const isValidPan = (pan) => {
+  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  return panRegex.test(pan);
+};
+  
+
+ const handlePanVerification = async (pan, type, index = null) => {
+  try {
+    if (!pan || pan.length !== 10) {
+      toast({
+        description: "Enter valid PAN",
+        status: "error",
+        duration: 2000,
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    const res = await API.post(API_ENDPOINTS.verify_pan, {
+      pan_number: pan,
+    });
+
+    const response = res.data;
+    const data = response.data;
+
+    if (response.success && data) {
+      const status = data.status?.toLowerCase() || "verified";
+      const name = data.full_name || ""; 
+
+      setPanStatus((prev) => ({
+        ...prev,
+        [type]: { status, name },
+      }));
+
+      if (type === "firm_pan") {
+        setFormData((prev) => ({
+          ...prev,
+          firm_name: name,
+        }));
+      }
+
+  
+      if (type === "owner_pan") {
+        setOwnerAddress((prev) => ({
+          ...prev,
+          name: name,
+        }));
+      }
+
+    
+      if (type.startsWith("partner_") && index !== null) {
+        const updated = [...partners];
+        if (updated[index]) {
+          updated[index].name = name;
+          setPartners(updated);
+        }
+      }
+
+      toast({
+        description: `PAN ${status.toUpperCase()} verified`,
+        status: "success",
+        duration: 2000,
+      });
+    }
+  } catch (err) {
+    console.error(err);
+
+    setPanStatus((prev) => ({
+      ...prev,
+      [type]: { status: "error", name: "" },
+    }));
+
+    toast({
+      description: "PAN verification failed",
+      status: "error",
+      duration: 2000,
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // ----------------------pincode based address auto fill--------------------------------------
   const handlePincodeChange = async (value) => {
@@ -310,34 +459,29 @@ function DistributorAgreement() {
     }
   };
 
-  // useEffect(() => {
-  //   if (formData.pincode && formData.pincode.length === 6) {
-  //     handlePincodeChange();
-  //   }
-  // }, []);
 
   // owner ke liye pincode 
   const handleOwnerPincodeChange = async (value) => {
-  setOwnerAddress((prev) => ({
-    ...prev,
-    pincode: value,
-  }));
+    setOwnerAddress((prev) => ({
+      ...prev,
+      pincode: value,
+    }));
 
-  if (value.length === 6) {
-    try {
-      const res = await API.get(`/getstatecity/${value}`);
-      const { state, district } = res.data.data;
+    if (value.length === 6) {
+      try {
+        const res = await API.get(`/getstatecity/${value}`);
+        const { state, district } = res.data.data;
 
-      setOwnerAddress((prev) => ({
-        ...prev,
-        state,
-        district,
-      }));
-    } catch (err) {
-      console.error("Owner Pincode lookup failed", err);
+        setOwnerAddress((prev) => ({
+          ...prev,
+          state,
+          district,
+        }));
+      } catch (err) {
+        console.error("Owner Pincode lookup failed", err);
+      }
     }
-  }
-};
+  };
 
   // for partners 
 
@@ -423,11 +567,11 @@ function DistributorAgreement() {
 
       //  JSON me only text data
       if (partners && partners.length > 0) {
-      formDataToSend.append("partners", JSON.stringify(partnersData,));   
-}
+        formDataToSend.append("partners", JSON.stringify(partnersData,));
+      }
 
-  if (otherCompanies && otherCompanies.length > 0) {
-      formDataToSend.append("otherCompanies", JSON.stringify(otherCompanies));
+      if (otherCompanies && otherCompanies.length > 0) {
+        formDataToSend.append("otherCompanies", JSON.stringify(otherCompanies));
       }
 
 
@@ -768,13 +912,15 @@ function DistributorAgreement() {
             <AddressForm
               data={ownerAddress}
               label="Owner Address"
+              handlePanVerification={handlePanVerification}
+              panStatus={panStatus}
               onChange={(i, field, value) => {
-               
                 setOwnerAddress((prev) => ({
                   ...prev,
                   [field]: value,
                 }));
-                 if (field === "pincode") {
+
+                if (field === "pincode") {
                   handleOwnerPincodeChange(value);
                 }
               }}
@@ -804,6 +950,8 @@ function DistributorAgreement() {
                     index={index}
                     data={partner}
                     label={`Partner ${index + 1} Address`}
+                     handlePanVerification={handlePanVerification}
+                          panStatus={panStatus}
                     onChange={handlePartnerChange}
 
                   />
@@ -899,12 +1047,43 @@ function DistributorAgreement() {
 
           <FormControl>
             <FormLabel>Firm PAN Number</FormLabel>
-            <Input
-              name="firm_pan"
-              value={formData.firm_pan}
-              onChange={handleChange}
-            // placeholder="Enter Firm PAN Card No."
-            />
+
+            <InputGroup>
+              {panStatus.firm_pan && (
+                <InputLeftElement width="auto" ml={2}  >
+                  <Badge borderRadius="lg" p="2px"
+                    colorScheme={
+                      panStatus.firm_pan.status === "valid"
+                        ? "green"
+                        : panStatus.firm_pan.status === "error"
+                          ? "red"
+                          : "gray"
+                    }
+                  >
+                    {panStatus.firm_pan.status.toUpperCase()}
+                  </Badge>
+                </InputLeftElement>
+              )}
+
+              <Input
+                name="firm_pan"
+                value={formData.firm_pan}
+                onChange={handleChange}
+                pl={panStatus.firm_pan ? "90px" : "12px"}
+              />
+
+              <InputRightElement>
+                <IconButton
+                  size="sm"
+                  colorScheme="blue"
+                  icon={<FiCheckCircle />}
+                  isDisabled={!isValidPan(formData.firm_pan)}
+                  onClick={() =>
+                    handlePanVerification(formData.firm_pan, "firm_pan")
+                  }
+                />
+              </InputRightElement>
+            </InputGroup>
           </FormControl>
 
           <FormControl>

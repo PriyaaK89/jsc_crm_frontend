@@ -1,3 +1,5 @@
+import { version } from "react";
+
 // src/services/endpoints.js
 export const API_ENDPOINTS = {
   LOGIN: "auth/login",
@@ -34,6 +36,7 @@ export const API_ENDPOINTS = {
   document_status:`document-status`,
   send_esign: "documents/send-esign",
   digio_send_eSign: "letters/send-esign",
+  verify_pan: "/verify-pan",
   check_digio_Status: `letters/document-status`,
   download_Signed_Letter_digio: `download-signed-pdf`,
   Gst_verify:`verify-gst`,

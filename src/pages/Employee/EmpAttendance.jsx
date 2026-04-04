@@ -197,7 +197,6 @@ const EmpAttendance = () => {
 
         fetchAttendance(1); //  reload data
     };
-
   
     return (
         <>
@@ -312,7 +311,7 @@ const EmpAttendance = () => {
                             <Spinner />
                         </Flex>
                     ) : (
-                        <Box overflowX="auto"  >
+                        <Box overflowX="auto" >
                             <TableContainer overflowX="auto" whiteSpace="nowrap" sx={{
                                 "&::-webkit-scrollbar": { width: "8px", height: '8px' },
                                 "&::-webkit-scrollbar-thumb": {
@@ -433,6 +432,7 @@ const EmpAttendance = () => {
         </>
     );
 };
+
 
 
 

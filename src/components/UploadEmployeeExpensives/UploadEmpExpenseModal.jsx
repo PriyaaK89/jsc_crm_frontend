@@ -7,11 +7,12 @@ import {
   ModalBody,
   ModalCloseButton,
   Box,
-  Progress
+  Progress,
+  Avatar,
+  Divider,
 } from "@chakra-ui/react";
 
 const UploadEmpExpenseModal = ({ isOpen, onClose, selectData }) => {
-
   const getPercent = (used, total) => {
     if (!total) return 0;
     return Math.round((used / total) * 100);
@@ -23,104 +24,117 @@ const UploadEmpExpenseModal = ({ isOpen, onClose, selectData }) => {
     return "red";
   };
 
-  // reusable block (same UI for all)
   const ExpenseRow = (title, allocated, used) => {
     const percent = getPercent(used, allocated);
     const remaining = allocated - used;
 
     return (
-      <Box mb={6}>
-        <Text  fontWeight="bold" letterSpacing="1px">
-          {title}
-        </Text>
+      <Box
+        p={4}
+        borderRadius="10px"
+        bg="gray.50"
+        boxShadow="sm"
+        mb={4}
+      >
+        <Flex justify="space-between" align="center" mb={2}>
+          <Text fontWeight="600" fontSize="lg">
+            {title}
+          </Text>
 
-        <Text  fontSize="sm" mt={1}>
-          Allocated: {allocated} | Used: {used} | Remaining: {remaining}
-        </Text>
-
-        <Flex align="center" mt={2}>
-          <Progress
-            value={percent}
-            flex="1"
-            size="xs"
-            borderRadius="2px"
-            bg="gray.700"
-            colorScheme={getColor(percent)}
-          />
-
-          <Text color="gray.300" fontSize="xs" ml={2} minW="35px">
+          <Text fontSize="sm" color="gray.500">
             {percent}%
           </Text>
+        </Flex>
+
+        <Progress
+          value={percent}
+          size="sm"
+          borderRadius="6px"
+          colorScheme={getColor(percent)}
+        />
+
+        <Flex justify="space-between" mt={2} fontSize="xs" color="gray.600">
+          <Text>Allocated: {allocated}</Text>
+          <Text>Used: {used}</Text>
+          <Text>Left: {remaining}</Text>
         </Flex>
       </Box>
     );
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered  >
-      <ModalOverlay  />
+    <Modal isOpen={isOpen} onClose={onClose} isCentered size="md">
+      <ModalOverlay />
 
-      <ModalContent  borderRadius="12px" mx="20px">
-
+      <ModalContent borderRadius="16px" overflow="hidden">
+        
         {/* Header */}
-         <Flex
-          bg="blue.500"
+        <Flex
+          bg="blue.600"
           color="white"
-          px={4}
-          py={3}
-          justifyContent="space-between"
-          alignItems="center"
-          borderTopRadius="12px"
+          px={5}
+          py={4}
+          align="center"
+          justify="space-between"
         >
-          <Text fontWeight="bold">Employee Expense</Text>
-
+          <Text fontWeight="600" fontSize="md">
+            Employee Expense Overview
+          </Text>
           <ModalCloseButton position="static" color="white" />
         </Flex>
 
         {/* Body */}
         <ModalBody p={5}>
           {selectData ? (
-            <Box>
-
-              {/* 👤 Name */}
+            <>
+              {/* 👤 Profile */}
               <Flex align="center" mb={5}>
-                <Text fontSize="lg">👤</Text>
-                <Text ml={2}>
-                  {selectData.employee_name}
-                </Text>
+                <Avatar
+                  size="md"
+                  name={selectData.employee_name}
+                  mr={3}
+                />
+                <Box>
+                  <Text fontWeight="600" fontSize="lg">
+                    {selectData.employee_name}
+                  </Text>
+                  <Text fontSize="xs" color="gray.400">
+                    Expense Summary
+                  </Text>
+                </Box>
               </Flex>
 
-              {/* HOTEL */}
+              <Divider mb={4} />
+
+              {/* Expense Sections */}
               {ExpenseRow(
-                "HOTEL",
+                "🏨 Hotel",
                 selectData.allocation?.HOTEL || 0,
                 selectData.usage?.HOTEL || 0
               )}
 
-              {/* TRAVEL */}
               {ExpenseRow(
-                "TRAVEL (Bus/Train/Toll)",
+                "🚌 Travel",
                 selectData.allocation?.BUS_TRAIN_TOLL || 0,
                 selectData.usage?.BUS_TRAIN_TOLL || 0
               )}
 
-              {/* PETROL */}
               {ExpenseRow(
-                "PETROL",
+                "⛽ Petrol",
                 selectData.allocation?.PETROL_DIESEL || 0,
                 selectData.usage?.PETROL_DIESEL || 0
               )}
 
-              {/* OTHER */}
               {ExpenseRow(
-                "OTHER",
+                "📦 Other",
                 selectData.allocation?.OTHER || 0,
                 selectData.usage?.OTHER || 0
               )}
-
-            </Box>
+            </>
           ) : (
-            <Text>No Data Found</Text>
+            <Text textAlign="center" color="gray.500">
+              No Data Found
+            </Text>
           )}
         </ModalBody>
       </ModalContent>

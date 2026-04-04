@@ -57,33 +57,6 @@ const DistributorAgreementPdfPreview = ({ isOpen, onClose, formData, partners, o
     }
   };
 
-
-  // split into thre lines 
-  const splitIntoThreeLines = (text = "") => {
-    const words = text.split(" ");
-    const totalWords = words.length;
-
-    const perLine = Math.ceil(totalWords / 3);
-
-    const line1 = words.slice(0, perLine).join(" ");
-    const line2 = words.slice(perLine, perLine * 2).join(" ");
-    const line3 = words.slice(perLine * 2).join(" ");
-
-    return [line1, line2, line3];
-  };
-  const address = [
-    formData?.firm_name,
-    formData?.business_address,
-    formData?.state,
-    formData?.tehsil && `Teh: ${formData.tehsil}`,
-    formData?.district && `Dist: ${formData.district}`,
-    formData?.landmark && `Landmark: ${formData.Bussiness_landmark}`,
-    formData?.pin_code && `Pincode: ${formData.pin_code}`
-  ]
-    .filter(Boolean)    //if value not in form 
-    .join(", ");    //if value in form 
-
-  const [line1, line2, line3] = splitIntoThreeLines(address);
   // formate date 
   const formatDate = (date) => {
     if (!date) return "";
@@ -99,10 +72,10 @@ const DistributorAgreementPdfPreview = ({ isOpen, onClose, formData, partners, o
 
   const getPanAadharDetails = (formData, partner1, ownerAddress) => {
   const pan =
-    formData?.firm_pan_no?.trim() || partner1?.pan_no?.trim() || ownerAddress?.pan_no?.trim() || "";
+    formData?.firm_pan?.trim() || partner1?.pan_no?.trim() || ownerAddress?.pan_no?.trim() || "";
 
   const aadhar =
-    formData?.firm_aadhar_no?.trim() || partner1?.aadhar_no?.trim() || ownerAddress?.aadhar_no?.trim() || "";
+    formData?.firm_aadhar?.trim() || partner1?.aadhar_no?.trim() || ownerAddress?.aadhar_no?.trim() || "";
 
   return { pan, aadhar };
 };
@@ -180,29 +153,40 @@ const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
                 {/* BRANCH */}
                 <HStack mt={5}  >
                   <Text w="250px">BRANCH:</Text>
-                  <Box borderBottom="1px solid black" w="410px" mt={3} textTransform="uppercase"> {formData?.branch}</Box>
+                  <Box borderBottom="1px solid black" w="410px" mt={3} textTransform="uppercase"><strong> {formData?.branch}</strong></Box>
                 </HStack>
 
                 {/* NAME OF FIRM */}
                 <HStack align="flex-start" mt={3} >
-                  <Text w="250px">
+                  <Text w="250px" mt={4}>
                     NAME OF THE FIRM WITH <br /> COMPLETE BUSINESS ADDRESS
                   </Text>
-                  <VStack flex="1" spacing={6}>
+                  
+                  <VStack flex="1" spacing={4} align="stretch">
                     <Box borderBottom="1px solid black" w="410px"
-                      noOfLines={3} textTransform="uppercase">{line1}
-                    </Box>
-                    <Box borderBottom="1px solid black" w="410px"
-                      noOfLines={3} textTransform="uppercase"> {line2}
-
-                    </Box>
-                    <Box borderBottom="1px solid black" w="410px"
-                      noOfLines={3} textTransform="uppercase">{line3}
-
+                      textTransform="uppercase"><strong> {formData?.firm_name} </strong>
                     </Box>
 
-                  </VStack>
+                    <Box borderBottom="1px solid black" w="410px"
+                      textTransform="uppercase"><strong> {formData?.business_address}  {formData?.state}  {formData?.tehsil && `Teh: ${formData.tehsil}`}  {formData?.district && `Dist: ${formData.district}`}  {formData?.pincode && `Pincode: ${formData.pincode}`} </strong>
+
+                    </Box>
+                      </VStack>
                 </HStack>
+                <HStack align="flex-start" mt={3} >
+                <Text w="250px">
+                   LANDMARK:
+                  </Text>  
+
+                    <Box borderBottom="1px solid black" w="410px"
+                      textTransform="uppercase">
+                       
+                       <strong> {formData?.landmark && formData.landmark} </strong>
+
+                    </Box>
+
+         </HStack>
+                
 
                 {/* partner/ solo pro details */}
                 <HStack align="flex-start" mt={4} spacing={4}>
@@ -216,13 +200,13 @@ const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
                     {/* Proprietorship */}
                     {formData?.firm_type === "proprietorship" && (
                       <HStack align="flex-start">
-                        <Text w="260px" >
+                        <Text w="260px" mt={3}>
                           DETAIL OF THE PRO. PARTNERS DIRECTORS <br />
                           WITH COMPLETE RESI. ADDRESS
                         </Text>
 
                         <Box borderBottom="1px solid black" flex="1" mt={3} textTransform="uppercase">
-                          {[
+                       <strong> {[
                             ownerAddress?.name,
                             ownerAddress?.address,
                             ownerAddress?.state,
@@ -232,6 +216,7 @@ const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
                           ]
                             .filter(Boolean)
                             .join(", ")}
+                            </strong>  
                         </Box>
                       </HStack>
                     )}
@@ -249,7 +234,7 @@ const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
 
                           {/*  RIGHT SIDE (Address) */}
                           <Box borderBottom="1px solid black" flex="1" mt={2} textTransform="uppercase">
-                            {[
+                       <strong>    {[
                               partner?.address,
                               partner?.state,
                               partner?.tehsil && `Teh: ${partner.tehsil}`,
@@ -257,7 +242,7 @@ const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
                               partner?.pincode && `Pincode: ${partner.pincode}`,
                             ]
                               .filter(Boolean)
-                              .join(", ")}
+                              .join(", ")} </strong> 
                           </Box>
 
                         </HStack>
@@ -270,22 +255,22 @@ const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
                 {/* hones emil and phone no  */}
 
 
-                <HStack align="flex-start">
+                <HStack align="flex-start" mt={4} spacing={4}>
                   <Text w="250px">
                     HONE NOS. E-MAIL ID :
                   </Text>
                   <VStack flex="1" spacing={3}>
-                    <Box borderBottom="1px solid black" w="100%" textTransform="uppercase">
-                      {formData?.firm_email_id}
+                    <Box borderBottom="1px solid black" w="100%" >
+                    Email:<strong> {formData?.firm_email} </strong>
                     </Box>
 
                     {/* ❌ NO BORDER HERE */}
                     <Box w="100%" borderBottom="1px solid black" textTransform="uppercase">
-                      LANDMARK: {formData?.landmark}
+                      LANDMARK: <strong> {formData?.landmark} </strong>
                     </Box>
 
                     <Box borderBottom="1px solid black" w="100%" display="flex" textTransform="uppercase">
-                      <Box w="70%"> DIST: {formData?.district}</Box> <Box w="40%">Pincode: {formData?.pin_code}</Box>
+                      <Box w="70%"> DIST: <strong> {formData?.district}</strong></Box> <Box w="40%">Pincode: <strong> {formData?.pincode}</strong></Box>
 
                     </Box>
                   </VStack>
@@ -299,18 +284,18 @@ const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
                   </Text>
                   <VStack flex="1" spacing={3}>
                     <Box borderBottom="1px solid black" w="100%" ><Text textTransform="uppercase">
-                      Name:   {formData?.responsile_person_name}
+                      Name: <strong> {formData?.responsible_person_name} </strong>
                     </Text>
                     </Box>
-                    <Box borderBottom="1px solid black" w="100%" textTransform="uppercase"> {formData?.responsile_person_address}</Box>
-                    <Box borderBottom="1px solid black" w="100%" textTransform="uppercase">Mobile no. {formData?.responsile_person_no}, Alt mobile No.{formData?.responsile_Alternat_person_no}</Box>
+                    <Box borderBottom="1px solid black" w="100%" textTransform="uppercase">Address: <strong> {formData?.responsible_person_address} </strong></Box>
+                    <Box borderBottom="1px solid black" w="100%" textTransform="uppercase">Mobile no. <strong> {formData?.responsible_person_contact} </strong>, Alt mobile No.<strong> {formData?.responsible_person_alt_contact} </strong></Box>
                   </VStack>
                 </HStack>
 
                 {/* GST */}
                 <HStack mt={5}>
                   <Text w="250px">GST NO. OF FIRM</Text>
-                  <Box borderBottom="1px solid black" flex="1" textTransform="uppercase" mt={1}>{formData?.firm_gstn_no || ""}</Box>
+                  <Box borderBottom="1px solid black" flex="1" textTransform="uppercase" mt={1}> <strong> {formData?.gst_number || ""} </strong></Box>
                 </HStack>
 
                 {/* PAN */}
@@ -318,15 +303,15 @@ const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
                   <Text w="250px">PAN OR AADHAR OF THE FIRM/PROPRITOR</Text>
                   <Box borderBottom="1px solid black" flex="1" textTransform="uppercase" >
                     
-                    {pan && `PAN NO: ${pan}`}
+                  <strong> {pan && `PAN NO: ${pan}`}
     {pan && aadhar && " , "}
-    {aadhar && `AADHAR NO: ${aadhar}`}</Box>
+    {aadhar && `AADHAR NO: ${aadhar}`}</strong></Box>
                 </HStack>
 
                 {/* LICENSE */}
                 <HStack mt={5}>
                   <Text w="250px">SEED LICENCE NO./VALIDITY</Text>
-                  <Box borderBottom="1px solid black" flex="1" textTransform="uppercase" >{formData?.seed_license}</Box>
+                  <Box borderBottom="1px solid black" flex="1" textTransform="uppercase" > <strong> {formData?.seed_license_no} </strong></Box>
                 </HStack>
 
                 {/* STRUCTURE */}
@@ -392,49 +377,49 @@ const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
               <VStack align="stretch" spacing={5} fontSize="14px">
                 <HStack mt={5}>
                   <Text w="250px">FERTILIZER LICENCE NO. /VALIDITY :</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={2} textTransform="uppercase">{formData?.fertilizer_license}</Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={2} textTransform="uppercase"> <strong> {formData?.fertilizer_license_no} </strong></Box>
                 </HStack>
 
 
                 <HStack >
                   <Text w="250px">PESTICIDE LICENCE NO./VALIDITY :</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={2} textTransform="uppercase">{formData?.pesticide_license}</Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={2} textTransform="uppercase"> <strong> {formData?.pesticide_license_no} </strong></Box>
                 </HStack>
                 <HStack w="100%">
                   <Text w="250px">NAME OF TRANSPORTS:</Text>
                   <Box display="flex" flexDirection="column">
-                    <Box borderBottom="1px solid black" flex="1" mt={2} w="370px" textTransform="uppercase">(A):{formData?.transport_a}</Box>
-                    <Box borderBottom="1px solid black" flex="1" mt={2} w="370px" textTransform="uppercase">(B):{formData?.transport_b}</Box>
+                    <Box borderBottom="1px solid black" flex="1" mt={2} w="370px" textTransform="uppercase">(A):<strong> {formData?.transport_name_a} </strong></Box>
+                    <Box borderBottom="1px solid black" flex="1" mt={2} w="370px" textTransform="uppercase">(B):<strong> {formData?.transport_name_b} </strong></Box>
                   </Box>
                 </HStack>
 
                 {/* years of bussines */}
                 <HStack >
                   <Text w="250px">YEARS OF BUSINESS :</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={1} > START AT : {formData?.firm_start_date}</Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={1} > START AT : <strong> {formData?.firm_since} </strong></Box>
                 </HStack>
                 {/* name of dealing bannk */}
                 <HStack >
                   <Text w="250px">NAME OF DEALING BANK:</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={2} textTransform="uppercase" > {formData?.bank_name}</Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={2} textTransform="uppercase" > <strong> {formData?.bank_name} </strong></Box>
                 </HStack>
                 <HStack >
                   <Text w="250px">BANK ACCOUNT NO:</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={2} > {formData?.bank_account}</Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={2} > <strong> {formData?.bank_account_no} </strong></Box>
                 </HStack>
                 <HStack >
                   <Text w="250px">BANK IFSC CODE NO:</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={2} textTransform="uppercase"> {formData?.bank_ifsc}</Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={2} textTransform="uppercase"> <strong> {formData?.ifsc_code} </strong></Box>
                 </HStack>
                 {/* ANUAL TURN OVR OF COMAPNY */}
                 <HStack >
                   <Text w="250px">ANNUAL TURNOVER OF THE PARTY:</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={2} >  {formData?.firm_anual_turnover}</Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={2} >  <strong> {formData?.annual_turnover} </strong></Box>
                 </HStack>
                 {/* frist year turn over with us */}
                 <HStack >
                   <Text w="250px">EXPECTED SALE OF JAMIDARA SEEDS (FIRST YEAR):</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={2} >  {formData?.expected_sale_per_year}</Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={2} >  <strong> {formData?.expected_sale} </strong></Box>
                 </HStack>
 
 
@@ -466,21 +451,21 @@ const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
                 {/* source of funds  */}
                 <HStack >
                   <Text w="250px">SOURCES OF FUNDS FOR BUSINESS:</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={1} > RS. {formData?.source_of_funds}</Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={1} textTransform="uppercase" ><strong> {formData?.source_of_funds}</strong></Box>
                 </HStack>
 
                 <HStack >
                   <Text w="250px">(A) OWN SOURCES:</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={1} > RS. {formData?.own_funds_details}</Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={1} textTransform="uppercase" >RS .  {formData?.own_funds_details}</Box>
                 </HStack>
 
                 <HStack >
                   <Text w="250px">(B) FROM BANK:</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={2} >{formData?.loan_details} </Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={2} textTransform="uppercase" >RS . {formData?.own_funds_details} </Box>
                 </HStack>
                  <HStack >
                   <Text w="250px">(c) FROM INVESTMENT:</Text>
-                  <Box borderBottom="1px solid black" flex="1" mt={2} >{formData?.investment} </Box>
+                  <Box borderBottom="1px solid black" flex="1" mt={2} textTransform="uppercase" >RS . {formData?.own_funds_details} </Box>
                 </HStack>
                  
                 <Text
@@ -496,21 +481,29 @@ const { pan, aadhar } = getPanAadharDetails(formData, partner1,ownerAddress);
             {/* PAGE 4: DOCUMENT CHECKLIST */}
             <Box className="pdf-page" w="210mm" h="297mm" p="20mm">
               <VStack justifyContent="space-between" flexDirection="column" mt={14} w="100%">
-                <Text borderBottom="dotted" w="100%"> I {formData?.customername} AGREE ON  BEHALF OF  {formData?.firm_name} </Text><br />
-                <Text borderBottom="dotted" w="100%"> DATE ON  {formatDate(formData?.approvering_date)}  THIS AGREEMENT ALL TERMS AND CONDITIONS</Text>
+                <Text borderBottom="dotted" w="100%"> I <strong>{formData?.customer_name}</strong> AGREE ON  BEHALF OF  <strong>{formData?.firm_name}</strong> </Text><br />
+                <Text borderBottom="dotted" w="100%"> DATE ON  <strong>{formatDate(formData?.approving_date)}</strong>  THIS AGREEMENT ALL TERMS AND CONDITIONS</Text>
                 <Text borderBottom="dotted" w="100%" mt={4}>  AND RULES REGULATIONION  ARE ACCPTED</Text>
 
               </VStack>
 
               <VStack justifyContent="space-between" spacing={2} flexDirection="row" mt={16}>
-                <Text>NAME OF PROPRIETOR/PARTNER</Text>
-                <Text>SIGNATURE</Text>
+                <Text>NAME OF PROPRIETOR/PARTNER (responsible person) 
+                  <br />
+                  <strong>{formData?.responsible_person_name}</strong>
+                  <strong>{formData?.responsible_person_address}</strong>
+                </Text>
+                <Text>
+                   
+                  SIGNATURE 
+                  <br />
+             <strong>{formData?.responsible_person_name}</strong>
+
+                 
+                </Text>
               </VStack>
 
-              <VStack justifyContent="space-between" spacing={2} flexDirection="row" mt={10}>
-                <Text>NAME OF AUTHORISED PERSON <br /> WITH ADDRESS</Text>
-                <Text>SIGNATURE</Text>
-              </VStack>
+             
 
               <VStack justifyContent="space-between" spacing={2} flexDirection="row" mt={10}>
                 {formData?.firm_type === "proprietorship" && (

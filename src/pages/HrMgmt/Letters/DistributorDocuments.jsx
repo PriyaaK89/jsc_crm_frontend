@@ -1,282 +1,259 @@
 import React, { useState, useEffect } from "react";
 import {
-    Box,
-    HStack,
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    Button,
-    FormControl,
-    FormLabel,
-    Input,
-    SimpleGrid,
-    Image,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalBody,
-    ModalCloseButton,
-    useDisclosure
+  Box,
+  HStack,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  SimpleGrid,
+  Image,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  Text
 } from "@chakra-ui/react";
 
-function DistributorDocuments({ onChange ,formData,onSendData }) {
+function DistributorDocuments({ onChange, formData, onSendData }) {
+  const shopModal = useDisclosure();
+  const chequeModal = useDisclosure();
 
- 
-   
-  
+  const [docs, setDocs] = useState({
+    shop_image: [],
+    cheque_photo: [],
+    partnership_deed: null,
+    mai_letter: null,
+    pan_photo: null,
+    aadhar_front: null,
+    aadhar_back: null,
+    gst_file: null,
+    seed_license: null,
+    fertilizer_license: null,
+    pesticide_license: null,
+    bank_diary: null,
+    letter_head: null,
+    authority_letter: null
+  });
 
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const shopModal = useDisclosure();
-    const chequeModal = useDisclosure();
+  const [shopPreview, setShopPreview] = useState([]);
+  const [chequePreview, setChequePreview] = useState([]);
 
-    //  ALL DATA IN ONE STATE
-    const [docs, setDocs] = useState({
-        shop_images: [],
-        partnership_deed: null,
-        mai_letter: null,
-        pan_photo: null,
-        aadhar_photo: null,
-        gst_file: null,
-        seed_license: null,
-        fertilizer_license: null,
-        pesticide_license: null,
-        bank_diary: null,
-        cheque_photos: [],
-        letter_head: null,
-        authority_letter: null
+  // ✅ MULTI FILE UPLOAD WITH LIMIT
+  const handleMultiUpload = (e, field) => {
+    const files = Array.from(e.target.files);
+
+    setDocs((prev) => {
+      let updatedFiles = [...(prev[field] || []), ...files];
+
+      // 🚀 LIMIT LOGIC
+      if (field === "shop_image") {
+        if (updatedFiles.length > 4) {
+          alert("Maximum 4 shop images allowed");
+          updatedFiles = updatedFiles.slice(0, 4);
+        }
+      }
+
+      if (field === "cheque_photo") {
+        if (updatedFiles.length > 2) {
+          alert("Only 2 cheque photos allowed");
+          updatedFiles = updatedFiles.slice(0, 2);
+        }
+      }
+
+      const updated = {
+        ...prev,
+        [field]: updatedFiles
+      };
+
+      onChange && onChange(updated);
+      return updated;
     });
+  };
 
-    const [shopPreview, setShopPreview] = useState([]);
-    const [chequePreview, setChequePreview] = useState([]);
+  // ✅ SINGLE FILE
+  const handleSingleUpload = (e, field) => {
+    const file = e.target.files[0];
 
-    // ✅ HANDLE MULTIPLE IMAGES (shop + cheque)
-    const handleMultiUpload = (e, field) => {
-        const files = Array.from(e.target.files);
-
-        setDocs((prev) => {
-            const updated = {
-                ...prev,
-                [field]: [...(prev[field] || []), ...files]
-            };
-
-            onChange && onChange(updated); // send to parent
-            return updated;
-        });
-
-        onOpen();
+    const updated = {
+      ...docs,
+      [field]: file
     };
 
-    // ✅ HANDLE SINGLE FILE
-    const handleSingleUpload = (e, field) => {
-        const file = e.target.files[0];
+    setDocs(updated);
+    onChange && onChange(updated);
+  };
 
-        setDocs((prev) => {
-            const updated = {
-                ...prev,
-                [field]: file
-            };
+  // ✅ PREVIEW SHOP
+  useEffect(() => {
+    const urls = docs.shop_image.map(file => URL.createObjectURL(file));
+    setShopPreview(urls);
 
-            onChange && onChange(updated); // send to parent
-            return updated;
-        });
-    };
+    return () => urls.forEach(url => URL.revokeObjectURL(url));
+  }, [docs.shop_image]);
 
-    useEffect(() => {
-        const urls = docs.shop_images.map(file => URL.createObjectURL(file));
-        setShopPreview(urls);
+  // ✅ PREVIEW CHEQUE
+  useEffect(() => {
+    const urls = docs.cheque_photo.map(file => URL.createObjectURL(file));
+    setChequePreview(urls);
 
-        return () => urls.forEach(url => URL.revokeObjectURL(url));
-    }, [docs.shop_images]);
+    return () => urls.forEach(url => URL.revokeObjectURL(url));
+  }, [docs.cheque_photo]);
 
-    useEffect(() => {
-        const urls = docs.cheque_photos.map(file => URL.createObjectURL(file));
-        setChequePreview(urls);
+  // ✅ SEND DATA TO PARENT
+  useEffect(() => {
+    onSendData && onSendData(docs);
+  }, [docs]);
 
-        return () => urls.forEach(url => URL.revokeObjectURL(url));
-    }, [docs.cheque_photos]);
+  return (
+    <Box border="1px solid #313131" mt={5} borderRadius="lg">
 
+      <HStack bg="#e9f2ff" borderBottom="1px solid #d9e5f8" borderTopRadius="lg" pl={6}>
+        <Breadcrumb py={3}>
+          <BreadcrumbItem>
+            <BreadcrumbLink>UPLOAD DOCUMENTS :</BreadcrumbLink>
+          </BreadcrumbItem>
+        </Breadcrumb>
+      </HStack>
 
-    useEffect(() => {
-  if (onSendData) {
-    onSendData(docs);
-  }
-}, [docs]);
+      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} p={5}>
 
-    return (
-        <Box border="1px solid #313131" mt={5} borderRadius="lg">
+        {/* SHOP IMAGES */}
+        <FormControl>
+          <FormLabel>Shop Images (Max 4)</FormLabel>
+          <Input type="file" multiple onChange={(e) => handleMultiUpload(e, "shop_image")} />
+          {docs.shop_image.length > 0 && (
+            <Button mt={2} onClick={shopModal.onOpen}>
+              Preview ({docs.shop_image.length})
+            </Button>
+          )}
+        </FormControl>
 
-            {/* Header */}
-            <HStack
-                justifyContent="space-between"
-                bg="#e9f2ff"
-                borderBottom="1px solid #d9e5f8"
-                borderTopRadius="lg"
-                pt={1}
-                pl={6}
-            >
-                <Breadcrumb padding="4px 0px 1rem 0px">
-                    <BreadcrumbItem>
-                        <BreadcrumbLink color="#000000">
-                            UPLOAD DOCUMENTS :
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                </Breadcrumb>
-            </HStack>
+        {/* CHEQUE */}
+        <FormControl>
+          <FormLabel>Cheque Photos (Max 2)</FormLabel>
+          <Input type="file" multiple onChange={(e) => handleMultiUpload(e, "cheque_photo")} />
+          {docs.cheque_photo?.length > 0 && (
+            <Button mt={2} onClick={chequeModal.onOpen}>
+              Preview ({docs.cheque_photo.length})
+            </Button>
+          )}
+        </FormControl>
 
-            {/* Form */}
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} p={5}>
+        {/* CONDITIONAL */}
+        {formData?.firm_type === "partnership" && (
+          <>
+            <FormControl>
+              <FormLabel>Partnership Deed</FormLabel>
+              <Input type="file" onChange={(e) => handleSingleUpload(e, "partnership_deed")} />
+            </FormControl>
 
-                {/*  SHOP IMAGES */}
-                <FormControl>
-                    <FormLabel>Shop Images</FormLabel>
-                    <Input type="file" multiple onChange={(e) => handleMultiUpload(e, "shop_images")} />
-                     {docs.shop_images.length > 0 && (
-                    <Button mt={2} onClick={shopModal.onOpen} colorScheme="blue" size={{base:"sm",md:"md"}}>
-                        Preview Shop photos ({docs.shop_images.length})
-                    </Button>
-                     )}
-                </FormControl>
+            <FormControl>
+              <FormLabel>Authority Letter</FormLabel>
+              <Input type="file" onChange={(e) => handleSingleUpload(e, "authority_letter")} />
+            </FormControl>
+          </>
+        )}
 
-                {/* CHEQUE IMAGES */}
-                <FormControl>
-                    <FormLabel>Cheque Photos (2)</FormLabel>
+        {formData?.firm_type === "private_limited" && (
+          <>
+            <FormControl>
+              <FormLabel>MAI Letter</FormLabel>
+              <Input type="file" onChange={(e) => handleSingleUpload(e, "mai_letter")} />
+            </FormControl>
 
-                    <Input
-                        type="file"
-                        multiple
-                        onChange={(e) => handleMultiUpload(e, "cheque_photos")}
-                    />
+            <FormControl>
+              <FormLabel>Authority Letter</FormLabel>
+              <Input type="file" onChange={(e) => handleSingleUpload(e, "authority_letter")} />
+            </FormControl>
+          </>
+        )}
 
-                    {docs.cheque_photos.length > 0 && (
-                        <Button mt={2} colorScheme="blue" onClick={chequeModal.onOpen} size={{base:"sm",md:"md"}}>
-                            Preview Cheques photos ({docs.cheque_photos.length})
-                        </Button>
-                    )}
-                </FormControl>
+        {/* OTHERS */}
+        <FormControl>
+          <FormLabel>PAN Photo</FormLabel>
+          <Input type="file" onChange={(e) => handleSingleUpload(e, "pan_photo")} />
+        </FormControl>
 
-                {/*  ALL SINGLE FILE INPUTS */}
-                {formData?.firm_type==="partnership" &&(
-                    <FormControl>
+        <FormControl>
+          <FormLabel>Aadhar Front</FormLabel>
+          <Input type="file" onChange={(e) => handleSingleUpload(e, "aadhar_front")} />
+        </FormControl>
 
-                 <FormControl>
-                    <FormLabel>Partnership Deed</FormLabel>
-                    <Input type="file" onChange={(e) => handleSingleUpload(e, "partnership_deed")} />
-                </FormControl>
+        <FormControl>
+          <FormLabel>Aadhar Back</FormLabel>
+          <Input type="file" onChange={(e) => handleSingleUpload(e, "aadhar_back")} />
+        </FormControl>
 
-                  <FormControl mt={3}>
-                    <FormLabel>Authority Letter</FormLabel>
-                    <Input type="file" onChange={(e) => handleSingleUpload(e, "authority_letter")} />
-                </FormControl>
-                </FormControl>
-                )}
+        <FormControl>
+          <FormLabel>GST File</FormLabel>
+          <Input type="file" onChange={(e) => handleSingleUpload(e, "gst_file")} />
+        </FormControl>
 
-         {formData?.firm_type==="private_limited" &&(
-                <FormControl>
-                 <FormControl>
-                    <FormLabel>MAI Letter</FormLabel>
-                    <Input type="file" onChange={(e) => handleSingleUpload(e, "mai_letter")} />
-                </FormControl>
+        <FormControl>
+          <FormLabel>Seed License</FormLabel>
+          <Input type="file" onChange={(e) => handleSingleUpload(e, "seed_license")} />
+        </FormControl>
 
-                  <FormControl mt={3}>
-                    <FormLabel>Authority Letter</FormLabel>
-                    <Input type="file" onChange={(e) => handleSingleUpload(e, "authority_letter")} />
-                </FormControl>
-                </FormControl>
- 
-                )}
+        <FormControl>
+          <FormLabel>Fertilizer License</FormLabel>
+          <Input type="file" onChange={(e) => handleSingleUpload(e, "fertilizer_license")} />
+        </FormControl>
 
-               
+        <FormControl>
+          <FormLabel>Pesticide License</FormLabel>
+          <Input type="file" onChange={(e) => handleSingleUpload(e, "pesticide_license")} />
+        </FormControl>
 
-                <FormControl>
-                    <FormLabel>PAN Photo</FormLabel>
-                    <Input type="file" onChange={(e) => handleSingleUpload(e, "pan_photo")} />
-                </FormControl>
+        <FormControl>
+          <FormLabel>Bank Diary</FormLabel>
+          <Input type="file" onChange={(e) => handleSingleUpload(e, "bank_diary")} />
+        </FormControl>
 
-                <FormControl>
-                    <FormLabel>Aadhar Photo</FormLabel>
-                    <Input type="file" onChange={(e) => handleSingleUpload(e, "aadhar_photo")} />
-                </FormControl>
+        <FormControl>
+          <FormLabel>Letter Head</FormLabel>
+          <Input type="file" onChange={(e) => handleSingleUpload(e, "letter_head")} />
+        </FormControl>
 
-                <FormControl>
-                    <FormLabel>Firm GST File</FormLabel>
-                    <Input type="file" onChange={(e) => handleSingleUpload(e, "gst_file")} />
-                </FormControl>
+      </SimpleGrid>
 
-                <FormControl>
-                    <FormLabel>Seed License (PDF)</FormLabel>
-                    <Input type="file" onChange={(e) => handleSingleUpload(e, "seed_license")} />
-                </FormControl>
-
-                <FormControl>
-                    <FormLabel>Fertilizer License (PDF)</FormLabel>
-                    <Input type="file" onChange={(e) => handleSingleUpload(e, "fertilizer_license")} />
-                </FormControl>
-
-                <FormControl>
-                    <FormLabel>Pesticide License (PDF)</FormLabel>
-                    <Input type="file" onChange={(e) => handleSingleUpload(e, "pesticide_license")} />
-                </FormControl>
-
-                <FormControl>
-                    <FormLabel>Bank Diary Photo</FormLabel>
-                    <Input type="file" onChange={(e) => handleSingleUpload(e, "bank_diary")} />
-                </FormControl>
-
-                <FormControl>
-                    <FormLabel>Letter Head</FormLabel>
-                    <Input type="file" onChange={(e) => handleSingleUpload(e, "letter_head")} />
-                </FormControl>
-
-              
-
+      {/* SHOP MODAL */}
+      <Modal isOpen={shopModal.isOpen} onClose={shopModal.onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody p={5}>
+            <SimpleGrid columns={2} spacing={3} pt={5}   >
+              {shopPreview.map((url, i) => (
+                <Image key={i} src={url} h="220px" />
+              ))}
             </SimpleGrid>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
 
-            {/*  Modal Preview */}
-            <Modal isOpen={shopModal.isOpen} onClose={shopModal.onClose} size="xl">
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalCloseButton />
+      {/* CHEQUE MODAL */}
+      <Modal isOpen={chequeModal.isOpen} onClose={chequeModal.onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody p={5}>
+            <SimpleGrid columns={3} spacing={3} pt={5}   >
+              {chequePreview.map((url, i) => (
+                <Image key={i} src={url} h="220px" />
+              ))}
+            </SimpleGrid>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
 
-                    <ModalBody p={9}>
-                        <SimpleGrid columns={{base:2,md:3}} spacing={4}>
-                            {shopPreview.map((url, i) => (
-                                <Image
-                                    key={i}
-                                    src={url}
-                                    h="250px"
-                                    width="200px"
-                                    objectFit="cover"
-                                    borderRadius="md"
-                                />
-                            ))}
-                        </SimpleGrid>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
-            {/* cheque model  */}
-            <Modal isOpen={chequeModal.isOpen} onClose={chequeModal.onClose} size="xl">
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalCloseButton />
-
-                    <ModalBody p={9}>
-                        <SimpleGrid columns={{base:2,md:3}} spacing={4}>
-                            {chequePreview.map((url, i) => (
-                                <Image
-                                    key={i}
-                                    src={url}
-                                     h="250px"
-                                    width="200px"
-                                    objectFit="cover"
-                                    borderRadius="md"
-                                />
-                            ))}
-                        </SimpleGrid>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
-        </Box>
-    );
+    </Box>
+  );
 }
 
 export default DistributorDocuments;

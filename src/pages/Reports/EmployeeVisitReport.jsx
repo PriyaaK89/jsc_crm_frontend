@@ -7,7 +7,7 @@ import {
   ModalHeader, ModalBody, ModalCloseButton, useDisclosure,
   Table, Thead, Tbody, Tr, Th, Td, Img,
   Flex, Spinner, Text,
-  TableContainer,Image ,
+  TableContainer, Image,
   VStack
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
@@ -17,6 +17,7 @@ import { Badge } from "@chakra-ui/react";
 import sort_icon from "../../assets/sort.svg";
 import { GoHomeFill } from "react-icons/go";
 // import useUsersapi from "../../Apis/GetUsersapi";
+import CustomDatePicker from "../../components/common/CustomDatepicker";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 
@@ -50,47 +51,47 @@ function EmployeeVisitReport() {
   });
 
   //  Fetch API
- const fetchVisits = async (page = 1) => {
-  setLoading(true);
+  const fetchVisits = async (page = 1) => {
+    setLoading(true);
 
-  try {
-    const res = await API.get(API_ENDPOINTS.get_emp_visit_report, {
-      params: {
-        search: debouncedSearch || undefined,
-        from_date: filters.from_date || undefined,
-        to_date: filters.to_date || undefined,
-        page,
-        limit: pagination?.limit || 10,
-      },
-    });
-
-    //  Validate response
-    if (res?.status === 200 && res?.data) {
-      const { data = [], pagination: pg = {} } = res.data;
-
-      setVisits(data);
-
-      setPagination({
-        page: pg.page ?? 1,
-        limit: pg.limit ?? 10,
-        total_pages: pg.total_pages ?? 1,
+    try {
+      const res = await API.get(API_ENDPOINTS.get_emp_visit_report, {
+        params: {
+          search: debouncedSearch || undefined,
+          from_date: filters.from_date || undefined,
+          to_date: filters.to_date || undefined,
+          page,
+          limit: pagination?.limit || 10,
+        },
       });
 
-    } else {
-      console.warn("Unexpected API response:", res);
+      //  Validate response
+      if (res?.status === 200 && res?.data) {
+        const { data = [], pagination: pg = {} } = res.data;
+
+        setVisits(data);
+
+        setPagination({
+          page: pg.page ?? 1,
+          limit: pg.limit ?? 10,
+          total_pages: pg.total_pages ?? 1,
+        });
+
+      } else {
+        console.warn("Unexpected API response:", res);
+        setVisits([]);
+      }
+
+    } catch (error) {
+      console.error("Fetch Visits Error:", error);
+
+      //  Optional: show user-friendly error
       setVisits([]);
+
+    } finally {
+      setLoading(false);
     }
-
-  } catch (error) {
-    console.error("Fetch Visits Error:", error);
-
-    //  Optional: show user-friendly error
-    setVisits([]);
-
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   // On Load
   useEffect(() => {
@@ -196,13 +197,13 @@ function EmployeeVisitReport() {
 
   return (
     <Box
-     bg="white"
-     mt={{base:2, md:5}}
-     px={{base:3, md:6}}
-     py={{base:3, md:4}}
-    borderRadius="lg"
-    boxShadow="md"
- >
+      bg="white"
+      mt={{ base: 2, md: 5 }}
+      px={{ base: 3, md: 6 }}
+      py={{ base: 3, md: 4 }}
+      borderRadius="lg"
+      boxShadow="md"
+    >
       {/*  Header */}
 
       <Breadcrumb mb={6}>
@@ -285,25 +286,29 @@ function EmployeeVisitReport() {
           </InputGroup>
         </FormControl>
 
+        {/* CustomDatePicker for from date */}
         <FormControl>
-          <FormLabel>From Date</FormLabel>
-          <Input
-            type="date"
+          <CustomDatePicker
+            label="From Date"
             value={filters.from_date}
-            onChange={(e) =>
-              setFilters({ ...filters, from_date: e.target.value })
+            onChange={(d) =>
+              setFilters((p) => ({ ...p, from_date: d }))
             }
+
+            placeholder="Select From Date"
           />
         </FormControl>
 
+
         <FormControl>
-          <FormLabel>To Date</FormLabel>
-          <Input
-            type="date"
+          <CustomDatePicker
+            label="To Date"
             value={filters.to_date}
-            onChange={(e) =>
-              setFilters({ ...filters, to_date: e.target.value })
+            onChange={(d) =>
+              setFilters((p) => ({ ...p, to_date: d }))
             }
+
+            placeholder="Select To Date"
           />
         </FormControl>
 
@@ -406,12 +411,12 @@ function EmployeeVisitReport() {
                         </Td>
                         <Td maxW="120px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap" >
                           <Flex align="center" gap={2}>
-                            <Text maxW="80px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap"
+                            <Text maxW="90px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap"
                             >
                               {item.comment || "-"}
                             </Text>
 
-                            {item.comment && item.comment.length > 20 && (
+                            {item.comment && item.comment.length > 4 && (
                               <Button
                                 size="xs"
                                 onClick={() => {
@@ -447,7 +452,7 @@ function EmployeeVisitReport() {
                             >
                               View
                             </Button>
-                           
+
                           ) : (
                             "-"
                           )}

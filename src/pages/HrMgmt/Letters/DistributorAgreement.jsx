@@ -17,6 +17,7 @@ import { WarningIcon } from "@chakra-ui/icons";
 import { FiCheckCircle } from "react-icons/fi";
 import { CloseIcon } from "@chakra-ui/icons";
 import DistributorAgreementPdfPreview from "./DistributorAgreementPdfPreview";
+import { validateEmail, validatePan, validateAadhar, validateContact, validateRequiredFields } from "../../../hook/Validation";
 
 import useUsersapi from "../../../Apis/GetUsersapi";
 import DistributorDocuments from "./DistributorDocuments";
@@ -27,163 +28,220 @@ import DistributorAgreementPreview from "./DistributorAgreementPreviewModel";
 
 
 //  Address Component
-const AddressForm = ({ 
-  data, 
-  onChange, 
-  index = 0, 
+const AddressForm = ({
+  data,
+  onChange,
+  index = 0,
   label,
   panStatus,
-  handlePanVerification
+  handlePanVerification,
+  errors
 }) => {
 
+  const isOwner = label.includes("Owner");
+
+  const getError = (field) => {
+    if (isOwner) return errors[`owner_${field}`];
+    return errors[`partner_${index}_${field}`];
+  };
+
   const panKey = label.includes("Owner")
-  ? "owner_pan"
-  : `partner_${index}`;
+    ? "owner_pan"
+    : `partner_${index}`;
 
   const isValidPan = (pan) => {
-  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-  return panRegex.test(pan);
-};
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    return panRegex.test(pan);
+  };
   return (
     <Box border="1px solid black" borderRadius="lg" mt={4} gridColumn={{ base: "span 1", md: "span 2" }}>
       <Text fontWeight="bold" mb={3} bg="#e9f2ff" p={3} borderTopRadius="lg" borderBottom="1px solid #f3f3f3"> {label}</Text>
 
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} p={4}>
-        <FormControl>
+        <FormControl isInvalid={getError("name")}>
           <FormLabel>NAME.</FormLabel>
           <Input
             value={data.name || ""}
             onChange={(e) => onChange(index, "name", e.target.value)}
-          />
+
+          /> {getError("name") && (
+            <Text color="red.500" fontSize="sm">
+              {getError("name")}
+            </Text>
+          )}
+
+
         </FormControl>
-        <FormControl>
+        <FormControl isInvalid={getError("father_name")}>
           <FormLabel>FATHER NAME.</FormLabel>
           <Input
             value={data.father_name || ""}
             onChange={(e) => onChange(index, "father_name", e.target.value)}
           />
+          {getError("father_name") && (
+            <Text color="red.500" fontSize="sm">
+              {getError("father_name")}
+            </Text>
+          )}
         </FormControl>
-       <FormControl>
-  <FormLabel>PAN NO.</FormLabel>
+        <FormControl isInvalid={getError("pan_no")}>
+          <FormLabel>PAN NO.</FormLabel>
 
-  <InputGroup>
-    {/*  STATUS BADGE */}
-    {panStatus?.[panKey] && (
-      <InputLeftElement width="auto" ml={2}>
-        <Badge
-          borderRadius="lg"
-         
-          colorScheme={
-            panStatus[panKey].status === "valid"
-              ? "green"
-              : panStatus[panKey].status === "verified"
-              ? "green"
-              : "red"
-          }
-        >
-          {panStatus[panKey].status.toUpperCase()}
-        </Badge>
-      </InputLeftElement>
-    )}
+          <InputGroup>
+            {/*  STATUS BADGE */}
+            {panStatus?.[panKey] && (
+              <InputLeftElement width="auto" ml={2}>
+                <Badge
+                  borderRadius="lg"
 
-    {/* INPUT */}
-    <Input
-      value={data.pan_no || ""}
-      onChange={(e) =>
-        onChange(index, "pan_no", e.target.value.toUpperCase())
-      }
-      pl={panStatus?.[panKey] ? "90px" : "12px"}
-    />
+                  colorScheme={
+                    panStatus[panKey].status === "valid"
+                      ? "green"
+                      : panStatus[panKey].status === "verified"
+                        ? "green"
+                        : "red"
+                  }
+                >
+                  {panStatus[panKey].status.toUpperCase()}
+                </Badge>
+              </InputLeftElement>
+            )}
 
-    {/*  VERIFY BUTTON */}
+            {/* INPUT */}
+            <Input
+              value={data.pan_no || ""}
+              onChange={(e) =>
+                onChange(index, "pan_no", e.target.value.toUpperCase())
+              }
+              pl={panStatus?.[panKey] ? "90px" : "12px"}
+            />
+            {/*  VERIFY BUTTON */}
 
-    <InputRightElement>
-      <IconButton
-        size="sm"
-        colorScheme="blue"
-        icon={<FiCheckCircle />}
-          isDisabled={!isValidPan(data.pan_no)}
-        onClick={() =>
-          handlePanVerification(
-            data.pan_no,
-            panKey,
-            index
-          )
-        }
-        
-      
-        
-      />
-    </InputRightElement>
-  </InputGroup>
-</FormControl>
+            <InputRightElement>
+              <IconButton
+                size="sm"
+                colorScheme="blue"
+                icon={<FiCheckCircle />}
+                isDisabled={!isValidPan(data.pan_no)}
+                onClick={() =>
+                  handlePanVerification(
+                    data.pan_no,
+                    panKey,
+                    index
+                  )
+                }
 
-        <FormControl>
+
+
+              />
+            </InputRightElement>
+          </InputGroup>
+
+          {getError("pan_no") && (
+            <Text color="red.500" fontSize="sm">
+              {getError("pan_no")}
+            </Text>
+          )}
+        </FormControl>
+
+        <FormControl isInvalid={getError("aadhar_no")}>
           <FormLabel>Aadhar No.</FormLabel>
           <Input
             value={data.aadhar_no || ""}
             type="number"
             onChange={(e) => onChange(index, "aadhar_no", e.target.value)}
-          />
+          /> {getError("aadhar_no") && (
+            <Text color="red.500" fontSize="sm">
+              {getError("aadhar_no")}
+            </Text>
+          )}
         </FormControl>
 
 
-        <FormControl>
+        <FormControl isInvalid={getError("address")}>
           <FormLabel>Address</FormLabel>
           <Input
             value={data.address || ""}
             onChange={(e) => onChange(index, "address", e.target.value)}
-          />
+          /> {getError("address") && (
+            <Text color="red.500" fontSize="sm">
+              {getError("address")}
+            </Text>
+          )}
         </FormControl>
 
-        <FormControl>
+        <FormControl isInvalid={getError("state")}>
           <FormLabel>State</FormLabel>
           <Input
             value={data.state || ""}
             onChange={(e) => onChange(index, "state", e.target.value)}
-          />
+          /> {getError("state") && (
+            <Text color="red.500" fontSize="sm">
+              {getError("state")}
+            </Text>
+          )}
         </FormControl>
 
-        <FormControl>
+        <FormControl isInvalid={getError("district")}>
           <FormLabel>District</FormLabel>
           <Input
             value={data.district || ""}
             onChange={(e) => onChange(index, "district", e.target.value)}
-          />
+          /> {getError("district") && (
+            <Text color="red.500" fontSize="sm">
+              {getError("district")}
+            </Text>
+          )}
         </FormControl>
 
-        <FormControl>
+        <FormControl isInvalid={getError("tehsil")}>
           <FormLabel>Tehsil</FormLabel>
           <Input
             value={data.tehsil || ""}
             onChange={(e) => onChange(index, "tehsil", e.target.value)}
-          />
+          /> {getError("tehsil") && (
+            <Text color="red.500" fontSize="sm">
+              {getError("tehsil")}
+            </Text>
+          )}
         </FormControl>
 
-        <FormControl>
+        <FormControl isInvalid={getError("pincode")}>
           <FormLabel>Pincode</FormLabel>
-          <Input
+          <Input type="number"
             value={data.pincode || ""}
             onChange={(e) => onChange(index, "pincode", e.target.value)}
-          />
+          /> {getError("pincode") && (
+            <Text color="red.500" fontSize="sm">
+              {getError("pincode")}
+            </Text>
+          )}
         </FormControl>
 
-        <FormControl>
+        <FormControl isInvalid={getError("mobile_no")}>
           <FormLabel>Mobile No.</FormLabel>
-          <Input
+          <Input type="number"
             value={data.mobile_no || ""}
             onChange={(e) => onChange(index, "mobile_no", e.target.value)}
-          />
-        </FormControl>
-        <FormControl>
+          /> {getError("mobile_no") && (
+            <Text color="red.500" fontSize="sm">
+              {getError("mobile_no")}
+            </Text>
+          )}
+        </FormControl >
+        <FormControl isInvalid={getError("alt_mobile_no")}>
           <FormLabel>Alt Mobile No.</FormLabel>
-          <Input
+          <Input type="number"
             value={data.alt_mobile_no || ""}
             onChange={(e) => onChange(index, "alt_mobile_no", e.target.value)}
-          />
+          /> {getError("alt_mobile_no") && (
+            <Text color="red.500" fontSize="sm">
+              {getError("alt_mobile_no")}
+            </Text>
+          )}
         </FormControl>
 
-        <FormControl>
+        <FormControl >
           <FormLabel>{label.includes("Partner") ? "Upload Partner Photo" : "Upload Owner Photo"}</FormLabel>
           <Input
             type="file"
@@ -217,6 +275,7 @@ function DistributorAgreement() {
   const [formData, setFormData] = useState({ gst_number: '' });
   const [gstStatus, setGstStatus] = useState("");
   const [panStatus, setPanStatus] = useState({});
+  const [errors, setError] = useState({});
   const [otherCompanies, setOtherCompanies] = useState([{ name: "", turnover: "" }]);
   const [ownerAddress, setOwnerAddress] = useState({
     address: "",
@@ -261,12 +320,22 @@ function DistributorAgreement() {
     partner_photo: null,
   });
 
+  const requirefilelds = [
+    "customer_name", "customer_dob", "firm_name", "firm_type",
+    "business_address", "business_territory", "state", "district", "tehsil", "landmark",
+    "firm_landmark", "pincode", "contact_number", "alt_contact_number", "responsible_person_name", "responsible_person_contact",
+    "responsible_person_address", "responsible_person_alt_contact",
+    "firm_email", "branch", "firm_since", "seed_license_no", "seed_license_expiry", "transport_name_a", "transport_name_b", "source_of_funds",
+    "own_funds_details", "bank_name", "bank_account_no", "ifsc_code", "bank_branch", "security_cheque_no", "security_cheque_no_2", "credit_duration",
+    "approver_name", "approving_date"
+  ]
+
   // ---------------------------gst verification------------------------------------------------------
   const handleGSTverification = async () => {
     try {
       setLoading(true);
 
-      if (!formData.gst_number ) {
+      if (!formData.gst_number) {
         toast({
           description: "Enter your GST number",
           duration: 2000,
@@ -350,89 +419,89 @@ function DistributorAgreement() {
   };
 
   // ----------------------------pan verification------------------------------------------------------
-// pan valadition 
- const isValidPan = (pan) => {
-  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-  return panRegex.test(pan);
-};
-  
+  // pan valadition 
+  const isValidPan = (pan) => {
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    return panRegex.test(pan);
+  };
 
- const handlePanVerification = async (pan, type, index = null) => {
-  try {
-    if (!pan || pan.length !== 10) {
-      toast({
-        description: "Enter valid PAN",
-        status: "error",
-        duration: 2000,
+
+  const handlePanVerification = async (pan, type, index = null) => {
+    try {
+      if (!pan || pan.length !== 10) {
+        toast({
+          description: "Enter valid PAN",
+          status: "error",
+          duration: 2000,
+        });
+        return;
+      }
+
+      setLoading(true);
+
+      const res = await API.post(API_ENDPOINTS.verify_pan, {
+        pan_number: pan,
       });
-      return;
-    }
 
-    setLoading(true);
+      const response = res.data;
+      const data = response.data;
 
-    const res = await API.post(API_ENDPOINTS.verify_pan, {
-      pan_number: pan,
-    });
+      if (response.success && data) {
+        const status = data.status?.toLowerCase() || "verified";
+        const name = data.full_name || "";
 
-    const response = res.data;
-    const data = response.data;
+        setPanStatus((prev) => ({
+          ...prev,
+          [type]: { status, name },
+        }));
 
-    if (response.success && data) {
-      const status = data.status?.toLowerCase() || "verified";
-      const name = data.full_name || ""; 
+        if (type === "firm_pan") {
+          setFormData((prev) => ({
+            ...prev,
+            firm_name: name,
+          }));
+        }
+
+
+        if (type === "owner_pan") {
+          setOwnerAddress((prev) => ({
+            ...prev,
+            name: name,
+          }));
+        }
+
+
+        if (type.startsWith("partner_") && index !== null) {
+          const updated = [...partners];
+          if (updated[index]) {
+            updated[index].name = name;
+            setPartners(updated);
+          }
+        }
+
+        toast({
+          description: `PAN ${status.toUpperCase()} verified`,
+          status: "success",
+          duration: 2000,
+        });
+      }
+    } catch (err) {
+      console.error(err);
 
       setPanStatus((prev) => ({
         ...prev,
-        [type]: { status, name },
+        [type]: { status: "error", name: "" },
       }));
 
-      if (type === "firm_pan") {
-        setFormData((prev) => ({
-          ...prev,
-          firm_name: name,
-        }));
-      }
-
-  
-      if (type === "owner_pan") {
-        setOwnerAddress((prev) => ({
-          ...prev,
-          name: name,
-        }));
-      }
-
-    
-      if (type.startsWith("partner_") && index !== null) {
-        const updated = [...partners];
-        if (updated[index]) {
-          updated[index].name = name;
-          setPartners(updated);
-        }
-      }
-
       toast({
-        description: `PAN ${status.toUpperCase()} verified`,
-        status: "success",
+        description: "PAN verification failed",
+        status: "error",
         duration: 2000,
       });
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error(err);
-
-    setPanStatus((prev) => ({
-      ...prev,
-      [type]: { status: "error", name: "" },
-    }));
-
-    toast({
-      description: "PAN verification failed",
-      status: "error",
-      duration: 2000,
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
   // ----------------------pincode based address auto fill--------------------------------------
@@ -511,6 +580,17 @@ function DistributorAgreement() {
 
   // post api for fomdata and partners and owner address and other company details
   const handleformSubmit = async () => {
+    const isValid = validateForm();
+
+    if (!isValid) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill all required fields correctly",
+        status: "error",
+        duration: 3000,
+      });
+      return;
+    }
     try {
       setLoading(true);
 
@@ -687,13 +767,119 @@ function DistributorAgreement() {
     }));
 
   };
-  // const handleFileChange = (name, file) => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [name]: file,
-  //   }));
-  // };
-  // date formate set 
+  // form validation ---------------------------------------
+  const validateForm = () => {
+    let newErrors = {};
+
+    //  Required fields (dynamic)
+    requirefilelds.forEach((field) => {
+      if (!formData[field] || formData[field].toString().trim() === "") {
+        newErrors[field] = "This field is required";
+      }
+    });
+    // customer name
+    if (!formData.firm_name) newErrors.firm_name = "Firm Name Required"
+    if (!formData.firm_type) newErrors.firm_type = "Firm Type is required";
+
+
+    //  Email
+    if (formData.firm_email && !validateEmail(formData.firm_email)) {
+      newErrors.firm_email = "Invalid email";
+    }
+
+    if (formData.contact_number && !validateContact(formData.contact_number)) {
+      newErrors.contact_number = "Invalid contact number";
+    }
+
+    // bussiness details 
+    if (!formData.business_address) newErrors.business_address = "Address is required";
+    if (!formData.business_territory) newErrors.business_territory = "Territory is required";
+    if (!formData.district) newErrors.district = "District required";
+    if (!formData.tehsil) newErrors.tehsil = "Tehsil is  required";
+    if (!formData.landmark) newErrors.landmark = "Landmark required";
+    if (!formData.state) newErrors.state = " State name required";
+    if (!formData.contact_number) newErrors.contact_number = "Bussiness contact number required";
+    if (!formData.alt_contact_number) newErrors.alt_contact_number = " Bussiness alt contact number  required";
+    if (!formData.pincode) newErrors.pincode = "Pincode required";
+    // responsiable person
+    if (!formData.responsible_person_name) newErrors.responsible_person_name = "Responsible person name required";
+    if (!formData.responsible_person_contact) newErrors.responsible_person_contact = "Responsible person Mobile No required";
+    if (!formData.responsible_person_address) newErrors.responsible_person_address = "Responsible person Address required";
+    if (!formData.responsible_person_alt_contact) newErrors.responsible_person_alt_contact = "Responsible person Alt no required";
+    // firm 
+    if (!formData.firm_landmark) newErrors.firm_landmark = "Firm Landmark is required";
+    if (!formData.firm_since) newErrors.firm_since = "Firm since required";
+    if (!formData.branch) newErrors.branch = "Firm  branch is required";
+    // seed lic
+    if (!formData.seed_license_no) newErrors.seed_license_no = "Seed license  no required";
+    if (!formData.seed_license_expiry) newErrors.seed_license_expiry = "Seed license expiry is required";
+    // transport 
+    if (!formData.transport_name_a) newErrors.transport_name_a = "Transport name (A) is required";
+    // if (!formData.transport_name_b) newErrors.transport_name_b = "Transport name (B) is required";
+    // source of fund 
+    if (!formData.source_of_funds) newErrors.source_of_funds = "Source Of funds is required";
+    if (!formData.own_funds_details) newErrors.own_funds_details = "Own Funds details is required";
+    // bank details
+    if (!formData.bank_name) newErrors.bank_name = "Bank name is required";
+    if (!formData.bank_account_no) newErrors.bank_account_no = "Bank account no is required";
+    if (!formData.ifsc_code) newErrors.ifsc_code = "ifsc code is required";
+    if (!formData.bank_branch) newErrors.bank_branch = "Bank branch is required";
+
+    if (!formData.security_cheque_no) newErrors.security_cheque_no = "Security cheque no1 is required";
+    if (!formData.security_cheque_no2) newErrors.security_cheque_no2 = "Security cheque no2 is required";
+
+    if (!formData.approver_name) newErrors.approver_name = "Approver name is required";
+    if (!formData.approving_date) newErrors.approving_date = "Approvering date is required";
+    // if (!formData.credit_duration) newErrors.credit_duration = "Credit duration is required";
+    if (!formData.security_amount) newErrors.security_amount = "Security amountis required";
+
+
+
+
+    //  Owner validation
+    if (firmtype === "proprietorship") {
+      if (!ownerAddress.name) newErrors.owner_name = "Owner name required";
+      if (!ownerAddress.father_name) newErrors.owner_father_name = "Owner Father name required";
+      if (!ownerAddress.address) newErrors.owner_address = "Owner address required";
+      if (!ownerAddress.pincode) newErrors.owner_pincode = "Owner pincode required";
+      if (!ownerAddress.pan_no) newErrors.owner_pan_no = "Owner PAN required";
+      if (!ownerAddress.state) newErrors.owner_state = "Owner state required";
+      if (!ownerAddress.district) newErrors.owner_district = "Owner district required";
+      if (!ownerAddress.tehsil) newErrors.owner_tehsil = "Owner tehsil required";
+      if (!ownerAddress.aadhar_no) newErrors.owner_aadhar_no = "Owner aadhar required";
+      if (!ownerAddress.mobile_no) newErrors.owner_mobile_no = "Owner mobile required";
+      if (!ownerAddress.alt_mobile_no) newErrors.owner_alt_mobile_no = "Owner alt mobile required";
+    }
+
+    //  Partners validation
+    if (firmtype === "partnership") {
+      partners.forEach((p, i) => {
+        if (!p.name) newErrors[`partner_${i}_name`] = "Required";
+        if (!p.mobile_no) newErrors[`partner_${i}_mobile_no`] = "Required";
+        if (!p.address) newErrors[`partner_${i}_address`] = "required";
+        if (!p.pincode) newErrors[`partner_${i}_pincode`] = "required";
+        if (!p.state) newErrors[`partner_${i}_state`] = "required";
+        if (!p.district) newErrors[`partner_${i}_district`] = "required";
+        if (!p.tehsil) newErrors[`partner_${i}_tehsil`] = "required";
+        if (!p.aadhar_no) newErrors[`partner_${i}_aadhar_no`] = "required";
+        if (!p.alt_mobile_no) newErrors[`partner_${i}_alt_mobile_no`] = "required";
+
+
+        if (!p.father_name)
+          newErrors[`partner_${i}_father_name`] = "Required";
+
+        if (!p.pan_no)
+          newErrors[`partner_${i}_pan_no`] = "Required";
+
+      });
+    }
+
+    setError(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // ------------------------------form input dte -----------------------------------------------------
   const formatToInputDate = (dateStr) => {
     if (!dateStr) return "";
 
@@ -720,16 +906,20 @@ function DistributorAgreement() {
 
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
 
-          <FormControl>
+          <FormControl isInvalid={errors.customer_name}>
             <FormLabel>Customer Name</FormLabel>
             <Input
               name="customer_name"
               value={formData.customer_name || ""}
               onChange={handleChange}
             />
+            {errors.customer_name && (
+              <Text color="red.500" fontSize="sm">{errors.customer_name}</Text>
+            )}
+
           </FormControl>
 
-          <FormControl>
+          <FormControl isInvalid={errors.customer_dob}>
             <FormLabel>Customer DOB</FormLabel>
             <Input
               type="date"
@@ -737,10 +927,13 @@ function DistributorAgreement() {
               value={formData.customer_dob || ""}
               onChange={handleChange}
             />
+            {errors.customer_dob && (
+              <Text color="red.500" fontSize="sm">{errors.customer_dob}</Text>
+            )}
           </FormControl>
 
 
-          <FormControl>
+          <FormControl >
             <FormLabel>Firm GSTN</FormLabel>
 
             <InputGroup>
@@ -801,16 +994,21 @@ function DistributorAgreement() {
             </InputGroup>
           </FormControl>
 
-          <FormControl>
+          <FormControl isInvalid={errors.firm_name}>
             <FormLabel>Firm Name</FormLabel>
             <Input
               name="firm_name"
               value={formData.firm_name || ""}
               onChange={handleChange}
             />
+            {errors.firm_name && (
+              <Text color="red.500" fontSize="sm">
+                {errors.firm_name}
+              </Text>
+            )}
           </FormControl>
 
-          <FormControl>
+          <FormControl isInvalid={errors.firm_type}>
             <FormLabel>Firm Type</FormLabel>
             <Select
               name="firm_type"
@@ -836,186 +1034,28 @@ function DistributorAgreement() {
               <option value="partnership">Partnership</option>
               <option value="partnership">Private Limited</option>
             </Select>
+            {errors.firm_type && (
+              <Text color="red.500" fontSize="sm">
+                {errors.firm_type}
+              </Text>
+            )}
           </FormControl>
-
-
-          {/* Business Address */}
-          <Box border="1px" borderColor="gray.900" gridColumn={{ base: "span 1", md: "span 2" }} p={4} borderRadius="lg">
-
-            <FormControl mt={3}>
-              <FormLabel>Business Address</FormLabel>
-              <Input
-                name="business_address"
-                value={formData.business_address || ""}
-                onChange={handleChange}
-
-              />
-
-            </FormControl>
-            <FormControl mt={3}>
-              <FormLabel>Business Territory</FormLabel>
-              <Input
-                name="business_territory"
-                value={formData.business_territory || ""}
-                onChange={handleChange}
-
-              />
-
-            </FormControl>
-
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5} mt={5}>
-              <FormControl>
-                <FormLabel>State</FormLabel>
-                <Input name="state" value={formData.state || ""} onChange={handleChange} />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>District</FormLabel>
-                <Input name="district" value={formData.district || ""} onChange={handleChange} />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Tehsil</FormLabel>
-                <Input name="tehsil" value={formData.tehsil || ""} onChange={handleChange} />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Landmark</FormLabel>
-                <Input name="landmark" value={formData.landmark || ""} onChange={handleChange} />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Pincode</FormLabel>
-                <Input name="pincode" value={formData.pincode || ""} onChange={(e) => handlePincodeChange(e.target.value)} />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Contact No(without +91)</FormLabel>
-                <Input
-                  name="contact_number"
-                  value={formData.contact_number}
-                  onChange={handleChange}
-                // placeholder="Enter Contact No (without +91)"
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel> Alt. Contact No</FormLabel>
-                <Input
-                  name="alt_contact_number"
-                  value={formData.alt_contact_number}
-                  onChange={handleChange}
-                // placeholder="Enter Alternative Contact No (without +91)"
-                />
-              </FormControl>
-            </SimpleGrid>
-          </Box>
-
-          {firmtype === "proprietorship" && (
-            <AddressForm
-              data={ownerAddress}
-              label="Owner Address"
-              handlePanVerification={handlePanVerification}
-              panStatus={panStatus}
-              onChange={(i, field, value) => {
-                setOwnerAddress((prev) => ({
-                  ...prev,
-                  [field]: value,
-                }));
-
-                if (field === "pincode") {
-                  handleOwnerPincodeChange(value);
-                }
-              }}
-            />
-          )}
-          {/* Proprietorship */}
-
-
-          {/* Partnership */}
-          {firmtype === "partnership" && (
-            <Box gridColumn={{ base: "span 1", md: "span 2" }}>
-              {partners.map((partner, index) => (
-                <Box key={index} position="relative">
-                  <Button
-                    size="sm"
-                    colorScheme="red"
-                    position="absolute"
-                    top="10px"
-                    right="10px"
-                    onClick={() => removePartner(index)}
-                    isDisabled={partners.length === 2}
-                  >
-                    <CloseIcon />
-                  </Button>
-
-                  <AddressForm
-                    index={index}
-                    data={partner}
-                    label={`Partner ${index + 1} Address`}
-                     handlePanVerification={handlePanVerification}
-                          panStatus={panStatus}
-                    onChange={handlePartnerChange}
-
-                  />
-                </Box>
-              ))}
-
-              <Button mt={4} onClick={addPartner} colorScheme="blue" leftIcon={<AddIcon />}>
-                Add Partner
-              </Button>
-            </Box>
-          )}
-
-
-
-          <FormControl>
-            <FormLabel>Responsible Persone Name</FormLabel>
-            <Input
-              name="responsible_person_name"
-              value={formData.responsible_person_name}
-              onChange={handleChange}
-            // placeholder="Enter Responsible Persone Name"
-            />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>Responsible Persone Address</FormLabel>
-            <Input
-              name="responsible_person_address"
-              value={formData.responsible_person_address}
-              onChange={handleChange}
-            // placeholder="Enter Responsible Persone Address"
-            />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>Responsible Persone Contact No</FormLabel>
-            <Input
-              name="responsible_person_contact"
-              value={formData.responsible_person_contact}
-              onChange={handleChange}
-            // placeholder="Enter Responsible Persone No"
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Responsible Persone Alternat Contact No</FormLabel>
-            <Input
-              name="responsible_person_alt_contact"
-              value={formData.responsible_person_alt_contact}
-              onChange={handleChange}
-            // placeholder="Enter Responsible Persone No"
-            />
-          </FormControl>
-
-          <FormControl>
+          <FormControl isInvalid={errors.firm_email}>
             <FormLabel>Firm Email Id</FormLabel>
             <Input
               name="firm_email"
               value={formData.firm_email}
               onChange={handleChange}
             // placeholder="Enter Firm GSTN"
-            />
+            /> {errors.firm_email && (
+              <Text color="red.500" fontSize="sm">
+                {errors.firm_email}
+              </Text>
+            )}
           </FormControl>
 
-          <FormControl>
+         
+ <FormControl>
             <FormLabel>Firm GSTN type</FormLabel>
             <Select
               name="gst_type"
@@ -1029,9 +1069,15 @@ function DistributorAgreement() {
               <option value="unregistered">Unregistered</option>
             </Select>
           </FormControl>
+          {formData.gst_type==="unregistered" &&(
 
+             <FormControl>
+                      <FormLabel>GST Unregistered Authority Latter </FormLabel>
+                      <Input type="file" onChange={(e) => handleChange(e, "gst_unregistered_authority_latter")} />
+                    </FormControl>
+          )}
 
-          <FormControl>
+          <FormControl isInvalid={errors.firm_since}>
             <FormLabel> Firm Since</FormLabel>
             <Input
               name="firm_since"
@@ -1039,7 +1085,11 @@ function DistributorAgreement() {
               onChange={handleChange}
               type="date"
               placeholder="Select Firm Start Date"
-            />
+            />  {errors.firm_since && (
+              <Text color="red.500" fontSize="sm">
+                {errors.firm_since}
+              </Text>
+            )}
 
 
 
@@ -1096,6 +1146,267 @@ function DistributorAgreement() {
             />
           </FormControl>
 
+          <FormControl isInvalid={errors.branch}>
+            <FormLabel>branch</FormLabel>
+            <Input
+              name="branch"
+              value={formData.branch}
+              onChange={handleChange}
+            /> {errors.branch && (
+              <Text color="red.500" fontSize="sm">
+                {errors.branch}
+              </Text>
+            )}
+          </FormControl>
+
+
+          <FormControl isInvalid={errors.firm_landmark}>
+            <FormLabel>Landmark</FormLabel>
+            <Input
+              name="firm_landmark"
+              value={formData.firm_landmark}
+              onChange={handleChange}
+            /> {errors.firm_landmark && (
+              <Text color="red.500" fontSize="sm">
+                {errors.firm_landmark}
+              </Text>
+            )}
+          </FormControl>
+
+
+
+          {/* Business Address */}
+          <Box border="1px" borderColor="gray.900" gridColumn={{ base: "span 1", md: "span 2" }} p={4} borderRadius="lg">
+
+            <FormControl mt={3} isInvalid={errors.business_address}>
+              <FormLabel>Business Address</FormLabel>
+              <Input
+                name="business_address"
+                value={formData.business_address || ""}
+                onChange={handleChange}
+
+              />
+              {errors.business_address && (
+                <Text color="red.500" fontSize="sm">
+                  {errors.business_address}
+                </Text>
+              )}
+
+            </FormControl>
+            <FormControl mt={3} isInvalid={errors.business_territory}>
+              <FormLabel>Business Territory</FormLabel>
+              <Input
+                name="business_territory"
+                value={formData.business_territory || ""}
+                onChange={handleChange}
+
+              />
+              {errors.business_territory && (
+                <Text color="red.500" fontSize="sm">
+                  {errors.business_territory}
+                </Text>
+              )}
+
+            </FormControl>
+
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5} mt={5}>
+              <FormControl isInvalid={errors.state}>
+                <FormLabel>State</FormLabel>
+                <Input name="state" value={formData.state || ""} onChange={handleChange} />
+                {errors.state && (
+                  <Text color="red.500" fontSize="sm">
+                    {errors.state}
+                  </Text>
+                )}
+              </FormControl>
+
+              <FormControl isInvalid={errors.district}>
+                <FormLabel>District</FormLabel>
+                <Input name="district" value={formData.district || ""} onChange={handleChange} />
+                {errors.district && (
+                  <Text color="red.500" fontSize="sm">
+                    {errors.district}
+                  </Text>
+                )}
+              </FormControl>
+
+              <FormControl isInvalid={errors.tehsil}>
+                <FormLabel>Tehsil</FormLabel>
+                <Input name="tehsil" value={formData.tehsil || ""} onChange={handleChange} />
+                {errors.tehsil && (
+                  <Text color="red.500" fontSize="sm">
+                    {errors.tehsil}
+                  </Text>
+                )}
+              </FormControl>
+              <FormControl isInvalid={errors.landmark}>
+                <FormLabel>Landmark</FormLabel>
+                <Input name="landmark" value={formData.landmark || ""} onChange={handleChange} />
+                {errors.landmark && (
+                  <Text color="red.500" fontSize="sm">
+                    {errors.landmark}
+                  </Text>
+                )}
+              </FormControl>
+
+              <FormControl isInvalid={errors.pincode}>
+                <FormLabel>Pincode</FormLabel>
+                <Input type="number" name="pincode" value={formData.pincode || ""} onChange={(e) => handlePincodeChange(e.target.value)} />
+                {errors.pincode && (
+                  <Text color="red.500" fontSize="sm">
+                    {errors.pincode}
+                  </Text>
+                )}
+              </FormControl>
+              <FormControl isInvalid={errors.contact_number}>
+                <FormLabel>Contact No(without +91)</FormLabel>
+                <Input
+                  type="number"
+                  name="contact_number"
+                  value={formData.contact_number}
+                  onChange={handleChange}
+                // placeholder="Enter Contact No (without +91)"
+                />
+                {errors.contact_number && (
+                  <Text color="red.500" fontSize="sm">
+                    {errors.contact_number}
+                  </Text>
+                )}
+              </FormControl>
+              <FormControl isInvalid={errors.alt_contact_number}>
+                <FormLabel> Alt. Contact No</FormLabel>
+                <Input type="number"
+                  name="alt_contact_number"
+                  value={formData.alt_contact_number}
+                  onChange={handleChange}
+                // placeholder="Enter Alternative Contact No (without +91)"
+                />
+                {errors.alt_contact_number && (
+                  <Text color="red.500" fontSize="sm">
+                    {errors.alt_contact_number}
+                  </Text>
+                )}
+              </FormControl>
+            </SimpleGrid>
+          </Box>
+
+          {firmtype === "proprietorship" && (
+            <AddressForm
+              data={ownerAddress}
+              label="Owner Address"
+              handlePanVerification={handlePanVerification}
+              panStatus={panStatus}
+              errors={errors}
+              onChange={(i, field, value) => {
+                setOwnerAddress((prev) => ({
+                  ...prev,
+                  [field]: value,
+                }));
+
+                if (field === "pincode") {
+                  handleOwnerPincodeChange(value);
+                }
+              }}
+            />
+          )}
+          {/* Proprietorship */}
+
+
+          {/* Partnership */}
+          {firmtype === "partnership" && (
+            <Box gridColumn={{ base: "span 1", md: "span 2" }}>
+              {partners.map((partner, index) => (
+                <Box key={index} position="relative">
+                  <Button
+                    size="sm"
+                    colorScheme="red"
+                    position="absolute"
+                    top="10px"
+                    right="10px"
+                    onClick={() => removePartner(index)}
+                    isDisabled={partners.length === 2}
+                  >
+                    <CloseIcon />
+                  </Button>
+
+                  <AddressForm
+                    index={index}
+                    data={partner}
+                    label={`Partner ${index + 1} Address`}
+                    handlePanVerification={handlePanVerification}
+                    panStatus={panStatus}
+                    errors={errors}
+                    onChange={handlePartnerChange}
+
+                  />
+                </Box>
+              ))}
+
+              <Button mt={4} onClick={addPartner} colorScheme="blue" leftIcon={<AddIcon />}>
+                Add Partner
+              </Button>
+            </Box>
+          )}
+
+
+
+          <FormControl isInvalid={errors.responsible_person_name}>
+            <FormLabel>Responsible Persone Name</FormLabel>
+            <Input
+              name="responsible_person_name"
+              value={formData.responsible_person_name}
+              onChange={handleChange}
+            // placeholder="Enter Responsible Persone Name"
+            />
+            {errors.responsible_person_name && (
+              <Text color="red.500" fontSize="sm">
+                {errors.responsible_person_name}
+              </Text>
+            )}
+          </FormControl>
+
+          <FormControl isInvalid={errors.responsible_person_address}>
+            <FormLabel>Responsible Persone Address</FormLabel>
+            <Input
+              name="responsible_person_address"
+              value={formData.responsible_person_address}
+              onChange={handleChange}
+            // placeholder="Enter Responsible Persone Address"
+            /> {errors.responsible_person_address && (
+              <Text color="red.500" fontSize="sm">
+                {errors.responsible_person_address}
+              </Text>
+            )}
+          </FormControl>
+
+          <FormControl isInvalid={errors.responsible_person_contact}>
+            <FormLabel>Responsible Persone Contact No</FormLabel>
+            <Input
+              name="responsible_person_contact"
+              value={formData.responsible_person_contact}
+              onChange={handleChange}
+            // placeholder="Enter Responsible Persone No"
+            /> {errors.responsible_person_contact && (
+              <Text color="red.500" fontSize="sm">
+                {errors.responsible_person_contact}
+              </Text>
+            )}
+          </FormControl>
+          <FormControl isInvalid={errors.responsible_person_alt_contact}>
+            <FormLabel>Responsible Persone Alternat Contact No</FormLabel>
+            <Input
+              name="responsible_person_alt_contact"
+              value={formData.responsible_person_alt_contact}
+              onChange={handleChange}
+            // placeholder="Enter Responsible Persone No"
+            /> {errors.responsible_person_alt_contact && (
+              <Text color="red.500" fontSize="sm">
+                {errors.responsible_person_alt_contact}
+              </Text>
+            )}
+          </FormControl>
+
+
           <FormControl>
             <FormLabel> JURISDICTION AREA</FormLabel>
             <Select
@@ -1110,35 +1421,21 @@ function DistributorAgreement() {
           </FormControl>
 
 
-          <FormControl>
-            <FormLabel>branch</FormLabel>
-            <Input
-              name="branch"
-              value={formData.branch}
-              onChange={handleChange}
-            />
-          </FormControl>
 
-
-          <FormControl>
-            <FormLabel>Landmark</FormLabel>
-            <Input
-              name="firm_landmark"
-              value={formData.firm_landmark}
-              onChange={handleChange}
-            />
-          </FormControl>
-
-          <FormControl>
+          <FormControl isInvalid={errors.seed_license_no}>
             <FormLabel>Seed License No.</FormLabel>
             <Input
               name="seed_license_no"
               value={formData.seed_license_no}
               onChange={handleChange}
-            />
+            /> {errors.seed_license_no && (
+              <Text color="red.500" fontSize="sm">
+                {errors.seed_license_no}
+              </Text>
+            )}
           </FormControl>
 
-          <FormControl >
+          <FormControl isInvalid={errors.seed_license_expiry} >
             <FormLabel>Seed License Expiry Date</FormLabel>
 
             <Input
@@ -1151,7 +1448,11 @@ function DistributorAgreement() {
                   seed_license_expiry: e.target.value
                 }))
               }
-            />
+            />  {errors.seed_license_expiry && (
+              <Text color="red.500" fontSize="sm">
+                {errors.seed_license_expiry}
+              </Text>
+            )}
           </FormControl>
 
           <FormControl>
@@ -1171,15 +1472,19 @@ function DistributorAgreement() {
             />
           </FormControl>
 
-          <FormControl>
+          <FormControl isInvalid={errors.transport_name_a}>
             <FormLabel>Tranport Name (A)</FormLabel>
             <Input
               name="transport_name_a"
               value={formData.transport_name_a}
               onChange={handleChange}
-            />
+            /> {errors.transport_name_a && (
+              <Text color="red.500" fontSize="sm">
+                {errors.transport_name_a}
+              </Text>
+            )}
           </FormControl>
-          <FormControl>
+          <FormControl >
             <FormLabel>Tranport Name (B)</FormLabel>
             <Input
               name="transport_name_b"
@@ -1187,7 +1492,7 @@ function DistributorAgreement() {
               onChange={handleChange}
             />
           </FormControl>
-          <FormControl>
+          <FormControl isInvalid={errors.source_of_funds}>
             <FormLabel>Source OF Funds For Bussiness</FormLabel>
             <Select
               name="source_of_funds"
@@ -1198,7 +1503,13 @@ function DistributorAgreement() {
               <option value="own_funds">Own Funds</option>
               <option value="loan">Loan</option>
               <option value="investment">Investment</option>
+              <option value="cc_od">CC/OD</option>
             </Select>
+            {errors.source_of_funds && (
+              <Text color="red.500" fontSize="sm">
+                {errors.source_of_funds}
+              </Text>
+            )}
 
           </FormControl>
 
@@ -1234,56 +1545,91 @@ function DistributorAgreement() {
             </FormControl>
           )}
 
-          <FormControl>
+          {formData.source_of_funds === "cc_od" && (
+            <FormControl >
+              <FormLabel>CC/OD</FormLabel>
+              <Input
+                name="cc_od"
+                value={formData.cc_od}
+                onChange={handleChange} placeholder="Enter CC / OD  Details"
+              />
+            </FormControl>
+          )}
+
+          <FormControl isInvalid={errors.bank_name}>
             <FormLabel>Bank Name</FormLabel>
             <Input
               name="bank_name"
               value={formData.bank_name}
               onChange={handleChange}
-            />
+            />  {errors.bank_name && (
+              <Text color="red.500" fontSize="sm">
+                {errors.bank_name}
+              </Text>
+            )}
           </FormControl>
 
-          <FormControl>
+          <FormControl isInvalid={errors.bank_account_no}>
             <FormLabel>Bank Account No</FormLabel>
             <Input
               name="bank_account_no"
               value={formData.bank_account_no}
               onChange={handleChange}
-            />
+            />  {errors.bank_account_no && (
+              <Text color="red.500" fontSize="sm">
+                {errors.bank_account_no}
+              </Text>
+            )}
           </FormControl>
 
-          <FormControl>
+          <FormControl isInvalid={errors.ifsc_code}>
             <FormLabel>Bank IFSC</FormLabel>
             <Input
               name="ifsc_code"
               value={formData.ifsc_code}
               onChange={handleChange}
-            />
+            />   {errors.ifsc_code && (
+              <Text color="red.500" fontSize="sm">
+                {errors.ifsc_code}
+              </Text>
+            )}
           </FormControl>
 
-          <FormControl>
+          <FormControl isInvalid={errors.bank_branch}>
             <FormLabel>Bank branch</FormLabel>
             <Input
               name="bank_branch"
               value={formData.bank_branch}
               onChange={handleChange}
-            />
+            />    {errors.bank_branch && (
+              <Text color="red.500" fontSize="sm">
+                {errors.bank_branch}
+              </Text>
+            )}
           </FormControl>
-          <FormControl>
+          <FormControl isInvalid={errors.security_cheque_no}>
             <FormLabel>Security Cheque No.</FormLabel>
             <Input
               name="security_cheque_no"
               value={formData.bank_cheaque_no}
               onChange={handleChange}
-            />
+            />         {errors.security_cheque_no && (
+              <Text color="red.500" fontSize="sm">
+                {errors.security_cheque_no}
+              </Text>
+            )}
           </FormControl>
-          <FormControl>
+          <FormControl isInvalid={errors.security_cheque_no_2}>
             <FormLabel>Security Cheque No.</FormLabel>
             <Input
               name="security_cheque_no_2"
               value={formData.security_cheque_no_2}
               onChange={handleChange}
-            />
+            />        {errors.security_cheque_no_2 && (
+              <Text color="red.500" fontSize="sm">
+                {errors.security_cheque_no_2}
+              </Text>
+            )}
           </FormControl>
 
 
@@ -1295,13 +1641,23 @@ function DistributorAgreement() {
               onChange={handleChange}
             />
           </FormControl>
-          <FormControl>
+
+          <FormControl >
+            <FormLabel>Credit Amount</FormLabel>
+            <Input
+              name="credit_amount"
+              value={formData.credit_amount}
+              onChange={handleChange}
+            /> 
+          </FormControl>
+
+          <FormControl >
             <FormLabel>Credit Duration Period</FormLabel>
             <Input
               name="credit_duration"
               value={formData.credit_duration}
               onChange={handleChange}
-            />
+            /> 
           </FormControl>
 
           <FormControl>
@@ -1381,7 +1737,7 @@ function DistributorAgreement() {
 
         <Box border="1px solid #313131" mt={5} p={5} borderRadius="lg">
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-            <FormControl>
+            <FormControl isInvalid={errors.approver_name}>
               <FormLabel>Approver Name</FormLabel>
 
               <Select
@@ -1401,9 +1757,14 @@ function DistributorAgreement() {
                   </option>
                 ))}
               </Select>
+              {errors.approver_name && (
+                <Text color="red.500" fontSize="sm">
+                  {errors.approver_name}
+                </Text>
+              )}
             </FormControl>
 
-            <FormControl>
+            <FormControl isInvalid={errors.approving_date}>
               <FormLabel>Approvering Date</FormLabel>
 
               <Input
@@ -1413,6 +1774,11 @@ function DistributorAgreement() {
                 onChange={handleChange}
                 max={new Date().toISOString().split("T")[0]}
               />
+              {errors.approving_date && (
+                <Text color="red.500" fontSize="sm">
+                  {errors.approving_date}
+                </Text>
+              )}
             </FormControl>
             <FormControl>
               <FormLabel>Upload Approval Image</FormLabel>
@@ -1466,7 +1832,9 @@ function DistributorAgreement() {
           colorScheme="teal"
           mt={6}
           onClick={handleformSubmit}
+        //  isDisabled={!formData.customer_name || !formData.gst_number}
         >
+
           Submit Form
         </Button>
       </Box>

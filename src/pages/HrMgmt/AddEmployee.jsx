@@ -22,7 +22,7 @@ import {
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import { GoHomeFill } from "react-icons/go";
 import { FormErrorMessage } from "@chakra-ui/react";
-import { validateEmail,validatePan,validateAadhar,validateContact,validateRequiredFields } from "../../hook/Validation";
+import { validateEmail, validatePan, validateAadhar, validateContact, validateRequiredFields } from "../../hook/Validation";
 
 const AddEmployee = () => {
   const toast = useToast();
@@ -57,6 +57,7 @@ const AddEmployee = () => {
     total_leaves: "",
     headquarter: "",
     approver_name: "",
+    reporting_under: "",
     aadhar_no: "",
     pan_number: "",
   });
@@ -127,10 +128,12 @@ const AddEmployee = () => {
     pf: "",
     esi: "",
     approver_name: "",
+    reporting_under: "",
+    profile_image: null
   });
   const [empList, setEmpList] = useState([]);
 
-  
+
 
   const fetchEmployeeList = async () => {
     try {
@@ -152,146 +155,178 @@ const AddEmployee = () => {
     fetchEmployeeList();
   }, []);
 
-  const handleChange = (e) => {
-    if (!e || !e.target || !e.target.name) return;
+ const handleChange = (e) => {
+  const { name, value } = e.target;
 
-    const { name, value } = e.target;
+  setFormData((prev) => ({
+    ...prev,
+    [name]:
+      name === "department_id" ||
+      name === "job_role_id" ||
+      name === "reporting_under"
+        ? Number(value)   
+        : value,
+  }));
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    console.log(formData.week_off, "weekOfff124")
+  setError((prev) => ({
+    ...prev,
+    [name]: "",
+  }));
+};
 
-    setError((prev) => ({
-      ...prev,
-      [name]: "",
-    }))
+
+ const handleSubmit = async () => {
+  // VALIDATIONS
+  const requiredFieldErrors = validateRequiredFields(formData, requiredFields);
+
+  const emailError = validateEmail(formData.email);
+  const contactError = validateContact(formData.contact_no);
+  const aadharError = validateAadhar(formData.aadhar_no);
+  const panError = validatePan(formData.pan_number);
+
+  const newError = {
+    ...requiredFieldErrors,
+    email: emailError,
+    contact_no: contactError,
+    aadhar_no: aadharError,
+    pan_number: panError,
   };
 
-  const handleSubmit = async () => {
-     const requiredFieldErrors = validateRequiredFields(formData, requiredFields); 
+  setError(newError);
 
+ 
+  // if (Object.values(newError).some((err) => err)) {
+  //   toast({
+  //     title: "Validation Error",
+  //     description:
+  //       newError.email ||
+  //       newError.contact_no ||
+  //       newError.aadhar_no ||
+  //       newError.pan_number ||
+  //       "Please fill all required fields",
+  //     status: "error",
+  //     duration: 3000,
+  //     isClosable: true,
+  //   });
+  //   return;
+  // }
 
-    const emailError = validateEmail(formData.email);
-    const contactError = validateContact(formData.contact_no);
-    const aadharError = validateAadhar(formData.aadhar_no);
-    const panError = validatePan(formData.pan_number);
+  try {
+    setLoading(true);
 
-    const newError = {
-      ...requiredFieldErrors,
-      email: emailError,
-      contact_no: contactError,
-      aadhar_no: aadharError,
-      pan_number: panError,
-    };
+    //  FormData create
+    const formDataToSend = new FormData();
 
-    setError(newError);
-
-    if (Object.values(newError).some((err) => err)) {
-
-      toast({
-        title: "Validation Error",
-        description:
-          newError.email ||
-          newError.contact_no ||
-          newError.aadhar_no ||
-          newError.pan_number ||
-          newError.date_of_joining ||
-          "Please fill all required fields",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const response = await API.post(`${API_ENDPOINTS?.CREATE_USERS}`, {
-        ...formData,
-        department_id: Number(formData.department_id),
-        job_role_id: Number(formData.job_role_id),
-        salary: Number(formData.salary),
-
-        travelling_allowance_per_km: Number(
-          formData.travelling_allowance_per_km,
-        ),
-        avg_travel_km_per_day: Number(formData.avg_travel_km_per_day),
-        city_allowance_per_km: Number(formData.city_allowance_per_km),
-
-        daily_allowance_with_doc: Number(formData.daily_allowance_with_doc),
-        daily_allowance_without_doc: Number(
-          formData.daily_allowance_without_doc,
-        ),
-        hotel_allowance: Number(formData.hotel_allowance),
-        week_off: formData.week_off ? formData.week_off : "Sunday",
-        total_leaves: Number(formData.total_leaves),
-        authentication_amount: Number(formData.authentication_amount),
-        pf: Number(formData.pf),
-        esi: Number(formData.esi),
-        attendance_time: Number(formData.attendance_time),
-        travelling_per_day: Number(formData.travelling_per_day)
-      });
-      if (response?.status === 201) {
-        toast({
-          title: "User created successfully",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-
-        navigate("/upload-documents", {
-          state: {
-            userId: response?.data?.id,
-            email: response?.data?.email,
-            mustChangePassword: response?.data?.must_change_password,
-          },
-        });
-
-        setFormData({
-          name: "",
-          gender: "",
-          contact_no: "",
-          date_of_birth: "",
-          email: "",
-          address_line1: "",
-          address_line2: "",
-          country: "India",
-          state: "",
-          city: "",
-          district: "",
-          pincode: "",
-          area: "",
-          father_name: "",
-          pan_number: "",
-          aadhar_no: "",
-          blood_group: "",
-          department_id: "",
-          job_role_id: "",
-          date_of_joining: "",
-          salary: "",
-          total_leaves: "",
-          week_off: "Sunday",
-
-          approver_name: "",
-          travelling_per_day: "",
-        });
+    //  Append all fields
+    Object.keys(formData).forEach((key) => {
+      if (key === "profile_image") {
+        if (formData.profile_image) {
+          formDataToSend.append("profile_image", formData.profile_image);
+        }
+      } else {
+        formDataToSend.append(key, formData[key] ?? "");
       }
-    } catch (error) {
+    });
+
+    //  Convert numeric fields
+    const numberFields = [
+      "department_id",
+      "job_role_id",
+      "salary",
+      "travelling_allowance_per_km",
+      "avg_travel_km_per_day",
+      "city_allowance_per_km",
+      "daily_allowance_with_doc",
+      "daily_allowance_without_doc",
+      "hotel_allowance",
+      "total_leaves",
+      "authentication_amount",
+      "pf",
+      "esi",
+      "attendance_time",
+      "travelling_per_day",
+      "reporting_under",
+    ];
+
+    numberFields.forEach((field) => {
+      if (formData[field] !== "" && formData[field] !== null) {
+        formDataToSend.set(field, Number(formData[field]));
+      }
+    });
+
+    //  Default values
+    formDataToSend.set("week_off", formData.week_off || "Sunday");
+
+    //  FINAL API CALL
+    const response = await API.post(
+      API_ENDPOINTS.CREATE_USERS,
+      formDataToSend,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (response?.status === 201) {
       toast({
-        title: "Failed to create user",
-        description: error.response?.data?.message || "Something went wrong",
-        status: "error",
+        title: "User created successfully",
+        status: "success",
         duration: 3000,
         isClosable: true,
       });
-    } finally {
-      setLoading(false);
+
+      navigate("/upload-documents", {
+        state: {
+          userId: response?.data?.id,
+          email: response?.data?.email,
+          mustChangePassword: response?.data?.must_change_password,
+        },
+      });
+
+     
+      setFormData({
+        name: "",
+        gender: "",
+        contact_no: "",
+        date_of_birth: "",
+        email: "",
+        address_line1: "",
+        address_line2: "",
+        country: "India",
+        state: "",
+        city: "",
+        district: "",
+        pincode: "",
+        area: "",
+        father_name: "",
+        pan_number: "",
+        aadhar_no: "",
+        blood_group: "",
+        department_id: "",
+        job_role_id: "",
+        date_of_joining: "",
+        salary: "",
+        total_leaves: "",
+        week_off: "Sunday",
+        approver_name: "",
+        reporting_under: "",
+        travelling_per_day: "",
+        profile_image: null, 
+      });
     }
-  };
+  } catch (error) {
+    toast({
+      title: "Failed to create user",
+      description: error.response?.data?.message || "Something went wrong",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   const fetchDepartmentList = async () => {
     try {
@@ -320,11 +355,11 @@ const AddEmployee = () => {
     }
   };
 
- 
- 
- 
 
- 
+
+
+
+
   const handleDepartmentChange = (e) => {
     const deptId = e.target.value;
 
@@ -468,25 +503,43 @@ const AddEmployee = () => {
               <FormErrorMessage>{error.contact_no}</FormErrorMessage>
             </FormControl>
 
-            <CustomDatePicker
-              label="Date of Birth"
-              name="date_of_birth"
-              value={formData.date_of_birth}
-              onChange={(date) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  date_of_birth: date,
-                }));
-                setError((prev) => ({
-                  ...prev,
-                  date_of_joining: "",
-                }))
-              }}
-              placeholder="Select date of Birth"
-            />
             <FormControl isRequired isInvalid={error.date_of_birth}>
-
+              <CustomDatePicker
+                label="Date of Birth"
+                name="date_of_birth"
+                value={formData.date_of_birth}
+                onChange={(date) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    date_of_birth: date,
+                  }));
+                  setError((prev) => ({
+                    ...prev,
+                    date_of_joining: "",
+                  }))
+                }}
+                placeholder="Select date of Birth"
+              />
             </FormControl>
+            <FormControl >
+              <FormLabel {...lableStyles}>Profile Image</FormLabel>
+
+             <Input
+  type="file"
+  accept="image/*"
+  onChange={(e) => {
+    const file = e.target.files[0];
+
+    setFormData((prev) => ({
+      ...prev,
+      profile_image: file,
+    }));
+  }}
+/>
+            </FormControl>
+
+
+
 
             <FormControl isRequired isInvalid={error.email}>
               <FormLabel {...lableStyles}>Email</FormLabel>
@@ -604,7 +657,7 @@ const AddEmployee = () => {
               />
               <FormErrorMessage>{error.father_name}</FormErrorMessage>
             </FormControl>
-            
+
             <FormControl isRequired isInvalid={error.pan_number}>
               <FormLabel {...lableStyles}>Pan Number</FormLabel>
               <Input
@@ -639,7 +692,7 @@ const AddEmployee = () => {
                 maxLength={12}
                 value={formData.aadhar_no}
                 onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, ""); 
+                  const value = e.target.value.replace(/\D/g, "");
                   if (value.length <= 12) {
                     setFormData((prev) => ({
                       ...prev,
@@ -756,16 +809,16 @@ const AddEmployee = () => {
               <FormErrorMessage>{error.travelling_allowance_per_km}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isRequired isInvalid={error.avg_travel_km_per_day} >
+            <FormControl isRequired isInvalid={error.travelling_per_day} >
               <FormLabel {...lableStyles}>
                 Avg. Travelling Per Day (In K.M.)
               </FormLabel>
               <Input
-                name="avg_travel_km_per_day"
+                name="travelling_per_day"
                 placeholder="Avg Travel / Day (km)"
                 onChange={handleChange}
               />
-              <FormErrorMessage>{error.avg_travel_km_per_day}</FormErrorMessage>
+              <FormErrorMessage>{error.travelling_per_day}</FormErrorMessage>
             </FormControl>
             <FormControl isRequired isInvalid={error.city_allowance_per_km}>
               <FormLabel {...lableStyles}>City Allowance (Per K.M.)</FormLabel>
@@ -809,7 +862,7 @@ const AddEmployee = () => {
               <Select
                 name="week_off"
                 fontSize="13px"
-                color="gray.400"
+                color="gray.700"
                 placeholder="Select Week Off"
                 value={formData.week_off ? formData.week_off : "Sunday"}
                 onChange={handleChange}
@@ -850,6 +903,24 @@ const AddEmployee = () => {
               </Select>
               <FormErrorMessage>{error.approver_name}</FormErrorMessage>
             </FormControl>
+
+            <FormControl isRequired isInvalid={error.reporting_under}>
+              <FormLabel {...lableStyles}>Reporting Under</FormLabel>
+              <Select
+                name="reporting_under"
+                placeholder="Select reporting under"
+                onChange={handleChange}
+              >
+                {empList?.map((emp) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.name}
+                  </option>
+                ))}
+              </Select>
+              <FormErrorMessage>{error.reporting_under}</FormErrorMessage>
+            </FormControl>
+
+
           </SimpleGrid>
 
           <Text fontWeight="bold">Office Timing & Payroll</Text>
@@ -857,12 +928,12 @@ const AddEmployee = () => {
             <FormControl>
               <FormLabel {...lableStyles}>Login Time</FormLabel>
               <Input type="time" name="login_time" onChange={handleChange} value={formData.login_time || "10:00:P.M"}
- />
+              />
             </FormControl>
 
             <FormControl>
               <FormLabel {...lableStyles}>Logout Time</FormLabel>
-              <Input type="time" name="logout_time" onChange={handleChange} value={formData.logout_time}/>
+              <Input type="time" name="logout_time" onChange={handleChange} value={formData.logout_time} />
             </FormControl>
 
             <FormControl>

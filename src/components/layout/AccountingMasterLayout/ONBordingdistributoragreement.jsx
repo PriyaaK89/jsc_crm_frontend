@@ -5,7 +5,7 @@ import Topbar from "../Topbar";
 import MobileTopbar from "../MobileTopbar";
 import { Flex,Box } from '@chakra-ui/react';
 import NotificationBtn from '../../NotificationBtn/NotificationBtn';
-import DistributorAgreement from '../../../pages/HrMgmt/Letters/DistributorAgreement';
+import DistributorAgreement from '../../../pages/HrMgmt/Letters/distributorONBoring/DistributorAgreement';
 
 function ONBordingdistributoragreement() {
 

@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack } from "@chakra-ui/react";
+import {
+    Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack, Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalCloseButton,
+    useDisclosure,
+} from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
@@ -13,14 +21,17 @@ const EditEmployee = () => {
     const { empId } = useParams();
     const toast = useToast();
     const navigate = useNavigate();
-
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const [loading, setLoading] = useState(false);
     const [departments, setDepartments] = useState([]);
     const [jobRole, setJobRole] = useState([]);
     const { users = [], fetchUsers } = useUsersapi();
+    const [profilePhoto, setProfilePhoto] = useState(null); // new upload
+    const [previewPhoto, setPreviewPhoto] = useState(""); // preview (API + new)
 
     const [formData, setFormData] = useState({
-        user_id: "",
+        approver_id: "",
+        reporting_id: "",
         name: "",
         gender: "",
         contact_no: "",
@@ -46,7 +57,8 @@ const EditEmployee = () => {
         salary: "",
 
         week_off: "",
-        travelling_allowance_per_km: "",
+        two_wheeler_travelling_allowance_per_km: "",
+        four_wheeler_travelling_allowance_per_km: "",
         avg_travel_km_per_day: "",
         city_allowance_per_km: "",
         daily_allowance_with_doc: "",
@@ -62,6 +74,7 @@ const EditEmployee = () => {
         pf: "",
         esi: "",
         approver_name: "",
+        reporting_under: "",
         role_id: 2,
     });
 
@@ -95,8 +108,10 @@ const EditEmployee = () => {
                     date_of_joining: formatDateForApi(data.date_of_joining),
                     login_time: data.login_time || "10:00",
                     logout_time: data.logout_time || "06:00",
-                    week_off: data.week_off || "Sunday"
+                    week_off: data.week_off || "Sunday",
+
                 });
+                setPreviewPhoto(data.profile_image);
 
             }
         } catch (err) {
@@ -108,6 +123,22 @@ const EditEmployee = () => {
         }
     };
 
+
+    // -----------------------------image handler--------------
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+
+        if (file) {
+            setProfilePhoto(file);
+
+            // preview show
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewPhoto(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
     /* ---------------- FETCH DEPARTMENTS ---------------- */
     const fetchDepartments = async () => {
         const res = await API.get(API_ENDPOINTS.get_department);
@@ -177,14 +208,18 @@ const EditEmployee = () => {
                 ...formData,
                 department_id: Number(formData.department_id),
                 job_role_id: Number(formData.job_role_id),
+                approver_id: Number(formData.approver_id) || null,
+                reporting_under_id: Number(formData.reporting_under_id) || null,
                 date_of_birth: formatDateForApi(formData.date_of_birth),
                 date_of_joining: formatDateForApi(formData.date_of_joining),
-                  approver_name: formData.approver_name, 
+                approver_name: formData.approver_name,
+                reporting_under: formData.reporting_under,
                 login_time: formData.login_time || "10:00",
                 logout_time: formData.logout_time || "06:00",
                 weak_off: formData.week_off || "Sunday",
                 salary: Number(formData.salary),
-                travelling_allowance_per_km: Number(formData.travelling_allowance_per_km),
+                two_wheeler_travelling_allowance_per_km: Number(formData.two_wheeler_travelling_allowance_per_km),
+                four_wheeler_travelling_allowance_per_km: Number(formData.four_wheeler_travelling_allowance_per_km),
                 avg_travel_km_per_day: Number(formData.avg_travel_km_per_day),
                 city_allowance_per_km: Number(formData.city_allowance_per_km),
                 daily_allowance_with_doc: Number(formData.daily_allowance_with_doc),
@@ -194,11 +229,45 @@ const EditEmployee = () => {
                 authentication_amount: Number(formData.authentication_amount),
                 pf: Number(formData.pf),
                 esi: Number(formData.esi),
+
             };
+            const formPayload = new FormData();
+
+            Object.keys(payload).forEach((key) => {
+                if (key !== "profile_image") {
+                    const value = payload[key];
+
+                    // Agar value null, undefined, empty string (""), ya NaN NAHI hai, 
+                    // tabhi usko FormData me set karo.
+                    if (
+                        value !== null &&
+                        value !== undefined &&
+                        value !== "" &&
+                        !Number.isNaN(value)
+                    ) {
+                      
+                        if ((key === "department_id" || key === "job_role_id") && value === 0) {
+                            return; // Skip 0 values for IDs
+                        }
+
+                        formPayload.set(key, value);
+                    }
+                }
+            });
+
+            // Image ke liye
+            if (profilePhoto) {
+                formPayload.set("profile_image", profilePhoto);
+            }
 
             const res = await API.put(
                 `${API_ENDPOINTS.update_emp_details}/${empId}`,
-                payload
+                formPayload,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                }
             );
 
             if (res.status === 200) {
@@ -209,6 +278,7 @@ const EditEmployee = () => {
                 });
                 navigate(-1);
             }
+            
         } catch (error) {
             toast({
                 title: "Update failed",
@@ -222,24 +292,24 @@ const EditEmployee = () => {
 
     /* ---------------- UI ---------------- */
     return (
-         <Box
-             bg="white"
-             mt={{base:2, md:5}}
-             px={{base:3, md:6}}
-             py={{base:3, md:4}}
+        <Box
+            bg="white"
+            mt={{ base: 2, md: 5 }}
+            px={{ base: 3, md: 6 }}
+            py={{ base: 3, md: 4 }}
             borderRadius="lg"
             boxShadow="md"
-         >
-                        <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+        >
+            <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
 
-                      <BreadcrumbItem>
-                      <BreadcrumbLink as={Link} to="/dashboard">
-                            <GoHomeFill color="#5570F1" />
-                          </BreadcrumbLink>
-                      </BreadcrumbItem>
-                          
+                <BreadcrumbItem>
+                    <BreadcrumbLink as={Link} to="/dashboard">
+                        <GoHomeFill color="#5570F1" />
+                    </BreadcrumbLink>
+                </BreadcrumbItem>
 
-                        <BreadcrumbItem>
+
+                <BreadcrumbItem>
                     <BreadcrumbLink as={Link} to='/hr-mgmt/view-employee-list' fontSize="13px">Employee List</BreadcrumbLink>
                 </BreadcrumbItem>
 
@@ -286,6 +356,26 @@ const EditEmployee = () => {
                         <FormLabel {...labelStyles}>Email</FormLabel>
                         <Input name="email" value={formData.email} onChange={handleChange} />
                     </FormControl>
+
+                    <SimpleGrid columns={{ base: 1, md: 1 }}>
+                        <FormControl>
+                            <FormLabel>Profile Photo</FormLabel>
+                            {/* Upload Input */}
+                            <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                            />
+
+                            {/* Preview Image */}
+                            {previewPhoto && (
+                                <Button onClick={onOpen} colorScheme="blue" mt={2} width="100%">
+                                    View Profile Photo
+                                </Button>
+
+                            )}
+                        </FormControl>
+                    </SimpleGrid>
                 </SimpleGrid>
 
                 <Text fontWeight="bold">Address Details</Text>
@@ -409,8 +499,12 @@ const EditEmployee = () => {
                     </FormControl>
 
                     <FormControl>
-                        <FormLabel {...labelStyles}>Travelling Allowance Per K.M.</FormLabel>
-                        <Input name="travelling_allowance_per_km" value={formData.travelling_allowance_per_km} onChange={handleChange} />
+                        <FormLabel {...labelStyles}>Two wheeler Travelling Allowance Per K.M.</FormLabel>
+                        <Input name="two_wheeler_travelling_allowance_per_km" value={formData.two_wheeler_travelling_allowance_per_km} onChange={handleChange} />
+                    </FormControl>
+                    <FormControl>
+                        <FormLabel {...labelStyles}> four wheelerTravelling Allowance Per K.M.</FormLabel>
+                        <Input name="four_wheeler_travelling_allowance_per_km" value={formData.four_wheeler_travelling_allowance_per_km} onChange={handleChange} />
                     </FormControl>
 
                     <FormControl>
@@ -446,8 +540,8 @@ const EditEmployee = () => {
                             <option value="Wednesday">Wednesday</option>
                             <option value="Thursday">Thursday</option>
                             <option value="Friday">Friday</option>
-                            <option  value="Saturday">Saturday</option>
-                            <option  value="Sunday">Sunday</option>
+                            <option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
                         </Select>
                     </FormControl>
 
@@ -465,7 +559,7 @@ const EditEmployee = () => {
                         <FormLabel {...labelStyles}>Approver Name</FormLabel>
                         <Select
                             placeholder="Select User"
-                            value={formData.user_id}
+                            value={formData.approver_id}
                             onChange={(e) => {
                                 const selectedUser = users.find(
                                     (u) => u.id === Number(e.target.value)
@@ -473,8 +567,32 @@ const EditEmployee = () => {
 
                                 setFormData((prev) => ({
                                     ...prev,
-                                    user_id: e.target.value,
+                                    approver_id: e.target.value,
                                     approver_name: selectedUser?.name || "",
+                                }));
+                            }}
+                        >
+                            {users.map((user) => (
+                                <option key={user.id} value={user.id}>
+                                    {user.name}
+                                </option>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormControl>
+                        <FormLabel {...labelStyles}>Reporting Under</FormLabel>
+                        <Select
+                            placeholder="Select Reporting Under"
+                            value={formData.reporting_id}
+                            onChange={(e) => {
+                                const selectedUser = users.find(
+                                    (u) => u.id === Number(e.target.value)
+                                );
+
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    reporting_id: e.target.value,
+                                    reporting_under: selectedUser?.name || "",
                                 }));
                             }}
                         >
@@ -496,7 +614,7 @@ const EditEmployee = () => {
 
                     <FormControl>
                         <FormLabel>Login Time</FormLabel>
-                        <Input type="time" name="login_time" value={formData?.login_time ||"10:00"} onChange={handleChange} />
+                        <Input type="time" name="login_time" value={formData?.login_time || "10:00"} onChange={handleChange} />
                     </FormControl>
 
                     <FormControl>
@@ -529,6 +647,36 @@ const EditEmployee = () => {
                     Update Employee
                 </Button>
             </VStack>
+
+            {/* model for profile image  */}
+            <Modal isOpen={isOpen} onClose={onClose} isCentered>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Profile Photo</ModalHeader>
+                    <ModalCloseButton />
+
+                    <ModalBody pb={6}>
+
+                        {/* Preview Image */}
+                        {previewPhoto && (
+                            <Box textAlign="center" mb={4}>
+                                <img
+                                    src={previewPhoto}
+                                    alt="Profile"
+                                    style={{
+                                        width: "100%",
+                                        height: "300px",
+                                        borderRadius: "10px",
+                                        objectFit: "cover",
+                                        border: "1px solid #ccc"
+                                    }}
+                                />
+                            </Box>
+                        )}
+
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </Box>
     );
 };

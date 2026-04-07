@@ -38,6 +38,8 @@ export const API_ENDPOINTS = {
   digio_send_eSign: "letters/send-esign",
   verify_pan: "/verify-pan",
   verify_mobile_no:"/digilocker-kyc",
+  // get_aadhar_pan_kid:`/kyc-status/response`,
+  get_aadhar_pan_kid: (kycId) => `/kyc-status/${kycId}/response`,
   check_digio_Status: `letters/document-status`,
   download_Signed_Letter_digio: `download-signed-pdf`,
   Gst_verify:`verify-gst`,

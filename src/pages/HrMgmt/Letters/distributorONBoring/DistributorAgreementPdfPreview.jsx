@@ -24,12 +24,12 @@ import {
 import { CheckIcon } from "@chakra-ui/icons";
 import React from "react";
 // import bottom_ele from "../../../assets/images/bottom_right_ele.png";
-import toprightcorner from '../../../assets/images/toprightcornerimg.png';
-import bottomleft_img from '../../../assets/images/bottomleftlogoimg.png';
+import toprightcorner from '../../../../assets/images/toprightcornerimg.png';
+import bottomleft_img from '../../../../assets/images/bottomleftlogoimg.png';
 // import bootomleft from '../../../assets/images/';
-import companyleft_logo from '../../../assets/images/jamidara_logo.png'
-import companyright_logo from "../../../assets/images/jamidara_seeds_logo (1).png"
-import r_logo from "../../../assets/images/jamidara_logo.png";
+import companyleft_logo from '../../../../assets/images/jamidara_logo.png'
+import companyright_logo from "../../../../assets/images/jamidara_seeds_logo (1).png"
+import r_logo from "../../../../assets/images/jamidara_logo.png";
 // import { formatDate } from "../../../components/common/helper";
 import jsPDF from "jspdf";
 import { toJpeg } from "html-to-image";

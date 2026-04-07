@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import {
   Box,
   Button, Text,
@@ -17,14 +17,15 @@ import { WarningIcon } from "@chakra-ui/icons";
 import { FiCheckCircle } from "react-icons/fi";
 import { CloseIcon } from "@chakra-ui/icons";
 import DistributorAgreementPdfPreview from "./DistributorAgreementPdfPreview";
-import { validateEmail, validateContact } from "../../../hook/Validation";
-
-import useUsersapi from "../../../Apis/GetUsersapi";
+import { validateEmail, validateContact } from "../../../../hook/Validation";
+import useUsersapi from "../../../../Apis/GetUsersapi"
 import DistributorDocuments from "./DistributorDocuments";
-import API from "../../../services/api";
-import { API_ENDPOINTS } from "../../../services/endpoints";
+import API from "../../../../services/api";
+import { API_ENDPOINTS } from "../../../../services/endpoints";
+// import DistributorAgreementPreview from "../DistributorAgreementPreviewModel";
 import DistributorAgreementPreview from "./DistributorAgreementPreviewModel";
 import AddressForm from './Distributoronboardingownerandpartneraddform';
+import DisBussinessAddressForm from "./DisBussinessAddressForm";
 
 
 function DistributorAgreement() {
@@ -38,6 +39,8 @@ function DistributorAgreement() {
   const generateModal = useDisclosure();
   const [firmtype, setFirmtype] = useState("");
   const [formData, setFormData] = useState({ gst_number: '' });
+  const [kycId, setKycId] = useState("");
+  const [kycStatus, setKycStatus] = useState(null);
   const [gstStatus, setGstStatus] = useState("");
   const [panStatus, setPanStatus] = useState({});
   const [errors, setError] = useState({});
@@ -183,6 +186,85 @@ function DistributorAgreement() {
     }
   };
 // -----------------------aadhar verifiction ------------------------------
+const validateMobile = (mobile) => {
+  return /^[6-9]\d{9}$/.test(mobile);
+};
+
+
+const handleResponsibleMobileVerify = async () => {
+  const mobile = formData.responsible_person_contact;
+
+  if (!mobile || !validateMobile(mobile)) {
+    toast({
+      description: "Enter valid 10 digit mobile number",
+      status: "error",
+      duration: 2000,
+    });
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const res = await API.post(API_ENDPOINTS.verify_mobile_no, {
+      mobile: mobile,
+    });
+
+    const response = res.data;
+
+    const id = response?.data?.id;
+
+    console.log("KYC ID:", id);
+
+    if (id) {
+      setKycId(id);
+      // DIRECTLY PASS ID
+      getKycStatus(id);
+    }
+    console.log("kyid",kycId)
+
+    const requestId = response?.request_id;
+
+    if (requestId) {
+      toast({
+        title: "Verification Link Sent",
+        description: "User ko DigiLocker link bhej diya gaya hai",
+        status: "success",
+        duration: 3000,
+      });
+    }
+
+  } catch (error) {
+    console.error("Verification Error:", error);
+
+    toast({
+      description: "Mobile verification failed",
+      status: "error",
+      duration: 2000,
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
+// verify KID kycId
+const getKycStatus = async (kycId) => {
+  try {
+    console.log("Calling status API with ID:", kycId);
+
+    const res = await API.post(API_ENDPOINTS.get_aadhar_pan_kid(kycId)
+    );
+
+    console.log("KYC Status Response:", res.data);
+
+    setKycStatus(res.data);
+
+  } catch (error) {
+    console.error("KYC Status Error:", error);
+  }
+};
+
+
 
   // ----------------------------pan verification------------------------------------------------------
   // pan valadition 
@@ -345,7 +427,12 @@ function DistributorAgreement() {
   };
 
   // post api for fomdata and partners and owner address and other company details
+  
+const isSubmitting = useRef(false);
+
   const handleformSubmit = async () => {
+      if (isSubmitting.current) return;
+      isSubmitting.current = true;
     const isValid = validateForm();
 
     if (!isValid) {
@@ -945,119 +1032,13 @@ function DistributorAgreement() {
 
 
           {/* Business Address */}
-          <Box border="1px" borderColor="gray.900" gridColumn={{ base: "span 1", md: "span 2" }} p={4} borderRadius="lg">
-
-            <FormControl mt={3} isInvalid={errors.business_address}>
-              <FormLabel>Business Address</FormLabel>
-              <Input
-                name="business_address"
-                value={formData.business_address || ""}
-                onChange={handleChange}
-
-              />
-              {errors.business_address && (
-                <Text color="red.500" fontSize="sm">
-                  {errors.business_address}
-                </Text>
-              )}
-
-            </FormControl>
-            <FormControl mt={3} isInvalid={errors.business_territory}>
-              <FormLabel>Business Territory</FormLabel>
-              <Input
-                name="business_territory"
-                value={formData.business_territory || ""}
-                onChange={handleChange}
-
-              />
-              {errors.business_territory && (
-                <Text color="red.500" fontSize="sm">
-                  {errors.business_territory}
-                </Text>
-              )}
-
-            </FormControl>
-
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5} mt={5}>
-              <FormControl isInvalid={errors.state}>
-                <FormLabel>State</FormLabel>
-                <Input name="state" value={formData.state || ""} onChange={handleChange} />
-                {errors.state && (
-                  <Text color="red.500" fontSize="sm">
-                    {errors.state}
-                  </Text>
-                )}
-              </FormControl>
-
-              <FormControl isInvalid={errors.district}>
-                <FormLabel>District</FormLabel>
-                <Input name="district" value={formData.district || ""} onChange={handleChange} />
-                {errors.district && (
-                  <Text color="red.500" fontSize="sm">
-                    {errors.district}
-                  </Text>
-                )}
-              </FormControl>
-
-              <FormControl isInvalid={errors.tehsil}>
-                <FormLabel>Tehsil</FormLabel>
-                <Input name="tehsil" value={formData.tehsil || ""} onChange={handleChange} />
-                {errors.tehsil && (
-                  <Text color="red.500" fontSize="sm">
-                    {errors.tehsil}
-                  </Text>
-                )}
-              </FormControl>
-              <FormControl isInvalid={errors.landmark}>
-                <FormLabel>Landmark</FormLabel>
-                <Input name="landmark" value={formData.landmark || ""} onChange={handleChange} />
-                {errors.landmark && (
-                  <Text color="red.500" fontSize="sm">
-                    {errors.landmark}
-                  </Text>
-                )}
-              </FormControl>
-
-              <FormControl isInvalid={errors.pincode}>
-                <FormLabel>Pincode</FormLabel>
-                <Input type="number" name="pincode" value={formData.pincode || ""} onChange={(e) => handlePincodeChange(e.target.value)} />
-                {errors.pincode && (
-                  <Text color="red.500" fontSize="sm">
-                    {errors.pincode}
-                  </Text>
-                )}
-              </FormControl>
-              <FormControl isInvalid={errors.contact_number}>
-                <FormLabel>Contact No(without +91)</FormLabel>
-                <Input
-                  type="number"
-                  name="contact_number"
-                  value={formData.contact_number}
-                  onChange={handleChange}
-                // placeholder="Enter Contact No (without +91)"
-                />
-                {errors.contact_number && (
-                  <Text color="red.500" fontSize="sm">
-                    {errors.contact_number}
-                  </Text>
-                )}
-              </FormControl>
-              <FormControl isInvalid={errors.alt_contact_number}>
-                <FormLabel> Alt. Contact No</FormLabel>
-                <Input type="number"
-                  name="alt_contact_number"
-                  value={formData.alt_contact_number}
-                  onChange={handleChange}
-                // placeholder="Enter Alternative Contact No (without +91)"
-                />
-                {errors.alt_contact_number && (
-                  <Text color="red.500" fontSize="sm">
-                    {errors.alt_contact_number}
-                  </Text>
-                )}
-              </FormControl>
-            </SimpleGrid>
-          </Box>
+        <DisBussinessAddressForm
+        formData={formData}
+        handleChange={handleChange}
+         handlePanVerification={handlePanVerification}
+                    panStatus={panStatus}
+                    errors={errors}
+        />
 
           {firmtype === "proprietorship" && (
             <AddressForm
@@ -1148,7 +1129,7 @@ function DistributorAgreement() {
             )}
           </FormControl>
 
-          <FormControl isInvalid={errors.responsible_person_contact}>
+          {/* <FormControl isInvalid={errors.responsible_person_contact}>
             <FormLabel>Responsible Persone Contact No</FormLabel>
             <Input
               name="responsible_person_contact"
@@ -1160,7 +1141,36 @@ function DistributorAgreement() {
                 {errors.responsible_person_contact}
               </Text>
             )}
-          </FormControl>
+          </FormControl> */}
+          <FormControl isInvalid={errors.responsible_person_contact}>
+  <FormLabel>Responsible Person Contact No</FormLabel>
+
+  <InputGroup>
+    <Input
+      name="responsible_person_contact"
+      value={formData.responsible_person_contact}
+      onChange={handleChange}
+    />
+
+    <InputRightElement>
+      <IconButton
+        size="sm"
+        colorScheme="blue"
+        icon={<FiCheckCircle />}
+        isDisabled={
+          !/^[6-9]\d{9}$/.test(formData.responsible_person_contact)
+        }
+        onClick={handleResponsibleMobileVerify}
+      />
+    </InputRightElement>
+  </InputGroup>
+
+  {errors.responsible_person_contact && (
+    <Text color="red.500" fontSize="sm">
+      {errors.responsible_person_contact}
+    </Text>
+  )}
+</FormControl>
           <FormControl isInvalid={errors.responsible_person_alt_contact}>
             <FormLabel>Responsible Persone Alternat Contact No</FormLabel>
             <Input

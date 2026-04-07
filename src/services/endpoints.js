@@ -37,6 +37,7 @@ export const API_ENDPOINTS = {
   send_esign: "documents/send-esign",
   digio_send_eSign: "letters/send-esign",
   verify_pan: "/verify-pan",
+  verify_mobile_no:"/digilocker-kyc",
   check_digio_Status: `letters/document-status`,
   download_Signed_Letter_digio: `download-signed-pdf`,
   Gst_verify:`verify-gst`,

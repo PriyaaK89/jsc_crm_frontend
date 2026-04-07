@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { Link } from "react-router-dom";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import useUsersapi from "../../Apis/GetUsersapi";
 import {
   Box,
   Button,
@@ -29,8 +30,9 @@ const AddEmployee = () => {
   const [loading, setLoading] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [jobRole, setJobRole] = useState([]);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(100)
+  const {users} =useUsersapi();
+  // const [page, setPage] = useState(1);
+  // const [limit, setLimit] = useState(100)
   const navigate = useNavigate();
 
   const [error, setError] = useState({
@@ -46,8 +48,8 @@ const AddEmployee = () => {
     department_id: "",
     job_role_id: "",
     date_of_joining: "",
-    travelling_allowance_per_km: "",
-    travelling_allowance_per_day: "",
+    two_travelling_allowance_per_km: "",
+    four_travelling_allowance_per_km: "",
     avg_travel_km_per_day: "",
     daily_allowance_with_doc: "",
     city_allowance_per_km: "",
@@ -75,7 +77,8 @@ const AddEmployee = () => {
     "department_id",
     "job_role_id",
     "date_of_joining",
-    "travelling_allowance_per_km",
+    "two_travelling_allowance_per_km",
+    "four_travelling_allowance_per_km",
     "avg_travel_km_per_day",
     "city_allowance_per_km",
     "daily_allowance_with_doc",
@@ -84,6 +87,7 @@ const AddEmployee = () => {
     "total_leaves",
     "headquarter",
     "approver_name",
+    "reporting_under",
   ];
 
   const [areas, setAreas] = useState([]);
@@ -112,7 +116,8 @@ const AddEmployee = () => {
     salary: "",
     week_off: "Sunday",
 
-    travelling_allowance_per_km: "",
+    two_travelling_allowance_per_km: "",
+    four_travelling_allowance_per_km:"",
     travelling_per_day: "",
     avg_travel_km_per_day: "",
     city_allowance_per_km: "",
@@ -131,29 +136,7 @@ const AddEmployee = () => {
     reporting_under: "",
     profile_image: null
   });
-  const [empList, setEmpList] = useState([]);
-
-
-
-  const fetchEmployeeList = async () => {
-    try {
-      setLoading(true);
-      const response = await API.get(`${API_ENDPOINTS.GET_USERS}?page=${page}&limit=${limit}`, {});
-
-      if (response.status === 200) {
-        setEmpList(response.data.data);
-        console.log(response.data, "EMPLOYEE RESPONSE");
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchEmployeeList();
-  }, []);
+ 
 
  const handleChange = (e) => {
   const { name, value } = e.target;
@@ -233,7 +216,8 @@ const AddEmployee = () => {
       "department_id",
       "job_role_id",
       "salary",
-      "travelling_allowance_per_km",
+      "four_travelling_allowance_per_km",
+      "two_travelling_allowance_per_km",
       "avg_travel_km_per_day",
       "city_allowance_per_km",
       "daily_allowance_with_doc",
@@ -245,7 +229,6 @@ const AddEmployee = () => {
       "esi",
       "attendance_time",
       "travelling_per_day",
-      "reporting_under",
     ];
 
     numberFields.forEach((field) => {
@@ -258,15 +241,10 @@ const AddEmployee = () => {
     formDataToSend.set("week_off", formData.week_off || "Sunday");
 
     //  FINAL API CALL
-    const response = await API.post(
-      API_ENDPOINTS.CREATE_USERS,
-      formDataToSend,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+   const response = await API.post(
+  API_ENDPOINTS.CREATE_USERS,
+  formDataToSend
+);
 
     if (response?.status === 201) {
       toast({
@@ -311,7 +289,8 @@ const AddEmployee = () => {
         week_off: "Sunday",
         approver_name: "",
         reporting_under: "",
-        travelling_per_day: "",
+        two_travelling_allowance_per_km:"",
+        four_travelling_allowance_per_km:"",
         profile_image: null, 
       });
     }
@@ -797,16 +776,28 @@ const AddEmployee = () => {
               <FormErrorMessage>{error.salary}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isRequired isInvalid={error.travelling_allowance_per_km}>
+            <FormControl isRequired isInvalid={error.two_travelling_allowance_per_km}>
               <FormLabel {...lableStyles}>
-                Travelling Allowance Per K.M.
+             Two wheeler Travelling Allowance Per K.M.
               </FormLabel>
               <Input
-                name="travelling_allowance_per_km"
-                placeholder="Travelling Allowance (per km)"
+                name="two_travelling_allowance_per_km"
+                placeholder=" Two Wheeler Travelling Allowance (per km)"
                 onChange={handleChange}
               />
-              <FormErrorMessage>{error.travelling_allowance_per_km}</FormErrorMessage>
+              <FormErrorMessage>{error.two_travelling_allowance_per_km}</FormErrorMessage>
+            </FormControl>
+           
+            <FormControl isRequired isInvalid={error.four_travelling_allowance_per_km}>
+              <FormLabel {...lableStyles}>
+                 Four wheeler Travelling Allowance Per K.M.
+              </FormLabel>
+              <Input
+                name="four_travelling_allowance_per_km"
+                placeholder=" Four Wheeler Travelling Allowance (per km)"
+                onChange={handleChange}
+              />
+              <FormErrorMessage>{error.four_travelling_allowance_per_km}</FormErrorMessage>
             </FormControl>
 
             <FormControl isRequired isInvalid={error.travelling_per_day} >
@@ -820,6 +811,7 @@ const AddEmployee = () => {
               />
               <FormErrorMessage>{error.travelling_per_day}</FormErrorMessage>
             </FormControl>
+            
             <FormControl isRequired isInvalid={error.city_allowance_per_km}>
               <FormLabel {...lableStyles}>City Allowance (Per K.M.)</FormLabel>
               <Input
@@ -888,14 +880,14 @@ const AddEmployee = () => {
               <FormErrorMessage>{error.headquarter}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isRequired isInvalid={error.approver_name}>
+            <FormControl isRequired isInvalid={error.approver_name} >
               <FormLabel {...lableStyles}>Approver Name</FormLabel>
               <Select
                 name="approver_name"
                 placeholder="Select Approver"
                 onChange={handleChange}
               >
-                {empList?.map((emp) => (
+                {users?.map((emp) => (
                   <option key={emp.id} value={emp.name}>
                     {emp.name}
                   </option>
@@ -911,7 +903,7 @@ const AddEmployee = () => {
                 placeholder="Select reporting under"
                 onChange={handleChange}
               >
-                {empList?.map((emp) => (
+                {users?.map((emp) => (
                   <option key={emp.id} value={emp.id}>
                     {emp.name}
                   </option>

@@ -109,7 +109,7 @@ const Newsidebar = () => {
         {label: "Employee List", path: "/hr-mgmt/view-employee-list",icon: RiUser3Line,},
         {label: "Create Job Role", path: "/hr-mgmt/roles/add-job-role",icon: HiUserGroup,},
         {label: "Create Department",path: "/hr-mgmt/dept/add-department",icon: MdAccountTree,},
-        {label: "Upload Employee Expenses", path: "/upload-employee-expenses", icon: MdUploadFile },
+        {label: "Upload Employee Expenses", path: "/hr-mgmt/upload-employee-expenses", icon: MdUploadFile },
         {label:"Upload Salary Slip",path:'/hr-mgmt/upload-emp-salary',icon: RiFileList3Line,},
        {label:"Change Password", path:"/hr-mgmt/change-password", icon:FaKey}
 

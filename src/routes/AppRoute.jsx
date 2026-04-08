@@ -221,7 +221,7 @@ function App() {
          <Route path="/report/pending-collection-report" element={<PendingCollectionReportLayout/>}/>
          <Route path="/report/emp-performance-report" element={<EmpPerformanceReportLayout/>}/>
            <Route path="/report/track-employee" element={<TrackEmpLayout />} />
-           <Route path="/upload-employee-expenses" element={<UploadEmployeeExpenses/>} />
+           <Route path="/hr-mgmt/upload-employee-expenses" element={<UploadEmployeeExpenses/>} />
 
       </Routes>
     </Router>

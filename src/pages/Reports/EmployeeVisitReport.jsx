@@ -39,10 +39,11 @@ function EmployeeVisitReport() {
   const [selectedImage, setSelectedImage] = useState(null);
 
   const [filters, setFilters] = useState({
-    userId: "",
-    city: "",
+    user_id: "",
+    district: "",
     from_date: "",
     to_date: "",
+    visit_type:"",
   });
   const [pagination, setPagination] = useState({
     page: 1,
@@ -51,31 +52,33 @@ function EmployeeVisitReport() {
   });
 
   //  Fetch API
-  const fetchVisits = async (page = 1) => {
+  const fetchVisits = async (targetPage = pagination.page) => {
     setLoading(true);
 
     try {
       const res = await API.get(API_ENDPOINTS.get_emp_visit_report, {
         params: {
-          search: debouncedSearch || undefined,
-          from_date: filters.from_date || undefined,
-          to_date: filters.to_date || undefined,
-          page,
-          limit: pagination?.limit || 10,
+          search: debouncedSearch || null,
+          from_date: filters.from_date || null,
+          to_date: filters.to_date || null,
+          page: targetPage,
+          limit: pagination?.limit,
         },
       });
 
       //  Validate response
-      if (res?.status === 200 && res?.data) {
-        const { data = [], pagination: pg = {} } = res.data;
+      if (res.status === 200 ) {
+      const data = Array.isArray(res.data) ? res.data : res.data.data || [];
 
+// console.log("FULL RESPONSE:", res.data);  yha tak thik h 
         setVisits(data);
+        // console.log("API Response Data:", data);
 
-        setPagination({
-          page: pg.page ?? 1,
-          limit: pg.limit ?? 10,
-          total_pages: pg.total_pages ?? 1,
-        });
+       setPagination((prev) => ({ 
+  ...prev,
+  page: res.data.page || targetPage,
+   total_pages: res.data.totalPages || 1,
+}));
 
       } else {
         console.warn("Unexpected API response:", res);
@@ -95,8 +98,13 @@ function EmployeeVisitReport() {
 
   // On Load
   useEffect(() => {
-    fetchVisits();
+    setPagination(prev => ({ ...prev, page: 1 }));
   }, [debouncedSearch, filters.from_date, filters.to_date]);
+
+
+  useEffect(() => {
+    fetchVisits(pagination.page);
+  }, [pagination.page, debouncedSearch, filters.from_date, filters.to_date, filters.visit_type]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -159,10 +167,11 @@ function EmployeeVisitReport() {
     setDebouncedSearch("");
 
     setFilters({
-      userId: "",
-      city: "",
+      user_id: "",
+      district: "",
       from_date: "",
       to_date: "",
+      visit_type:"",
     });
 
     setPagination((prev) => ({
@@ -170,7 +179,7 @@ function EmployeeVisitReport() {
       page: 1,
     }));
 
-    fetchVisits(1); //  reload data
+    // fetchVisits(1); // if fatchuservisit karneg to pagination bhi page reload karega and ye bhi to load aayga to ak hi 
   };
   //  visit purpose response fix
   const visitPurposeMap = {
@@ -194,6 +203,13 @@ function EmployeeVisitReport() {
     onOpen();
   };
 
+ const handlePageChange = (newPage) => {
+  if (loading) return; // block if already loading
+
+  if (newPage >= 1 && newPage <= pagination.total_pages) {
+    setPagination(prev => ({ ...prev, page: newPage }));
+  }
+};
 
   return (
     <Box
@@ -467,26 +483,28 @@ function EmployeeVisitReport() {
           </Box>
         )}
       </Box>
-      <HStack justify="end" mt={4}>
+     <HStack justify="end" mt={4}>
         <Button
           size="sm"
-          onClick={() => fetchVisits(pagination.page - 1)}
-          isDisabled={pagination.page === 1}
+          onClick={() => handlePageChange(pagination.page - 1)}
+          isDisabled={pagination.page === 1 || loading}
         >
           Prev
         </Button>
 
-        <Text>
-          {pagination.page} / {pagination.total_pages}
+        <Text fontWeight="bold">
+        {pagination.page} / {pagination.total_pages}
         </Text>
 
-        <Button
-          size="sm"
-          onClick={() => fetchVisits(pagination.page + 1)}
-          isDisabled={pagination.page === pagination.total_pages}
-        >
-          Next
-        </Button>
+      <Button
+  size="sm"
+  onClick={() => handlePageChange(pagination.page + 1)}
+  isDisabled={
+    pagination.page === pagination.total_pages || loading
+  }
+>
+  Next
+</Button>
       </HStack>
 
       {/* model for comment  */}

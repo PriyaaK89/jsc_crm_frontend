@@ -1,7 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import { API_ENDPOINTS } from "../../services/endpoints";
-import { Link } from "react-router-dom";
-import API from "../../services/api";
+import { useState } from "react";
 import {
   Box,
   Heading,
@@ -14,55 +11,28 @@ import {
   BreadcrumbItem,
   BreadcrumbLink
 } from "@chakra-ui/react";
-import useUsersapi from "../../Apis/GetUsersapi";
-import { GoHomeFill } from "react-icons/go";
 
+import { Link } from "react-router-dom";
+import { GoHomeFill } from "react-icons/go";
+import useUsersapi from "../../Apis/GetUsersapi";
+import API from "../../services/api";
+import { API_ENDPOINTS } from "../../services/endpoints";
+
+import MapView from "./Map"; // 👈 path check kar lena
 
 const TrackEmployee = () => {
 
-  const mapRef = useRef(null);
-  const polylineRef = useRef(null);
-  const markersRef = useRef([]);
+  const { users } = useUsersapi();
 
-  const {users}=useUsersapi();
   const [selectedUser, setSelectedUser] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(40);
 
-  //  Initialize Map ONLY ONCE
-  useEffect(() => {
-    const wait = setInterval(() => {
-      if (window.mappls && document.getElementById("map") && !mapRef.current) {
-        clearInterval(wait);
+  const [path, setPath] = useState([]);
+  const [start, setStart] = useState(null);
+  const [end, setEnd] = useState(null);
 
-        mapRef.current = new window.mappls.Map("map", {
-          center: { lat: 28.612964, lng: 77.229463 },
-          zoom: 10,
-        });
-      }
-    }, 100);
-
-    return () => clearInterval(wait);
-  }, []);
-
-  //  Fetch Employees
-  // useEffect(() => {
-  //   const fetchUsers = async () => {
-  //     try {
-  //       const res = await API.get(API_ENDPOINTS?.GET_USERS);
-  //       setUsers(res.data.data);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-
-  //   fetchUsers();
-  // }, []);
-
-  //  Fetch Route
   const fetchRoute = async () => {
-    if (!selectedUser || !selectedDate || !mapRef.current) return;
+    if (!selectedUser || !selectedDate) return;
 
     try {
       const res = await API.get(
@@ -81,41 +51,9 @@ const TrackEmployee = () => {
         lng: parseFloat(loc.longitude),
       }));
 
-      //  Remove old polyline
-      if (polylineRef.current) {
-        polylineRef.current.remove();
-      }
-
-      //  Remove old markers
-      markersRef.current.forEach((marker) => marker.remove());
-      markersRef.current = [];
-
-      //  Draw new polyline
-      polylineRef.current = new window.mappls.Polyline({
-        map: mapRef.current,
-        path: coordinates,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1,
-        strokeWeight: 4,
-      });
-
-      //  Start Marker
-      const startMarker = new window.mappls.Marker({
-        map: mapRef.current,
-        position: coordinates[0],
-      });
-
-      //  End Marker
-      const endMarker = new window.mappls.Marker({
-        map: mapRef.current,
-        position: coordinates[coordinates.length - 1],
-      });
-
-      markersRef.current.push(startMarker, endMarker);
-
-      // 🔹 Center map
-      mapRef.current.setCenter(coordinates[0]);
-      mapRef.current.setZoom(14);
+      setPath(coordinates);
+      setStart(coordinates[0]);
+      setEnd(coordinates[coordinates.length - 1]);
 
     } catch (err) {
       console.log(err);
@@ -123,49 +61,31 @@ const TrackEmployee = () => {
   };
 
   return (
-      <Box
-          bg="white"
-          mt={{base:2, md:5}}
-          px={{base:3, md:6}}
-          py={{base:3, md:4}}
-         borderRadius="lg"
-         boxShadow="md"
-      >
-        <Breadcrumb mb={4}>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink as={Link} to="/dashboard">
-                                    <GoHomeFill color="blue" />
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbItem >
-                                <BreadcrumbLink
-                                fontSize="13px"
-                                isCurrentPage
-                                >
-                                  Employee Route Tracking
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                        </Breadcrumb>
+    <Box bg="white" p={4} borderRadius="lg" boxShadow="md">
+
+      <Breadcrumb mb={4}>
+        <BreadcrumbItem>
+          <BreadcrumbLink as={Link} to="/dashboard">
+            <GoHomeFill color="blue" />
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+          <BreadcrumbLink isCurrentPage>
+            Employee Route Tracking
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+      </Breadcrumb>
+
       <VStack align="start" spacing={6}>
 
         <Heading size="md">Employee Route Tracking</Heading>
-        <Box
-  display="flex"
-  flexDir={{ base: "column", md: "row" }}
-  gap={4}
-  w="100%"
->
 
-
-        {/* <HStack spacing={4}> */}
-          <SimpleGrid columns={{base:1, md:2}} spacing={4} w="100%">
-
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} w="100%">
+          
           <Select
             placeholder="Select Employee"
             value={selectedUser}
             onChange={(e) => setSelectedUser(e.target.value)}
-            // width="250px"
-            size={{base:"sm", md:"md"}}
           >
             {users.map((user) => (
               <option key={user.id} value={user.id}>
@@ -178,31 +98,15 @@ const TrackEmployee = () => {
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            size={{base:"sm", md:"md"}}
           />
-           {/* </HStack> */}
         </SimpleGrid>
-          <Button
-            colorScheme="blue"
-            onClick={fetchRoute}
-            px={10}
-            py={2}
-            fontSize={{base:"sm",md:"md"}}
-          >
-            Show Route
-          </Button>
-</Box>
 
-              
+        <Button colorScheme="blue" onClick={fetchRoute}>
+          Show Route
+        </Button>
 
-        <Box
-          id="map"
-          w="100%"
-          h="500px"
-          borderRadius="lg"
-          border="1px solid"
-          borderColor="gray.200"
-        />
+        {/* ✅ MAP */}
+        <MapView path={path} start={start} end={end} />
 
       </VStack>
     </Box>

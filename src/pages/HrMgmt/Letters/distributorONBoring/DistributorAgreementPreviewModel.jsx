@@ -9,12 +9,9 @@ import {
 import { toWords } from "number-to-words";
 import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
-import React from "react";
 // import jsc_stamp from "../../../assets/images/stamp_jsc.png";
-import API from "../../../services/api";
-import { API_ENDPOINTS } from "../../../services/endpoints";
 import { CloseButton } from "@chakra-ui/react";
-import { Bold } from "lucide-react";
+
 
 const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee, partners, ownerAddress, otherCompanies }) => {
 

@@ -242,8 +242,9 @@ function DistributorDocuments({ onChange, formData, onSendData }) {
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
+        
           <ModalBody p={5}>
-            <SimpleGrid columns={3} spacing={3} pt={5}   >
+            <SimpleGrid columns={2} spacing={3} pt={5}   >
               {chequePreview.map((url, i) => (
                 <Image key={i} src={url} h="220px" />
               ))}

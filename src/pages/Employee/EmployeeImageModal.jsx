@@ -131,19 +131,20 @@ const EmployeeImageModal = ({
       <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
         <ModalOverlay />
 
-        <ModalContent borderRadius="xl" mx="12px">
+        <ModalContent borderRadius="12px" mx="12px" overflow="hidden">
           <Flex
             bg="blue.500"
             color="white"
             px={4}
             py={3}
             justifyContent="space-between"
-            alignItems="center" borderRadius="10px 0px"
+            alignItems="center"
+            borderRadius="12px 12px 0px 0px"
           >
             <Text fontWeight="bold">
               Employee Attendance Images
             </Text>
-            <ModalCloseButton color="white" />
+            <ModalCloseButton color="white" position="static" />
           </Flex>
 
           <ModalBody pb={6} maxH="70vh" overflowY="auto">

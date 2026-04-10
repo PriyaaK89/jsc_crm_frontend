@@ -24,6 +24,7 @@ const ViewEmpImageModal = ({ isOpen, onClose, image }) => {
           py={3}
           justifyContent="space-between"
           alignItems="center"
+          borderTopRadius="12px"
         >
           <Text fontWeight="bold">Image Preview</Text>
 

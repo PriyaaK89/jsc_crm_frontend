@@ -1597,7 +1597,7 @@ const isSubmitting = useRef(false);
           mt={6}
           onClick={previewModal.onOpen}
         >
-          Download  Latter
+          Download  Letter
         </Button>
 
         <Button ml={5}
@@ -1605,7 +1605,7 @@ const isSubmitting = useRef(false);
           mt={6}
           onClick={generateModal.onOpen}
         >
-          Genrate  Disributor Aggrement Latter
+          Genrate distributor  Aggrement Letter
         </Button>
         <Button ml={5}
           colorScheme="teal"

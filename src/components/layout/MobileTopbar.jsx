@@ -45,6 +45,7 @@ import {
   RiFileList3Line,
   RiBarChartLine,
 } from "react-icons/ri";
+import{FaBookOpen} from "react-icons/fa";
 
 import {
   FaChartLine,
@@ -264,6 +265,8 @@ const MobileTopbar = () => {
           path: "/accounting-master/create-ledger",
           icon: FaFileInvoiceDollar,
         },
+                {label:"ON Boarding Ledger",path:"/accounting-master/onboarding-ledger", icon:FaBookOpen},
+        
         {
           label: "View Ledger",
           path: "/accounting-master/view-ledger",

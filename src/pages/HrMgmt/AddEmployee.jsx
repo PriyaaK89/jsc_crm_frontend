@@ -419,7 +419,7 @@ const AddEmployee = () => {
                 color="#8B8D97"
                 fontSize="13px"
               >
-                Employee List
+                Add Employee
               </BreadcrumbLink>
             </BreadcrumbItem>
           </Breadcrumb>

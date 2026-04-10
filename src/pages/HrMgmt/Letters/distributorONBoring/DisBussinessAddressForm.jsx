@@ -26,7 +26,7 @@ function DisBussinessAddressForm({
   return (
       <Box border="1px" borderColor="gray.900" gridColumn={{ base: "span 1", md: "span 2" }} p={4} borderRadius="lg">
     
-                <FormControl mt={3} isInvalid={errors.business_address}>
+                <FormControl mt={3} isInvalid={!!errors.business_address}>
                   <FormLabel>Business Address</FormLabel>
                   <Input
                     name="business_address"
@@ -41,7 +41,7 @@ function DisBussinessAddressForm({
                   )}
     
                 </FormControl>
-                <FormControl mt={3} isInvalid={errors.business_territory}>
+                <FormControl mt={3} isInvalid={!!errors.business_territory}>
                   <FormLabel>Business Territory</FormLabel>
                   <Input
                     name="business_territory"
@@ -58,7 +58,7 @@ function DisBussinessAddressForm({
                 </FormControl>
     
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5} mt={5}>
-                  <FormControl isInvalid={errors.state}>
+                  <FormControl isInvalid={!!errors.state}>
                     <FormLabel>State</FormLabel>
                     <Input name="state" value={formData.state || ""} onChange={handleChange} />
                     {errors.state && (
@@ -68,7 +68,7 @@ function DisBussinessAddressForm({
                     )}
                   </FormControl>
     
-                  <FormControl isInvalid={errors.district}>
+                  <FormControl isInvalid={!!errors.district}>
                     <FormLabel>District</FormLabel>
                     <Input name="district" value={formData.district || ""} onChange={handleChange} />
                     {errors.district && (
@@ -78,7 +78,7 @@ function DisBussinessAddressForm({
                     )}
                   </FormControl>
     
-                  <FormControl isInvalid={errors.tehsil}>
+                  <FormControl isInvalid={!!errors.tehsil}>
                     <FormLabel>Tehsil</FormLabel>
                     <Input name="tehsil" value={formData.tehsil || ""} onChange={handleChange} />
                     {errors.tehsil && (
@@ -87,7 +87,7 @@ function DisBussinessAddressForm({
                       </Text>
                     )}
                   </FormControl>
-                  <FormControl isInvalid={errors.landmark}>
+                  <FormControl isInvalid={!!errors.landmark}>
                     <FormLabel>Landmark</FormLabel>
                     <Input name="landmark" value={formData.landmark || ""} onChange={handleChange} />
                     {errors.landmark && (
@@ -97,23 +97,22 @@ function DisBussinessAddressForm({
                     )}
                   </FormControl>
     
-                  <FormControl isInvalid={errors.pincode}>
+                  <FormControl isInvalid={!!errors.pincode}>
                     <FormLabel>Pincode</FormLabel>
-                    <Input type="number" name="pincode" value={formData.pincode || ""} onChange={(e) => handlePincodeChange(e.target.value)} />
+                    <Input type="text" name="pincode" value={formData.pincode} onChange={(e) => handlePincodeChange(e.target.value)} />
                     {errors.pincode && (
                       <Text color="red.500" fontSize="sm">
                         {errors.pincode}
                       </Text>
                     )}
                   </FormControl>
-                  <FormControl isInvalid={errors.contact_number}>
+                  <FormControl isInvalid={!!errors.contact_number}>
                     <FormLabel>Contact No(without +91)</FormLabel>
                     <Input
                       type="number"
                       name="contact_number"
                       value={formData.contact_number}
                       onChange={handleChange}
-                    // placeholder="Enter Contact No (without +91)"
                     />
                     {errors.contact_number && (
                       <Text color="red.500" fontSize="sm">
@@ -121,7 +120,7 @@ function DisBussinessAddressForm({
                       </Text>
                     )}
                   </FormControl>
-                  <FormControl isInvalid={errors.alt_contact_number}>
+                  <FormControl isInvalid={!!errors.alt_contact_number}>
                     <FormLabel> Alt. Contact No</FormLabel>
                     <Input type="number"
                       name="alt_contact_number"

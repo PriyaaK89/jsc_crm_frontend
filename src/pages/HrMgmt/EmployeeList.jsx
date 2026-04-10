@@ -3,33 +3,15 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { data, Link, useNavigate } from "react-router-dom";
 import {
-  Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Button,
-  Flex,
-  HStack,
-  IconButton,
-  Img,
-  Input,
-  InputGroup,
-  Select,
-  Spinner,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tooltip,
-  Tr,
-  useDisclosure,
+  Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Flex, HStack, IconButton,
+  ModalOverlay, ModalContent, ModalBody, Image, Modal, Img, Input, InputGroup, Select, Spinner, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useDisclosure
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import sort_icon from "../../assets/sort.svg";
 import { FiEdit2, FiTrash2, FiSearch, FiFileText } from "react-icons/fi";
 import { FaEye } from "react-icons/fa";
+import { CloseIcon } from "@chakra-ui/icons";
+import { Avatar } from "@chakra-ui/react";
 import ViewUploadedDocument from "./DocUpload/ViewDocuments";
 import UpdateEmpStatus from "../../utils/Emp/UpdateEmpStatus";
 import DeleteEmployeeModel from "./DeleteEmployee";
@@ -45,8 +27,15 @@ const EmployeeList = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const { onOpen, onClose, isOpen } = useDisclosure();
-  const [selectedId, setSelectedId] = useState("");
-  const [empName, setEmpName] = useState("");
+  const [selectedId, setSelectedId] = useState('');
+  const {
+    isOpen: isImageOpen,
+    onOpen: onImageOpen,
+    onClose: onImageClose,
+  } = useDisclosure();
+
+  const [selectedImage, setSelectedImage] = useState("");
+  const [empName, setEmpName] = useState('')
   const navigate = useNavigate();
   const {
     isOpen: isDeleteModalOpen,
@@ -155,8 +144,21 @@ const EmployeeList = () => {
   const handleVerifyModal = (id, name) => {
     onVerifyModalOpen();
     setSelectedId(id);
-    setEmpName(name);
+    setEmpName(name)
+  }
+
+  const getImageUrl = (url) => {
+    const BASE_URL = "https://your-api-domain.com"; // change this
+
+    if (!url) return "";
+
+    // already full URL
+    if (url.startsWith("http")) return url;
+
+    // relative URL
+    return `${BASE_URL}${url}`;
   };
+
   return (
     <>
       <VerifyDocumentModel
@@ -247,57 +249,55 @@ const EmployeeList = () => {
               <Spinner size="lg" />
             </Flex>
           ) : (
-            <Box
-              overflowX="auto"
-              whiteSpace="nowrap"
-              sx={{
-                "&::-webkit-scrollbar": { width: "8px", height: "12px" },
-                "&::-webkit-scrollbar-thumb": {
-                  width: "8px",
-                  backgroundColor: "#7A7A7A",
-                  borderRadius: "4px",
-                },
-                "&::-webkit-scrollbar-track": {
-                  background: "#E8E8E8",
-                  borderRadius: "4px",
-                },
-              }}
-            >
-              <Table
-                variant="striped"
-                colorScheme="gray"
-                size="sm"
-                minW="2650px"
-                className="productsTable"
+            <Box overflowX="auto" whiteSpace="nowrap" sx={{
+              "&::-webkit-scrollbar": { width: "8px", height: '8px' },
+              "&::-webkit-scrollbar-thumb": {
+                width: "8px", backgroundColor: "#7A7A7A", borderRadius: "4px",
+              },
+              "&::-webkit-scrollbar-track": {
+                background: "#E8E8E8", borderRadius: "4px",
+              },
+            }}>
+              <Table variant="striped" colorScheme="gray" size="sm" minW="2950px" className="productsTable" tableLayout="fixed"
               >
                 <Thead>
                   <Tr>
-                    {tableHeader.map((header,index) =>(
-
-                    <Th
-                      key={index}
-                      fontSize="14px"
-                      fontWeight="500"
-                      color="#2C2D33"
-                      textTransform="capitalize"
-                      width={widthMap[header]} 
-
-                    >
-                      <Flex alignItems="center" gap="7px">
-                        <Text
-                          fontSize="14px"
-                          color="#2C2D33"
-                          fontWeight="400"
-                          textTransform="capitalize"
-                          fontFamily="InterRegular"
-                        >
-                          {header}
-                        </Text>
-                        <Img src={sort_icon} alt="sort_icon" />
-                      </Flex>
-                    </Th>
-                      ))}
-
+                    {["profile Image", "Name", "Email", "Department", "Role", "Contact", "City / State", "Salary(Rs.)", "DOJ", "Leaves", "Login", "Logout", "Last Seen", "Approver", "View Doc", "Action", "Generate Letters"].map((header, index) => (
+                      <Th key={index} fontSize='14px' fntWeight='500' color='#2C2D33' textTransform='capitalize'
+                        width={
+                          header === "profile Image"
+                            ? "250px"
+                            :
+                            header === "Last Seen"
+                              ? "160px"
+                              :
+                            header === "Name"
+                              ? "150px"
+                              : header === "Email"
+                                ? "250px"
+                                : header === "Department"
+                                  ? "180px"
+                                  : header === "Role"
+                                    ? "180px"
+                                    : header === "Contact"
+                                      ? "150px"
+                                      : header === "City / State"
+                                        ? "200px"
+                                        : header === "Salary(Rs.)"
+                                          ? "150px"
+                                          : header === "Generate Letters"
+                                            ? "320px"
+                                            : "160px"
+                        }
+                      >
+                        <Flex alignItems="center" gap='7px'>
+                          <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' overflow="hidden">
+                            {header}
+                          </Text>
+                          <Img src={sort_icon} alt='sort_icon' />
+                        </Flex>
+                      </Th>
+                    ))}
                   </Tr>
                 </Thead>
 
@@ -305,6 +305,23 @@ const EmployeeList = () => {
                   {empList?.length > 0 ? (
                     empList.map((emp) => (
                       <Tr key={emp?.id}>
+
+                        <Td width="250px" fontWeight="medium">
+                          <Avatar
+                            h="40px"
+                            w="40px"
+                            name={emp?.name}
+                            src={getImageUrl(emp?.profile_image_url)}
+                            cursor={emp?.profile_image_url ? "pointer" : "default"}
+                            onClick={() => {
+                              if (emp?.profile_image_url) {
+                                setSelectedImage(getImageUrl(emp.profile_image_url));
+                                onImageOpen();
+                              }
+                            }}
+                          />
+                        </Td>
+
                         <Td fontWeight="medium">{emp?.name}</Td>
                         <Td>{emp?.email}</Td>
                         <Td>{emp?.department_name}</Td>
@@ -324,6 +341,9 @@ const EmployeeList = () => {
                         <Td>{emp.total_leaves}</Td>
                         <Td>{formatTime(emp?.login_time) || "-"}</Td>
                         <Td>{formatTime(emp?.logout_time) || "-"}</Td>
+                        <Td >
+                          {emp?.last_seen ? new Date(emp.last_seen).toLocaleString() : "-"}
+                        </Td>
                         <Td>{emp?.approver_name || "-"}</Td>
                         <Td>
                           <Tooltip label="View Employee Documents" hasArrow>
@@ -460,9 +480,56 @@ const EmployeeList = () => {
           totalItems={totalItems}
           totalPages={totalPages}
         />
+
       </Box>
+
+
+      <Modal isOpen={isImageOpen} onClose={onImageClose} size="xl" isCentered>
+        <ModalOverlay />
+
+        <ModalContent bg="transparent" boxShadow="none">
+          <ModalBody p={0}>
+            <Box
+              position="relative"
+              borderRadius="xl"
+              overflow="hidden"
+              maxH="80vh"
+              maxW="500px"
+              mx="auto"
+            >
+              {/*Close Button (Overlay) */}
+              <IconButton
+                icon={<CloseIcon />}
+                position="absolute"
+                top="10px"
+                right="10px"
+                zIndex="2"
+                size="sm"
+                borderRadius="full"
+                bg="blackAlpha.600"
+                color="white"
+                _hover={{ bg: "blackAlpha.800" }}
+                onClick={onImageClose}
+                aria-label="Close"
+              />
+
+              {/*  Image */}
+              <Image
+                src={selectedImage}
+                alt="Profile"
+                w="100%"
+                h="100%"
+                maxH="80vh"
+                objectFit="contain"
+                borderRadius="xl"
+              />
+            </Box>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
-  );
-};
+  )
+}
+
 
 export default EmployeeList;

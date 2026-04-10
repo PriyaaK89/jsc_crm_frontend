@@ -38,7 +38,54 @@ function DistributorAgreement() {
   const previewModal = useDisclosure();
   const generateModal = useDisclosure();
   const [firmtype, setFirmtype] = useState("");
-  const [formData, setFormData] = useState({ gst_number: '' });
+  const [formData, setFormData] = useState({
+  customer_name: "",
+  customer_dob: "",
+  gst_number: "",
+  firm_name: "",
+  firm_type: "",
+  firm_email: "",
+  gst_type: "",
+  firm_since: "",
+  firm_pan: "",
+  firm_aadhar: "",
+  branch: "",
+  firm_landmark: "",
+
+  business_address: "",
+  business_territory: "",
+  district: "",
+  tehsil: "",
+  landmark: "",
+  state: "",
+  pincode: "",
+  contact_number: "",
+  alt_contact_number: "",
+
+  responsible_person_name: "",
+  responsible_person_contact: "",
+  responsible_person_address: "",
+  responsible_person_alt_contact: "",
+
+  seed_license_no: "",
+  seed_license_expiry: "",
+
+  transport_name_a: "",
+  transport_name_b: "",
+
+  source_of_funds: "",
+  own_funds_details: "",
+
+  bank_name: "",
+  bank_account_no: "",
+  ifsc_code: "",
+  bank_branch: "",
+
+  security_cheque_no: "",
+  security_cheque_no_2: "",
+  approver_name: "",
+  approving_date: "",
+});
   const [kycId, setKycId] = useState("");
   const [kycStatus, setKycStatus] = useState(null);
   const [gstStatus, setGstStatus] = useState("");
@@ -87,16 +134,6 @@ function DistributorAgreement() {
     aadhar_no: "",
     partner_photo: null,
   });
-
-  const requirefilelds = [
-    "customer_name", "customer_dob", "firm_name", "firm_type",
-    "business_address", "business_territory", "state", "district", "tehsil", "landmark",
-    "firm_landmark", "pincode", "contact_number", "alt_contact_number", "responsible_person_name", "responsible_person_contact",
-    "responsible_person_address", "responsible_person_alt_contact",
-    "firm_email", "branch", "firm_since", "seed_license_no", "seed_license_expiry", "transport_name_a", "transport_name_b", "source_of_funds",
-    "own_funds_details", "bank_name", "bank_account_no", "ifsc_code", "bank_branch", "security_cheque_no", "security_cheque_no_2", "credit_duration",
-    "approver_name", "approving_date"
-  ]
 
   // ---------------------------gst verification------------------------------------------------------
   const handleGSTverification = async () => {
@@ -223,7 +260,7 @@ const handleResponsibleMobileVerify = async () => {
     }
     console.log("kyid",kycId)
 
-    const requestId = response?.request_id;
+    const requestId = response?.request_id; 
 
     if (requestId) {
       toast({
@@ -248,6 +285,7 @@ const handleResponsibleMobileVerify = async () => {
 };
 
 // verify KID kycId
+
 const getKycStatus = async (kycId) => {
   try {
     console.log("Calling status API with ID:", kycId);
@@ -255,16 +293,105 @@ const getKycStatus = async (kycId) => {
     const res = await API.post(API_ENDPOINTS.get_aadhar_pan_kid(kycId)
     );
 
-    console.log("KYC Status Response:", res.data);
+    // console.log("KYC Status Response:", res.data);
 
-    setKycStatus(res.data);
+    setKycStatus(res.data?.data);
 
   } catch (error) {
     console.error("KYC Status Error:", error);
   }
 };
+const intervalRef = useRef(null);
+const startTimeRef = useRef(null);
+
+useEffect(() => {
+  if (!kycId) return;
+
+  // already running ho to dubara mat start karo
+  if (intervalRef.current) return;
+
+  startTimeRef.current = Date.now();
+
+  intervalRef.current = setInterval(() => {
+    const now = Date.now();
+
+    // STOP after 10 min
+    if (now - startTimeRef.current > 600000) {
+      console.log("⛔ Stopped after 10 min");
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+      return;
+    }
+
+    const isCompleted = kycStatus?.approved || kycStatus?.is_completed;
+
+    const hasBasicData =
+      kycStatus?.aadhaar?.name &&
+      kycStatus?.customer_identifier;
+
+    //  STOP if data mil gaya
+    if (isCompleted || hasBasicData) {
+      console.log("✅ Data mil gaya, stop polling");
+
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+
+      toast({
+        title: "KYC Completed ✅",
+        description: "Aadhaar details received",
+        status: "success",
+        duration: 3000,
+      });
+
+      return;
+    }
+
+    console.log("⏳ Checking KYC...");
+    getKycStatus(kycId);
+
+  }, 10000); // 10 sec
+
+  return () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+}, [kycId, kycStatus]); 
 
 
+useEffect(() => {
+  if (kycStatus?.is_completed && kycStatus?.aadhaar) {
+    const aadhaar = kycStatus.aadhaar;
+
+    // console.log("✅ Auto filling Aadhaar data:", aadhaar);
+
+    setFormData((prev) => ({
+      ...prev,
+      responsible_person_name: aadhaar.name || "",
+      customer_dob: aadhaar.dob
+        ? aadhaar.dob.split("/").reverse().join("-") // dd/mm/yyyy → yyyy-mm-dd
+        : "",
+      responsible_person_address: aadhaar.address || "",
+    }));
+
+   if(formData.firm_type==="proprietorship"){
+    setOwnerAddress((prev) => ({
+      ...prev,
+      name: aadhaar.name || "",
+      address: aadhaar.address || "",
+      father_name: aadhaar.father_name || "",
+      pincode: aadhaar.pincode || "",
+      state: aadhaar.state || "",
+      district: aadhaar.district || "",
+
+    }));
+   }
+    
+
+  }
+}, [kycStatus]);
 
   // ----------------------------pan verification------------------------------------------------------
   // pan valadition 
@@ -377,7 +504,7 @@ const getKycStatus = async (kycId) => {
   };
 
 
-  // owner ke liye pincode 
+  // --------------------------owner ke liye pincode ------------------------------
   const handleOwnerPincodeChange = async (value) => {
     setOwnerAddress((prev) => ({
       ...prev,
@@ -400,7 +527,7 @@ const getKycStatus = async (kycId) => {
     }
   };
 
-  // for partners 
+  // -----------------------------------for partners ----------------------------------------
 
   const handlePartnerChange = async (index, field, value) => {
     const updated = [...partners];
@@ -425,26 +552,27 @@ const getKycStatus = async (kycId) => {
       }
     }
   };
-
-  // post api for fomdata and partners and owner address and other company details
-  
+  // -------------------------------------handle submit----------------------------------------------------
 const isSubmitting = useRef(false);
 
   const handleformSubmit = async () => {
-      if (isSubmitting.current) return;
-      isSubmitting.current = true;
-    const isValid = validateForm();
 
-    if (!isValid) {
-      toast({
-        title: "Validation Error",
-        description: "Please fill all required fields correctly",
-        status: "error",
-        duration: 3000,
-      });
-      return;
-    }
-    try {
+  // const isValid = validateForm();
+
+  // if (!isValid) {
+  //   toast({
+  //     title: "Validation Error",
+  //     description: "Please fill all required fields correctly",
+  //     status: "error",
+  //     duration: 3000,
+  //   });
+  //   return;
+  // }
+
+  // if (isSubmitting.current) return;
+  // isSubmitting.current = true;
+
+  try {
       setLoading(true);
 
       const formDataToSend = new FormData();
@@ -541,7 +669,7 @@ const isSubmitting = useRef(false);
         if (docs.mai_letter) formDataToSend.append("mai_letter", docs.mai_letter);
       }
 
-
+console.log("Before API Call");
       const response = await API.post(
         API_ENDPOINTS.distributor_onbording_form,
         formDataToSend,
@@ -552,12 +680,29 @@ const isSubmitting = useRef(false);
         }
       );
 
-      console.log("API RESPONSE:", response);
+    
+      if (response.data.success) {
+        toast({
+          title: "Success",
+          description: "Distributor form created successfully",
+          status: "success",
+          duration: 3000,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: response.data.message || "Submission failed",
+          status: "error",
+          duration: 3000,
+        });
+       }
+        // Reset form after successful submission
 
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
+       isSubmitting.current = false;
     }
   };
 
@@ -623,74 +768,49 @@ const isSubmitting = useRef(false);
   // form validation ---------------------------------------
   const validateForm = () => {
     let newErrors = {};
+const requiredFields = [
+    "firm_name",
+    "firm_type",
+    "firm_email",
+    "business_address",
+    "business_territory",
+    "district",
+    "tehsil",
+    "landmark",
+    "state",
+    "pincode",
+    "contact_number",
+    "alt_contact_number",
+    "responsible_person_name",
+    "responsible_person_contact",
+    "responsible_person_address",
+    "responsible_person_alt_contact",
+    "firm_landmark",
+    "firm_since",
+    "branch",
+    "seed_license_no",
+    "seed_license_expiry",
+    "transport_name_a",
+    "source_of_funds",
+    "own_funds_details",
+    "bank_name",
+    "bank_account_no",
+    "ifsc_code",
+    "bank_branch",
+    "security_cheque_no",
+    "security_cheque_no_2",
+    "approver_name",
+    "approving_date",
+  ];
 
-    //  Required fields (dynamic)
-    requirefilelds.forEach((field) => {
-      if (!formData[field] || formData[field].toString().trim() === "") {
-        newErrors[field] = "This field is required";
-      }
-    });
-    // customer name
-    if (!formData.firm_name) newErrors.firm_name = "Firm Name Required"
-    if (!formData.firm_type) newErrors.firm_type = "Firm Type is required";
-
-
-    //  Email
-    if (formData.firm_email && !validateEmail(formData.firm_email)) {
-      newErrors.firm_email = "Invalid email";
+  // ✅ required check
+  requiredFields.forEach((field) => {
+    if (!formData[field] || formData[field].toString().trim() === "") {
+      newErrors[field] = "This field is required";
     }
-
-    if (formData.contact_number && !validateContact(formData.contact_number)) {
-      newErrors.contact_number = "Invalid contact number";
-    }
-
-    // bussiness details 
-    if (!formData.business_address) newErrors.business_address = "Address is required";
-    if (!formData.business_territory) newErrors.business_territory = "Territory is required";
-    if (!formData.district) newErrors.district = "District required";
-    if (!formData.tehsil) newErrors.tehsil = "Tehsil is  required";
-    if (!formData.landmark) newErrors.landmark = "Landmark required";
-    if (!formData.state) newErrors.state = " State name required";
-    if (!formData.contact_number) newErrors.contact_number = "Bussiness contact number required";
-    if (!formData.alt_contact_number) newErrors.alt_contact_number = " Bussiness alt contact number  required";
-    if (!formData.pincode) newErrors.pincode = "Pincode required";
-    // responsiable person
-    if (!formData.responsible_person_name) newErrors.responsible_person_name = "Responsible person name required";
-    if (!formData.responsible_person_contact) newErrors.responsible_person_contact = "Responsible person Mobile No required";
-    if (!formData.responsible_person_address) newErrors.responsible_person_address = "Responsible person Address required";
-    if (!formData.responsible_person_alt_contact) newErrors.responsible_person_alt_contact = "Responsible person Alt no required";
-    // firm 
-    if (!formData.firm_landmark) newErrors.firm_landmark = "Firm Landmark is required";
-    if (!formData.firm_since) newErrors.firm_since = "Firm since required";
-    if (!formData.branch) newErrors.branch = "Firm  branch is required";
-    // seed lic
-    if (!formData.seed_license_no) newErrors.seed_license_no = "Seed license  no required";
-    if (!formData.seed_license_expiry) newErrors.seed_license_expiry = "Seed license expiry is required";
-    // transport 
-    if (!formData.transport_name_a) newErrors.transport_name_a = "Transport name (A) is required";
-    // if (!formData.transport_name_b) newErrors.transport_name_b = "Transport name (B) is required";
-    // source of fund 
-    if (!formData.source_of_funds) newErrors.source_of_funds = "Source Of funds is required";
-    if (!formData.own_funds_details) newErrors.own_funds_details = "Own Funds details is required";
-    // bank details
-    if (!formData.bank_name) newErrors.bank_name = "Bank name is required";
-    if (!formData.bank_account_no) newErrors.bank_account_no = "Bank account no is required";
-    if (!formData.ifsc_code) newErrors.ifsc_code = "ifsc code is required";
-    if (!formData.bank_branch) newErrors.bank_branch = "Bank branch is required";
-
-    if (!formData.security_cheque_no) newErrors.security_cheque_no = "Security cheque no1 is required";
-    if (!formData.security_cheque_no2) newErrors.security_cheque_no2 = "Security cheque no2 is required";
-
-    if (!formData.approver_name) newErrors.approver_name = "Approver name is required";
-    if (!formData.approving_date) newErrors.approving_date = "Approvering date is required";
-    // if (!formData.credit_duration) newErrors.credit_duration = "Credit duration is required";
-    if (!formData.security_amount) newErrors.security_amount = "Security amountis required";
-
-
-
-
+  });
     //  Owner validation
-    if (firmtype === "proprietorship") {
+    if (formData.firm_type === "proprietorship") {
       if (!ownerAddress.name) newErrors.owner_name = "Owner name required";
       if (!ownerAddress.father_name) newErrors.owner_father_name = "Owner Father name required";
       if (!ownerAddress.address) newErrors.owner_address = "Owner address required";
@@ -705,7 +825,7 @@ const isSubmitting = useRef(false);
     }
 
     //  Partners validation
-    if (firmtype === "partnership") {
+    if (formData.firm_type === "partnership") {
       partners.forEach((p, i) => {
         if (!p.name) newErrors[`partner_${i}_name`] = "Required";
         if (!p.mobile_no) newErrors[`partner_${i}_mobile_no`] = "Required";
@@ -732,16 +852,6 @@ const isSubmitting = useRef(false);
     return Object.keys(newErrors).length === 0;
   };
 
-  // ------------------------------form input dte -----------------------------------------------------
-  const formatToInputDate = (dateStr) => {
-    if (!dateStr) return "";
-
-    const [day, month, year] = dateStr.split("/");
-    return `${year}-${month}-${day}`;
-  };
-
-
-
   return (
     <>
       <Box
@@ -759,7 +869,7 @@ const isSubmitting = useRef(false);
 
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
 
-          <FormControl isInvalid={errors.customer_name}>
+          <FormControl isInvalid={!!errors.customer_name}>
             <FormLabel>Customer Name</FormLabel>
             <Input
               name="customer_name"
@@ -772,7 +882,7 @@ const isSubmitting = useRef(false);
 
           </FormControl>
 
-          <FormControl isInvalid={errors.customer_dob}>
+          <FormControl isInvalid={!!errors.customer_dob}>
             <FormLabel>Customer DOB</FormLabel>
             <Input
               type="date"
@@ -847,7 +957,7 @@ const isSubmitting = useRef(false);
             </InputGroup>
           </FormControl>
 
-          <FormControl isInvalid={errors.firm_name}>
+          <FormControl isInvalid={!!errors.firm_name}>
             <FormLabel>Firm Name</FormLabel>
             <Input
               name="firm_name"
@@ -861,7 +971,7 @@ const isSubmitting = useRef(false);
             )}
           </FormControl>
 
-          <FormControl isInvalid={errors.firm_type}>
+          <FormControl isInvalid={!!errors.firm_type}>
             <FormLabel>Firm Type</FormLabel>
             <Select
               name="firm_type"
@@ -893,7 +1003,7 @@ const isSubmitting = useRef(false);
               </Text>
             )}
           </FormControl>
-          <FormControl isInvalid={errors.firm_email}>
+          <FormControl isInvalid={!!errors.firm_email}>
             <FormLabel>Firm Email Id</FormLabel>
             <Input
               name="firm_email"
@@ -926,15 +1036,20 @@ const isSubmitting = useRef(false);
 
              <FormControl>
                       <FormLabel>GST Unregistered Authority Latter </FormLabel>
-                      <Input type="file" onChange={(e) => handleChange(e, "gst_unregistered_authority_latter")} />
+                      <Input type="file"onChange={(e) =>
+  setFormData(prev => ({
+    ...prev,
+    gst_unregistered_authority_latter: e.target.files[0]
+  }))
+} />
                     </FormControl>
           )}
 
-          <FormControl isInvalid={errors.firm_since}>
+          <FormControl isInvalid={!!errors.firm_since}>
             <FormLabel> Firm Since</FormLabel>
             <Input
               name="firm_since"
-              value={formatToInputDate(formData.firm_since || "")}
+              value={formData.firm_since || ""}
               onChange={handleChange}
               type="date"
               placeholder="Select Firm Start Date"
@@ -1002,7 +1117,7 @@ const isSubmitting = useRef(false);
             />
           </FormControl>
 
-          <FormControl isInvalid={errors.branch}>
+          <FormControl isInvalid={!!errors.branch}>
             <FormLabel>branch</FormLabel>
             <Input
               name="branch"
@@ -1016,7 +1131,7 @@ const isSubmitting = useRef(false);
           </FormControl>
 
 
-          <FormControl isInvalid={errors.firm_landmark}>
+          <FormControl isInvalid={!!errors.firm_landmark}>
             <FormLabel>Landmark</FormLabel>
             <Input
               name="firm_landmark"
@@ -1036,6 +1151,7 @@ const isSubmitting = useRef(false);
         formData={formData}
         handleChange={handleChange}
          handlePanVerification={handlePanVerification}
+         handlePincodeChange={handlePincodeChange}
                     panStatus={panStatus}
                     errors={errors}
         />
@@ -1100,7 +1216,7 @@ const isSubmitting = useRef(false);
 
 
 
-          <FormControl isInvalid={errors.responsible_person_name}>
+          <FormControl isInvalid={!!errors.responsible_person_name}>
             <FormLabel>Responsible Persone Name</FormLabel>
             <Input
               name="responsible_person_name"
@@ -1115,7 +1231,7 @@ const isSubmitting = useRef(false);
             )}
           </FormControl>
 
-          <FormControl isInvalid={errors.responsible_person_address}>
+          <FormControl isInvalid={!!errors.responsible_person_address}>
             <FormLabel>Responsible Persone Address</FormLabel>
             <Input
               name="responsible_person_address"
@@ -1129,7 +1245,7 @@ const isSubmitting = useRef(false);
             )}
           </FormControl>
 
-          {/* <FormControl isInvalid={errors.responsible_person_contact}>
+          {/* <FormControl isInvalid={!!errors.responsible_person_contact}>
             <FormLabel>Responsible Persone Contact No</FormLabel>
             <Input
               name="responsible_person_contact"
@@ -1142,7 +1258,7 @@ const isSubmitting = useRef(false);
               </Text>
             )}
           </FormControl> */}
-          <FormControl isInvalid={errors.responsible_person_contact}>
+          <FormControl isInvalid={!!errors.responsible_person_contact}>
   <FormLabel>Responsible Person Contact No</FormLabel>
 
   <InputGroup>
@@ -1171,7 +1287,7 @@ const isSubmitting = useRef(false);
     </Text>
   )}
 </FormControl>
-          <FormControl isInvalid={errors.responsible_person_alt_contact}>
+          <FormControl isInvalid={!!errors.responsible_person_alt_contact}>
             <FormLabel>Responsible Persone Alternat Contact No</FormLabel>
             <Input
               name="responsible_person_alt_contact"
@@ -1201,7 +1317,7 @@ const isSubmitting = useRef(false);
 
 
 
-          <FormControl isInvalid={errors.seed_license_no}>
+          <FormControl isInvalid={!!errors.seed_license_no}>
             <FormLabel>Seed License No.</FormLabel>
             <Input
               name="seed_license_no"
@@ -1214,7 +1330,7 @@ const isSubmitting = useRef(false);
             )}
           </FormControl>
 
-          <FormControl isInvalid={errors.seed_license_expiry} >
+          <FormControl isInvalid={!!errors.seed_license_expiry} >
             <FormLabel>Seed License Expiry Date</FormLabel>
 
             <Input
@@ -1251,7 +1367,7 @@ const isSubmitting = useRef(false);
             />
           </FormControl>
 
-          <FormControl isInvalid={errors.transport_name_a}>
+          <FormControl isInvalid={!!errors.transport_name_a}>
             <FormLabel>Tranport Name (A)</FormLabel>
             <Input
               name="transport_name_a"
@@ -1271,7 +1387,7 @@ const isSubmitting = useRef(false);
               onChange={handleChange}
             />
           </FormControl>
-          <FormControl isInvalid={errors.source_of_funds}>
+          <FormControl isInvalid={!!errors.source_of_funds}>
             <FormLabel>Source OF Funds For Bussiness</FormLabel>
             <Select
               name="source_of_funds"
@@ -1335,7 +1451,7 @@ const isSubmitting = useRef(false);
             </FormControl>
           )}
 
-          <FormControl isInvalid={errors.bank_name}>
+          <FormControl isInvalid={!!errors.bank_name}>
             <FormLabel>Bank Name</FormLabel>
             <Input
               name="bank_name"
@@ -1348,7 +1464,7 @@ const isSubmitting = useRef(false);
             )}
           </FormControl>
 
-          <FormControl isInvalid={errors.bank_account_no}>
+          <FormControl isInvalid={!!errors.bank_account_no}>
             <FormLabel>Bank Account No</FormLabel>
             <Input
               name="bank_account_no"
@@ -1361,7 +1477,7 @@ const isSubmitting = useRef(false);
             )}
           </FormControl>
 
-          <FormControl isInvalid={errors.ifsc_code}>
+          <FormControl isInvalid={!!errors.ifsc_code}>
             <FormLabel>Bank IFSC</FormLabel>
             <Input
               name="ifsc_code"
@@ -1374,7 +1490,7 @@ const isSubmitting = useRef(false);
             )}
           </FormControl>
 
-          <FormControl isInvalid={errors.bank_branch}>
+          <FormControl isInvalid={!!errors.bank_branch}>
             <FormLabel>Bank branch</FormLabel>
             <Input
               name="bank_branch"
@@ -1386,11 +1502,11 @@ const isSubmitting = useRef(false);
               </Text>
             )}
           </FormControl>
-          <FormControl isInvalid={errors.security_cheque_no}>
+          <FormControl isInvalid={!!errors.security_cheque_no}>
             <FormLabel>Security Cheque No.</FormLabel>
             <Input
               name="security_cheque_no"
-              value={formData.bank_cheaque_no}
+              value={formData.security_cheque_no}
               onChange={handleChange}
             />         {errors.security_cheque_no && (
               <Text color="red.500" fontSize="sm">
@@ -1398,7 +1514,7 @@ const isSubmitting = useRef(false);
               </Text>
             )}
           </FormControl>
-          <FormControl isInvalid={errors.security_cheque_no_2}>
+          <FormControl isInvalid={!!errors.security_cheque_no_2}>
             <FormLabel>Security Cheque No.</FormLabel>
             <Input
               name="security_cheque_no_2"
@@ -1516,7 +1632,7 @@ const isSubmitting = useRef(false);
 
         <Box border="1px solid #313131" mt={5} p={5} borderRadius="lg">
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-            <FormControl isInvalid={errors.approver_name}>
+            <FormControl isInvalid={!!errors.approver_name}>
               <FormLabel>Approver Name</FormLabel>
 
               <Select
@@ -1543,7 +1659,7 @@ const isSubmitting = useRef(false);
               )}
             </FormControl>
 
-            <FormControl isInvalid={errors.approving_date}>
+            <FormControl isInvalid={!!errors.approving_date}>
               <FormLabel>Approvering Date</FormLabel>
 
               <Input
@@ -1610,6 +1726,7 @@ const isSubmitting = useRef(false);
         <Button ml={5}
           colorScheme="teal"
           mt={6}
+          type="button"
           onClick={handleformSubmit}
         //  isDisabled={!formData.customer_name || !formData.gst_number}
         >

@@ -76,6 +76,7 @@ import TrackEmpLayout from "../components/layout/Reports/TrackEmpLayout";
 import UploadEmployeeExpenses from  "../components/layout/UploadEmployeeExpensesLayout";
 import Distributors from "../components/layout/Distributors";
 import EditDistributorLayout from "../components/layout/EditDistributeLayout"
+import KYCReport from "../components/layout/Reports/KYCReport";
 
 function App() {
   return (

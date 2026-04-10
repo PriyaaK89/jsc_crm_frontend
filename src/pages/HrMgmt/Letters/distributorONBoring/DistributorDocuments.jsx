@@ -8,6 +8,7 @@ import {
   Button,
   FormControl,
   FormLabel,
+ Flex,
   Input,
   SimpleGrid,
   Image,
@@ -224,9 +225,23 @@ function DistributorDocuments({ onChange, formData, onSendData }) {
 
       {/* SHOP MODAL */}
       <Modal isOpen={shopModal.isOpen} onClose={shopModal.onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalCloseButton />
+        <ModalOverlay borderRadius="12px" overflow="hidden" mx="12px" />
+        <ModalContent >
+           {/* HEADER */}
+                          <Flex
+                            bg="blue.500"
+                            color="white"
+                            px={4}
+                            py={3}
+                            justifyContent="space-between"
+                            align="center"
+                                        borderRadius="12px 12px 0px 0px"
+
+                          >
+                            <Text fontWeight="bold">Preview  Documents</Text>
+                            <ModalCloseButton position="static" color="white" />
+                          </Flex>
+                
           <ModalBody p={5}>
             <SimpleGrid columns={2} spacing={3} pt={5}   >
               {shopPreview.map((url, i) => (

@@ -46,5 +46,7 @@ export const API_ENDPOINTS = {
   set_expense_allocation:`set-expense-allocation`,
   get_uploaded_exp: `admin-expense-summary`,
   emp_daily_summary: `daily-summary`,
-  distributor_onbording_form:`create-distributor`,
+  get_distributors:  `get-distributorsList`,
+  update_distributor: `update-distributor`,
+  get_distributor: `get-distributor`
 };

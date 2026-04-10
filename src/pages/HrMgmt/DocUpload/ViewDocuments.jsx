@@ -3,27 +3,25 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
   Box,
   Text,
   VStack,
   SimpleGrid,
-  Image, 
+  Image,
   Divider,
   Button,
   Input,
   useToast,
+  Flex,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
-import PreviewDocument from "./PreviewDocumentModal"; 
-import { FiUploadCloud } from "react-icons/fi";
-import { FiEye } from "react-icons/fi";
+import PreviewDocument from "./PreviewDocumentModal";
+import { FiUploadCloud, FiEye } from "react-icons/fi";
 import { useDisclosure } from "@chakra-ui/react";
-
-
+import { RxUpdate } from "react-icons/rx";
 
 const DOCUMENT_LABELS = {
   aadhar_card: "Aadhar Card Front",
@@ -44,14 +42,14 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
   const [uploadingKey, setUploadingKey] = useState(null);
   const fileInputRef = useRef(null);
   const [previewImage, setPreviewImage] = useState(null);
+
   const toast = useToast();
+
   const {
     isOpen: isPreviewDocumentOpen,
     onOpen: onPreviewDocumentOpen,
     onClose: onPreviewDocumentClose,
   } = useDisclosure();
-
-
 
   const getEmployeeDocuments = async () => {
     try {
@@ -100,7 +98,7 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
       });
 
       getEmployeeDocuments();
-    } catch (err) {
+    } catch {
       toast({
         status: "error",
         description: "Upload failed",
@@ -113,135 +111,148 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
 
   return (
     <>
-    <PreviewDocument
-  isOpen={isPreviewDocumentOpen}   
-  onClose={onPreviewDocumentClose}
-  image={previewImage}
-/>
-        <Modal isOpen={isOpen} onClose={onClose} size="2xl" isCentered scrollBehavior="inside">
-      <ModalOverlay />
-      <ModalContent borderRadius="12px" mx="10px">
-        <ModalHeader bg="blue.500" textColor="white" p={7} fontSize={{ base: "15px", md: "lg" }}>Uploaded Documents
-          </ModalHeader>
-                  <ModalCloseButton color="white" p={5} size={{ base: "md", md: "lg" }} />
+      <PreviewDocument
+        isOpen={isPreviewDocumentOpen}
+        onClose={onPreviewDocumentClose}
+        image={previewImage}
+      />
 
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        size="2xl"
+        isCentered
+        scrollBehavior="inside"
+      >
+        <ModalOverlay />
 
-        <ModalBody pb={6}>
-          {userName && (
-            <>
+        <ModalContent borderRadius="12px" mx="10px">
+          {/* Header */}
+          <Flex
+            bg="blue.500"
+            color="white"
+            px={4}
+            py={3}
+            justifyContent="space-between"
+            alignItems="center"
+            borderRadius="12px 12px 0px 0px"
+          >
+            <Text fontWeight="bold">View Employee Documents</Text>
+            <ModalCloseButton color="white" position="static" />
+          </Flex>
 
-              <Text fontSize="lg" fontWeight="600" mb={4} mt={4}>
-                UserName:
-                {userName}
-              </Text>
-              <Divider mb={6} />
-            </>
-          )}
+          <ModalBody pb={6}>
+            {userName && (
+              <>
+                <Text fontSize="lg" fontWeight="600" my={4}>
+                  UserName: {userName}
+                </Text>
+                <Divider mb={6} />
+              </>
+            )}
 
-          <Input
-            type="file"
-            ref={fileInputRef}
-            display="none"
-            onChange={handleFileChange}
-          />
+            <Input
+              type="file"
+              ref={fileInputRef}
+              display="none"
+              onChange={handleFileChange}
+            />
 
-          <VStack spacing={8} align="stretch">
-            {Object.keys(DOCUMENT_LABELS).map((key) => {
-              const url = docs[key];
+            <VStack spacing={6} align="stretch">
+              {Object.keys(DOCUMENT_LABELS).map((key) => {
+                const url = docs[key];
 
-              return (
-                <Box key={key} mt={4}>
-                    <SimpleGrid columns={3} justify="space-between" spacing={{sm:0, base:0, md:"7rem"}}>
-
-                  <Text fontSize={{base:"12px",md:"14px"}} fontWeight="500" mb={2}  width={{base:"100px", md:"200px"}}>
-                    {DOCUMENT_LABELS[key]}
-                  </Text>
-
-                  {url ? (
-                    <>
-                    <Box position="relative" w="120px" h="80px">
-  <Image
-    src={url}
-    alt={key}
-    w="100%"
-    h="100%"
-    objectFit="cover"
-    borderRadius="8px"
-    border="1px solid"
-    borderColor="gray.200"
-  />
-
-  <Box
-    position="absolute"
-    top="5px"
-    right="5px"
-    bg="blackAlpha.600"
-    borderRadius="50%"
-    p="5px"
-    cursor="pointer"
-
- onClick={() => {
-  if (!url) return; // ✅ safety check
-
-  const isPdf = url.toLowerCase().includes(".pdf");
-
-  if (isPdf) {
-    window.open(url, "_blank", "noopener,noreferrer"); // ✅ secure open
-  } else {
-    setPreviewImage(url);
-    onPreviewDocumentOpen();
-    onClose(); // ✅ parent modal close
-  }
-}}
-  >
-    <FiEye size={16} color="white" />
-  </Box>
-</Box>
-
-                      <Button 
-                          // mx={{base: 3, md:0 }}
-                        marginLeft={{base:"4", md:"0"}}
-                        size="sm"
-                        colorScheme="blue"
-                        onClick={() => handleUploadClick(key)}
-                        isLoading={uploadingKey === key}
-                      >
-                        Update
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Text fontSize={{base:"12px",md:"14px"}}  fontStyle="italic" mb={2}>
-                        Not provided
+                return (
+                  <Box key={key}>
+                    <SimpleGrid
+                      columns={{ base: 1, md: 3 }} 
+                      spacing={{base: 2, md: 4}} 
+                      alignItems="center"
+                    >
+                      {/* Label */}
+                      <Text fontSize="sm" fontWeight="500">
+                        {DOCUMENT_LABELS[key]}
                       </Text>
-                      <Box>
 
+                      {/* Image */}
+                      {url ? (
+                        <Box
+  position="relative"
+  w={{ base: "100%", md: "120px" }}  
+  h={{ base: "150px", md: "80px" }}   
+>
+                          <Image
+                            src={url}
+                            alt={key}
+                            w="100%"
+                            h="100%"
+                            objectFit="cover"
+                            borderRadius="8px"
+                            border="1px solid"
+                            borderColor="gray.200"
+                          />
+
+                          <Box
+                            position="absolute"
+                            top="5px"
+                            right="5px"
+                            bg="blackAlpha.600"
+                            borderRadius="50%"
+                            p="5px"
+                            cursor="pointer"
+                            onClick={() => {
+                              const isPdf = url
+                                .toLowerCase()
+                                .includes(".pdf");
+
+                              if (isPdf) {
+                                window.open(url, "_blank");
+                              } else {
+                                setPreviewImage(url);
+                                onPreviewDocumentOpen();
+                                onClose();
+                              }
+                            }}
+                          >
+                            <FiEye size={16} color="white" />
+                          </Box>
+                        </Box>
+                      ) : (
+                        <Text fontSize="sm" fontStyle="italic">
+                          Not provided
+                        </Text>
+                      )}
+
+                      {/* Button */}
+                      <Flex justify={{ base: "center", md: "flex-end" }}>
                         <Button
-                        rightIcon={<FiUploadCloud  size={15} color="white"/>
-}
-                          // size="sm"
-                          fontSize={{base:"12px",md:"14px"}}
+                          rightIcon={
+                            url ? (
+                              <RxUpdate size={15} />
+                            ) : (
+                              <FiUploadCloud size={15} />
+                            )
+                          }
+                          size="sm"
+                          w="120px"
+                          px={4}
+                          fontSize="sm"
                           colorScheme="blue"
                           onClick={() => handleUploadClick(key)}
                           isLoading={uploadingKey === key}
-                          mx={{base: 2, md:0 }}
                         >
-                          Upload
+                          {url ? "Update" : "Upload"}
                         </Button>
-                      </Box>
-
-                    </>
-                  )}
-                  </SimpleGrid>
-                </Box>
-              );
-            })}
-          </VStack>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
-        </>
-
+                      </Flex>
+                    </SimpleGrid>
+                  </Box>
+                );
+              })}
+            </VStack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

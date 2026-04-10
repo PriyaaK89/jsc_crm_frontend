@@ -17,7 +17,7 @@ import { FaFileInvoice } from "react-icons/fa";
 import { FiMapPin } from "react-icons/fi";
 import { FaClipboardList,FaCalculator,FaWallet,FaList,FaTrash,FaFileInvoiceDollar,FaBookOpen,FaMoneyCheckAlt} from "react-icons/fa";
   import { FaEdit,FaStore } from "react-icons/fa";
-  import { Receipt,CalendarCheck,BellRing,Handshake,BookText,Clock,FileSpreadsheet,BarChart3 } from "lucide-react";
+  import { Receipt,CalendarCheck,BellRing,Handshake,BookText,Clock,FileSpreadsheet,BarChart3, User2 } from "lucide-react";
   import { HiOutlinePrinter } from "react-icons/hi";
   import { Printer, Barcode } from "lucide-react";
 import {RiDashboardLine,RiUserAddLine,RiUser3Line,RiFileList3Line,RiBarChartLine,RiSettings3Line,} from "react-icons/ri";
@@ -35,6 +35,7 @@ import { NavLink, useLocation,useNavigate} from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import { MdUploadFile } from "react-icons/md";
 import { FaKey } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa";
 
 const Newsidebar = () => {
   const location = useLocation();
@@ -136,8 +137,9 @@ const Newsidebar = () => {
         {label:"Create Group", path:"/accounting-master/create-group",icon:MdGroupAdd},
         {label:"View Group",path:"/accounting-master/view-group",icon:FaList},
         {label:"Delete Group",path:"/accounting-master/delete-group",icon:FaTrash},
-        {label:"ON Bording Ledger",path:"/accounting-master/onboarding-ledger", icon:FaBookOpen},
         {label:"Create Ledger",path:"/accounting-master/create-ledger", icon:FaFileInvoiceDollar},
+        {label:"ON Boarding Ledger",path:"/accounting-master/onboarding-ledger", icon:FaBookOpen},
+        {label: "Distributor", path: "/accounting-master/distributor", icon: FaUsers },
         {label:"View Ledger",path:"/accounting-master/view-ledger", icon:FaFileInvoice},
         {label:"Delete Ledger",path:"/accounting-master/delete-ledger", icon:FaTrash},
         {label:"Create Voucher",path:"/accounting-master/create-voucher", icon:FaMoneyCheckAlt},

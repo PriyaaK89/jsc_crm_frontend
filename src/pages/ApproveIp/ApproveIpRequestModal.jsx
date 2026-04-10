@@ -55,7 +55,7 @@ const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
 
-      <ModalContent borderRadius="12px" mx="10px">
+      <ModalContent borderRadius="12px" mx="10px" overflow="hidden">
 
         {/* ✅ Proper Header */}
         <ModalHeader

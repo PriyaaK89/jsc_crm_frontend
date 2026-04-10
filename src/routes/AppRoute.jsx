@@ -74,6 +74,8 @@ import PendingCollectionReportLayout from "../components/layout/Reports/PendingC
 import EmpPerformanceReportLayout from "../components/layout/Reports/EmpPerformanceReportLayout";
 import TrackEmpLayout from "../components/layout/Reports/TrackEmpLayout";
 import UploadEmployeeExpenses from  "../components/layout/UploadEmployeeExpensesLayout";
+import Distributors from "../components/layout/Distributors";
+import EditDistributorLayout from "../components/layout/EditDistributeLayout"
 
 function App() {
   return (
@@ -119,6 +121,8 @@ function App() {
         <Route path='/accounting-master/view-group' element={<ViewGroupLayout/>}/>
         <Route path='/accounting-master/delete-group'   element={<DeleteGroupLayout/>}/>
         <Route path='/accounting-master/create-ledger' element={<CreateLedgerLayout/>}/>
+        <Route path='/accounting-master/distributor' element={<Distributors/>}/>
+        <Route path='/accounting-master/edit-distributor/:id' element={<EditDistributorLayout/>}/>
         <Route path='/accounting-master/onboarding-ledger' element={<ONBordingdistributoragreement/>}/>
         <Route path='/accounting-master/view-ledger' element={<ViewLedgerLayout/>}/>
         <Route path='/accounting-master/delete-ledger' element={<DeleteLedgerLayout/>}/>
@@ -195,8 +199,6 @@ function App() {
         <Route path="/esign-success" element={<ESignSuccess/>} />
         <Route path="/esign-error" element={<ESignError />} />  
         
-
-
         {/* reports */}
          <Route path="/report/emp-attendance-report" element={<EmpAttendanceLayout/>}/>
          <Route path="/report/scheduling-alert-report" element={<SchedulingAlertsReportLayout/>}/>

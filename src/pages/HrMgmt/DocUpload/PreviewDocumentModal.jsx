@@ -2,7 +2,8 @@ import {
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
+  Text,
+  Flex,
   ModalCloseButton,
   ModalBody,
   ModalFooter,   
@@ -37,19 +38,23 @@ const PreviewDocument = ({ isOpen, onClose, image }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl" isCentered>
       <ModalOverlay />
-      <ModalContent borderRadius="12px" mx="10px">
+      <ModalContent borderRadius="12px" mx="10px" overflow="hidden">
         
-        <ModalHeader
+        <Flex
           bg="blue.500"
           textColor="white"
-          p={7}
-          fontSize={{ base: "15px", md: "lg" }}
+          px={4}
+            py={3}
+            justifyContent="space-between"
+            alignItems="center"
+            borderRadius="12px 12px 0px 0px"
         >
-          Document Preview
-        </ModalHeader>
-
-        <ModalCloseButton color="white" p={5} />
-
+         < Text fontWeight="bold">
+                     Preview Document
+                      </Text>
+          <ModalCloseButton color="white" position="static" />
+                      
+        </Flex>
         <ModalBody>
           <Image
             src={image}

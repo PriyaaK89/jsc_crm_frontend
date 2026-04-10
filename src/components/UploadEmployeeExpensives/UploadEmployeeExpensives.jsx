@@ -39,6 +39,7 @@ import CustomDatePicker from "../common/CustomDatepicker";
 const UploadEmployeeExpensives = () => {
   const [formData, setFormData] = useState({
     user_id: "",
+    select_all: "",
     hotel_amount: "",
     bus_train_toll_amount: "",
     petrol_diesel_amount: "",
@@ -98,6 +99,16 @@ const UploadEmployeeExpensives = () => {
       [name]: value,
     }));
   };
+  const tableHeader = ["S.No", "Name", "Hotel", "Bus Train Toll", "Petrol Diesel", "Other", "Action"];
+  const tableWidth = {
+  "S.No": "80px",
+  Name: "150px",
+  Hotel: "120px",
+  "Bus Train Toll": "150px",
+  "Petrol Diesel": "150px",
+  Other: "120px",
+  Action: "100px",
+};
 
   // Handle submit
   const handleSubmit = async () => {
@@ -333,30 +344,30 @@ const UploadEmployeeExpensives = () => {
                 <Spinner size="lg" />
               </Flex>
             ) : (
-              <Box overflowX="auto" >
-                <Table variant="striped" colorScheme="gray" size="sm" className="productsTable" minW="1200px">
+              <Box overflowX="auto"
+              whiteSpace="nowrap"
+              sx={{
+                "&::-webkit-scrollbar": { width: "8px", height: "12px" },
+                "&::-webkit-scrollbar-thumb": {
+                  width: "8px",
+                  backgroundColor: "#7A7A7A",
+                  borderRadius: "4px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  background: "#E8E8E8",
+                  borderRadius: "4px",
+                },
+              }}
+               >
+                <Table variant="striped" colorScheme="gray" size="sm" className="productsTable" minW="1200px" >
                   <Thead>
                     <Tr>
                       {
-                        ["S.No", "Name", "Hotel", "Bus Train Toll", "Petrol Diesel", "Other", "Action"].map((header, index) => (
-                          <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize' whiteSpace="nowrap"
-                            width={
-                              header === "Name"
-                                ? "150px"
-                                : header === "Hotel"
-                                  ? "250px"
-                                  : header === "Bus Train Toll"
-                                    ? "180px"
-                                    : header === "Pertrol Diesel"
-                                      ? "180px"
-                                      : header === "Other"
-                                        ? "150px" : header === "Action" ?
-                                          "200px" : ""
-                            }
+                        tableHeader.map((header, index) => (
+                          <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize' whiteSpace="nowrap" width={header[tableWidth]}>
 
-                          >
-                            <Flex alignItems="center" gap='7px'>
-                              <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' overflow="hidden">
+                              <Flex alignItems="center" gap='7px'>
+                              <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' >
                                 {header}
                               </Text>
                               <Img src={sort_icon} alt='sort_icon' />

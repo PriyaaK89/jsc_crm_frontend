@@ -66,11 +66,11 @@ const DeleteEmployeeModel = ({
       <ModalOverlay />
       <ModalContent mx="12px" borderRadius="12px">
 
-        <Flex bg="#E53E3E" borderTopRadius="12px" color="white" py={2} px={4} justify="space-between" alignItems="center"  size="xl">
+        <Flex bg="#E53E3E" borderRadius="12px 12px 0px 0px " color="white" py={2} px={4} justify="space-between" alignItems="center"  size="xl">
          <Text fontWeight="bold">
           Delete Employee
          </Text>
-         <ModalCloseButton position="static" size="md"/>
+         <ModalCloseButton position="static" color="white"/>
         </Flex>
        
 

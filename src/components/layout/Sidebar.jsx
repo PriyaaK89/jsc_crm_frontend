@@ -185,6 +185,7 @@ const Newsidebar = () => {
             {label:"Stock Transfer Report",path:"/report/stock-transfer-report",icon:MdSwapHoriz},
             {label:"Pending Collection Report",path:"/report/pending-collection-report",icon:MdPendingActions},
             {label:"Employee Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
+            {label:"Digio KYC Report",path:"/report/emp-kyc-report",icon:MdTrendingUp},
           ]
       },
       {

@@ -8,6 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import sort_icon from "../../assets/sort.svg";
+import sort_icon from "../../assets/sort.svg";
 import { FiEdit2, FiTrash2, FiSearch, FiFileText } from "react-icons/fi";
 import { FaEye } from "react-icons/fa";
 import { CloseIcon } from "@chakra-ui/icons";
@@ -17,12 +18,14 @@ import UpdateEmpStatus from "../../utils/Emp/UpdateEmpStatus";
 import DeleteEmployeeModel from "./DeleteEmployee";
 import VerifyDocumentModel from "./models/VerifyDocuments";
 import Pagination from "../../Pagination/Pagination";
+import Pagination from "../../Pagination/Pagination";
 
 const EmployeeList = () => {
   const [empList, setEmpList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [search, setSearch] = useState("");
   const [search, setSearch] = useState("");
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -47,11 +50,22 @@ const EmployeeList = () => {
     onOpen: onVerifyModalOpen,
     onClose: onVerifyModalClose,
   } = useDisclosure();
+  const {
+    isOpen: isDeleteModalOpen,
+    onOpen: onDeleteModalOpen,
+    onClose: onDeleteModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isVerifyModelOpen,
+    onOpen: onVerifyModalOpen,
+    onClose: onVerifyModalClose,
+  } = useDisclosure();
 
   const fetchEmployeeList = async () => {
     try {
       setLoading(true);
       const response = await API.get(API_ENDPOINTS.GET_USERS, {
+        params: { page, limit, search },
         params: { page, limit, search },
       });
 
@@ -91,14 +105,51 @@ const EmployeeList = () => {
 
   const handleEdit = (empId) => {
     navigate(`/edit-employee-details/${empId}`);
+    navigate(`/edit-employee-details/${empId}`);
   };
 
   const handleView = (id) => {
+    navigate(`/view-employee-details/${id}`);
     navigate(`/view-employee-details/${id}`);
   };
 
   const handleDelete = (id) => {
     onDeleteModalOpen();
+    setSelectedId(id);
+  };
+  const tableHeader = [
+    "Name",
+    "Email",
+    "Department",
+    "Role",
+    "Contact",
+    "City / State",
+    "Salary(Rs.)",
+    "DOJ",
+    "Leaves",
+    "Login",
+    "Logout",
+    "Approver",
+    "View Doc",
+    "Action",
+    "Generate Letters",
+  ];
+  const widthMap = {
+    Name: "150px",
+    Email: "250px",
+    Department: "180px",
+    Role: "180px",
+    Contact: "150px",
+    "City / State": "200px",
+    "Salary(Rs.)": "150px",
+    DOJ: "140px",
+    Leaves: "120px",
+    Login: "150px",
+    Logout: "150px",
+    Approver: "180px",
+    "View Doc": "140px",
+    Action: "160px",
+    "Generate Letters": "320px",
     setSelectedId(id);
   };
   const tableHeader = [
@@ -140,6 +191,8 @@ const EmployeeList = () => {
     onOpen();
     setSelectedId(id);
   };
+    setSelectedId(id);
+  };
 
   const handleVerifyModal = (id, name) => {
     onVerifyModalOpen();
@@ -179,7 +232,36 @@ const EmployeeList = () => {
         selectedId={selectedId}
         fetchEmployeeList={fetchEmployeeList}
       />
+      <VerifyDocumentModel
+        isVerifyModelOpen={isVerifyModelOpen}
+        onVerifyModalClose={onVerifyModalClose}
+        selectedId={selectedId}
+        fetchEmployeeList={fetchEmployeeList}
+        empName={empName}
+      />
+      <ViewUploadedDocument
+        isOpen={isOpen}
+        onClose={onClose}
+        selectedId={selectedId}
+      />
+      <DeleteEmployeeModel
+        isDeleteModalOpen={isDeleteModalOpen}
+        onDeleteModalClose={onDeleteModalClose}
+        selectedId={selectedId}
+        fetchEmployeeList={fetchEmployeeList}
+      />
       {/* <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px 0px' width="100%"> */}
+      <Box
+        backgroundColor="white"
+        mt="1rem"
+        padding="12px 20px"
+        pt={{ base: 2, md: 3 }}
+        px={{ base: 1, md: 4 }}
+        borderRadius="15px 15px 0px 0px"
+        width="100%"
+      >
+        <HStack justifyContent="space-between">
+          <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
       <Box
         backgroundColor="white"
         mt="1rem"
@@ -200,11 +282,18 @@ const EmployeeList = () => {
               <BreadcrumbLink as={Link} color="#8B8D97" fontSize="13px">
                 Employee List
               </BreadcrumbLink>
+              <BreadcrumbLink as={Link} color="#8B8D97" fontSize="13px">
+                Employee List
+              </BreadcrumbLink>
             </BreadcrumbItem>
           </Breadcrumb>
         </HStack>
         <Flex justifyContent="space-between" mb={4} alignItems="baseline">
+        <Flex justifyContent="space-between" mb={4} alignItems="baseline">
           <Box>
+            <Text color="#45464E" fontSize="13px" fontWeight="500">
+              Employee List Management
+            </Text>
             <Text color="#45464E" fontSize="13px" fontWeight="500">
               Employee List Management
             </Text>
@@ -219,7 +308,18 @@ const EmployeeList = () => {
                   top: "10px",
                   right: "16px",
                 }}
+          <Box position="relative" w="40%">
+            <InputGroup justifyContent="end">
+              <Box
+                display={{ base: "none", md: "none", lg: "block" }}
+                style={{
+                  color: "#8C8C91",
+                  position: "absolute",
+                  top: "10px",
+                  right: "16px",
+                }}
               >
+                <FiSearch fontSize="20px" />
                 <FiSearch fontSize="20px" />
               </Box>
 
@@ -232,11 +332,28 @@ const EmployeeList = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
+              <Input
+                placeholder="Search by Employee Name"
+                border="1px solid #CFD3D4"
+                borderRadius="32px"
+                _placeholder={{ fontSize: "16px", color: "#8C8C91" }}
+                boxShadow="0px 2px 2px #e5e5e5"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
             </InputGroup>
           </Box>
         </Flex>
+        </Flex>
 
         {/* Table */}
+        <Box
+          bg="white"
+          borderRadius="md"
+          boxShadow="sm"
+          border="1px solid #e5e5e5"
+          width="100%"
+        >
         <Box
           bg="white"
           borderRadius="md"
@@ -330,9 +447,15 @@ const EmployeeList = () => {
                         <Td>
                           {emp?.city || "-"}, {emp?.state || "-"}
                         </Td>
+                        <Td>
+                          {emp?.city || "-"}, {emp?.state || "-"}
+                        </Td>
                         <Td>{emp?.salary || "-"}</Td>
                         <Td>
                           {emp?.date_of_joining
+                            ? new Date(
+                                emp?.date_of_joining,
+                              ).toLocaleDateString()
                             ? new Date(
                                 emp?.date_of_joining,
                               ).toLocaleDateString()
@@ -354,6 +477,11 @@ const EmployeeList = () => {
                               color="blue.600"
                               _hover={{ bg: "blue.50" }}
                               aria-label="View Documents"
+                              size="sm"
+                              variant="ghost"
+                              color="blue.600"
+                              _hover={{ bg: "blue.50" }}
+                              aria-label="View Documents"
                               onClick={() => handleViewDocs(emp?.id)}
                             />
                           </Tooltip>
@@ -361,6 +489,11 @@ const EmployeeList = () => {
                         {/* ACTIONS */}
                         <Td>
                           <Flex gap="10px" justify="center">
+                            <UpdateEmpStatus
+                              userId={emp?.id}
+                              currentStatus={
+                                emp?.is_active === 1 ? "activate" : "deactivate"
+                              }
                             <UpdateEmpStatus
                               userId={emp?.id}
                               currentStatus={
@@ -376,7 +509,13 @@ const EmployeeList = () => {
                                 variant="ghost"
                                 color="blue.600"
                                 _hover={{ bg: "blue.50" }}
+                                size="sm"
+                                variant="ghost"
+                                color="blue.600"
+                                _hover={{ bg: "blue.50" }}
                                 aria-label="Edit"
+                                onClick={() => handleEdit(emp?.id)}
+                              />
                                 onClick={() => handleEdit(emp?.id)}
                               />
                             </Tooltip>
@@ -384,6 +523,13 @@ const EmployeeList = () => {
                             <Tooltip label="View Employee" hasArrow>
                               <IconButton
                                 icon={<FiFileText />}
+                                size="sm"
+                                variant="ghost"
+                                color="blue.600"
+                                _hover={{ bg: "blue.50" }}
+                                aria-label="View"
+                                onClick={() => handleView(emp?.id)}
+                              />
                                 size="sm"
                                 variant="ghost"
                                 color="blue.600"
@@ -403,12 +549,28 @@ const EmployeeList = () => {
                                 aria-label="Delete"
                                 onClick={() => handleDelete(emp.id)}
                               />
+                                icon={<FiTrash2 />}
+                                size="sm"
+                                variant="ghost"
+                                color="red.600"
+                                _hover={{ bg: "red.50" }}
+                                aria-label="Delete"
+                                onClick={() => handleDelete(emp.id)}
+                              />
                             </Tooltip>
                           </Flex>
                         </Td>
                         <Td>
+                        <Td>
                           <Flex gap="8px">
                             <Tooltip label="Generate Offer Letter">
+                              <Button
+                                size="xs"
+                                colorScheme="blue"
+                                onClick={() =>
+                                  navigate(`/generate-offer-letter/${emp.id}`)
+                                }
+                              >
                               <Button
                                 size="xs"
                                 colorScheme="blue"
@@ -428,6 +590,13 @@ const EmployeeList = () => {
                                   navigate(`/generate-joining-letter/${emp.id}`)
                                 }
                               >
+                              <Button
+                                size="xs"
+                                colorScheme="green"
+                                onClick={() =>
+                                  navigate(`/generate-joining-letter/${emp.id}`)
+                                }
+                              >
                                 Joining
                               </Button>
                             </Tooltip>
@@ -440,11 +609,25 @@ const EmployeeList = () => {
                                   navigate(`/generate-agreement/${emp.id}`)
                                 }
                               >
+                              <Button
+                                size="xs"
+                                colorScheme="purple"
+                                onClick={() =>
+                                  navigate(`/generate-agreement/${emp.id}`)
+                                }
+                              >
                                 Agreement
                               </Button>
                             </Tooltip>
 
                             <Tooltip label="Verify Documents">
+                              <Button
+                                size="xs"
+                                colorScheme="yellow"
+                                onClick={() =>
+                                  handleVerifyModal(emp?.id, emp?.name)
+                                }
+                              >
                               <Button
                                 size="xs"
                                 colorScheme="yellow"
@@ -465,9 +648,15 @@ const EmployeeList = () => {
                         {" "}
                         No employees found.{" "}
                       </Td>
+                      <Td colSpan={15} textAlign="center">
+                        {" "}
+                        No employees found.{" "}
+                      </Td>
                     </Tr>
                   )}
                 </Tbody>
+              </Table>
+            </Box>
               </Table>
             </Box>
           )}

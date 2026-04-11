@@ -133,10 +133,32 @@ const AddEmployee = () => {
     pf: "",
     esi: "",
     approver_name: "",
-    reporting_under: "",
-    profile_image: null
+     reporting_under: "",
+  profile_image: null,
   });
- 
+  const [empList, setEmpList] = useState([]);
+
+  
+
+  const fetchEmployeeList = async () => {
+    try {
+      setLoading(true);
+      const response = await API.get(`${API_ENDPOINTS.GET_USERS}?page=${page}&limit=${limit}`, {});
+
+      if (response.status === 200) {
+        setEmpList(response.data.data);
+        console.log(response.data, "EMPLOYEE RESPONSE");
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEmployeeList();
+  }, []);
 
  const handleChange = (e) => {
   const { name, value } = e.target;
@@ -158,8 +180,7 @@ const AddEmployee = () => {
 };
 
 
- const handleSubmit = async () => {
-  // VALIDATIONS
+const handleSubmit = async () => {
   const requiredFieldErrors = validateRequiredFields(formData, requiredFields);
 
   const emailError = validateEmail(formData.email);
@@ -177,74 +198,117 @@ const AddEmployee = () => {
 
   setError(newError);
 
- 
-  // if (Object.values(newError).some((err) => err)) {
-  //   toast({
-  //     title: "Validation Error",
-  //     description:
-  //       newError.email ||
-  //       newError.contact_no ||
-  //       newError.aadhar_no ||
-  //       newError.pan_number ||
-  //       "Please fill all required fields",
-  //     status: "error",
-  //     duration: 3000,
-  //     isClosable: true,
-  //   });
-  //   return;
-  // }
+  if (Object.values(newError).some((err) => err)) {
+    toast({
+      title: "Validation Error",
+      description:
+        newError.email ||
+        newError.contact_no ||
+        newError.aadhar_no ||
+        newError.pan_number ||
+        newError.date_of_joining ||
+        "Please fill all required fields",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
+    return;
+  }
 
   try {
     setLoading(true);
 
-    //  FormData create
+    //  CREATE FORMDATA
     const formDataToSend = new FormData();
 
-    //  Append all fields
+    //  APPEND ALL FIELDS
     Object.keys(formData).forEach((key) => {
-      if (key === "profile_image") {
-        if (formData.profile_image) {
-          formDataToSend.append("profile_image", formData.profile_image);
-        }
-      } else {
-        formDataToSend.append(key, formData[key] ?? "");
+      if (
+         key !== "profile_image" &&
+        formData[key] !== null &&
+        formData[key] !== undefined &&
+        formData[key] !== ""
+      ) {
+        formDataToSend.append(key, formData[key]);
       }
     });
 
-    //  Convert numeric fields
-    const numberFields = [
-      "department_id",
-      "job_role_id",
-      "salary",
-      "four_travelling_allowance_per_km",
-      "two_travelling_allowance_per_km",
+    //  FORCE NUMBER CONVERSIONS (IMPORTANT)
+    formDataToSend.set("department_id", Number(formData.department_id));
+    formDataToSend.set("job_role_id", Number(formData.job_role_id));
+    formDataToSend.set("salary", Number(formData.salary));
+    formDataToSend.set(
+      "travelling_allowance_per_km",
+      Number(formData.travelling_allowance_per_km)
+    );
+    formDataToSend.set(
       "avg_travel_km_per_day",
+      Number(formData.avg_travel_km_per_day)
+    );
+    formDataToSend.set(
       "city_allowance_per_km",
+      Number(formData.city_allowance_per_km)
+    );
+    formDataToSend.set(
       "daily_allowance_with_doc",
+      Number(formData.daily_allowance_with_doc)
+    );
+    formDataToSend.set(
       "daily_allowance_without_doc",
+      Number(formData.daily_allowance_without_doc)
+    );
+    formDataToSend.set(
       "hotel_allowance",
+      Number(formData.hotel_allowance)
+    );
+    formDataToSend.set(
       "total_leaves",
+      Number(formData.total_leaves)
+    );
+    formDataToSend.set(
       "authentication_amount",
-      "pf",
-      "esi",
+      Number(formData.authentication_amount)
+    );
+    formDataToSend.set("pf", Number(formData.pf));
+    formDataToSend.set("esi", Number(formData.esi));
+    formDataToSend.set(
       "attendance_time",
+      Number(formData.attendance_time)
+    );
+    formDataToSend.set(
       "travelling_per_day",
-    ];
+      Number(formData.travelling_per_day)
+    );
 
-    numberFields.forEach((field) => {
-      if (formData[field] !== "" && formData[field] !== null) {
-        formDataToSend.set(field, Number(formData[field]));
+    //  DEFAULT VALUE
+    formDataToSend.set(
+      "week_off",
+      formData.week_off ? formData.week_off : "Sunday"
+    );
+
+    //  FILE APPEND (VERY IMPORTANT)
+    if (formData.profile_image) {
+      formDataToSend.append("profile_image", formData.profile_image);
+    }
+
+    //  REPORTING UNDER
+    if (formData.reporting_under) {
+      formDataToSend.set(
+        "reporting_under",
+        formData.reporting_under
+      );
+    }
+
+    //  API CALL
+    const response = await API.post(
+      `${API_ENDPOINTS?.CREATE_USERS}`,
+      formDataToSend,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       }
-    });
-
-    //  Default values
-    formDataToSend.set("week_off", formData.week_off || "Sunday");
-
-    //  FINAL API CALL
-   const response = await API.post(
-  API_ENDPOINTS.CREATE_USERS,
-  formDataToSend
-);
+    );
 
     if (response?.status === 201) {
       toast({
@@ -262,7 +326,7 @@ const AddEmployee = () => {
         },
       });
 
-     
+      //  RESET FORM
       setFormData({
         name: "",
         gender: "",
@@ -288,10 +352,9 @@ const AddEmployee = () => {
         total_leaves: "",
         week_off: "Sunday",
         approver_name: "",
-        reporting_under: "",
-        two_travelling_allowance_per_km:"",
-        four_travelling_allowance_per_km:"",
-        profile_image: null, 
+        travelling_per_day: "",
+        profile_image: null,        // RESET IMAGE
+        reporting_under: "",        // RESET REPORTING
       });
     }
   } catch (error) {
@@ -443,6 +506,21 @@ const AddEmployee = () => {
               />
               <FormErrorMessage>{error.name}</FormErrorMessage>
             </FormControl>
+
+            <FormControl>
+  <FormLabel>Profile Image</FormLabel>
+  <Input
+    type="file"
+    name="profile_image"
+    accept="image/*"
+    onChange={(e) => {
+      setFormData((prev) => ({
+        ...prev,
+        profile_image: e.target.files[0], //  FILE STORE
+      }));
+    }}
+  />
+</FormControl>
 
             <FormControl isRequired isInvalid={error.gender}>
               <FormLabel {...lableStyles}>Select Gender</FormLabel>
@@ -767,7 +845,7 @@ const AddEmployee = () => {
               <FormErrorMessage>{error.date_of_joining}</FormErrorMessage>
             </ FormControl>
             <FormControl isRequired isInvalid={error.salary}>
-              <FormLabel {...lableStyles}>Salary</FormLabel>
+              <FormLabel {...lableStyles}>Annual Basic Salary</FormLabel>
               <Input
                 name="salary"
                 placeholder="Salary"
@@ -896,24 +974,24 @@ const AddEmployee = () => {
               <FormErrorMessage>{error.approver_name}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isRequired isInvalid={error.reporting_under}>
-              <FormLabel {...lableStyles}>Reporting Under</FormLabel>
-              <Select
-                name="reporting_under"
-                placeholder="Select reporting under"
-                onChange={handleChange}
-              >
-                {users?.map((emp) => (
-                  <option key={emp.id} value={emp.id}>
-                    {emp.name}
-                  </option>
-                ))}
-              </Select>
-              <FormErrorMessage>{error.reporting_under}</FormErrorMessage>
-            </FormControl>
-
-
+            <FormControl>
+  <FormLabel>Reporting Under</FormLabel>
+  <Select
+    name="reporting_under"
+    value={formData.reporting_under}
+    onChange={handleChange}
+  >
+    <option value="">Select Manager</option>
+    {empList.map((emp) => (
+      <option key={emp.id} value={emp.id}>
+        {emp.name}
+      </option>
+    ))}
+  </Select>
+</FormControl>
           </SimpleGrid>
+
+
 
           <Text fontWeight="bold">Office Timing & Payroll</Text>
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>

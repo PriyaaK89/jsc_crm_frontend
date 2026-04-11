@@ -76,6 +76,7 @@ import TrackEmpLayout from "../components/layout/Reports/TrackEmpLayout";
 import UploadEmployeeExpenses from  "../components/layout/UploadEmployeeExpensesLayout";
 import Distributors from "../components/layout/Distributors";
 import EditDistributorLayout from "../components/layout/EditDistributeLayout"
+import KYCReport from "../components/layout/Reports/KYCReport";
 
 function App() {
   return (
@@ -224,6 +225,7 @@ function App() {
          <Route path="/report/emp-performance-report" element={<EmpPerformanceReportLayout/>}/>
            <Route path="/report/track-employee" element={<TrackEmpLayout />} />
            <Route path="/hr-mgmt/upload-employee-expenses" element={<UploadEmployeeExpenses/>} />
+           <Route path="/report/emp-kyc-report" element={<KYCReport/>}/>
 
       </Routes>
     </Router>

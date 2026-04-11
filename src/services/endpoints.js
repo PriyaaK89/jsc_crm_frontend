@@ -47,6 +47,8 @@ export const API_ENDPOINTS = {
   get_uploaded_exp: `admin-expense-summary`,
   emp_daily_summary: `daily-summary`,
   get_distributors:  `get-distributorsList`,
+  distributor_onbording_form:`/create-distributor`,
   update_distributor: `update-distributor`,
-  get_distributor: `get-distributor`
+  get_distributor: `get-distributor`,
+  uplaod_distributor_agreement_pdf: `/upload-agreement`
 };

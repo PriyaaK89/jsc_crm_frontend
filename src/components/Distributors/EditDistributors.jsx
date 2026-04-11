@@ -26,6 +26,7 @@ import { AddIcon, CheckIcon } from "@chakra-ui/icons";
 import { WarningIcon } from "@chakra-ui/icons";
 import { FiCheckCircle } from "react-icons/fi";
 import { CloseIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom";
 
 import useUsersapi from "../../Apis/GetUsersapi";
 import API from "../../services/api";
@@ -171,6 +172,7 @@ function DistributorAgreement() {
 
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const navigate = useNavigate();
 
   // const handleChildData = (data) => {
   //   setFormData((prev) => ({ ...prev, documents: data }));
@@ -484,6 +486,8 @@ const handleSubmit = async () => {
         duration: 3000,
         isClosable: true,
       });
+       navigate("/accounting-master/distributor");
+     
     }
 
   } catch (error) {
@@ -498,13 +502,8 @@ const handleSubmit = async () => {
     console.error("Update Error:", error);
   }
 };
-   // owner ke liye pincode
 
-  //    useEffect(() => {
-  //  if (formData.firm_type === "partnership" && partners.length === 0) {
-  //      setPartners([getEmptyPartner(), getEmptyPartner()]);
-  //   }
-    // }, [formData.firm_type]);
+
 
   const handleOwnerPincodeChange = async (value) => {
     setOwnerAddress((prev) => ({

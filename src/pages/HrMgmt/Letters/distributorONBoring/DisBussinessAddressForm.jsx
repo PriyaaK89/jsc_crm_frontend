@@ -56,6 +56,15 @@ function DisBussinessAddressForm({
                   )}
     
                 </FormControl>
+                  <FormControl isInvalid={!!errors.pincode}>
+                    <FormLabel>Pincode</FormLabel>
+                    <Input type="text" name="pincode" value={formData.pincode} onChange={(e) => handlePincodeChange(e.target.value)} />
+                    {errors.pincode && (
+                      <Text color="red.500" fontSize="sm">
+                        {errors.pincode}
+                      </Text>
+                    )}
+                  </FormControl>
     
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5} mt={5}>
                   <FormControl isInvalid={!!errors.state}>
@@ -97,15 +106,7 @@ function DisBussinessAddressForm({
                     )}
                   </FormControl>
     
-                  <FormControl isInvalid={!!errors.pincode}>
-                    <FormLabel>Pincode</FormLabel>
-                    <Input type="text" name="pincode" value={formData.pincode} onChange={(e) => handlePincodeChange(e.target.value)} />
-                    {errors.pincode && (
-                      <Text color="red.500" fontSize="sm">
-                        {errors.pincode}
-                      </Text>
-                    )}
-                  </FormControl>
+                
                   <FormControl isInvalid={!!errors.contact_number}>
                     <FormLabel>Contact No(without +91)</FormLabel>
                     <Input

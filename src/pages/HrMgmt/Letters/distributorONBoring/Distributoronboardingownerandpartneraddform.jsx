@@ -135,7 +135,7 @@ const AddressForm = ({
         </FormControl>
 
         {/* ALT MOBILE */}
-        <FormControl>
+        <FormControl isInvalid={!!getError("alt_mobile_no")}>
           <FormLabel>Alt Mobile No.</FormLabel>
           <Input
             maxLength={10}
@@ -154,27 +154,8 @@ const AddressForm = ({
             onChange={(e) => onChange(index, "address", e.target.value)}
           />
         </FormControl>
-
-        {/* STATE */}
-        <FormControl>
-          <FormLabel>State</FormLabel>
-          <Input
-            value={data.state || ""}
-            onChange={(e) => onChange(index, "state", e.target.value)}
-          />
-        </FormControl>
-
-        {/* DISTRICT */}
-        <FormControl>
-          <FormLabel>District</FormLabel>
-          <Input
-            value={data.district || ""}
-            onChange={(e) => onChange(index, "district", e.target.value)}
-          />
-        </FormControl>
-
-        {/* PINCODE */}
-        <FormControl>
+         {/* PINCODE */}
+        <FormControl isInvalid={!!getError("pincode")}>
           <FormLabel>Pincode</FormLabel>
           <Input
             maxLength={6}
@@ -184,6 +165,26 @@ const AddressForm = ({
             }
           />
         </FormControl>
+
+        {/* STATE */}
+        <FormControl isInvalid={!!getError("state")}>
+          <FormLabel>State</FormLabel>
+          <Input
+            value={data.state || ""}
+            onChange={(e) => onChange(index, "state", e.target.value)}
+          />
+        </FormControl>
+
+        {/* DISTRICT */}
+        <FormControl isInvalid={!!getError("district")}>
+          <FormLabel>District</FormLabel>
+          <Input
+            value={data.district || ""}
+            onChange={(e) => onChange(index, "district", e.target.value)}
+          />
+        </FormControl>
+
+       
 
         {/* PHOTO */}
         <FormControl>

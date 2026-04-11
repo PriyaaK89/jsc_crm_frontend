@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Button, Text,
@@ -12,12 +12,12 @@ import {
   Select,
   useToast
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 import { AddIcon, CheckIcon } from "@chakra-ui/icons";
 import { WarningIcon } from "@chakra-ui/icons";
 import { FiCheckCircle } from "react-icons/fi";
 import { CloseIcon } from "@chakra-ui/icons";
 import DistributorAgreementPdfPreview from "./DistributorAgreementPdfPreview";
-import { validateEmail, validateContact } from "../../../../hook/Validation";
 import useUsersapi from "../../../../Apis/GetUsersapi"
 import DistributorDocuments from "./DistributorDocuments";
 import API from "../../../../services/api";
@@ -32,6 +32,7 @@ function DistributorAgreement() {
 
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const navigate = useNavigate();
   const handleChildData = (data) => { setFormData((prev) => ({ ...prev, documents: data, })); };
 
   const { users } = useUsersapi();
@@ -39,53 +40,53 @@ function DistributorAgreement() {
   const generateModal = useDisclosure();
   const [firmtype, setFirmtype] = useState("");
   const [formData, setFormData] = useState({
-  customer_name: "",
-  customer_dob: "",
-  gst_number: "",
-  firm_name: "",
-  firm_type: "",
-  firm_email: "",
-  gst_type: "",
-  firm_since: "",
-  firm_pan: "",
-  firm_aadhar: "",
-  branch: "",
-  firm_landmark: "",
+    customer_name: "",
+    customer_dob: "",
+    gst_number: "",
+    firm_name: "",
+    firm_type: "",
+    firm_email: "",
+    gst_type: "",
+    firm_since: "",
+    firm_pan: "",
+    firm_aadhar: "",
+    branch: "",
+    firm_landmark: "",
 
-  business_address: "",
-  business_territory: "",
-  district: "",
-  tehsil: "",
-  landmark: "",
-  state: "",
-  pincode: "",
-  contact_number: "",
-  alt_contact_number: "",
+    business_address: "",
+    business_territory: "",
+    district: "",
+    tehsil: "",
+    landmark: "",
+    state: "",
+    pincode: "",
+    contact_number: "",
+    alt_contact_number: "",
 
-  responsible_person_name: "",
-  responsible_person_contact: "",
-  responsible_person_address: "",
-  responsible_person_alt_contact: "",
+    responsible_person_name: "",
+    responsible_person_contact: "",
+    responsible_person_address: "",
+    responsible_person_alt_contact: "",
 
-  seed_license_no: "",
-  seed_license_expiry: "",
+    seed_license_no: "",
+    seed_license_expiry: "",
 
-  transport_name_a: "",
-  transport_name_b: "",
+    transport_name_a: "",
+    transport_name_b: "",
 
-  source_of_funds: "",
-  own_funds_details: "",
+    source_of_funds: "",
+    own_funds_details: "",
 
-  bank_name: "",
-  bank_account_no: "",
-  ifsc_code: "",
-  bank_branch: "",
+    bank_name: "",
+    bank_account_no: "",
+    ifsc_code: "",
+    bank_branch: "",
 
-  security_cheque_no: "",
-  security_cheque_no_2: "",
-  approver_name: "",
-  approving_date: "",
-});
+    security_cheque_no: "",
+    security_cheque_no_2: "",
+    approver_name: "",
+    approving_date: "",
+  });
   const [kycId, setKycId] = useState("");
   const [kycStatus, setKycStatus] = useState(null);
   const [gstStatus, setGstStatus] = useState("");
@@ -96,7 +97,6 @@ function DistributorAgreement() {
     address: "",
     state: "",
     district: "",
-    tehsil: "",
     pincode: "",
     pan_no: "",
     aadhar_no: "",
@@ -128,7 +128,6 @@ function DistributorAgreement() {
     address: "",
     state: "",
     district: "",
-    tehsil: "",
     pincode: "",
     pan_no: "",
     aadhar_no: "",
@@ -171,7 +170,7 @@ function DistributorAgreement() {
           business_address: `${data.address?.building || ""}, ${data.address?.street || ""}, ${data.address?.location || ""}`,
           state: data.address?.state || "",
           district: data.address?.district || "",
-          pin_code: data.address?.pincode || "",
+          pincode: data.address?.pincode || "",
           firm_since: data.reg_date || "",
           customer_name: data.legal_name || "",
         }));
@@ -222,176 +221,176 @@ function DistributorAgreement() {
       setLoading(false);
     }
   };
-// -----------------------aadhar verifiction ------------------------------
-const validateMobile = (mobile) => {
-  return /^[6-9]\d{9}$/.test(mobile);
-};
+  // -----------------------aadhar verifiction ------------------------------
+  const validateMobile = (mobile) => {
+    return /^[6-9]\d{9}$/.test(mobile);
+  };
 
 
-const handleResponsibleMobileVerify = async () => {
-  const mobile = formData.responsible_person_contact;
+  const handleResponsibleMobileVerify = async () => {
+    const mobile = formData.responsible_person_contact;
 
-  if (!mobile || !validateMobile(mobile)) {
-    toast({
-      description: "Enter valid 10 digit mobile number",
-      status: "error",
-      duration: 2000,
-    });
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    const res = await API.post(API_ENDPOINTS.verify_mobile_no, {
-      mobile: mobile,
-    });
-
-    const response = res.data;
-
-    const id = response?.data?.id;
-
-    console.log("KYC ID:", id);
-
-    if (id) {
-      setKycId(id);
-      // DIRECTLY PASS ID
-      getKycStatus(id);
-    }
-    console.log("kyid",kycId)
-
-    const requestId = response?.request_id; 
-
-    if (requestId) {
+    if (!mobile || !validateMobile(mobile)) {
       toast({
-        title: "Verification Link Sent",
-        description: "User ko DigiLocker link bhej diya gaya hai",
-        status: "success",
-        duration: 3000,
+        description: "Enter valid 10 digit mobile number",
+        status: "error",
+        duration: 2000,
       });
-    }
-
-  } catch (error) {
-    console.error("Verification Error:", error);
-
-    toast({
-      description: "Mobile verification failed",
-      status: "error",
-      duration: 2000,
-    });
-  } finally {
-    setLoading(false);
-  }
-};
-
-// verify KID kycId
-
-const getKycStatus = async (kycId) => {
-  try {
-    console.log("Calling status API with ID:", kycId);
-
-    const res = await API.post(API_ENDPOINTS.get_aadhar_pan_kid(kycId)
-    );
-
-    // console.log("KYC Status Response:", res.data);
-
-    setKycStatus(res.data?.data);
-
-  } catch (error) {
-    console.error("KYC Status Error:", error);
-  }
-};
-const intervalRef = useRef(null);
-const startTimeRef = useRef(null);
-
-useEffect(() => {
-  if (!kycId) return;
-
-  // already running ho to dubara mat start karo
-  if (intervalRef.current) return;
-
-  startTimeRef.current = Date.now();
-
-  intervalRef.current = setInterval(() => {
-    const now = Date.now();
-
-    // STOP after 10 min
-    if (now - startTimeRef.current > 600000) {
-      console.log("⛔ Stopped after 10 min");
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
       return;
     }
 
-    const isCompleted = kycStatus?.approved || kycStatus?.is_completed;
+    try {
+      setLoading(true);
 
-    const hasBasicData =
-      kycStatus?.aadhaar?.name &&
-      kycStatus?.customer_identifier;
-
-    //  STOP if data mil gaya
-    if (isCompleted || hasBasicData) {
-      console.log("✅ Data mil gaya, stop polling");
-
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-
-      toast({
-        title: "KYC Completed ✅",
-        description: "Aadhaar details received",
-        status: "success",
-        duration: 3000,
+      const res = await API.post(API_ENDPOINTS.verify_mobile_no, {
+        mobile: mobile,
       });
 
-      return;
-    }
+      const response = res.data;
 
-    console.log("⏳ Checking KYC...");
-    getKycStatus(kycId);
+      const id = response?.data?.id;
 
-  }, 10000); // 10 sec
+      console.log("KYC ID:", id);
 
-  return () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
+      if (id) {
+        setKycId(id);
+        // DIRECTLY PASS ID
+        getKycStatus(id);
+      }
+      console.log("kyid", kycId)
+
+      const requestId = response?.request_id;
+
+      if (requestId) {
+        toast({
+          title: "Verification Link Sent",
+          description: "User ko DigiLocker link bhej diya gaya hai",
+          status: "success",
+          duration: 3000,
+        });
+      }
+
+    } catch (error) {
+      console.error("Verification Error:", error);
+
+      toast({
+        description: "Mobile verification failed",
+        status: "error",
+        duration: 2000,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-}, [kycId, kycStatus]); 
+  // verify KID kycId
+
+  const getKycStatus = async (kycId) => {
+    try {
+      console.log("Calling status API with ID:", kycId);
+
+      const res = await API.post(API_ENDPOINTS.get_aadhar_pan_kid(kycId)
+      );
+
+      // console.log("KYC Status Response:", res.data);
+
+      setKycStatus(res.data?.data);
+
+    } catch (error) {
+      console.error("KYC Status Error:", error);
+    }
+  };
+  const intervalRef = useRef(null);
+  const startTimeRef = useRef(null);
+
+  useEffect(() => {
+    if (!kycId) return;
+
+    // already running ho to dubara mat start karo
+    if (intervalRef.current) return;
+
+    startTimeRef.current = Date.now();
+
+    intervalRef.current = setInterval(() => {
+      const now = Date.now();
+
+      // STOP after 10 min
+      if (now - startTimeRef.current > 600000) {
+        console.log("⛔ Stopped after 10 min");
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+        return;
+      }
+
+      const isCompleted = kycStatus?.approved || kycStatus?.is_completed;
+
+      const hasBasicData =
+        kycStatus?.aadhaar?.name &&
+        kycStatus?.customer_identifier;
+
+      //  STOP if data mil gaya
+      if (isCompleted || hasBasicData) {
+        console.log("✅ Data mil gaya, stop polling");
+
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+
+        toast({
+          title: "KYC Completed ✅",
+          description: "Aadhaar details received",
+          status: "success",
+          duration: 3000,
+        });
+
+        return;
+      }
+
+      console.log("⏳ Checking KYC...");
+      getKycStatus(kycId);
+
+    }, 10000); // 10 sec
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+
+  }, [kycId, kycStatus]);
 
 
-useEffect(() => {
-  if (kycStatus?.is_completed && kycStatus?.aadhaar) {
-    const aadhaar = kycStatus.aadhaar;
+  useEffect(() => {
+    if (kycStatus?.is_completed && kycStatus?.aadhaar) {
+      const aadhaar = kycStatus.aadhaar;
 
-    // console.log("✅ Auto filling Aadhaar data:", aadhaar);
+      // console.log("✅ Auto filling Aadhaar data:", aadhaar);
 
-    setFormData((prev) => ({
-      ...prev,
-      responsible_person_name: aadhaar.name || "",
-      customer_dob: aadhaar.dob
-        ? aadhaar.dob.split("/").reverse().join("-") // dd/mm/yyyy → yyyy-mm-dd
-        : "",
-      responsible_person_address: aadhaar.address || "",
-    }));
+      setFormData((prev) => ({
+        ...prev,
+        responsible_person_name: aadhaar.name || "",
+        customer_dob: aadhaar.dob
+          ? aadhaar.dob.split("/").reverse().join("-") // dd/mm/yyyy → yyyy-mm-dd
+          : "",
+        responsible_person_address: aadhaar.address || "",
+      }));
 
-   if(formData.firm_type==="proprietorship"){
-    setOwnerAddress((prev) => ({
-      ...prev,
-      name: aadhaar.name || "",
-      address: aadhaar.address || "",
-      father_name: aadhaar.father_name || "",
-      pincode: aadhaar.pincode || "",
-      state: aadhaar.state || "",
-      district: aadhaar.district || "",
+      if (formData.firm_type === "proprietorship") {
+        setOwnerAddress((prev) => ({
+          ...prev,
+          name: aadhaar.name || "",
+          address: aadhaar.address || "",
+          father_name: aadhaar.father_name || "",
+          pincode: aadhaar.pincode || "",
+          state: aadhaar.state || "",
+          district: aadhaar.district || "",
 
-    }));
-   }
-    
+        }));
+      }
 
-  }
-}, [kycStatus]);
+
+    }
+  }, [kycStatus]);
 
   // ----------------------------pan verification------------------------------------------------------
   // pan valadition 
@@ -553,26 +552,18 @@ useEffect(() => {
     }
   };
   // -------------------------------------handle submit----------------------------------------------------
-const isSubmitting = useRef(false);
 
-  const handleformSubmit = async () => {
+ const handleformSubmit = async () => {
 
-  // const isValid = validateForm();
-
-  // if (!isValid) {
-  //   toast({
-  //     title: "Validation Error",
-  //     description: "Please fill all required fields correctly",
-  //     status: "error",
-  //     duration: 3000,
-  //   });
-  //   return;
-  // }
-
-  // if (isSubmitting.current) return;
-  // isSubmitting.current = true;
-
-  try {
+  if (!validateForm()) {
+    toast({
+      description: "Please fix validation errors",
+      status: "error",
+      duration: 2000,
+    });
+    return;
+  }
+    try {
       setLoading(true);
 
       const formDataToSend = new FormData();
@@ -587,20 +578,19 @@ const isSubmitting = useRef(false);
       //  nested data
       if (formData.firm_type === "proprietorship") {
 
-        const keyMap = {
-          name: "owner_name",
-          father_name: "owner_father_name",
-          pan_no: "owner_pan",
-          aadhar_no: "owner_aadhar",
-          address: "owner_address",
-          state: "owner_state",
-          district: "owner_district",
-          tehsil: "owner_tehsil",
-          pincode: "owner_pincode",
-          mobile_no: "owner_mobile",
-          alt_mobile_no: "owner_alt_mobile",
-          upload_img: "owner_photo",
-        };
+       const keyMap = {
+  name: "owner_name",
+  father_name: "owner_father_name",
+  pan_no: "owner_pan",
+  aadhar_no: "owner_aadhar",
+  address: "owner_address",
+  state: "owner_state",
+  district: "owner_district",
+  pincode: "owner_pincode",
+  mobile_no: "owner_mobile",
+  alt_mobile_no: "owner_alt_mobile",
+  upload_img: "owner_photo",
+};
 
         Object.keys(ownerAddress).forEach((key) => {
           if (ownerAddress[key]) {
@@ -631,9 +621,9 @@ const isSubmitting = useRef(false);
         formDataToSend.append("partners", JSON.stringify(partnersData,));
       }
 
-      if (otherCompanies && otherCompanies.length > 0) {
-        formDataToSend.append("otherCompanies", JSON.stringify(otherCompanies));
-      }
+    if (otherCompanies.length && otherCompanies[0].name) {
+  formDataToSend.append("other_companies", JSON.stringify(otherCompanies));
+}
 
 
       const docs = formData.documents;
@@ -642,22 +632,21 @@ const isSubmitting = useRef(false);
 
         //  SHOP IMAGES (convert to shop_image_1,2,3...)
         if (docs.shop_image && docs.shop_image.length > 0) {
-          docs.shop_image.forEach((file,) => {
-            formDataToSend.append(`shop_image`, file);
+          docs.shop_image.forEach((file, index) => {
+            formDataToSend.append(`shop_image[${index}]`, file);
           });
         }
 
         // CHEQUE IMAGES
         if (docs.cheque_photo && docs.cheque_photo.length > 0) {
-          docs.cheque_photo.forEach((file,) => {
-            formDataToSend.append(`cheque_photo`, file);
+          docs.cheque_photo.forEach((file, index) => {
+            formDataToSend.append(`cheque_photo[${index}]`, file);
           });
         }
 
         // SINGLE FILES
         if (docs.pan_photo) formDataToSend.append("pan_photo", docs.pan_photo);
-        if (docs.aadhar_front) formDataToSend.append("aadhar_front", docs.aadhar_front);
-        if (docs.aadhar_back) formDataToSend.append("aadhar_back", docs.aadhar_back);
+       if (docs.aadhar_front) formDataToSend.append("aadhar_photo", docs.aadhar_front);
         if (docs.gst_file) formDataToSend.append("gst_file", docs.gst_file);
         if (docs.seed_license) formDataToSend.append("seed_license", docs.seed_license);
         if (docs.fertilizer_license) formDataToSend.append("fertilizer_license", docs.fertilizer_license);
@@ -669,7 +658,7 @@ const isSubmitting = useRef(false);
         if (docs.mai_letter) formDataToSend.append("mai_letter", docs.mai_letter);
       }
 
-console.log("Before API Call");
+      console.log("Before API Call");
       const response = await API.post(
         API_ENDPOINTS.distributor_onbording_form,
         formDataToSend,
@@ -680,7 +669,7 @@ console.log("Before API Call");
         }
       );
 
-    
+
       if (response.data.success) {
         toast({
           title: "Success",
@@ -695,15 +684,24 @@ console.log("Before API Call");
           status: "error",
           duration: 3000,
         });
-       }
-        // Reset form after successful submission
+      }
+     if (response.status === 201 || response.data.success) {
+  toast({
+    title: "Success",
+    description: "Distributor created successfully",
+    status: "success",
+    duration: 3000,
+  });
+
+  navigate("/distributor-list"); // 👈 your route
+}
 
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
-       isSubmitting.current = false;
     }
+    
   };
 
 
@@ -749,7 +747,7 @@ console.log("Before API Call");
 
     setFormData((prev) => ({
       ...prev,
-      approver_name: selectedApprover, //  proper key
+      approver_name: selectedApprover?.id, //  proper key
     }));
   };
   // habndle change 
@@ -763,88 +761,88 @@ console.log("Before API Call");
       ...prev,
       [name]: value,
     }));
-
   };
   // form validation ---------------------------------------
   const validateForm = () => {
-    let newErrors = {};
-const requiredFields = [
-    "firm_name",
-    "firm_type",
-    "firm_email",
-    "business_address",
-    "business_territory",
-    "district",
-    "tehsil",
-    "landmark",
-    "state",
-    "pincode",
-    "contact_number",
-    "alt_contact_number",
-    "responsible_person_name",
-    "responsible_person_contact",
-    "responsible_person_address",
-    "responsible_person_alt_contact",
-    "firm_landmark",
-    "firm_since",
-    "branch",
-    "seed_license_no",
-    "seed_license_expiry",
-    "transport_name_a",
-    "source_of_funds",
-    "own_funds_details",
-    "bank_name",
-    "bank_account_no",
-    "ifsc_code",
-    "bank_branch",
-    "security_cheque_no",
-    "security_cheque_no_2",
-    "approver_name",
-    "approving_date",
-  ];
 
-  // ✅ required check
-  requiredFields.forEach((field) => {
-    if (!formData[field] || formData[field].toString().trim() === "") {
-      newErrors[field] = "This field is required";
-    }
-  });
+    let newErrors = {};
+
+    const requiredFields = [
+      "firm_name",
+      "firm_type",
+      "firm_email",
+      "business_address",
+      "business_territory",
+      "district",
+      "tehsil",
+      "landmark",
+      "state",
+      "pincode",
+      "contact_number",
+      "alt_contact_number",
+      "responsible_person_name",
+      "responsible_person_contact",
+      "responsible_person_address",
+      "responsible_person_alt_contact",
+      "firm_landmark",
+      "firm_since",
+      "branch",
+      "seed_license_no",
+      "seed_license_expiry",
+      "transport_name_a",
+      "source_of_funds",
+      "bank_name",
+      "bank_account_no",
+      "ifsc_code",
+      "bank_branch",
+      "security_cheque_no",
+      "security_cheque_no_2",
+      "approver_name",
+      "approving_date",
+    ];
+    //  required check
+    requiredFields.forEach((field) => {
+      if (!formData[field] || formData[field].toString().trim() === "") {
+        newErrors[field] = "This field is required";
+      }
+    });
     //  Owner validation
     if (formData.firm_type === "proprietorship") {
-      if (!ownerAddress.name) newErrors.owner_name = "Owner name required";
-      if (!ownerAddress.father_name) newErrors.owner_father_name = "Owner Father name required";
-      if (!ownerAddress.address) newErrors.owner_address = "Owner address required";
-      if (!ownerAddress.pincode) newErrors.owner_pincode = "Owner pincode required";
-      if (!ownerAddress.pan_no) newErrors.owner_pan_no = "Owner PAN required";
-      if (!ownerAddress.state) newErrors.owner_state = "Owner state required";
-      if (!ownerAddress.district) newErrors.owner_district = "Owner district required";
-      if (!ownerAddress.tehsil) newErrors.owner_tehsil = "Owner tehsil required";
-      if (!ownerAddress.aadhar_no) newErrors.owner_aadhar_no = "Owner aadhar required";
-      if (!ownerAddress.mobile_no) newErrors.owner_mobile_no = "Owner mobile required";
-      if (!ownerAddress.alt_mobile_no) newErrors.owner_alt_mobile_no = "Owner alt mobile required";
+      if (!ownerAddress.name) newErrors.owner_name = "Required";
+      if (!ownerAddress.father_name) newErrors.owner_father_name = "Required";
+      if (!ownerAddress.address) newErrors.owner_address = "Required";
+      if (!ownerAddress.pincode) newErrors.owner_pincode = "Required";
+      if (!ownerAddress.pan_no) newErrors.owner_pan = "Required"; // FIXED
+      if (!ownerAddress.state) newErrors.owner_state = "Required";
+      if (!ownerAddress.district) newErrors.owner_district = "Required";
+      if (!ownerAddress.aadhar_no) newErrors.owner_aadhar = "Required"; // FIXED
+      if (!ownerAddress.mobile_no) newErrors.owner_mobile = "Required"; // FIXED
+      if (!ownerAddress.alt_mobile_no) newErrors.owner_alt_mobile = "Required"; // FIXED
     }
 
     //  Partners validation
     if (formData.firm_type === "partnership") {
       partners.forEach((p, i) => {
         if (!p.name) newErrors[`partner_${i}_name`] = "Required";
-        if (!p.mobile_no) newErrors[`partner_${i}_mobile_no`] = "Required";
         if (!p.address) newErrors[`partner_${i}_address`] = "required";
         if (!p.pincode) newErrors[`partner_${i}_pincode`] = "required";
         if (!p.state) newErrors[`partner_${i}_state`] = "required";
         if (!p.district) newErrors[`partner_${i}_district`] = "required";
-        if (!p.tehsil) newErrors[`partner_${i}_tehsil`] = "required";
-        if (!p.aadhar_no) newErrors[`partner_${i}_aadhar_no`] = "required";
         if (!p.alt_mobile_no) newErrors[`partner_${i}_alt_mobile_no`] = "required";
-
 
         if (!p.father_name)
           newErrors[`partner_${i}_father_name`] = "Required";
 
         if (!p.pan_no)
-          newErrors[`partner_${i}_pan_no`] = "Required";
+          newErrors[`partner_${i}_pan`] = "Required";
 
-      });
+        if (!p.aadhar_no)
+          newErrors[`partner_${i}_aadhar`] = "Required";
+
+        if (!p.mobile_no)
+          newErrors[`partner_${i}_mobile`] = "Required";
+      }
+      );
     }
 
     setError(newErrors);
@@ -983,7 +981,7 @@ const requiredFields = [
 
                 if (value === "partnership") {
                   setPartners([
-                    { address: "", state: "", district: "", tehsil: "", pincode: "", pan_no: "", aadharno: "" },
+                    { address: "", state: "", district: "",  pincode: "", pan_no: "", aadhar_no: "", mobile_no: "", alt_mobile_no: "", name: "", father_name: "", partner_photo: null },
                   ]);
                 }
 
@@ -1017,8 +1015,8 @@ const requiredFields = [
             )}
           </FormControl>
 
-         
- <FormControl>
+
+          <FormControl>
             <FormLabel>Firm GSTN type</FormLabel>
             <Select
               name="gst_type"
@@ -1032,17 +1030,17 @@ const requiredFields = [
               <option value="unregistered">Unregistered</option>
             </Select>
           </FormControl>
-          {formData.gst_type==="unregistered" &&(
+          {formData.gst_type === "unregistered" && (
 
-             <FormControl>
-                      <FormLabel>GST Unregistered Authority Latter </FormLabel>
-                      <Input type="file"onChange={(e) =>
-  setFormData(prev => ({
-    ...prev,
-    gst_unregistered_authority_latter: e.target.files[0]
-  }))
-} />
-                    </FormControl>
+            <FormControl>
+              <FormLabel>GST Unregistered Authority Latter </FormLabel>
+              <Input type="file" onChange={(e) =>
+                setFormData(prev => ({
+                  ...prev,
+                  gst_unregistered_authority_latter: e.target.files[0]
+                }))
+              } />
+            </FormControl>
           )}
 
           <FormControl isInvalid={!!errors.firm_since}>
@@ -1147,14 +1145,14 @@ const requiredFields = [
 
 
           {/* Business Address */}
-        <DisBussinessAddressForm
-        formData={formData}
-        handleChange={handleChange}
-         handlePanVerification={handlePanVerification}
-         handlePincodeChange={handlePincodeChange}
-                    panStatus={panStatus}
-                    errors={errors}
-        />
+          <DisBussinessAddressForm
+            formData={formData}
+            handleChange={handleChange}
+            handlePanVerification={handlePanVerification}
+            handlePincodeChange={handlePincodeChange}
+            panStatus={panStatus}
+            errors={errors}
+          />
 
           {firmtype === "proprietorship" && (
             <AddressForm
@@ -1259,34 +1257,34 @@ const requiredFields = [
             )}
           </FormControl> */}
           <FormControl isInvalid={!!errors.responsible_person_contact}>
-  <FormLabel>Responsible Person Contact No</FormLabel>
+            <FormLabel>Responsible Person Contact No</FormLabel>
 
-  <InputGroup>
-    <Input
-      name="responsible_person_contact"
-      value={formData.responsible_person_contact}
-      onChange={handleChange}
-    />
+            <InputGroup>
+              <Input
+                name="responsible_person_contact"
+                value={formData.responsible_person_contact}
+                onChange={handleChange}
+              />
 
-    <InputRightElement>
-      <IconButton
-        size="sm"
-        colorScheme="blue"
-        icon={<FiCheckCircle />}
-        isDisabled={
-          !/^[6-9]\d{9}$/.test(formData.responsible_person_contact)
-        }
-        onClick={handleResponsibleMobileVerify}
-      />
-    </InputRightElement>
-  </InputGroup>
+              <InputRightElement>
+                <IconButton
+                  size="sm"
+                  colorScheme="blue"
+                  icon={<FiCheckCircle />}
+                  isDisabled={
+                    !/^[6-9]\d{9}$/.test(formData.responsible_person_contact)
+                  }
+                  onClick={handleResponsibleMobileVerify}
+                />
+              </InputRightElement>
+            </InputGroup>
 
-  {errors.responsible_person_contact && (
-    <Text color="red.500" fontSize="sm">
-      {errors.responsible_person_contact}
-    </Text>
-  )}
-</FormControl>
+            {errors.responsible_person_contact && (
+              <Text color="red.500" fontSize="sm">
+                {errors.responsible_person_contact}
+              </Text>
+            )}
+          </FormControl>
           <FormControl isInvalid={!!errors.responsible_person_alt_contact}>
             <FormLabel>Responsible Persone Alternat Contact No</FormLabel>
             <Input
@@ -1537,14 +1535,14 @@ const requiredFields = [
             />
           </FormControl>
 
-          <FormControl >
+          {/* <FormControl >
             <FormLabel>Credit Amount</FormLabel>
             <Input
               name="credit_amount"
               value={formData.credit_amount}
               onChange={handleChange}
-            /> 
-          </FormControl>
+            />
+          </FormControl> */}
 
           <FormControl >
             <FormLabel>Credit Duration Period</FormLabel>
@@ -1552,7 +1550,7 @@ const requiredFields = [
               name="credit_duration"
               value={formData.credit_duration}
               onChange={handleChange}
-            /> 
+            />
           </FormControl>
 
           <FormControl>

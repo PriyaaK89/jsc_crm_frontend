@@ -129,7 +129,7 @@ const DistributorsList = () => {
     "Approver Name",
     "Approvering Date",
     "Created At",
-    "Approver Image",
+    // "Approver Image",
     "Business Territory",
     "Firm Landmark",
     "Responsible Person Address",
@@ -185,7 +185,7 @@ const DistributorsList = () => {
     "Approver Name": "180px",
     "Approvering Date": "180px",
     "Created At": "180px",
-    "Approver Image": "160px",
+    // "Approver Image": "160px",
     "Business Territory": "200px",
     "Firm Landmark": "200px",
     "Responsible Person Address": "250px",
@@ -431,14 +431,14 @@ const DistributorsList = () => {
                     <Td> {formatDate(item?.approving_date || "-")} </Td>
 
                     <Td> {formatDateTime(item?.created_at || "-")} </Td>
-                    <Td>
+                    {/* <Td>
                       <Img
                         src={item?.approver_image}
                         alt="approver image"
                         boxSize="16px"
                         cursor="pointer"
                       />
-                    </Td>
+                    </Td> */}
                     <Td>{item?.business_territory || "-"}</Td>
                     <Td>{item?.firm_landmark || "-"}</Td>
                     <Td>{item?.responsible_person_address || "-"}</Td>

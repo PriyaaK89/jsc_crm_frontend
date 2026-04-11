@@ -225,8 +225,8 @@ function DistributorDocuments({ onChange, formData, onSendData }) {
 
       {/* SHOP MODAL */}
       <Modal isOpen={shopModal.isOpen} onClose={shopModal.onClose}>
-        <ModalOverlay borderRadius="12px" overflow="hidden" mx="12px" />
-        <ModalContent >
+        <ModalOverlay   />
+        <ModalContent overflow="hidden" mx="12px" borderRadius="12px" >
            {/* HEADER */}
                           <Flex
                             bg="blue.500"
@@ -235,7 +235,7 @@ function DistributorDocuments({ onChange, formData, onSendData }) {
                             py={3}
                             justifyContent="space-between"
                             align="center"
-                                        borderRadius="12px 12px 0px 0px"
+                           borderRadius="12px 12px 0px 0px"
 
                           >
                             <Text fontWeight="bold">Preview  Documents</Text>

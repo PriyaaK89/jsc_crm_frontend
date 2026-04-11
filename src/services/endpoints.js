@@ -48,5 +48,6 @@ export const API_ENDPOINTS = {
   emp_daily_summary: `daily-summary`,
   get_distributors:  `get-distributorsList`,
   update_distributor: `update-distributor`,
-  get_distributor: `get-distributor`
+  get_distributor: `get-distributor`,
+  delete_distributor: `delete-distributor`,
 };

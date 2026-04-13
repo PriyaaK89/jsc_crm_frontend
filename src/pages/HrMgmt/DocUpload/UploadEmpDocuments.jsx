@@ -21,6 +21,9 @@ const UploadEmpDocuments = () => {
 const navigate = useNavigate();
 
 const { userId, email, mustChangePassword } = location.state || {};
+console.log(location.state , "location");
+
+console.log(typeof(mustChangePassword) ,"type of mustChangePassword");
 
 const handleNext = () => {
   if (Number(mustChangePassword) === 1) {
@@ -35,7 +38,10 @@ const handleNext = () => {
   }
 };
 
-console.log(userId, "usersID")
+console.log(userId, "usersID");
+console.log(email, "email");
+console.log(mustChangePassword, "mustChangePassword");
+
   return (
     <Box  bg="white" rounded="md" p={5} >
       <Text fontSize="lg" fontWeight="bold" mb={6}>

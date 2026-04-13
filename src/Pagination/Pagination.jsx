@@ -9,6 +9,12 @@ const Pagination = ({
   totalItems,
   totalPages,
 }) => {
+    console.log( "pg data",  page,
+  setPage,
+  limit,
+  setLimit,
+  totalItems,
+  totalPages);
   return (
     <Flex justify="space-between" align="center" mt={3}>
 

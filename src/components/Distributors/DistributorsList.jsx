@@ -31,9 +31,11 @@ import ViewDistributorsDocumentsModal from "./ViewDistributorsDocumentsModal";
 import ViewCompanyModal from "./ViewCompanyModal";
 import ViewPartnersModal from "./ViewPartnersModal";
 import Pagination from "../../Pagination/Pagination";
+import DeleteDistributorModal from "./DeleteDistributorModal";
 import { FiSearch } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { FiEdit2 } from "react-icons/fi";
+import { FiTrash2 } from "react-icons/fi";
 
 const DistributorsList = () => {
   const [distributors, setDistributors] = useState([]);
@@ -47,6 +49,8 @@ const DistributorsList = () => {
   const [search, setSearch] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const navigate = useNavigate();
+  const [selectedId, setSelectedId] = useState("");
+  const {isOpen: isDeleteModalOpen, onOpen: onDeleteModalOpen, onClose: onDeleteModalClose  } = useDisclosure()
 
   const {
     isOpen: isCompanyOpen,
@@ -143,7 +147,7 @@ const DistributorsList = () => {
     "Partners",
     "Companies",
     "Documents",
-    "Edit Doc",
+    "Action",
   ];
   const widthMap = {
     "S No": "80px",
@@ -201,6 +205,12 @@ const DistributorsList = () => {
     Documents: "160px",
     Action: "180px",
   };
+
+  const handleDelete = (id) =>{
+    onDeleteModalOpen();
+    setSelectedId(id);
+    
+  }
 
   const fetchDistributors = async () => {
     try {
@@ -264,6 +274,12 @@ const DistributorsList = () => {
         isOpen={isCompanyOpen}
         onClose={onCompanyClose}
         companies={selectedDistributor}
+      />
+      <DeleteDistributorModal
+      isOpen={isDeleteModalOpen}
+      onClose={onDeleteModalClose}
+      selectedId={selectedId}
+      fetchDistributors={fetchDistributors}
       />
       <Box
         bg="white"
@@ -385,7 +401,7 @@ const DistributorsList = () => {
               ) : distributors.length === 0 ? (
                 <Tr>
                   <Td colSpan={headers.length} textAlign="center">
-                    No Data Found
+                    No Data Founds
                   </Td>
                 </Tr>
               ) : (
@@ -488,7 +504,7 @@ const DistributorsList = () => {
                     <Td>
 
                       <IconButton
-                        icon={<FiEdit2 style={{ width: "21px" }} />}
+                        icon={<FiEdit2 />}
                         size="sm"
                         variant="ghost"
                         color="blue.600"
@@ -497,6 +513,20 @@ const DistributorsList = () => {
                         onClick={() => {
                           navigate(`/accounting-master/edit-distributor/${item?.id}`);
                       }}
+                      />
+                    </Td>
+                    <Td>
+                      <IconButton
+                       icon={<FiTrash2/>}
+                        size="sm"
+                        variant="ghost"
+                        color="red.600"
+                        _hover={{bg:"red.50"}}
+                        aria-label="Delete"
+                        onClick={()=>{
+                          handleDelete(item?.id)
+                        }}
+                       
                       />
                     </Td>
                   </Tr>

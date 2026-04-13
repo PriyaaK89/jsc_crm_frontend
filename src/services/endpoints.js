@@ -50,5 +50,6 @@ export const API_ENDPOINTS = {
   distributor_onbording_form:`/create-distributor`,
   update_distributor: `update-distributor`,
   get_distributor: `get-distributor`,
+    delete_distributor: `delete-distributor`,
   uplaod_distributor_agreement_pdf: `/upload-agreement`
 };

@@ -20,6 +20,7 @@ import { GoHomeFill } from "react-icons/go";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import Pagination from "../../Pagination/Pagination";
 
 function EmployeeVisitReport() {
 
@@ -49,38 +50,48 @@ function EmployeeVisitReport() {
     page: 1,
     limit: 10,
     total_pages: 1,
+    total: 0,
   });
 
   //  Fetch API
-  const fetchVisits = async (targetPage = pagination.page) => {
-    setLoading(true);
+  // const fetchVisits = async (targetPage = pagination.page) => {
+      const fetchVisits = async () => {
 
+    setLoading(true);
     try {
       const res = await API.get(API_ENDPOINTS.get_emp_visit_report, {
         params: {
+          page: pagination.page,
           search: debouncedSearch || null,
           from_date: filters.from_date || null,
           to_date: filters.to_date || null,
-          page: targetPage,
           limit: pagination?.limit,
         },
       });
 
-      //  Validate response
+//       //  Validate response
       if (res.status === 200 ) {
-      const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+          setVisits(res.data.data);
+          setPagination({
+            page: res.data.page,
+            limit: res.data.limit,
+            total_pages: res.data.totalPages,
+            total: res.data.total
+          })
+  //     const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+  //       setVisits(data);
+  //       // console.log("API Response Data:", data);
 
-// console.log("FULL RESPONSE:", res.data);  yha tak thik h 
-        setVisits(data);
-        // console.log("API Response Data:", data);
+  //      setPagination((prev) => ({ 
+  // ...prev,
+  // page: res.data.page || targetPage,
+  //  total_pages: res.data.totalPages || 1,
+  //  }));
 
-       setPagination((prev) => ({ 
-  ...prev,
-  page: res.data.page || targetPage,
-   total_pages: res.data.totalPages || 1,
-}));
 
-      } else {
+
+      }
+       else {
         console.warn("Unexpected API response:", res);
         setVisits([]);
       }
@@ -102,9 +113,9 @@ function EmployeeVisitReport() {
   }, [debouncedSearch, filters.from_date, filters.to_date]);
 
 
-  useEffect(() => {
-    fetchVisits(pagination.page);
-  }, [pagination.page, debouncedSearch, filters.from_date, filters.to_date, filters.visit_type]);
+ useEffect(() => {
+  fetchVisits();
+}, [pagination.page, pagination.limit, debouncedSearch, filters.from_date, filters.to_date, filters.visit_type]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -158,7 +169,7 @@ function EmployeeVisitReport() {
     "Address": "280px",
     "Contact No.": "135px",
     "District": "150px",
-    "pincode": "160px",
+    "pincode": "200px",
   };
 
   // refresh function 
@@ -203,13 +214,14 @@ function EmployeeVisitReport() {
     onOpen();
   };
 
- const handlePageChange = (newPage) => {
-  if (loading) return; // block if already loading
+//   const handlePageChange = (newPage) => {
+//    if (loading) return; // block if already loading
 
-  if (newPage >= 1 && newPage <= pagination.total_pages) {
-    setPagination(prev => ({ ...prev, page: newPage }));
-  }
-};
+//    if (newPage >= 1 && newPage <= pagination.total_pages) {
+//     setPagination(prev => ({ ...prev, page: newPage }));   }
+// };
+
+
 
   return (
     <Box
@@ -268,7 +280,7 @@ function EmployeeVisitReport() {
   <Select
     placeholder=" Select District"
     value={filters.city}
-    onFocus={Getcity} // 🔥 call only once
+    onFocus={Getcity} //  call only once
     onChange={(e) =>
       setFilters({ ...filters, city: e.target.value })
     }
@@ -376,7 +388,7 @@ function EmployeeVisitReport() {
                       "Image",
                     ].map((h) => (
                       <Th key={h} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize'
-                        width={tablehead[h] || "100px"} >
+                        width={tablehead[h ] || "100px"} >
 
                         <Flex gap={2} pt={3} pb={3} spacing="300px">
                           <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' overflow="hidden" >{h}</Text>
@@ -396,9 +408,9 @@ function EmployeeVisitReport() {
                       </Td>
                     </Tr>
                   ) : (
-                    visits.map((item, i) => (
+                    visits.map((item, index) => (
                       <Tr key={item.id}>
-                        <Td>{i + 1}</Td>
+                        <Td>{(pagination.page - 1)*pagination.limit + index+1}</Td>
                         <Td>{item.emp_name}</Td>
                         <Td>{item.visit_type}</Td>
                         {/* <Td>{item.visit_purpose}</Td> */}
@@ -483,29 +495,18 @@ function EmployeeVisitReport() {
           </Box>
         )}
       </Box>
-     <HStack justify="end" mt={4}>
-        <Button
-          size="sm"
-          onClick={() => handlePageChange(pagination.page - 1)}
-          isDisabled={pagination.page === 1 || loading}
-        >
-          Prev
-        </Button>
-
-        <Text fontWeight="bold">
-        {pagination.page} / {pagination.total_pages}
-        </Text>
-
-      <Button
-  size="sm"
-  onClick={() => handlePageChange(pagination.page + 1)}
-  isDisabled={
-    pagination.page === pagination.total_pages || loading
-  }
->
-  Next
-</Button>
-      </HStack>
+         <Pagination
+          page={pagination.page}
+          setPage={(newPage) =>
+            setPagination((prev) => ({ ...prev, page: newPage }))
+          }
+          limit={pagination.limit}
+          setLimit={(newLimit) =>
+            setPagination((prev) => ({ ...prev, limit: newLimit }))
+          }
+          totalItems={pagination.total}
+          totalPages={pagination.total_pages}
+        />
 
       {/* model for comment  */}
       <Modal isOpen={issOpen} onClose={() => setIssOpen(false)} isCentered size="lg">

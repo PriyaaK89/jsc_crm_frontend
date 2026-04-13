@@ -43,6 +43,7 @@ import CustomDatePicker from "../../components/common/CustomDatepicker";
 import useUsersapi from "../../Apis/GetUsersapi";
 import { FaRegEye } from "react-icons/fa";
 import EmpCard from "./EmpCard";
+import Pagination from "../../Pagination/Pagination";
 
 const EmpAttendance = () => {
   const { users } = useUsersapi();
@@ -61,6 +62,7 @@ const EmpAttendance = () => {
     page: 1,
     limit: 10,
     total_pages: 1,
+    total_Items: 0
   });
 
   const [selectedUserId, setSelectedUserId] = useState(null);
@@ -76,7 +78,6 @@ const EmpAttendance = () => {
                         "Logout",
                         "Hours",
                         "Status",
-                        "Attendance Time",
                         "Attendance Unit",
                         "Odometer Reading",
                         "Day Over Odometer",
@@ -86,9 +87,6 @@ const EmpAttendance = () => {
                         "Vehicle  Type",
                         "Action",
                       ]
-
-
-  
   const widthMap = {
 
   }
@@ -103,12 +101,13 @@ const EmpAttendance = () => {
         API_ENDPOINTS.get_Emp_Attendance_filter_search,
         {
           params: {
+            page: pagination.page,
             employee_id: filters.userId || null,
             search: debouncedSearch || null, // change here
             start_date: filters.startDate || null,
             end_date: filters.endDate || null,
-            page,
             limit: pagination.limit,
+
           },
         },
       );
@@ -120,6 +119,7 @@ const EmpAttendance = () => {
           page: res.data.pagination.page,
           limit: res.data.pagination.limit,
           total_pages: res.data.pagination.total_pages,
+          total_Items: res.data.pagination.total_records
         });
       }
     } catch (err) {
@@ -149,7 +149,7 @@ const EmpAttendance = () => {
     if (
       filters.userId ||
       filters.startDate ||
-      filters.endDate ||
+      filters.endDate || 
       debouncedSearch
     ) {
       fetchAttendance(1);
@@ -232,6 +232,10 @@ const EmpAttendance = () => {
 
     fetchAttendance(1); //  reload data
   };
+
+  useEffect(() => {
+  fetchAttendance(pagination.page);
+}, [pagination.page, pagination.limit]);
 
   return (
     <>
@@ -400,9 +404,9 @@ const EmpAttendance = () => {
                         </Td>
                       </Tr>
                     ) : (
-                      memoizedData.map((item, i) => (
-                        <Tr key={i}>
-                          <Td>{i + 1}</Td>
+                      memoizedData.map((item, index) => (
+                        <Tr key={index}>
+                    <Td>{(pagination.page - 1) * pagination.limit + index + 1}</Td>
                           <Td>CRM-{item.employee_id}</Td>
                           <Td>{item.employee_name}</Td>
                           <Td>{formatDate(item.attendance_date)}</Td>
@@ -430,10 +434,9 @@ const EmpAttendance = () => {
                               {formatStatus(item.status)}
                             </Badge>
                           </Td>
-                          <Td>{item.attendance_time || 0}</Td>
                           <Td>{item.attendance_unit}</Td>
                           <Td>{item.odometer_reading || 0}</Td>
-                          <Td>{item.day_over_odometer || 0}</Td>
+                          <Td>{item.day_over_odometer_reading || 0}</Td>
                           <Td>{item.visit_location || "-"}</Td>
                           <Td>{item.work_type || "-"}</Td>
                           <Td>{item.leave_reason || "-"}</Td>
@@ -465,27 +468,18 @@ const EmpAttendance = () => {
         </Box>
 
         {/*  Pagination */}
-        <HStack justify="end" mt={4}>
-          <Button
-            size="sm"
-            onClick={() => fetchAttendance(pagination.page - 1)}
-            isDisabled={pagination.page === 1}
-          >
-            Prev
-          </Button>
-
-          <Text>
-            {pagination.page} / {pagination.total_pages}
-          </Text>
-
-          <Button
-            size="sm"
-            onClick={() => fetchAttendance(pagination.page + 1)}
-            isDisabled={pagination.page === pagination.total_pages}
-          >
-            Next
-          </Button>
-        </HStack>
+         <Pagination
+  page={pagination.page}
+  setPage={(newPage) =>
+    setPagination((prev) => ({ ...prev, page: newPage }))
+  }
+  limit={pagination.limit}
+  setLimit={(newLimit) =>
+    setPagination((prev) => ({ ...prev, limit: newLimit }))
+  }
+  totalItems={pagination.total_Items}
+  totalPages={pagination.total_pages}
+/>
       </Box>
     </>
   );

@@ -165,7 +165,7 @@ const Newsidebar = () => {
             {label:"Attendance Report",path:"/report/emp-attendance-report",icon:CalendarCheck},
             {label:"Scheduling & Alert Report",path:"/report/scheduling-alert-report",icon:BellRing },
             {label:"Party Transaction Report",path:"/report/party-transaction-report",icon:Handshake},
-            {label:"Get Employee Expense Report",path:"/report/get-emp-expense-report",icon:Receipt},
+            {label:" Employee Expense Report",path:"/report/get-emp-expense-report",icon:Receipt},
             {label:"Party Ledger Report",path:"/report/party-ledger-report",icon:BookText},
             {label:"Credit Days Reminder Report",path:"/report/credit-days-reminder-report",icon:Clock},
             {label:"Employee Balance Sheet",path:"/report/emp-balance-sheet",icon:FileSpreadsheet},
@@ -273,7 +273,7 @@ useEffect(() => {
         <Image src={logo} alt="Company Logo" h="74px" w="224px" pl='2.5rem'  loading="eager" fetchpriority="high"/>
       </Box> 
 
-      <VStack spacing={2} align="stretch" mt="75px" pt={4} px={1} >
+      <VStack spacing={2} align="stretch" mt="75px" pt={4}>
         {menuSections.map((menu, index) => {
           const IconComponent = menu.icon;
 
@@ -281,7 +281,7 @@ useEffect(() => {
           if (!menu.children) {
             return (
               <Button
-              w="100%"
+              w="92%"
                 key={index}
                 leftIcon={<IconComponent />}
                 as={NavLink}
@@ -302,7 +302,7 @@ useEffect(() => {
           return (
             <Box key={index}>
               <Button
-              w="100%"
+              w="92%"
                 leftIcon={<IconComponent />}
                 rightIcon={
                   <Icon
@@ -326,7 +326,7 @@ useEffect(() => {
                     const ChildIcon = item.icon;
                     return (
                       <Button
-                      w="100%"
+                      w="92%"
                         key={i}
                         leftIcon={<ChildIcon size={17}/>}
                         size="sm"

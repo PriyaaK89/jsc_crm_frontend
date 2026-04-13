@@ -5,7 +5,6 @@ import Topbar from "./Topbar";
 import MobileTopbar from "./MobileTopbar";
 import CreateDepartment from "../../pages/SAdminMgmt/Scope/CreateDepartment";
 import NotificationBtn from "../NotificationBtn/NotificationBtn";
-import CreateCompany from "../../pages/HrMgmt/CompanyMaster/CreateCompany";
 
 const DepartmentLayout = () => {
     return (
@@ -27,7 +26,7 @@ const DepartmentLayout = () => {
                    pb={6}
                  >
                    <NotificationBtn/>
-                   <CreateCompany />
+                  <CreateDepartment/>
                  </Box>
                </Box>
     )

@@ -187,16 +187,16 @@ const UploadEmployeeExpensives = () => {
         </HStack>
 
         {/* User Select */}
-        <Box py={7} px={6} border="1px solid #ccc" boxShadow="md" borderRadius="lg">
+        <Box py={5} px={5} border="1px solid #939393" borderRadius="lg">
 
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 5 }} spacing={6} >
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 3 }} spacing={5} >
 
-            <FormControl mb={3}>
-              <FormLabel>User</FormLabel>
+            <FormControl >
+              <FormLabel> Employee List</FormLabel>
               <Select
                 placeholder="Select User"
                 value={formData.user_id}
-                size="sm"
+                size="md" borderRadius="md"
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
@@ -213,52 +213,53 @@ const UploadEmployeeExpensives = () => {
             </FormControl>
 
             {/* Inputs */}
-            <FormControl mb={3} >
+            <FormControl >
               <FormLabel>Hotel Amount</FormLabel>
               <Input
                 type="number"
+                  size="md" borderRadius="md"
                 name="hotel_amount"
                 value={formData.hotel_amount}
                 onChange={handleChange}
-                size="sm"
+             
               />
             </FormControl>
 
-            <FormControl mb={3} >
+            <FormControl  >
               <FormLabel >Bus Train Toll Amount</FormLabel>
               <Input
                 type="number"
                 name="bus_train_toll_amount"
                 value={formData.bus_train_toll_amount}
                 onChange={handleChange}
-                size="sm"
+                size="md" borderRadius="md"
               />
             </FormControl>
 
-            <FormControl mb={3}>
+            <FormControl >
               <FormLabel  >Petrol Diesel Amount</FormLabel>
               <Input
                 type="number"
                 name="petrol_diesel_amount"
                 value={formData.petrol_diesel_amount}
                 onChange={handleChange}
-                size="sm"
+                size="md" borderRadius="md"
               />
             </FormControl>
 
-            <FormControl mb={4}>
+            <FormControl>
               <FormLabel >Other Amount</FormLabel>
               <Input
                 type="number"
                 name="other_amount"
                 value={formData.other_amount}
                 onChange={handleChange}
-                size="sm"
+                 size="md" borderRadius="md"
               />
             </FormControl>
 
           </SimpleGrid>
-          <Flex justifyContent="flex-end" mt={4}>
+          <Flex justifyContent="flex-end" >
             <Button
               colorScheme="blue"
               isLoading={loading}
@@ -279,14 +280,16 @@ const UploadEmployeeExpensives = () => {
           gap={4}
         >
 
-          <Text flexShrink={0}>Allocate Expense Table </Text>
+          <Text flexShrink={0} mr={{base: 0, md: 0, lg: 3}} mt={{base: 2, md: 4}} fontWeight="600" bg="#F3F4F6" px={2} borderRadius="md" p={2}>
+            Allocate Expense Table
+          </Text>
           {/* <Flex> */}
           <Flex flexDirection={{base:"column", md: "column", lg: "row"}} ml={{base: "0", md: "0", lg:"auto"}} gap={3} alignItems="center">
 
 
             <FormControl>
               <FormLabel>Expense Type</FormLabel>
-              <Select width="100%" size="sm" value={expenseType} onChange={(e) => {
+              <Select width="100%" size="md"  borderRadius="md" value={expenseType} onChange={(e) => {
                 setExpenseType(e.target.value);
                 setPage(1);
                 
@@ -310,7 +313,7 @@ const UploadEmployeeExpensives = () => {
             />
             <CustomDatePicker
               label="End Date"
-              name="end"
+              name="end"          
               value={endDate}
               onChange={(date) => {
                 setEndDate(date);
@@ -318,7 +321,7 @@ const UploadEmployeeExpensives = () => {
               }}
             />
 
-            <Box >
+            <Box mt={{base:2, md:2}}>
               <InputGroup justifyContent={{base:"start",md:"start",lg:"end"}}  width={{base:"100%", md:"100%", lg:"200px"}} mt="10px" position="relative">
                 <Box display={{ base: "none", md: "none", lg: "block" }} style={{ color: '#8C8C91', position: 'absolute', top: '10px', right: '7px' }}
                 >

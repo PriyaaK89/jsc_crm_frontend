@@ -11,9 +11,12 @@ import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
 // import jsc_stamp from "../../../assets/images/stamp_jsc.png";
 import { CloseButton } from "@chakra-ui/react";
+import  API  from "../../../../services/api";
+import { API_ENDPOINTS } from "../../../../services/endpoints";
 
 
-const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee, partners, ownerAddress, otherCompanies }) => {
+const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee, partners, ownerAddress, otherCompanies, distributorId,
+  onUploadSuccess, }) => {
 
 
     //    for check firm type 
@@ -25,51 +28,134 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
 
 
     const toast = useToast();
+    // const handleDownloadAgreementPDF = async () => {
+    //     try {
+    //         const pages = document.querySelectorAll("#agre-letter-preview .pdf-page");
+    //         const pdf = new jsPDF("p", "mm", "a4");
+
+    //         for (let i = 0; i < pages.length; i++) {
+    //             const page = pages[i];
+
+    //             const dataUrl = await toJpeg(page, {
+    //                 quality: 0.9,
+    //                 pixelRatio: 2,
+    //                 cacheBust: true,
+    //             });
+
+    //             const imgProps = pdf.getImageProperties(dataUrl);
+
+    //             const pdfWidth = 210;
+    //             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    //             if (i > 0) {
+    //                 pdf.addPage();
+    //             }
+
+    //             pdf.addImage(dataUrl, "JPEG", 0, 0, pdfWidth, pdfHeight);
+    //         }
+
+    //         //  Only Download (No API Upload)
+    //         pdf.save(`Agreement_Letter_${employee?.name || "user"}.pdf`);
+
+    //         toast({
+    //             description: "PDF Downloaded Successfully!",
+    //             duration: 2000,
+    //             status: "success",
+    //         });
+
+    //     } catch (error) {
+    //         console.error("PDF generation error:", error);
+
+    //         toast({
+    //             description: "Something went wrong, Please try again!",
+    //             status: "error",
+    //             duration: 2000,
+    //         });
+    //     }
+    // };
+
     const handleDownloadAgreementPDF = async () => {
-        try {
-            const pages = document.querySelectorAll("#agre-letter-preview .pdf-page");
-            const pdf = new jsPDF("p", "mm", "a4");
+  try {
+    const pages = document.querySelectorAll("#agre-letter-preview .pdf-page");
 
-            for (let i = 0; i < pages.length; i++) {
-                const page = pages[i];
+    if (!pages.length) {
+      throw new Error("No PDF pages found");
+    }
 
-                const dataUrl = await toJpeg(page, {
-                    quality: 0.9,
-                    pixelRatio: 2,
-                    cacheBust: true,
-                });
+    const pdf = new jsPDF("p", "mm", "a4");
 
-                const imgProps = pdf.getImageProperties(dataUrl);
+    for (let i = 0; i < pages.length; i++) {
+      const page = pages[i];
 
-                const pdfWidth = 210;
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      const dataUrl = await toJpeg(page, {
+        quality: 0.9,
+        pixelRatio: 2,
+        cacheBust: true,
+        backgroundColor: "#ffffff",
+      });
 
-                if (i > 0) {
-                    pdf.addPage();
-                }
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const pdfWidth = 210;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-                pdf.addImage(dataUrl, "JPEG", 0, 0, pdfWidth, pdfHeight);
-            }
+      if (i > 0) {
+        pdf.addPage();
+      }
 
-            //  Only Download (No API Upload)
-            pdf.save(`Agreement_Letter_${employee?.name || "user"}.pdf`);
+      pdf.addImage(dataUrl, "JPEG", 0, 0, pdfWidth, pdfHeight);
+    }
 
-            toast({
-                description: "PDF Downloaded Successfully!",
-                duration: 2000,
-                status: "success",
-            });
+    const pdfBlob = pdf.output("blob");
 
-        } catch (error) {
-            console.error("PDF generation error:", error);
+    const uploadFormData = new FormData();
+    uploadFormData.append("distributor_id", distributorId);
+    uploadFormData.append(
+      "file",
+      pdfBlob,
+      `Agreement_Letter_${formData?.firm_name || "Distributor"}.pdf`
+    );
 
-            toast({
-                description: "Something went wrong, Please try again!",
-                status: "error",
-                duration: 2000,
-            });
-        }
-    };
+    const uploadRes = await API.post(
+      API_ENDPOINTS.uplaod_distributor_agreement_pdf,
+      uploadFormData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (uploadRes.status === 200 || uploadRes.data.success) {
+      const url = URL.createObjectURL(pdfBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Agreement_Letter_${formData?.firm_name || "Distributor"}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast({
+        description: "PDF uploaded successfully",
+        duration: 2000,
+        status: "success",
+      });
+
+      if (onUploadSuccess) {
+        onUploadSuccess();
+      }
+    } else {
+      throw new Error(uploadRes.data.message || "PDF upload failed");
+    }
+  } catch (error) {
+    console.error("PDF generation/upload error:", error);
+    toast({
+      description: error.message || "Something went wrong",
+      status: "error",
+      duration: 2000,
+    });
+  }
+};
 
 
 

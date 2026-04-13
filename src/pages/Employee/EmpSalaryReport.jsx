@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -23,7 +23,7 @@ import {
   HStack, Img, useToast,
   TableContainer
 } from "@chakra-ui/react";
-import { FiUpload  } from "react-icons/fi";
+import { FiUpload } from "react-icons/fi";
 import { GoHomeFill } from "react-icons/go";
 import sort_icon from "../../assets/sort.svg";
 import useUsersapi from "../../Apis/GetUsersapi";
@@ -171,30 +171,56 @@ const EmpSalaryReport = () => {
     document.body.removeChild(link);
   };
 
+  // -------------------------------perday salary-------------------------------
+  const totalPerDaySalary = dailySalry.reduce((total, emp) => {
+    return total + Number(emp.per_day_salary || 0);
+  }, 0);
+  // -------------------------------basic  salary-------------------------------
+  const totalBasicSalary = dailySalry.reduce((total, emp) => {
+    return total + Number(emp.basic_salary || 0);
+  }, 0).toFixed(2);
+  // ------------------------------------------travelling allowance-----------
+  const totalTravellingAllowance = dailySalry.reduce((total, emp) => {
+    return total + Number(emp.travelling_allowance || 0);
+  }, 0).toFixed(2);
+  // ------------------------------------------daily allowance-----------
+  const totalDailyAllowance = dailySalry.reduce((total, emp) => {
+    return total + Number(emp.daily_allowance || 0);
+  }, 0).toFixed(2);
+  // ------------------------------------------gross salary-----------
+  const totalGrossSalary = dailySalry.reduce((total, emp) => {
+    return total + Number(emp.gross_salary || 0);
+  }, 0).toFixed(2);
+  // ------------------------------------------net salary-----------
+  const totalNetSalary = dailySalry.reduce((total, emp) => {
+    return total + Number(emp.net_salary || 0);
+  }, 0).toFixed(2);
+
+
   return (
-       <Box
-          bg="white"
-          mt={{base:2, md:5}}
-          px={{base:3, md:6}}
-          py={{base:3, md:4}}
-         borderRadius="lg"
-         boxShadow="md"
-      >
-        <HStack justifyContent="space-between" flexWrap="wrap">
-                        <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
-                          <BreadcrumbItem>
-                            <BreadcrumbLink as={Link} to="/dashboard">
-                              <GoHomeFill color="#5570F1" />
-                            </BreadcrumbLink>
-                          </BreadcrumbItem>
-              
-                          <BreadcrumbItem isCurrentPage>
-                            <BreadcrumbLink fontSize="13px">
-                            Daily Salary Report
-                            </BreadcrumbLink>
-                          </BreadcrumbItem>
-                        </Breadcrumb>
-                      </HStack>
+    <Box
+      bg="white"
+      mt={{ base: 2, md: 5 }}
+      px={{ base: 3, md: 6 }}
+      py={{ base: 3, md: 4 }}
+      borderRadius="lg"
+      boxShadow="md"
+    >
+      <HStack justifyContent="space-between" flexWrap="wrap">
+        <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+          <BreadcrumbItem>
+            <BreadcrumbLink as={Link} to="/dashboard">
+              <GoHomeFill color="#5570F1" />
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+
+          <BreadcrumbItem isCurrentPage>
+            <BreadcrumbLink fontSize="13px">
+              Daily Salary Report
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </Breadcrumb>
+      </HStack>
 
       <Heading fontSize="xl" fontWeight="bold" mb={6}>
         Daily Salary Report
@@ -251,7 +277,7 @@ const EmpSalaryReport = () => {
 
           </Button>
         </SimpleGrid>
-       
+
         {/* Table Section */}
         {hasDatafind && (
           <>
@@ -262,104 +288,118 @@ const EmpSalaryReport = () => {
             ) : (
               <Box>
 
-               <Box textAlign="end" mr={5}>
-                  <Button 
-                  rightIcon={<FiUpload  />}
+                <Box textAlign="end" mr={5}>
+                  <Button
+                    rightIcon={<FiUpload />}
                     colorScheme="green"
                     onClick={downloadCSV}
-                   
+
                   >
-                 Export
+                    Export
                   </Button>
                 </Box>
 
-              <Box
-                borderWidth="1px"
-                borderColor="gray.200"
-                borderRadius="lg"
-                mt={5}
-                maxW="100%"
-                overflowX="auto"
-              >
-           
+                <Box
+                  borderWidth="1px"
+                  borderColor="gray.200"
+                  borderRadius="lg"
+                  mt={5}
+                  maxW="100%"
+                  overflowX="auto"
+                >
 
-                <TableContainer overflowX="auto" whiteSpace="nowrap" sx={{
-                  "&::-webkit-scrollbar": { width: "8px", height: '8px' },
-                  "&::-webkit-scrollbar-thumb": {
-                    width: "8px", backgroundColor: "#7A7A7A", borderRadius: "4px",
-                  },
-                  "&::-webkit-scrollbar-track": {
-                    background: "#E8E8E8", borderRadius: "4px",
-                  },
-                }}>
 
-                  <Table
-                    size="sm"
-                    minW="1000px"
-                    variant="simple"
-                    whiteSpace="nowrap"
-                    overflowX="auto"
+                  <TableContainer overflowX="auto" whiteSpace="nowrap" sx={{
+                    "&::-webkit-scrollbar": { width: "8px", height: '8px' },
+                    "&::-webkit-scrollbar-thumb": {
+                      width: "8px", backgroundColor: "#7A7A7A", borderRadius: "4px",
+                    },
+                    "&::-webkit-scrollbar-track": {
+                      background: "#E8E8E8", borderRadius: "4px",
+                    },
+                  }}>
 
-                  >
+                    <Table
+                      size="sm"
+                      minW="1000px"
+                      variant="simple"
+                      whiteSpace="nowrap"
+                      overflowX="auto"
 
-                    <Thead bg="gray.50" p={5}>
-                      <Tr >
-                        {[
-                          "Employee Id",
-                          "Salary Date",
-                          "Attendance Type",
-                          "Working Hours",
-                          "Per Day Salary",
-                          "Basic Salary",
-                          "Travelling Allowance",
-                          "Daily Allowance",
-                          "Gross Salary",
-                          "Net Salary",
-                          "Created At"
-                        ].map((header, index) => (
-                          <Th key={index} p={5} color='#2C2D33' textTransform='capitalize' >
-                            <Flex align="center" gap="4px">
-                              <Text fontSize={{ base: "14px", md: "16px" }} fontWeight='500'>{header}</Text>
-                              <Img src={sort_icon} alt="sort" />
-                            </Flex>
-                          </Th>
-                        ))}
-                      </Tr>
-                    </Thead>
+                    >
 
-                    <Tbody >
-                      {dailySalry.length > 0 ? (
-                        dailySalry.map((emp, index) => (
-                          <Tr key={emp.id} className="empsalaryreporttablebodytd" >
-                            <Td>{index + 1}</Td>
-                            <Td>{new Date(emp.salary_date).toLocaleDateString()}</Td>
-                            <Td>{emp.attendance_type}</Td>
-                            <Td>{emp.working_hours}</Td>
-                            <Td>{emp.per_day_salary}</Td>
-                            <Td>{emp.basic_salary}</Td>
-                            <Td>{emp.travelling_allowance}</Td>
-                            <Td>{emp.daily_allowance}</Td>
-                            <Td>{emp.gross_salary}</Td>
-                            <Td>{emp.net_salary}</Td>
-                            <Td>{new Date(emp.created_at).toLocaleDateString()}</Td>
-                          </Tr>
-                        ))
-                      ) : (
-                        <Tr>
-                          <Td colSpan={11} textAlign="center" py={10}>
-                            No data found for the selected criteria.
-                          </Td>
+                      <Thead bg="gray.50" p={5}>
+                        <Tr >
+                          {[
+                            "Employee Id",
+                            "Salary Date",
+                            "Attendance Type",
+                            "Working Hours",
+                            "Per Day Salary",
+                            "Basic Salary",
+                            "Travelling Allowance",
+                            "Daily Allowance",
+                            "Gross Salary",
+                            "Net Salary",
+                            "Created At"
+                          ].map((header, index) => (
+                            <Th key={index} p={5} color='#2C2D33' textTransform='capitalize' >
+                              <Flex align="center" gap="4px">
+                                <Text fontSize={{ base: "14px", md: "16px" }} fontWeight='500'>{header}</Text>
+                                <Img src={sort_icon} alt="sort" />
+                              </Flex>
+                            </Th>
+                          ))}
                         </Tr>
-                      )}
-                    </Tbody>
+                      </Thead>
+                      <Tbody>
+                        {dailySalry.length > 0 ? (
+                          <>
+                            {dailySalry.map((emp, index) => (
+                              <Tr key={emp.id}>
+                                <Td>{index + 1}</Td>
+                                <Td>{new Date(emp.salary_date).toLocaleDateString()}</Td>
+                                <Td>{emp.attendance_type}</Td>
+                                <Td>{emp.working_hours}</Td>
+                                <Td>{emp.per_day_salary}</Td>
+                                <Td>{emp.basic_salary}</Td>
+                                <Td>{emp.travelling_allowance}</Td>
+                                <Td>{emp.daily_allowance}</Td>
+                                <Td>{emp.gross_salary}</Td>
+                                <Td>{emp.net_salary}</Td>
+                                <Td>{new Date(emp.created_at).toLocaleDateString()}</Td>
+                              </Tr>
+                            ))}
 
-                  </Table>
+                            {/* 🔥 TOTAL ROW */}
+                            <Tr bg="gray.100">
+                              <Text fontWeight="bold" m={2}>Total</Text>
+                              <Td></Td><Td></Td><Td></Td>
+                              <Td fontWeight="bold"> ₹ {totalPerDaySalary}</Td>
+                              <Td fontWeight="bold"> ₹ {totalBasicSalary} </Td>
+                              <Td fontWeight="bold"> ₹ {totalTravellingAllowance}</Td>
+                              <Td fontWeight="bold"> ₹ {totalDailyAllowance}</Td>
+                              <Td fontWeight="bold">₹ {totalGrossSalary}</Td>
+                              <Td fontWeight="bold"> ₹ {totalNetSalary}</Td>
+                              <Td colSpan={5}></Td>
+                            </Tr>
+                          </>
+                        ) : (
+                          <Tr>
+                            <Td colSpan={11} textAlign="center" py={10}>
+                              No data found for the selected criteria.
+                            </Td>
+                          </Tr>
+                        )}
+                      </Tbody>
 
-                </TableContainer>
+                    </Table>
 
-                
+                  </TableContainer>
 
-              </Box>
+
+
+                </Box>
               </Box>
             )}
           </>

@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-    Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack, Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalCloseButton,
-    useDisclosure,
+    Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack,
 } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
@@ -21,13 +15,12 @@ const EditEmployee = () => {
     const { empId } = useParams();
     const toast = useToast();
     const navigate = useNavigate();
-    const { isOpen, onOpen, onClose } = useDisclosure();
     const [loading, setLoading] = useState(false);
     const [departments, setDepartments] = useState([]);
     const [jobRole, setJobRole] = useState([]);
     const { users = [], fetchUsers } = useUsersapi();
     const [profilePhoto, setProfilePhoto] = useState(null); // new upload
-    const [previewPhoto, setPreviewPhoto] = useState(""); // preview (API + new)
+
 
     const [formData, setFormData] = useState({
         approver_id: "",
@@ -111,7 +104,7 @@ const EditEmployee = () => {
                     week_off: data.week_off || "Sunday",
 
                 });
-                setPreviewPhoto(data.profile_image);
+              
 
             }
         } catch (err) {
@@ -130,13 +123,7 @@ const EditEmployee = () => {
 
         if (file) {
             setProfilePhoto(file);
-
-            // preview show
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreviewPhoto(reader.result);
-            };
-            reader.readAsDataURL(file);
+            
         }
     };
     /* ---------------- FETCH DEPARTMENTS ---------------- */
@@ -367,13 +354,7 @@ const EditEmployee = () => {
                                 onChange={handleImageChange}
                             />
 
-                            {/* Preview Image */}
-                            {previewPhoto && (
-                                <Button onClick={onOpen} colorScheme="blue" mt={2} width="100%">
-                                    View Profile Photo
-                                </Button>
-
-                            )}
+                        
                         </FormControl>
                     </SimpleGrid>
                 </SimpleGrid>
@@ -647,36 +628,7 @@ const EditEmployee = () => {
                     Update Employee
                 </Button>
             </VStack>
-
-            {/* model for profile image  */}
-            <Modal isOpen={isOpen} onClose={onClose} isCentered>
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>Profile Photo</ModalHeader>
-                    <ModalCloseButton />
-
-                    <ModalBody pb={6}>
-
-                        {/* Preview Image */}
-                        {previewPhoto && (
-                            <Box textAlign="center" mb={4}>
-                                <img
-                                    src={previewPhoto}
-                                    alt="Profile"
-                                    style={{
-                                        width: "100%",
-                                        height: "300px",
-                                        borderRadius: "10px",
-                                        objectFit: "cover",
-                                        border: "1px solid #ccc"
-                                    }}
-                                />
-                            </Box>
-                        )}
-
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+       
         </Box>
     );
 };

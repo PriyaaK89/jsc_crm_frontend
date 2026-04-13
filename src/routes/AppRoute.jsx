@@ -50,6 +50,7 @@ import DebitLayout from "../components/layout/DebitLayout";
 import ESignSuccess from "../components/redirection-pages/esign-success";
 import ESignError from "../components/redirection-pages/esign-error";
 import EmpAttendanceLayout from "../components/layout/Reports/EmpAttendaneLayout";
+import ViewDistributorLayout from "../components/layout/Reports/ViewDistributorLayout";
 
 import SchedulingAlertsReportLayout from "../components/layout/Reports/Scheduling&AlertReportLayout";
 import PartyTransactionReportLayout from '../components/layout/Reports/PartyTransactionReportLayout';
@@ -124,6 +125,7 @@ function App() {
         <Route path='/accounting-master/create-ledger' element={<CreateLedgerLayout/>}/>
         <Route path='/accounting-master/distributor' element={<Distributors/>}/>
         <Route path='/accounting-master/edit-distributor/:id' element={<EditDistributorLayout/>}/>
+        <Route path='/accounting-master/view-distributor/:id' element={<ViewDistributorLayout/>}/>
         <Route path='/accounting-master/onboarding-ledger' element={<ONBordingdistributoragreement/>}/>
         <Route path='/accounting-master/view-ledger' element={<ViewLedgerLayout/>}/>
         <Route path='/accounting-master/delete-ledger' element={<DeleteLedgerLayout/>}/>

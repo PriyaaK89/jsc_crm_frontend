@@ -39,8 +39,6 @@ function DistributorAgreement() {
   const previewModal = useDisclosure();
   const generateModal = useDisclosure();
   const [distributorId, setDistributorId] = useState(null);
-  const [isDistributorCreated, setIsDistributorCreated] = useState(false);
-  const [isPdfUploaded, setIsPdfUploaded] = useState(false);
   const [firmtype, setFirmtype] = useState("");
   const [formData, setFormData] = useState({
     customer_name: "",
@@ -673,19 +671,23 @@ function DistributorAgreement() {
       );
 
 
-      if (response.status === 201 || response.data.success) {
-        const createdDistributorId =
-          response.data.distributorId || response.data.data?.distributorId;
+     if (response.status === 201 || response.data.success) {
+  const createdDistributorId =
+    response.data.distributorId || response.data.data?.distributorId;
 
-        setDistributorId(createdDistributorId);
-        setIsDistributorCreated(true);
-        // navigate(`/hr/distributor-agreement/${createdDistributorId}/preview`);
-        toast({
-          title: "Success",
-          description: "Distributor created successfully",
-          status: "success",
-          duration: 3000,
-        })};
+  setDistributorId(createdDistributorId);
+
+  toast({
+    title: "Success",
+    description: "Distributor created successfully",
+    status: "success",
+    duration: 3000,
+  });
+
+     handleGenerateAgreement();
+     console.log(handleGenerateAgreement(), "handleGenerateAgreement")
+}
+
     } catch (error) {
       console.error(error);
     } finally {
@@ -839,6 +841,23 @@ function DistributorAgreement() {
 
     return Object.keys(newErrors).length === 0;
   };
+
+
+  // handle generate agreement
+ const handleGenerateAgreement = () => {
+  if (!validateForm()) {
+    toast({
+      description: "Please fix validation errors",
+      status: "error",
+      duration: 2000,
+    });
+    generateModal.onClose();
+    return;
+  }
+
+  generateModal.onOpen();
+  console.log(generateModal.onOpen(), "qwertyuio")
+};
 
   return (
     <>
@@ -1725,7 +1744,7 @@ function DistributorAgreement() {
         <Button ml={5}
           colorScheme="green"
           mt={6}
-          onClick={generateModal.onOpen}
+          onClick={handleGenerateAgreement}
         >
           Genrate distributor  Aggrement Letter
         </Button>
@@ -1749,11 +1768,10 @@ function DistributorAgreement() {
         partners={partners}
         otherCompanies={otherCompanies}
         distributorId={distributorId}
-        onUploadSuccess={() => {
-          setIsPdfUploaded(true);
-          generateModal.onClose();
-          navigate("/distributor-list");
-        }}
+  onUploadSuccess={() => {
+    generateModal.onClose();
+    navigate("/distributor-list");
+  }}
 
       />
       <DistributorAgreementPdfPreview

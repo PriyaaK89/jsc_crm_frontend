@@ -74,8 +74,12 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
     //     }
     // };
 
-    const handleDownloadAgreementPDF = async () => {
+  const handleDownloadAgreementPDF = async () => {
   try {
+    if (!distributorId) {
+      throw new Error("Distributor ID not found");
+    }
+
     const pages = document.querySelectorAll("#agre-letter-preview .pdf-page");
 
     if (!pages.length) {
@@ -125,37 +129,33 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
       }
     );
 
-    if (uploadRes.status === 200 || uploadRes.data.success) {
-      const url = URL.createObjectURL(pdfBlob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `Agreement_Letter_${formData?.firm_name || "Distributor"}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
-      toast({
-        description: "PDF uploaded successfully",
-        duration: 2000,
-        status: "success",
-      });
-
-      if (onUploadSuccess) {
-        onUploadSuccess();
-      }
-    } else {
+    if (!(uploadRes.status === 200 || uploadRes.data.success)) {
       throw new Error(uploadRes.data.message || "PDF upload failed");
+    }
+
+    pdf.save(`Agreement_Letter_${formData?.firm_name || "Distributor"}.pdf`);
+
+    toast({
+      description: "PDF uploaded and downloaded successfully",
+      duration: 2000,
+      status: "success",
+    });
+
+    if (onUploadSuccess) {
+      onUploadSuccess();
     }
   } catch (error) {
     console.error("PDF generation/upload error:", error);
     toast({
-      description: error.message || "Something went wrong",
+      description:
+        error?.response?.data?.message || error.message || "Something went wrong",
       status: "error",
       duration: 2000,
     });
   }
 };
+
+
 
 
 

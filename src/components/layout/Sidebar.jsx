@@ -139,7 +139,7 @@ const Newsidebar = () => {
         {label:"Delete Group",path:"/accounting-master/delete-group",icon:FaTrash},
         {label:"Create Ledger",path:"/accounting-master/create-ledger", icon:FaFileInvoiceDollar},
         {label:"ON Boarding Ledger",path:"/accounting-master/onboarding-ledger", icon:FaBookOpen},
-        {label: "Distributor", path: "/accounting-master/distributor", icon: FaUsers },
+        {label: "Distributor List", path: "/accounting-master/distributor", icon: FaUsers },
         {label:"View Ledger",path:"/accounting-master/view-ledger", icon:FaFileInvoice},
         {label:"Delete Ledger",path:"/accounting-master/delete-ledger", icon:FaTrash},
         {label:"Create Voucher",path:"/accounting-master/create-voucher", icon:FaMoneyCheckAlt},

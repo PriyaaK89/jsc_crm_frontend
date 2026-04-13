@@ -28,6 +28,7 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import sort_icon from "../../assets/sort.svg";
 import ViewDistributorsDocumentsModal from "./ViewDistributorsDocumentsModal";
+import DistributorAgreementModel from "./DistributorAgreementModel";
 import ViewCompanyModal from "./ViewCompanyModal";
 import ViewPartnersModal from "./ViewPartnersModal";
 import Pagination from "../../Pagination/Pagination";
@@ -44,6 +45,8 @@ const DistributorsList = () => {
   const [loading, setLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedDistributor, setSelectedDistributor] = useState(null);
+  const [pdfUrl, setPdfUrl] = useState(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -52,7 +55,7 @@ const DistributorsList = () => {
   const [selectedState, setSelectedState] = useState("");
   const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState("");
-  const {isOpen: isDeleteModalOpen, onOpen: onDeleteModalOpen, onClose: onDeleteModalClose  } = useDisclosure()
+  const { isOpen: isDeleteModalOpen, onOpen: onDeleteModalOpen, onClose: onDeleteModalClose } = useDisclosure()
 
   const {
     isOpen: isCompanyOpen,
@@ -64,6 +67,14 @@ const DistributorsList = () => {
     onOpen: onPartnersOpen,
     onClose: onPartnersClose,
   } = useDisclosure();
+
+  const {
+    isOpen: ispenaltyModalOpen,
+    onOpen: onpenaltyModalOpen,
+    onClose: onpenaltyModalClose,
+  } = useDisclosure();
+
+
   const states = [
     "Andhra Pradesh",
     "Arunachal Pradesh",
@@ -151,6 +162,7 @@ const DistributorsList = () => {
     "Partners",
     "Companies",
     "Documents",
+    "Distributor Agreement",
     "Action",
     "Delete"
   ];
@@ -211,10 +223,10 @@ const DistributorsList = () => {
     Action: "180px",
   };
 
-  const handleDelete = (id) =>{
+  const handleDelete = (id) => {
     onDeleteModalOpen();
     setSelectedId(id);
-    
+
   }
 
   const fetchDistributors = async () => {
@@ -263,12 +275,52 @@ const DistributorsList = () => {
     fetchDistributors();
   }, [page, limit, search, selectedState]);
 
+ const handleGenerateAgreement = async (id) => {
+  try {
+    setPdfLoading(true);
+
+    const response = await API.get(
+      `${API_ENDPOINTS.get_distributor_agreement_pdf}/${id}`
+    );
+
+    if (response.status === 200) {
+      const data = response?.data?.data;
+
+      // 🔥 priority order (important)
+      const pdfLink =
+        data?.signed_file_url ||   // if signed
+        data?.presigned_url ||    // best option
+        data?.file_url;           // fallback
+
+      console.log("PDF LINK:", pdfLink);
+
+      if (!pdfLink) {
+        alert("PDF not available");
+        return;
+      }
+
+      setPdfUrl(pdfLink);
+    }
+  } catch (error) {
+    console.error("Error fetching PDF:", error);
+  } finally {
+    setPdfLoading(false);
+  }
+};
+
   return (
     <>
       <ViewDistributorsDocumentsModal
         isOpen={isOpen}
         onClose={onClose}
         distributor={selectedDistributor}
+      />
+      <DistributorAgreementModel
+        isOpen={ispenaltyModalOpen}
+        onClose={onpenaltyModalClose}
+        pdfUrl={pdfUrl}
+        loading={pdfLoading}
+        selectedId={selectedId}
       />
       <ViewPartnersModal
         isOpen={isPartnersOpen}
@@ -281,10 +333,10 @@ const DistributorsList = () => {
         companies={selectedDistributor}
       />
       <DeleteDistributorModal
-      isOpen={isDeleteModalOpen}
-      onClose={onDeleteModalClose}
-      selectedId={selectedId}
-      fetchDistributors={fetchDistributors}
+        isOpen={isDeleteModalOpen}
+        onClose={onDeleteModalClose}
+        selectedId={selectedId}
+        fetchDistributors={fetchDistributors}
       />
       <Box
         bg="white"
@@ -416,19 +468,19 @@ const DistributorsList = () => {
                     <Td>{item?.customer_name || "-"}</Td>
                     {/* <Td> {formatDate(item?.customer_dob || "-")} </Td> */}
                     <Td>{item?.firm_name || "-"}</Td>
-                   
+
                     <Td> <IconButton
-                        icon={<ViewIcon />}
-                        size="sm"
-                        variant="ghost"
-                        color="blue.600"
-                        _hover={{ bg: "blue.50" }}
-                        aria-label="view Distributor"
-                        onClick={() => {
-                          navigate(`/accounting-master/view-distributor/${item?.id}`);
+                      icon={<ViewIcon />}
+                      size="sm"
+                      variant="ghost"
+                      color="blue.600"
+                      _hover={{ bg: "blue.50" }}
+                      aria-label="view Distributor"
+                      onClick={() => {
+                        navigate(`/accounting-master/view-distributor/${item?.id}`);
                       }}
-                      /></Td>
-                       <Td>{item?.gst_number || "-"}</Td>
+                    /></Td>
+                    <Td>{item?.gst_number || "-"}</Td>
                     {/* <Td>{item?.gst_type || "-"}</Td> */}
                     <Td>{item?.firm_type || "-"}</Td>
                     <Td>{item?.business_address || "-"}</Td>
@@ -519,6 +571,20 @@ const DistributorsList = () => {
                       </Button>
                     </Td>
                     <Td>
+                      <Button
+                        colorScheme="teal"
+                        size="xs"
+                        onClick={() => {
+                          setSelectedId(item?.id);
+                           handleGenerateAgreement(item?.id); 
+                          onpenaltyModalOpen();
+                        }}
+                      >
+                        View Agreement
+                      </Button>
+                    </Td>
+
+                    <Td>
 
                       <IconButton
                         icon={<FiEdit2 />}
@@ -529,21 +595,21 @@ const DistributorsList = () => {
                         aria-label="edit Documents"
                         onClick={() => {
                           navigate(`/accounting-master/edit-distributor/${item?.id}`);
-                      }}
+                        }}
                       />
                     </Td>
                     <Td>
                       <IconButton
-                       icon={<FiTrash2/>}
+                        icon={<FiTrash2 />}
                         size="sm"
                         variant="ghost"
                         color="red.600"
-                        _hover={{bg:"red.50"}}
+                        _hover={{ bg: "red.50" }}
                         aria-label="Delete"
-                        onClick={()=>{
+                        onClick={() => {
                           handleDelete(item?.id)
                         }}
-                       
+
                       />
                     </Td>
                   </Tr>

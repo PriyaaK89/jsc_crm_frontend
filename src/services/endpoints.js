@@ -51,5 +51,6 @@ export const API_ENDPOINTS = {
   update_distributor: `update-distributor`,
   get_distributor: `get-distributor`,
     delete_distributor: `delete-distributor`,
-  uplaod_distributor_agreement_pdf: `/upload-agreement`
+  uplaod_distributor_agreement_pdf: `/upload-agreement`,
+  get_distributor_agreement_pdf:`get-distributor-agreement`
 };

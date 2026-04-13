@@ -6,7 +6,7 @@ import {
   FormLabel,
   Input, useDisclosure, InputGroup, Tooltip,
   InputRightElement, IconButton,
-  InputLeftElement,
+  InputLeftElement,Spinner,
   Flex,
   SimpleGrid, Badge,
   Select,
@@ -38,6 +38,9 @@ function DistributorAgreement() {
   const { users } = useUsersapi();
   const previewModal = useDisclosure();
   const generateModal = useDisclosure();
+  const [distributorId, setDistributorId] = useState(null);
+  const [isDistributorCreated, setIsDistributorCreated] = useState(false);
+  const [isPdfUploaded, setIsPdfUploaded] = useState(false);
   const [firmtype, setFirmtype] = useState("");
   const [formData, setFormData] = useState({
     customer_name: "",
@@ -553,16 +556,16 @@ function DistributorAgreement() {
   };
   // -------------------------------------handle submit----------------------------------------------------
 
- const handleformSubmit = async () => {
+  const handleformSubmit = async () => {
 
-  if (!validateForm()) {
-    toast({
-      description: "Please fix validation errors",
-      status: "error",
-      duration: 2000,
-    });
-    return;
-  }
+    if (!validateForm()) {
+      toast({
+        description: "Please fix validation errors",
+        status: "error",
+        duration: 2000,
+      });
+      return;
+    }
     try {
       setLoading(true);
 
@@ -578,19 +581,19 @@ function DistributorAgreement() {
       //  nested data
       if (formData.firm_type === "proprietorship") {
 
-       const keyMap = {
-  name: "owner_name",
-  father_name: "owner_father_name",
-  pan_no: "owner_pan",
-  aadhar_no: "owner_aadhar",
-  address: "owner_address",
-  state: "owner_state",
-  district: "owner_district",
-  pincode: "owner_pincode",
-  mobile_no: "owner_mobile",
-  alt_mobile_no: "owner_alt_mobile",
-  upload_img: "owner_photo",
-};
+        const keyMap = {
+          name: "owner_name",
+          father_name: "owner_father_name",
+          pan_no: "owner_pan",
+          aadhar_no: "owner_aadhar",
+          address: "owner_address",
+          state: "owner_state",
+          district: "owner_district",
+          pincode: "owner_pincode",
+          mobile_no: "owner_mobile",
+          alt_mobile_no: "owner_alt_mobile",
+          upload_img: "owner_photo",
+        };
 
         Object.keys(ownerAddress).forEach((key) => {
           if (ownerAddress[key]) {
@@ -621,9 +624,9 @@ function DistributorAgreement() {
         formDataToSend.append("partners", JSON.stringify(partnersData,));
       }
 
-    if (otherCompanies.length && otherCompanies[0].name) {
-  formDataToSend.append("other_companies", JSON.stringify(otherCompanies));
-}
+      if (otherCompanies.length && otherCompanies[0].name) {
+        formDataToSend.append("other_companies", JSON.stringify(otherCompanies));
+      }
 
 
       const docs = formData.documents;
@@ -646,7 +649,7 @@ function DistributorAgreement() {
 
         // SINGLE FILES
         if (docs.pan_photo) formDataToSend.append("pan_photo", docs.pan_photo);
-       if (docs.aadhar_front) formDataToSend.append("aadhar_photo", docs.aadhar_front);
+        if (docs.aadhar_front) formDataToSend.append("aadhar_photo", docs.aadhar_front);
         if (docs.gst_file) formDataToSend.append("gst_file", docs.gst_file);
         if (docs.seed_license) formDataToSend.append("seed_license", docs.seed_license);
         if (docs.fertilizer_license) formDataToSend.append("fertilizer_license", docs.fertilizer_license);
@@ -670,38 +673,25 @@ function DistributorAgreement() {
       );
 
 
-      if (response.data.success) {
+      if (response.status === 201 || response.data.success) {
+        const createdDistributorId =
+          response.data.distributorId || response.data.data?.distributorId;
+
+        setDistributorId(createdDistributorId);
+        setIsDistributorCreated(true);
+        // navigate(`/hr/distributor-agreement/${createdDistributorId}/preview`);
         toast({
           title: "Success",
-          description: "Distributor form created successfully",
+          description: "Distributor created successfully",
           status: "success",
           duration: 3000,
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: response.data.message || "Submission failed",
-          status: "error",
-          duration: 3000,
-        });
-      }
-     if (response.status === 201 || response.data.success) {
-  toast({
-    title: "Success",
-    description: "Distributor created successfully",
-    status: "success",
-    duration: 3000,
-  });
-
-  navigate("/distributor-list"); // 👈 your route
-}
-
+        })};
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
-    
+
   };
 
 
@@ -861,6 +851,24 @@ function DistributorAgreement() {
         boxShadow="md"
       >
 
+        {loading && (
+          <Flex
+            position="fixed"
+            top="0"
+            left="0"
+            width="100%"
+            height="100%"
+            bg="rgba(0,0,0,0.4)"
+            zIndex="9999"
+            justify="center"
+            align="center"
+            flexDirection="column"
+          >
+            <Spinner size="xl" color="white" thickness="4px" />
+            <Text mt={4} color="white">Please wait.....</Text>
+          </Flex>
+        )}
+
         <Text fontSize={{ base: "lg", md: "xl" }} mb={6} fontWeight="bold">
           Distributor Agreement Form
         </Text>
@@ -981,7 +989,7 @@ function DistributorAgreement() {
 
                 if (value === "partnership") {
                   setPartners([
-                    { address: "", state: "", district: "",  pincode: "", pan_no: "", aadhar_no: "", mobile_no: "", alt_mobile_no: "", name: "", father_name: "", partner_photo: null },
+                    { address: "", state: "", district: "", pincode: "", pan_no: "", aadhar_no: "", mobile_no: "", alt_mobile_no: "", name: "", father_name: "", partner_photo: null },
                   ]);
                 }
 
@@ -1740,6 +1748,12 @@ function DistributorAgreement() {
         ownerAddress={ownerAddress}
         partners={partners}
         otherCompanies={otherCompanies}
+        distributorId={distributorId}
+        onUploadSuccess={() => {
+          setIsPdfUploaded(true);
+          generateModal.onClose();
+          navigate("/distributor-list");
+        }}
 
       />
       <DistributorAgreementPdfPreview
@@ -1757,6 +1771,7 @@ function DistributorAgreement() {
     </>
   )
 }
+
 
 
 export default DistributorAgreement

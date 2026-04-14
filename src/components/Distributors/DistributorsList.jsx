@@ -45,8 +45,9 @@ const DistributorsList = () => {
   const [loading, setLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedDistributor, setSelectedDistributor] = useState(null);
-  const [pdfUrl, setPdfUrl] = useState(null);
-  const [pdfLoading, setPdfLoading] = useState(false);
+  // const [pdfUrl, setPdfUrl] = useState(null);
+  // const [pdfLoading, setPdfLoading] = useState(false);
+  const [firmName, setFirmName] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -69,11 +70,10 @@ const DistributorsList = () => {
   } = useDisclosure();
 
   const {
-    isOpen: ispenaltyModalOpen,
-    onOpen: onpenaltyModalOpen,
-    onClose: onpenaltyModalClose,
+    isOpen: isAgreementOpen,
+    onOpen: onAgreementOpen,
+    onClose: onAgreementClose,
   } = useDisclosure();
-
 
   const states = [
     "Andhra Pradesh",
@@ -275,38 +275,46 @@ const DistributorsList = () => {
     fetchDistributors();
   }, [page, limit, search, selectedState]);
 
- const handleGenerateAgreement = async (id) => {
-  try {
-    setPdfLoading(true);
+  //  const handleGenerateAgreement = async (id) => {
+  //   try {
+  //     setPdfLoading(true);
 
-    const response = await API.get(
-      `${API_ENDPOINTS.get_distributor_agreement_pdf}/${id}`
-    );
+  //     const response = await API.get(
+  //       `${API_ENDPOINTS.get_distributor_agreement_pdf}/${id}`
+  //     );
 
-    if (response.status === 200) {
-      const data = response?.data?.data;
+  //     if (response.status === 200) {
+  //       const data = response?.data?.data;
 
-      // 🔥 priority order (important)
-      const pdfLink =
-        data?.signed_file_url ||   // if signed
-        data?.presigned_url ||    // best option
-        data?.file_url;           // fallback
+  //       // 🔥 priority order (important)
+  //       const pdfLink =
+  //         data?.signed_file_url ||   // if signed
+  //         data?.presigned_url ||    // best option
+  //         data?.file_url;           // fallback
 
-      console.log("PDF LINK:", pdfLink);
+  //       console.log("PDF LINK:", pdfLink);
 
-      if (!pdfLink) {
-        alert("PDF not available");
-        return;
-      }
+  //       if (!pdfLink) {
+  //         alert("PDF not available");
+  //         return;
+  //       }
 
-      setPdfUrl(pdfLink);
-    }
-  } catch (error) {
-    console.error("Error fetching PDF:", error);
-  } finally {
-    setPdfLoading(false);
-  }
-};
+  //       setPdfUrl(pdfLink);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching PDF:", error);
+  //   } finally {
+  //     setPdfLoading(false);
+  //   }
+  // };
+
+
+  const handleGenerateAgreement = (id, firm_name) => {
+    console.log("CLICKED", id); // debug
+    setSelectedId(id);
+    setFirmName(firm_name);
+    onAgreementOpen();
+  };
 
   return (
     <>
@@ -316,11 +324,10 @@ const DistributorsList = () => {
         distributor={selectedDistributor}
       />
       <DistributorAgreementModel
-        isOpen={ispenaltyModalOpen}
-        onClose={onpenaltyModalClose}
-        pdfUrl={pdfUrl}
-        loading={pdfLoading}
+        isOpen={isAgreementOpen}
+        onClose={onAgreementClose}
         selectedId={selectedId}
+        firm_name={firmName}
       />
       <ViewPartnersModal
         isOpen={isPartnersOpen}
@@ -574,11 +581,9 @@ const DistributorsList = () => {
                       <Button
                         colorScheme="teal"
                         size="xs"
-                        onClick={() => {
-                          setSelectedId(item?.id);
-                           handleGenerateAgreement(item?.id); 
-                          onpenaltyModalOpen();
-                        }}
+                        onClick={() =>
+                          handleGenerateAgreement(item?.id, item?.firm_name)
+                        }
                       >
                         View Agreement
                       </Button>
@@ -608,6 +613,7 @@ const DistributorsList = () => {
                         aria-label="Delete"
                         onClick={() => {
                           handleDelete(item?.id)
+
                         }}
 
                       />

@@ -34,6 +34,7 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 import { useParams, Link } from "react-router-dom";
 import { GoHomeFill } from "react-icons/go";
 import EditImageDistributor from "../Distributors/EditImageDistributor";
+import DistributorAgreementPreview from "../../pages/HrMgmt/Letters/distributorONBoring/DistributorAgreementPreviewModel";
 
 
 
@@ -173,67 +174,69 @@ function DistributorAgreement() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
-
+  const generateModal = useDisclosure();
+  const [distributorId, setDistributorId] = useState(null);
   // const handleChildData = (data) => {
   //   setFormData((prev) => ({ ...prev, documents: data }));
   // };
 
+
   const { users } = useUsersapi();
   const [firmtype, setFirmtype] = useState("");
   const [formData, setFormData] = useState({
-  customer_name: "",
-  customer_dob: "",
-  firm_name: "",
-  gst_number: "",
-  firm_type: "",
-  business_address: "",
-  state: "",
-  district: "",
-  tehsil: "",
-  landmark: "",
-  pin_code: "",
-  contact_number: "",
-  alt_contact_number: "",
-  responsible_person_name: "",
-  responsible_person_address: "",
-  responsible_person_contact: "",
-  firm_email: "",
-  firm_pan: "",
-  jurisdiction_area: "",
-  brach: "",
-  seed_license_no: "",
-  fertilizer_license_no: "",
-  pesticide_license_no: "",
-  source_of_funds: "",
-  own_funds_details: "",
-  bank_name: "",
-  bank_account_no: "",
-  ifsc_code: "",
-  bank_branch: "",
-  security_cheque_no: "",
-  security_amount: "",
-  credit_duration: "",
-  annual_turnover: "",
-  expected_sale: "",
-  approver_name: "",
-  approving_date: "",
-  created_at: "",
-  approving_image: "",
-  business_territory: "",
-  firm_landmark: "",
-  responsible_person_alt_contact: "",
-  firm_since: "",
-  seed_license_expiry: "",
-  transport_name_a: "",
-  transport_name_b: "",
-  security_cheque_no_2: "",
-  created_by: "",
-  created_by_name: "",
-  distributor: "",
-  companies: "",
-  partners: "",
+    customer_name: "",
+    customer_dob: "",
+    firm_name: "",
+    gst_number: "",
+    firm_type: "",
+    business_address: "",
+    state: "",
+    district: "",
+    tehsil: "",
+    landmark: "",
+    pin_code: "",
+    contact_number: "",
+    alt_contact_number: "",
+    responsible_person_name: "",
+    responsible_person_address: "",
+    responsible_person_contact: "",
+    firm_email: "",
+    firm_pan: "",
+    jurisdiction_area: "",
+    brach: "",
+    seed_license_no: "",
+    fertilizer_license_no: "",
+    pesticide_license_no: "",
+    source_of_funds: "",
+    own_funds_details: "",
+    bank_name: "",
+    bank_account_no: "",
+    ifsc_code: "",
+    bank_branch: "",
+    security_cheque_no: "",
+    security_amount: "",
+    credit_duration: "",
+    annual_turnover: "",
+    expected_sale: "",
+    approver_name: "",
+    approving_date: "",
+    created_at: "",
+    approving_image: "",
+    business_territory: "",
+    firm_landmark: "",
+    responsible_person_alt_contact: "",
+    firm_since: "",
+    seed_license_expiry: "",
+    transport_name_a: "",
+    transport_name_b: "",
+    security_cheque_no_2: "",
+    created_by: "",
+    created_by_name: "",
+    distributor: "",
+    companies: "",
+    partners: "",
 
-});
+  });
   const [gstStatus, setGstStatus] = useState("");
   const [otherCompanies, setOtherCompanies] = useState([
     { name: "", turnover: "" },
@@ -287,7 +290,7 @@ function DistributorAgreement() {
         setLoading(false);
         return;
       }
- 
+
       const response = await API.post(API_ENDPOINTS.Gst_verify, {
         gst_number: formData.gst_number,
       });
@@ -389,119 +392,119 @@ function DistributorAgreement() {
 
 
 
-const handleSubmit = async () => {
-  try {
-    const formDataToSend = new FormData();
+  const handleSubmit = async () => {
+    try {
+      const formDataToSend = new FormData();
 
-    // // ✅ 1. Distributor basic fields
-    // Object.keys(formData).forEach((key) => {
-    //   formDataToSend.append(key, formData[key]);
-    // });
+      // // ✅ 1. Distributor basic fields
+      // Object.keys(formData).forEach((key) => {
+      //   formDataToSend.append(key, formData[key]);
+      // });
 
-    
-    // 1. Basic Fields Append (Text data)
-    Object.keys(formData).forEach((key) => {
-      // Agar value object hai (jaise partners array), toh stringify karein
-      if (Array.isArray(formData[key]) || (typeof formData[key] === 'object' && formData[key] !== null && !(formData[key] instanceof File))) {
-        formDataToSend.append(key, JSON.stringify(formData[key]));
-      } else {
-        formDataToSend.append(key, formData[key]);
-      }
-    });
 
-    // 2. Documents (Files) handling - Direct from 'documents' state
-    if (documents) {
-      Object.keys(documents).forEach((key) => {
-        const value = documents[key];
-
-        if (Array.isArray(value)) {
-          // Multiple Files (Shop images, Cheques)
-          value.forEach((file, index) => {
-            if (file instanceof File) {
-              formDataToSend.append(`${key}_${index + 1}`, file);
-            }
-          });
-        } else if (value instanceof File) {
-          // Single File (PAN, Aadhar)
-          formDataToSend.append(key, value);
+      // 1. Basic Fields Append (Text data)
+      Object.keys(formData).forEach((key) => {
+        // Agar value object hai (jaise partners array), toh stringify karein
+        if (Array.isArray(formData[key]) || (typeof formData[key] === 'object' && formData[key] !== null && !(formData[key] instanceof File))) {
+          formDataToSend.append(key, JSON.stringify(formData[key]));
+        } else {
+          formDataToSend.append(key, formData[key]);
         }
       });
-    }
 
+      // 2. Documents (Files) handling - Direct from 'documents' state
+      if (documents) {
+        Object.keys(documents).forEach((key) => {
+          const value = documents[key];
 
-    // ✅ 2. Partners (files + data separate)
-    const partnersData = partners.map((p, index) => {
-      const { partner_photo, ...rest } = p;
-
-      // file append
-      if (partner_photo) {
-        formDataToSend.append(`partner_photo_${index + 1}`, partner_photo);
+          if (Array.isArray(value)) {
+            // Multiple Files (Shop images, Cheques)
+            value.forEach((file, index) => {
+              if (file instanceof File) {
+                formDataToSend.append(`${key}_${index + 1}`, file);
+              }
+            });
+          } else if (value instanceof File) {
+            // Single File (PAN, Aadhar)
+            formDataToSend.append(key, value);
+          }
+        });
       }
 
-      return rest; // only text data
-    });
 
-    formDataToSend.append("partners", JSON.stringify(partnersData));
+      // ✅ 2. Partners (files + data separate)
+      const partnersData = partners.map((p, index) => {
+        const { partner_photo, ...rest } = p;
 
-    // ✅ 3. Companies (normal JSON)
-    formDataToSend.append("companies", JSON.stringify(companies));
+        // file append
+        if (partner_photo) {
+          formDataToSend.append(`partner_photo_${index + 1}`, partner_photo);
+        }
 
-    // ✅ 4. Documents (🔥 FIXED PART)
-
-    // PAN (single file)
-    if (documents?.pan_photo) {
-      formDataToSend.append("pan_photo", documents.pan_photo);
-    }
-
-    // Cheque photos (multiple)
-    if (documents?.cheque_photo?.length > 0) {
-      documents.cheque_photo.forEach((file, index) => {
-        formDataToSend.append(`cheque_photo_${index + 1}`, file);
+        return rest; // only text data
       });
-    }
 
-    // Shop images (multiple)
-    if (documents?.shop_image?.length > 0) {
-      documents.shop_image.forEach((file, index) => {
-        formDataToSend.append(`shop_image_${index + 1}`, file);
-      });
-    }
+      formDataToSend.append("partners", JSON.stringify(partnersData));
 
-    // ✅ 5. API Call
-    const response = await API.put(
-      `${API_ENDPOINTS.update_distributor}/${id}`,
-      formDataToSend,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      // ✅ 3. Companies (normal JSON)
+      formDataToSend.append("companies", JSON.stringify(companies));
+
+      // ✅ 4. Documents (🔥 FIXED PART)
+
+      // PAN (single file)
+      if (documents?.pan_photo) {
+        formDataToSend.append("pan_photo", documents.pan_photo);
       }
-    );
 
-    // ✅ 6. Success
-    if (response.status === 200) {
+      // Cheque photos (multiple)
+      if (documents?.cheque_photo?.length > 0) {
+        documents.cheque_photo.forEach((file, index) => {
+          formDataToSend.append(`cheque_photo_${index + 1}`, file);
+        });
+      }
+
+      // Shop images (multiple)
+      if (documents?.shop_image?.length > 0) {
+        documents.shop_image.forEach((file, index) => {
+          formDataToSend.append(`shop_image_${index + 1}`, file);
+        });
+      }
+
+      // ✅ 5. API Call
+      const response = await API.put(
+        `${API_ENDPOINTS.update_distributor}/${id}`,
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      // ✅ 6. Success
+      if (response.status === 200) {
+        toast({
+          title: "Distributor updated successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        navigate("/accounting-master/distributor");
+
+      }
+
+    } catch (error) {
+      //  Error
       toast({
-        title: "Distributor updated successfully",
-        status: "success",
+        title: "Failed to update data",
+        status: "error",
         duration: 3000,
         isClosable: true,
       });
-       navigate("/accounting-master/distributor");
-     
+
+      console.error("Update Error:", error);
     }
-
-  } catch (error) {
-    //  Error
-    toast({
-      title: "Failed to update data",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-
-    console.error("Update Error:", error);
-  }
-};
+  };
 
 
 
@@ -560,6 +563,8 @@ const handleSubmit = async () => {
         setPartners(data.partners || []);
         setCompanies(data.companies || []);
         setDocuments(data.documents || {});
+        setDistributorId(data.distributor?.id || null);
+        // console.log(data.distributor?.id, "distributor details fetched");
 
         setFirmtype(data.firm_type?.toLowerCase()); // Normalize case
 
@@ -596,9 +601,9 @@ const handleSubmit = async () => {
     }
   }, [id]);
 
-    const handleChildData = (data) => {  console.log("Parent received data from Child:", data);  setFormData((prev) => ({ ...prev, documents: data, })); };
+  const handleChildData = (data) => { console.log("Parent received data from Child:", data); setFormData((prev) => ({ ...prev, documents: data, })); };
 
- 
+
   // add mulyiple comapny ----------------------------------------------
   const handleOtherCompanyChange = (index, field, value) => {
     const updated = [...otherCompanies];
@@ -662,21 +667,54 @@ const handleSubmit = async () => {
   };
 
   const formatToInputDate = (dateStr) => {
-  if (!dateStr) return "";
+    if (!dateStr) return "";
 
-  const date = new Date(dateStr);
+    const date = new Date(dateStr);
 
-  if (isNaN(date)) return ""; // safety
+    if (isNaN(date)) return ""; // safety
 
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
-  return `${year}-${month}-${day}`;
-};
+    return `${year}-${month}-${day}`;
+  };
+
+
+  const handleGenerateAgreement = () => {
+    if (!formData.customer_name || !formData.firm_name || !formData.gst_number) {
+      toast({
+        title: "Missing Required Fields",
+        description: "Please fill in all required fields",
+        status: "error",
+        duration: 2000,
+      });
+      console.log(formData, "formdatadistributor");
+
+      generateModal.onClose();
+      return;
+    }
+
+    generateModal.onOpen();
+
+    // console.log(generateModal.onOpen(), "qwertyuio")
+  };
 
   return (
     <>
+      <DistributorAgreementPreview
+        isOpen={generateModal.isOpen}
+        onClose={generateModal.onClose}
+        formData={formData}
+        ownerAddress={ownerAddress}
+        partners={partners}
+        otherCompanies={otherCompanies}
+        distributorId={distributorId}
+        onUploadSuccess={() => {
+          generateModal.onClose();
+          navigate("/accounting-master/distributor");
+        }}
+      />
       <Box
         bg="white"
         mt={{ base: 2, md: 5 }}
@@ -685,31 +723,31 @@ const handleSubmit = async () => {
         borderRadius="lg"
         boxShadow="md"
       >
-       
-         <HStack justifyContent="space-between"  spacing="space-between">
-                <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
-        
-                  <BreadcrumbItem>
-                    <BreadcrumbLink as={Link} to="/dashboard">
-                      <GoHomeFill color="#5570F1" />
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                 <BreadcrumbItem>
-                    <BreadcrumbLink as={Link} fontSize="13px" to="/accounting-master/distributor" >
-                      Distributor List 
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-        
-                  <BreadcrumbItem isCurrentPage>
-                    <BreadcrumbLink fontSize="13px">
-                      Edit Distributor 
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-        
-                </Breadcrumb>
-              </HStack>
 
-               <Text fontSize={{ base: "lg", md: "xl" }} mb={6} fontWeight="bold">
+        <HStack justifyContent="space-between" spacing="space-between">
+          <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+
+            <BreadcrumbItem>
+              <BreadcrumbLink as={Link} to="/dashboard">
+                <GoHomeFill color="#5570F1" />
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbLink as={Link} fontSize="13px" to="/accounting-master/distributor" >
+                Distributor List
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+
+            <BreadcrumbItem isCurrentPage>
+              <BreadcrumbLink fontSize="13px">
+                Edit Distributor
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+
+          </Breadcrumb>
+        </HStack>
+
+        <Text fontSize={{ base: "lg", md: "xl" }} mb={6} fontWeight="bold">
           Edit Distributor
         </Text>
 
@@ -782,7 +820,7 @@ const handleSubmit = async () => {
                     onClick={handleGSTverification}
                     // isLoading={loading}
                     aria-label="Verify GST"
-                    // isDisabled={formData.gst_number.length !== 15}
+                  // isDisabled={formData.gst_number.length !== 15}
                   />
                 </Tooltip>
               </InputRightElement>
@@ -909,7 +947,7 @@ const handleSubmit = async () => {
                   name="contact_number"
                   value={formData.contact_number}
                   onChange={handleChange}
-                  // placeholder="Enter Contact No (without +91)"
+                // placeholder="Enter Contact No (without +91)"
                 />
               </FormControl>
               <FormControl>
@@ -918,7 +956,7 @@ const handleSubmit = async () => {
                   name="alt_contact_number"
                   value={formData.alt_contact_number}
                   onChange={handleChange}
-                  // placeholder="Enter Alternative Contact No (without +91)"
+                // placeholder="Enter Alternative Contact No (without +91)"
                 />
               </FormControl>
             </SimpleGrid>
@@ -984,7 +1022,7 @@ const handleSubmit = async () => {
               name="responsible_person_name"
               value={formData.responsible_person_name}
               onChange={handleChange}
-              // placeholder="Enter Responsible PersonName"
+            // placeholder="Enter Responsible PersonName"
             />
           </FormControl>
 
@@ -994,7 +1032,7 @@ const handleSubmit = async () => {
               name="responsible_person_address"
               value={formData.responsible_person_address}
               onChange={handleChange}
-              // placeholder="Enter Responsible PersonAddress"
+            // placeholder="Enter Responsible PersonAddress"
             />
           </FormControl>
 
@@ -1004,7 +1042,7 @@ const handleSubmit = async () => {
               name="responsible_person_contact"
               value={formData.responsible_person_contact}
               onChange={handleChange}
-              // placeholder="Enter Responsible PersonNo"
+            // placeholder="Enter Responsible PersonNo"
             />
           </FormControl>
           <FormControl>
@@ -1013,7 +1051,7 @@ const handleSubmit = async () => {
               name="responsible_person_alt_contact"
               value={formData.responsible_person_alt_contact}
               onChange={handleChange}
-              // placeholder="Enter Responsible PersonNo"
+            // placeholder="Enter Responsible PersonNo"
             />
           </FormControl>
 
@@ -1023,7 +1061,7 @@ const handleSubmit = async () => {
               name="firm_email"
               value={formData.firm_email}
               onChange={handleChange}
-              // placeholder="Enter Firm GSTN"
+            // placeholder="Enter Firm GSTN"
             />
           </FormControl>
 
@@ -1033,7 +1071,7 @@ const handleSubmit = async () => {
               name="gst_type"
               value={formData.gst_type}
               onChange={handleChange}
-              // placeholder="Select Firm GSTN Type"
+            // placeholder="Select Firm GSTN Type"
             >
               <option value="composition">Composition</option>
               <option value="consumer">Consumer</option>
@@ -1059,7 +1097,7 @@ const handleSubmit = async () => {
               name="firm_pan"
               value={formData.firm_pan}
               onChange={handleChange}
-              // placeholder="Enter Firm PAN Card No."
+            // placeholder="Enter Firm PAN Card No."
             />
           </FormControl>
 
@@ -1069,7 +1107,7 @@ const handleSubmit = async () => {
               name="firm_aadhar"
               value={formData.firm_aadhar}
               onChange={handleChange}
-              // placeholder="Enter Firm Aadhar Card No."
+            // placeholder="Enter Firm Aadhar Card No."
             />
           </FormControl>
 
@@ -1119,7 +1157,7 @@ const handleSubmit = async () => {
             <Input
               type="date"
               name="seed_license_expiry"
-              value={formatToInputDate (formData.seed_license_expiry || "")}
+              value={formatToInputDate(formData.seed_license_expiry || "")}
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
@@ -1196,7 +1234,7 @@ const handleSubmit = async () => {
                 value={formData.own_funds_details}
                 onChange={handleChange}
                 placeholder="Enter Own Funds Details"
-                                                                                          />
+              />
             </FormControl>
           )}
           {formData.source_of_funds === "investment" && (
@@ -1400,7 +1438,7 @@ const handleSubmit = async () => {
 
               <Input
                 type="file"
-                  accept="image/*,application/pdf"
+                accept="image/*,application/pdf"
                 capture="environment"
                 display="none"
                 id="cameraUpload"
@@ -1422,13 +1460,20 @@ const handleSubmit = async () => {
           </SimpleGrid>
         </Box>
         {/* upload document */}
-         <EditImageDistributor
-                  formData={formData}
-                  onSendData={handleChildData} 
-                    existingDocs={documents}/> 
-        
+        <EditImageDistributor
+          formData={formData}
+          onSendData={handleChildData}
+          existingDocs={documents} />
+
         <Button colorScheme="blue" onClick={handleSubmit} mt={4}>
           Update Distributor
+        </Button>
+        <Button ml={5}
+          colorScheme="green"
+          mt={6}
+          onClick={handleGenerateAgreement}
+        >
+          Genrate distributor  Aggrement Letter
         </Button>
       </Box>
     </>

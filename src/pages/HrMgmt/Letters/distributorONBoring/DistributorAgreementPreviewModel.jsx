@@ -25,7 +25,7 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
     const handleClose = () => {
         onClose(true);
     };
-
+  
 
     const toast = useToast();
     // const handleDownloadAgreementPDF = async () => {
@@ -154,9 +154,6 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
     });
   }
 };
-
-
-
 
 
     const isPartner = formData?.firm_type === "partnership";

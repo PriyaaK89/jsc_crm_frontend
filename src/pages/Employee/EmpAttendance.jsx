@@ -81,6 +81,7 @@ const EmpAttendance = () => {
                         "Attendance Unit",
                         "Odometer Reading",
                         "Day Over Odometer",
+                        "Total KM",
                         "Visit location",
                         "Work Type",
                         "Leave Reason",
@@ -437,6 +438,11 @@ const EmpAttendance = () => {
                           <Td>{item.attendance_unit}</Td>
                           <Td>{item.odometer_reading || 0}</Td>
                           <Td>{item.day_over_odometer_reading || 0}</Td>
+<Td>
+  {item?.day_over_odometer_reading != null && item?.odometer_reading != null
+    ? item.day_over_odometer_reading - item.odometer_reading
+    : "-"}
+</Td>
                           <Td>{item.visit_location || "-"}</Td>
                           <Td>{item.work_type || "-"}</Td>
                           <Td>{item.leave_reason || "-"}</Td>

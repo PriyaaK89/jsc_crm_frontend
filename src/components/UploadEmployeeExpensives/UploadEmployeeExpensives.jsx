@@ -66,30 +66,75 @@ const UploadEmployeeExpensives = () => {
     fetchUsers();
   }, []);
 
+  // const fetchAdminExpense = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await API.get(`${API_ENDPOINTS?.get_uploaded_exp}?page=${page}&limit=${limit}&search=${search}&expense_type=${expenseType}&start_date=${startDate}&end_date=${endDate}`);
+  //     if (response.status === 200) {
+  //       setAdminExpense(response.data.data);
+  //       const pg = response.data;
+  //       setPage(pg.page);
+  //       setLimit(pg.limit);
+  //       setTotalItems(pg.totalItems);
+  //       setTotalPages(pg.total_pages);
+  //     }
+  //   }
+  //   catch (error) {
+  //     console.error(error);
+  //   }
+  //   finally {
+  //     setLoading(false);
+  //   }
+
+  // }
+
   const fetchAdminExpense = async () => {
-    setLoading(true);
-    try {
-      const response = await API.get(`${API_ENDPOINTS?.get_uploaded_exp}?page=${page}&limit=${limit}&search=${search}&expense_type=${expenseType}&start_date=${startDate}&end_date=${endDate}`);
-      if (response.status === 200) {
-        setAdminExpense(response.data.data);
-        const pg = response.data;
-        setPage(pg.page);
-        setLimit(pg.limit);
-        setTotalItems(pg.totalItems);
-        setTotalPages(pg.total_pages);
-      }
-    }
-    catch (error) {
-      console.error(error);
-    }
-    finally {
-      setLoading(false);
+  setLoading(true);
+
+  try {
+    const params = new URLSearchParams();
+    params.append("page", page);
+    params.append("limit", limit);
+
+    if (search && search.trim() !== "") {
+      params.append("search", search.trim());
     }
 
+    if (expenseType && expenseType !== "") {
+      params.append("expense_type", expenseType);
+    }
+
+    if (startDate && endDate) {
+      params.append("start_date", startDate);
+      params.append("end_date", endDate);
+    }
+
+    const url = `${API_ENDPOINTS?.get_uploaded_exp}?${params.toString()}`;
+
+    const response = await API.get(url);
+
+    if (response.status === 200) {
+      const data = response.data;
+
+      setAdminExpense(data.data);
+      setPage(data.page);
+      setLimit(data.limit);
+      setTotalItems(data.totalItems);
+      setTotalPages(data.total_pages);
+    }
+
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
   }
-  useEffect(() => {
-    fetchAdminExpense();
-  }, [page, limit, search, expenseType, startDate, endDate])
+};
+useEffect(() => {
+  setPage(1);
+}, [search, expenseType, startDate, endDate]);
+useEffect(() => {
+  fetchAdminExpense();
+}, [page, limit, expenseType, startDate, endDate]);
 
   // Handle input change
   const handleChange = (e) => {

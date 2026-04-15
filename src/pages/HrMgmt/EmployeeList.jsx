@@ -94,7 +94,7 @@ const EmployeeList = () => {
     "Leaves",
     "Login",
     "Logout",
-    "Last Seen",
+    // "Last Seen",
     "Approver",
     "View Doc",
     "Action",
@@ -118,7 +118,7 @@ const EmployeeList = () => {
       case "DOJ":
       case "Login":
       case "Logout":
-      case "Last Seen":
+      // case "Last Seen":
       case "View Doc":
       case "Action":
         return "160px";
@@ -389,11 +389,11 @@ const EmployeeList = () => {
                         <Td>{emp?.total_leaves ?? "-"}</Td>
                         <Td>{formatTime(emp?.login_time)}</Td>
                         <Td>{formatTime(emp?.logout_time)}</Td>
-                        <Td>
+                       {/* <Td>
                           {emp?.last_seen
                             ? new Date(emp.last_seen).toLocaleString()
                             : "-"}
-                        </Td>
+                        </Td> */}
                         <Td>{emp?.approver_name || "-"}</Td>
 
                         <Td>

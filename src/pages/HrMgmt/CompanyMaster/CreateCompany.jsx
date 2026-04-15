@@ -91,14 +91,6 @@ const CreateCompany = () => {
         formPayload.append(key, formData[key] || "");
       });
 
-
-      // if (formData.company_logo) {
-      //   formPayload.append("companyLogo", formData.company_logo);
-      // }
-
-      // if (formData.signature) {
-      //   formPayload.append("signature", formData.signature);
-      // }
       const response = await API.post(API_ENDPOINTS.create_company, formPayload, {
         headers: {
           "Content-Type": "multipart/form-data",

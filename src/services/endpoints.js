@@ -56,6 +56,11 @@ export const API_ENDPOINTS = {
   get_distributor_send_esign:`distributor/send-esign`,
   get_distributor_esign_status:`/distributor/status`,
   download_distributor_signed_agreement:`distributor/download`,
-   create_company:`company/create-company`,
+   create_company:`create-company`,
+   Get_comapnies:`get-companies`,
+   Get_comapany_by_id:`get-company`,
+   Update_comapany:`update-company`,
+   Delete_company:`delete-company`,
+
 };
 // 

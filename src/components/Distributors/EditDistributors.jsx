@@ -735,7 +735,7 @@ function DistributorAgreement() {
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbItem>
-              <BreadcrumbLink as={Link} fontSize="13px" to="/accounting-master/distributor" >
+              <BreadcrumbLink as={Link} fontSize="13px" to="/distributor/distributorlist" >
                 Distributor List
               </BreadcrumbLink>
             </BreadcrumbItem>

@@ -45,8 +45,6 @@ const DistributorsList = () => {
   const [loading, setLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedDistributor, setSelectedDistributor] = useState(null);
-  // const [pdfUrl, setPdfUrl] = useState(null);
-  // const [pdfLoading, setPdfLoading] = useState(false);
   const [firmName, setFirmName] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -275,40 +273,6 @@ const DistributorsList = () => {
     fetchDistributors();
   }, [page, limit, search, selectedState]);
 
-  //  const handleGenerateAgreement = async (id) => {
-  //   try {
-  //     setPdfLoading(true);
-
-  //     const response = await API.get(
-  //       `${API_ENDPOINTS.get_distributor_agreement_pdf}/${id}`
-  //     );
-
-  //     if (response.status === 200) {
-  //       const data = response?.data?.data;
-
-  //       // 🔥 priority order (important)
-  //       const pdfLink =
-  //         data?.signed_file_url ||   // if signed
-  //         data?.presigned_url ||    // best option
-  //         data?.file_url;           // fallback
-
-  //       console.log("PDF LINK:", pdfLink);
-
-  //       if (!pdfLink) {
-  //         alert("PDF not available");
-  //         return;
-  //       }
-
-  //       setPdfUrl(pdfLink);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching PDF:", error);
-  //   } finally {
-  //     setPdfLoading(false);
-  //   }
-  // };
-
-
   const handleGenerateAgreement = (id, firm_name) => {
     console.log("CLICKED", id); // debug
     setSelectedId(id);
@@ -484,7 +448,7 @@ const DistributorsList = () => {
                       _hover={{ bg: "blue.50" }}
                       aria-label="view Distributor"
                       onClick={() => {
-                        navigate(`/accounting-master/view-distributor/${item?.id}`);
+                        navigate(`/distributor/distributorlist/view-distributor/${item?.id}`);
                       }}
                     /></Td>
                     <Td>{item?.gst_number || "-"}</Td>
@@ -585,7 +549,7 @@ const DistributorsList = () => {
                           handleGenerateAgreement(item?.id, item?.firm_name)
                         }
                       >
-                       Verify Agreement
+                        Verify Agreement
                       </Button>
                     </Td>
 
@@ -599,7 +563,7 @@ const DistributorsList = () => {
                         _hover={{ bg: "blue.50" }}
                         aria-label="edit Documents"
                         onClick={() => {
-                          navigate(`/accounting-master/edit-distributor/${item?.id}`);
+                          navigate(`/distributor/distributorlist/edit-distributor/${item?.id}`);
                         }}
                       />
                     </Td>

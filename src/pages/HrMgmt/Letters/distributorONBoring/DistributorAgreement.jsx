@@ -1770,7 +1770,7 @@ function DistributorAgreement() {
         distributorId={distributorId}
   onUploadSuccess={() => {
     generateModal.onClose();
-    navigate("/accounting-master/distributor");
+    navigate("/distributor/distributorlist/distributorlist");
   }}
 
       />

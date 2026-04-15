@@ -1,12 +1,12 @@
 import React from 'react'
-import Sidebar from './Sidebar';
-import Topbar from './Topbar';
+import Sidebar from '../Sidebar';
+import Topbar from '../Topbar';
 import { Flex, Box } from '@chakra-ui/react';
-import MobileTopbar from "./MobileTopbar";
-import CreateCompany from '../../pages/HrMgmt/CompanyMaster/CreateCompany';
-import NotificationBtn from '../NotificationBtn/NotificationBtn';
+import MobileTopbar from "../MobileTopbar";
+import EditCompany from '../../../pages/HrMgmt/CompanyMaster/EditCompany'
+import NotificationBtn from '../../NotificationBtn/NotificationBtn';
 
-function CreateCompanyLayout() {
+function EditComapnyLayout() {
   return (
    <Box bg="#F3F3F3" h="100%" >
         <Box display={{ base: "none", md: "block" }}>
@@ -26,7 +26,7 @@ function CreateCompanyLayout() {
           pb={6}
         >
           <NotificationBtn/>
-          <CreateCompany/>
+       <EditCompany/>
         </Box>
       </Box>
   )
@@ -34,4 +34,4 @@ function CreateCompanyLayout() {
 
 
 
-export default CreateCompanyLayout
+export default EditComapnyLayout

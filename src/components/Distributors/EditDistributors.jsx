@@ -561,6 +561,7 @@ function DistributorAgreement() {
 
         setFormData(data.distributor || {});
         setPartners(data.partners || []);
+        console.log(partners)
         setCompanies(data.companies || []);
         setDocuments(data.documents || {});
         setDistributorId(data.distributor?.id || null);
@@ -699,6 +700,7 @@ function DistributorAgreement() {
 
     // console.log(generateModal.onOpen(), "qwertyuio")
   };
+
 
   return (
     <>

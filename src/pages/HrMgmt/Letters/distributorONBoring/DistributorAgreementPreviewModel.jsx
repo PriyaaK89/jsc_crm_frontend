@@ -159,19 +159,19 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
     const isPartner = formData?.firm_type === "partnership";
 
     const personName = isPartner
-        ? partners?.[0]?.name
+        ? partners[0]?.name
         : formData?.name;
 
     const personAadhar = isPartner
-        ? partners?.[0]?.aadhar_no
+        ? partners[0]?.aadhar_no
         : ownerAddress?.aadhar_no;
 
     const personAddress = isPartner
-        ? partners?.[0]?.address
+        ? partners[0]?.address
         : formData?.responsible_person_address;
 
     const personContact = isPartner
-        ? partners?.[0]?.contact_no
+        ? partners[0]?.contact_no
         : formData?.responsible_person_contact;
 
 
@@ -207,7 +207,7 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                     <Text mt={4} textAlign="center" fontSize="15px">And</Text>
 
                                     <Text mt={4}>
-                                        <mark><strong>  {formData?.firm_name} </strong> </mark>,  a {formData?.firm_type} concern having its place of business at <strong> {formData?.business_address} {formData?.landmark} {formData?.district} {formData?.pincode}. </strong>Represented through its proprietor.<strong>{ownerAddress?.name}{partners?.name} </strong> residing at S/O-<strong>{ownerAddress?.father_name}{partners?.father_name}</strong> address <strong> {ownerAddress?.address},{ownerAddress?.state},{ownerAddress?.district},{ownerAddress?.pincode}{partners?.address},{partners?.state}, {partners?.district}, {partners?.pincode}</strong> (hereinafter collectively referred to as “Distributor” ) which expression shall unless repugnant to the context or meaning thereof be deemed to include his /her heirs, executors, administrators, permitted assigns and successors of the OTHER PART.
+                                        <mark><strong>  {formData?.firm_name} </strong> </mark>,  a {formData?.firm_type} concern having its place of business at <strong> {formData?.business_address} {formData?.landmark} {formData?.district} {formData?.pincode}. </strong>Represented through its proprietor.<strong>{ownerAddress?.name}{partners[0]?.name} </strong> residing at S/O-<strong>{ownerAddress?.father_name}{partners[0]?.father_name}</strong> address <strong> {ownerAddress?.address},{ownerAddress?.state},{ownerAddress?.district},{ownerAddress?.pincode}{partners[0]?.address},{partners[0]?.state}, {partners[0]?.district}, {partners[0]?.pincode}</strong> (hereinafter collectively referred to as “Distributor” ) which expression shall unless repugnant to the context or meaning thereof be deemed to include his /her heirs, executors, administrators, permitted assigns and successors of the OTHER PART.
                                     </Text>
 
                                     <Text mt={4}>
@@ -723,6 +723,8 @@ const DistributorAgreementPreviewModel = ({ isOpen, onClose, formData, employee,
                                                     [
                                                         "Name of Key Person/s with Aadhaar No.",
                                                         `${personName || ""}, ${personAadhar || ""}`
+                                                        
+                                                        
                                                     ],
 
                                                     [

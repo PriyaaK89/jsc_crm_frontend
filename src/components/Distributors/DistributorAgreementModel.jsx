@@ -1,124 +1,3 @@
-// import React, { useState } from "react";
-// import {
-//   Modal,
-//   ModalOverlay,
-//   ModalContent,
-//   ModalHeader,
-//   ModalBody,
-//   ModalCloseButton,
-//   Button,
-//   Spinner,
-//   Box,
-//   Text,
-//   VStack,
-// } from "@chakra-ui/react";
-
-// function DistributorAgreementModel({
-//   isOpen,
-//   onClose,
-//   pdfUrl,
-//   loading,
-//   selectedId,
-// }) {
-//   const [error, setError] = useState(false);
-
-//   const handleDownload = async () => {
-//   try {
-//     const response = await fetch(pdfUrl);
-//     const blob = await response.blob();
-
-//     const url = window.URL.createObjectURL(blob);
-//     const link = document.createElement("a");
-
-//     link.href = url;
-//     link.download = `distributor_agreement_${selectedId}.pdf`;
-
-//     document.body.appendChild(link);
-//     link.click();
-
-//     link.remove();
-//     window.URL.revokeObjectURL(url);
-//   } catch (error) {
-//     console.error("Download failed:", error);
-//   }
-// };
-
-//   return (
-//     <Modal isOpen={isOpen} onClose={onClose} size="6xl" borderRadius="lg" >
-//       <ModalOverlay />
-//       <ModalContent >
-//         <Box bg="#EDF2F7" h="100%"  borderTopLeftRadius="xl" borderTopRightRadius="xl">
-//         <ModalHeader m={4} >Distributor Agreement</ModalHeader>
-//         <ModalCloseButton m={1}  size="lg" mb={2} bg="-moz-initial" borderRadius="full" _hover={{ bg: "gray.500", color: "white" }} />
-//         </Box>
-
-//         <ModalBody borderRadius="lg">
-//           {loading ? (
-//             <VStack py={10}>
-//               <Spinner size="lg" />
-//               <Text>Loading PDF...</Text>
-//             </VStack>
-//           ) : pdfUrl ? (
-//             <>
-//               {!error ? (
-//                 <Box height="650px" border="1px solid #eee" borderRadius="md">
-//                   <iframe
-//                     src={pdfUrl}
-//                     title="PDF Preview"
-//                     width="100%"
-//                     height="100%"
-//                     onError={() => setError(true)}
-//                   />
-//                 </Box>
-//               ) : (
-//                 <VStack py={10}>
-//                   <Text color="red.500">
-//                     Failed to load PDF in preview
-//                   </Text>
-
-//                   <Button
-//                     colorScheme="blue"
-//                     onClick={() => window.open(pdfUrl, "_blank")}
-//                   >
-//                     Open in New Tab
-//                   </Button>
-//                 </VStack>
-//               )}
-
-//               {/* Actions */}
-//               <VStack mt={4}  mb={4} spacing={3} justify="center" justifyContent="center" flexDirection={{ base: "column", md: "row" }}>
-//                 <Button
-//                  variant="outline"
-
-//                   onClick={() => window.open(pdfUrl, "_blank")}
-//                 >
-//                   Open Full Screen
-//                 </Button>
-
-//                 <Button
-
-//                    colorScheme="blue"
-//                     onClick={handleDownload}
-//                     >
-//                   Download PDF
-//                 </Button>
-//               </VStack>
-//             </>
-//           ) : (
-//             <Text textAlign="center" py={10}>
-//               No PDF available
-//             </Text>
-//           )}
-//         </ModalBody>
-//       </ModalContent>
-//     </Modal>
-//   );
-// }
-
-// export default DistributorAgreementModel;
-
-
-
 
 import { Box, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, useToast, Button, Text, Flex, Spinner, Badge, IconButton, Progress, Tooltip } from "@chakra-ui/react";
 import { FaFilePdf, FaEye, FaDownload } from "react-icons/fa";
@@ -137,17 +16,29 @@ const DistributorAgreementModel = ({
   const toast = useToast();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [downoladloding, setDownloading] = useState(false)
   const [esignLoading, setEsignLoading] = useState(null);
-  const [legID, setLegID] = useState('')
-  const[documentstatus,setDocumentstatus]=useState('');
+  const [documentId, setDocumentId] = useState('');
+  const [isPollingStopped, setIsPollingStopped] = useState(false);
+  // console.log(selectedId, "Selected ID")
 
-  const getEmployeeDocs = async () => {
+  // --------------------------get distributor ------------------------------------------------
+
+  const getdistributordoc = async () => {
     try {
       setLoading(true);
       const response = await API.get(`${API_ENDPOINTS.get_distributor_agreement_pdf}/${selectedId}`);
-      const docs = response?.data?.data ? [response.data.data] : [];
-      setDocuments(docs);
-      setDocumentstatus(response?.data?.data?.digio_document_id || '');
+
+      if (response.status === 200) {
+        const docs = Array.isArray(response?.data?.data)
+          ? response.data.data
+          : response?.data?.data
+            ? [response.data.data]
+            : [];
+        setDocuments(docs);
+        setDocumentId(response?.data?.data?.digio_document_id || '');
+      }
+
     } catch (error) {
       console.log(error);
     } finally {
@@ -158,49 +49,74 @@ const DistributorAgreementModel = ({
 
   useEffect(() => {
     if (isOpen && selectedId) {
-      getEmployeeDocs();
+      getdistributordoc(selectedId);
     }
   }, [isOpen, selectedId]);
-  // console.log("Documents:", documentstatus);
 
-  // ---------check legality status -------------------------------------------------
+  // ---------check digio document status -------------------------------------------------
   const checkDocumentStatus = async (selectedId) => {
     try {
       const response = await API.get(
-        `${API_ENDPOINTS.document_status}/${selectedId}`
+        `${API_ENDPOINTS.get_distributor_esign_status}/${selectedId}`
       );
-      if (response?.data?.status === 1) {
-        getEmployeeDocs();
-        
-  
+
+      const doc = response?.data?.data;
+
+      if (!doc) return false;
+
+      const isCompleted = doc?.agreement_status === "completed";
+
+      if (isCompleted) {
+        // await fetchSignedDocument(doc.id);
+        getdistributordoc(); //  refresh UI
+        return true; // stop polling
       }
+
+      getdistributordoc();
+      return false;
 
     } catch (error) {
       console.log("Document status error", error);
+      return false;
     }
   };
 
   useEffect(() => {
-    if (!legID) return;
-    const interval = setInterval(() => {
-      checkDocumentStatus(legID);
-    }, 30000); 
+    if (!selectedId || isPollingStopped) return;
+
+    const interval = setInterval(async () => {
+      const isCompleted = await checkDocumentStatus(selectedId); //  correct
+
+      if (isCompleted) {
+        setIsPollingStopped(true);
+        clearInterval(interval);
+      }
+    }, 30000);
 
     return () => clearInterval(interval);
-  }, [legID]);
+  }, [selectedId]);
+
+  // ---------------------status api response ----------------------
+  const getAgreementUIStatus = (doc) => {
+    const status = doc?.signing_status;
+    if (status === "completed") return "signed";
+    if (status === "requested") return "requested";
+
+    return "pending";
+  };
 
   // -------get sattus color----------------------------------------------------------------
   const getStatusColor = (status) => {
     if (status === "signed") return "green";
-    if (status === "pending") return "orange";
-    return "gray";
+    if (status === "requested") return "blue";
+    return "orange";
   };
+
 
   const getProgressValue = (status) => {
     if (status === "signed") return 100;
-    if (status === "completed") return 100;
-    if (status === "pending") return 50;
-    return 10;
+    if (status === "requested") return 60;
+    return 20;
   };
 
 
@@ -209,50 +125,63 @@ const DistributorAgreementModel = ({
     window.open(url, "_blank");
   };
 
-  // ---------download document -------------------------------------------------
+  // ---------download document ------------------------------------------------
+ const downloadDocument = async (selectedId) => {
+  try {
+    setDownloading(true); //  start loading
 
-  // const downloadDocument = async (url, doc) => {
-  //   try {
-  //     if (!url) return;
+    const response = await API.get(
+      `${API_ENDPOINTS.download_distributor_signed_agreement}/${selectedId}`
+    );
 
-  //     const response = await fetch(url);
-  //     const blob = await response.blob();
+    const fileUrl = response?.data?.download_url;
 
-  //     // Create custom filename
-  //     const status = ["signed", "completed"].includes(doc.signing_status)
-  //       ? "signed"
-  //       : "pending";
+    if (!fileUrl) {
+      toast({
+        title: "Download URL not found",
+        status: "error",
+      });
+      setDownloading(false);
+      return;
+    }
 
-  //     const fileName = `${doc.employee_name || "emp"}_${doc.employee_id || "id"}_${doc.document_type || "doc"}_${status}.pdf`
-  //       .replace(/\s+/g, "_")
-  //       .toLowerCase();
+   
+    const fileResponse = await fetch(fileUrl);
+    const blob = await fileResponse.blob();
 
-  //     const link = document.createElement("a");
-  //     link.href = window.URL.createObjectURL(blob);
-  //     link.download = fileName;
+    const url = window.URL.createObjectURL(blob);
 
-  //     document.body.appendChild(link);
-  //     link.click();
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `signed_agreement_${firm_name}.pdf`;
 
-  //     document.body.removeChild(link);
-  //     window.URL.revokeObjectURL(link.href);
+    document.body.appendChild(link);
+    link.click();
 
-  //   } catch (error) {
-  //     console.error("Download failed", error);
-  //     toast({
-  //       title: "Download failed",
-  //       description: "Unable to download file",
-  //       status: "error",
-  //     });
-  //   }
-  // };
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    setDownloading(false); 
+
+  } catch (error) {
+    console.log("Download failed", error);
+
+    setDownloading(false);
+
+    toast({
+      title: "Download failed",
+      description: "Unable to download PDF",
+      status: "error",
+    });
+  }
+};
 
   // ---------------------------------send for esign ----------------------------------------------------------------
 
-  const sendForESign = async (docId) => {
+  const sendForESign = async (documentId) => {
     try {
-      setEsignLoading(docId);
-      const response = await API.post(API_ENDPOINTS.get_distributor_send_esign, { document_id: docId, distributor_id: selectedId });
+      setEsignLoading(documentId);
+      const response = await API.post(API_ENDPOINTS.get_distributor_send_esign, { distributor_id: selectedId });
 
       if (response?.data?.status === 1) {
         toast({
@@ -261,8 +190,9 @@ const DistributorAgreementModel = ({
           duration: 3000,
           isClosable: true
         });
-       
-        getEmployeeDocs(); // refresh status
+
+
+        getdistributordoc(); // refresh status
       } else {
         toast({
           title: "Failed to send for eSign",
@@ -289,112 +219,41 @@ const DistributorAgreementModel = ({
       setEsignLoading(null);
     }
   };
+  // s--------------------signed document downoal ------------------------
+  // const downloadDocument = async (doc) => {
 
-
-
-  // ---------------------------------send for esign via digio ----------------------------------------------------------------
-
-  // const handleSendForESignDigio = async (docId) => {
   //   try {
-  //     setEsignLoading(docId);
+  // fetchSignedDocument(url)
 
-  //     const response = await API.post(
-  //       API_ENDPOINTS.digio_send_eSign,
-  //       { document_id: docId }
-  //     );
+  //     const response = await fetch(url);
+  //     const blob = await response.blob();
 
-  //     if (response?.data?.success) {
-  //       toast({
-  //         title: response?.data?.message || "Sent for eSign via Digio",
-  //         status: "success",
-  //         duration: 3000,
-  //         isClosable: true,
-  //       });
+  //     const fileName = `${doc?.file_name || "agreement"}`.replace(/\s+/g, "_");
 
-  //       // console.log(response?.data?.data);
-  //       getEmployeeDocs();
-  //     } else {
-  //       toast({
-  //         title: "Failed to send for eSign",
-  //         description: response?.data?.message || "Something went wrong",
-  //         status: "error",
-  //         duration: 3000,
-  //       });
-  //     }
+  //     const link = document.createElement("a");
+  //     link.href = window.URL.createObjectURL(blob);
+  //     link.download = fileName;
+
+  //     document.body.appendChild(link);
+  //     link.click();
+
+  //     document.body.removeChild(link);
+  //     window.URL.revokeObjectURL(link.href);
+
   //   } catch (error) {
+  //     console.error("Download failed", error);
+
   //     toast({
-  //       title: "Digio eSign failed",
-  //       description:
-  //         error?.response?.data?.message || "Something went wrong",
+  //       title: "Download failed",
+  //       description: "Unable to download file",
   //       status: "error",
   //     });
-  //   } finally {
-  //     setEsignLoading(null);
   //   }
   // };
 
-  // handle digioo status check & fetching signed document -------------------------------------------------
 
-  const handleCheckDigioStatus = async (docId) => {
-    try {
-      const response = await API.get(
-        `${API_ENDPOINTS.get_distributor_esign_status}/${docId}`
-      );
 
-      if (response?.data?.success) {
-        const status = response?.data?.agreement_status;
-  console.log("agreement status",status)
 
-        //  If signed → fetch signed PDF
-        if (status === "completed" || status === "signed") {
-          await handleFetchSignedDoc(docId);
-        } else {
-          // console.log("Still pending:", docId);
-        }
-      }
-    } catch (error) {
-      console.log("Status check failed", error);
-    }
-  };
-
-  // handle fetching signed document after esign completion -------------------------------------------------
-
-  const handleFetchSignedDoc = async (docId) => {
-    try {
-      const response = await API.get(
-        `${API_ENDPOINTS.download_distributor_signed_agreement}/${docId}`
-      );
-
-      if (response?.data?.success) {
-        console.log("Signed document fetched & stored");
-
-        //  Refresh documents so signed_file_url comes
-        getEmployeeDocs();
-      } else {
-        console.log("Failed to fetch signed document");
-      }
-
-    } catch (error) {
-      console.log("Fetch signed PDF failed", error);
-    }
-  };
-
-  useEffect(() => {
-    if (!documents.length) return;
-
-    documents.forEach((doc) => {
-      const isDigioDoc =
-        doc.document_type === "joining_letter" ||
-        doc.document_type === "agreement_letter";
-
-      const isPending =
-        !["signed", "completed"].includes(doc.signing_status);
-
-      if (isDigioDoc && isPending && doc.id) {
-        handleCheckDigioStatus(doc.id);
-      }
-    });
-  }, [documents]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
@@ -418,90 +277,79 @@ const DistributorAgreementModel = ({
               No documents found
             </Text>
           ) : (
-            documents.map((doc) => (
-              <Box key={doc.id} border="1px solid #E2E8F0"
-                borderRadius="10px" p={4} mb={4}>
+            documents.map((doc) => {
 
-                <Flex justify="space-between" align={{ base: "start", md: "center" }} direction={{ base: "column", md: "row" }} gap={{ base: 4, md: 'auto' }}>
+              const status = getAgreementUIStatus(doc);
+              return (
+                <Box key={doc.id} border="1px solid #E2E8F0"
+                  borderRadius="10px" p={4} mb={4}>
 
-                  <Flex align={{ base: "start", md: "center" }} gap="12px">
-                    <FaFilePdf size="24px" color="#E53E3E" style={{ marginTop: "4px" }} />
-                    <Box>
-                      <Text fontWeight="600" textTransform="capitalize" fontSize={{ base: "14px", md: "16px" }}>
-                        {doc?.document_type
-                          ? doc.document_type.replace(/_/g, " ")
-                          : "Unknown Document"}
-                      </Text>
+                  <Flex justify="space-between" align={{ base: "start", md: "center" }} direction={{ base: "column", md: "row" }} gap={{ base: 4, md: 'auto' }}>
 
-                      <Badge
-                        mt="4px" fontSize={{ base: "11px", md: "12px" }}
-                        colorScheme={getStatusColor(doc.signing_status)}>
-                        {["signed", "completed"].includes(doc.signing_status) ? "eSigned" : "Pending"}
-                      </Badge>
+                    <Flex align={{ base: "start", md: "center" }} gap="12px">
+                      <FaFilePdf size="24px" color="#E53E3E" style={{ marginTop: "4px" }} />
+                      <Box>
+                        <Text fontWeight="600" textTransform="capitalize">
+                          {doc?.document_type}
+                        </Text>
 
-                    </Box>
-                  </Flex>
 
-                  {/* RIGHT ACTIONS */}
-                  <Flex gap="8px">
-                    {/* VIEW DOCUMENT */}
-                    <Tooltip label="View Document">
-                      <IconButton
-                        icon={<FaEye />}
-                        size="sm"
-                        onClick={() => viewDocument(doc?.file_url)} />
-                    </Tooltip>
+                        <Badge colorScheme={getStatusColor(status)}>
+                          {status === "signed"
+                            ? "Signed"
+                            : status === "requested"
+                              ? "Requested"
+                              : "Pending"}
+                        </Badge>
+                      </Box>
+                    </Flex>
 
-                    {doc.signed_file_url && (
-                      <Tooltip label="Download Signed Document">
+                    <Flex gap="8px">
+                      <Tooltip label="View Document">
                         <IconButton
-                          icon={<FaDownload />}
+                          icon={<FaEye />}
                           size="sm"
-                          colorScheme="green"
-                          onClick={() => downloadDocument(doc.signed_file_url, doc)}
+                          onClick={() => viewDocument(doc?.presigned_url)}
                         />
                       </Tooltip>
-                    )}
 
-                    {doc.document_type === "agreement" && (
-                      <Button
-                        size="sm"
-                        leftIcon={<FiSend />} isLoading={esignLoading === doc.id}
-                        isDisabled={["signed", "completed"].includes(doc.signing_status)}
-                        colorScheme="blue" onClick={() => sendForESign(doc.id)} fontSize={{ base: "11px", md: "14px" }}>
-                        Send eSign
-                      </Button>
-                    )}
+                      {status === "signed" && (
+                        <Tooltip label="Download Signed Document">
+                          <IconButton
+                            icon={downoladloding ? <Spinner size="sm" /> : <FaDownload />}
+                            size="sm"
+                            colorScheme="green"
+                            isLoading={downoladloding}
+                            isDisabled={downoladloding}
+                            onClick={() => downloadDocument(doc?.distributor_id)}
+                          />
+                        </Tooltip>
+                      )}
 
-                    {doc.document_type === "agreement_letter" && (
-                      <>
+                      {doc.document_type === "agreement" && (
                         <Button
                           size="sm"
                           leftIcon={<FiSend />}
                           isLoading={esignLoading === doc.id}
-                          colorScheme="blue" fontSize={{ base: "11px", md: "14px" }}
-                          isDisabled={["signed", "completed"].includes(doc.signing_status)}
-                          onClick={() => handleSendForESignDigio(doc.id)}
+                          isDisabled={status === "signed"}
+                          colorScheme="blue"
+                          onClick={() => sendForESign(doc.id)}
                         >
-                          {["signed", "completed"].includes(doc.signing_status) ? "Signed" : "Send eSign"}
+                          Send eSign
                         </Button>
-                        <Button size="sm" colorScheme="purple" fontSize={{ base: "11px", md: "14px" }}>
-                          Send eStamp
-                        </Button>
-                      </>
-                    )}
-
- 
-
+                      )}
+                    </Flex>
                   </Flex>
-                </Flex>
 
-                <Progress
-                  mt={4}
-                  value={getProgressValue(doc.signing_status)}
-                  size="sm" borderRadius="md" />
-              </Box>
-            ))
+                  <Progress
+                    mt={4}
+                    value={getProgressValue(status)}
+                    size="sm"
+                    borderRadius="md"
+                  />
+                </Box>
+              );
+            })
           )}
         </ModalBody>
       </ModalContent>

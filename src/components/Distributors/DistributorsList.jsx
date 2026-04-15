@@ -478,7 +478,7 @@ const DistributorsList = () => {
 
                     <Td> <IconButton
                       icon={<ViewIcon />}
-                      size="sm"
+                      size="md"
                       variant="ghost"
                       color="blue.600"
                       _hover={{ bg: "blue.50" }}
@@ -579,13 +579,13 @@ const DistributorsList = () => {
                     </Td>
                     <Td>
                       <Button
-                        colorScheme="teal"
+                        colorScheme="yellow"
                         size="xs"
                         onClick={() =>
                           handleGenerateAgreement(item?.id, item?.firm_name)
                         }
                       >
-                        View Agreement
+                       Verify Agreement
                       </Button>
                     </Td>
 

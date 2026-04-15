@@ -105,7 +105,9 @@ const downloadDocument = async (url, doc) => {
   }
 };
 
+
   const sendForESign = async (docId) => {
+    // console.log(docId,"docis")
     try {
       setEsignLoading(docId);
       const response = await API.post( API_ENDPOINTS.send_esign, { document_id: docId });

@@ -55,7 +55,7 @@ export const API_ENDPOINTS = {
   get_distributor_agreement_pdf:`get-distributor-agreement`,
   get_distributor_send_esign:`distributor/send-esign`,
   get_distributor_esign_status:`/distributor/status`,
-  download_distributor_signed_agreement:`distributor/downloadt`,
+  download_distributor_signed_agreement:`distributor/download`,
    create_company:`company/create-company`,
 };
 // 

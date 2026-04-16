@@ -9,7 +9,7 @@ import PieChart from "../../pages/Dashboard/PieChart";
 const DashboardLayout = () => {
 
   return (
-    <Box bg="#F3F3F3" h="100%" >
+    <Box bg="#F3F3F3" minH="100vh" >
           <Box display={{ base: "none", md: "block" }}>
             <Sidebar />
     

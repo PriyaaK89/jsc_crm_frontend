@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack, SimpleGrid } from "@chakra-ui/react";
 import PersonalInfoCard from "./PersonalInfoCard";
 import ContactInfoCard from "./ContactInfoCard";
@@ -5,6 +6,8 @@ import { GoHomeFill } from "react-icons/go";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useParams,Link } from "react-router-dom";
+import API from "../../services/api";
+import { API_ENDPOINTS } from "../../services/endpoints";
 
 
 const Profile = () => {
@@ -14,6 +17,37 @@ const Profile = () => {
   console.log("Auth Context in Topbar:", auth);
   const userID = auth?.user?.id || "Unknown User";
   console.log("User ID:", userID);
+     const [employeeData, setEmployeeData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+
+   const fetchEmployeeDetails = async () => {
+    try {
+      setLoading(true);
+      const res = await API.get (
+        `${API_ENDPOINTS.get_emp_details}/${empId}`
+      );
+      if (res?.data.success) {
+        return setEmployeeData(res.data.data);
+      } 
+    } catch (err) {
+      setToast({
+        title: "Failed to load employee data",
+        status: "error",
+        duration: 3000,
+      });
+
+      console.error("Error:", err.response || err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+ useEffect(() => {
+    if (empId) fetchEmployeeDetails();
+  }, [empId]);
+
+
   return (
           <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px 0px'>
                 <HStack justifyContent='space-between'>
@@ -36,8 +70,8 @@ const Profile = () => {
   spacing={{ base: 4, md: 6 }}
   mt={4}
   alignItems="stretch">
-                    <PersonalInfoCard />
-                    <ContactInfoCard />
+                    <PersonalInfoCard data={employeeData} fetchEmployeeDetails={fetchEmployeeDetails} />
+                    <ContactInfoCard data={employeeData} />
                     </SimpleGrid>
                     </Box>
         

@@ -40,9 +40,10 @@ const Topbar = () => {
     }
   };
 
-
   const toast = useToast();
   const { auth,logoutUser } = useContext(AuthContext);
+    console.log("Topbar user:", auth?.user);
+
 
   const logout = () => {
 
@@ -106,7 +107,7 @@ const Topbar = () => {
       {/* profile  */}
     <Popover placement="bottom-end">
   <PopoverTrigger>
-    <Avatar name={auth?.user?.name} size="sm" cursor="pointer" />
+    <Avatar name={auth?.user?.name} size="sm" cursor="pointer" src={auth?.user?.profile_image_url} />
   </PopoverTrigger>
 
   <Portal>

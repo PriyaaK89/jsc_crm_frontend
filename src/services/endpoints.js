@@ -61,6 +61,7 @@ export const API_ENDPOINTS = {
    Get_comapany_by_id:`get-company`,
    Update_comapany:`update-company`,
    Delete_company:`delete-company`,
-
+  auth_my_profile:  `/auth/my-profile`,
+  update_profile_image: `/auth/upload-profile-image`,
 };
 // 

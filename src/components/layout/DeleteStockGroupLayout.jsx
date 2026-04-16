@@ -7,7 +7,7 @@ import DeleteStockGroup from "../../pages/InventoryMaster/DeleteStockGroup";
 import NotificationBtn from "../NotificationBtn/NotificationBtn";
 const DeleteStockGroupLayout = () => {
   return (
-     <Box bg="#F3F3F3" h="100vh" >
+     <Box bg="#F3F3F3" minH="100vh" >
               <Box display={{ base: "none", md: "block" }}>
                 <Sidebar />
         

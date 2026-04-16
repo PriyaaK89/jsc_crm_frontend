@@ -242,7 +242,6 @@ function DistributorAgreement() {
     { name: "", turnover: "" },
   ]);
 
-  const [companies, setCompanies] = useState([]);
   const [partners, setPartners] = useState([]);
 
   const [documents, setDocuments] = useState({});
@@ -396,10 +395,10 @@ function DistributorAgreement() {
     try {
       const formDataToSend = new FormData();
 
-      // // ✅ 1. Distributor basic fields
-      // Object.keys(formData).forEach((key) => {
-      //   formDataToSend.append(key, formData[key]);
-      // });
+    // //  1. Distributor basic fields
+    // Object.keys(formData).forEach((key) => {
+    //   formDataToSend.append(key, formData[key]);
+    // });
 
 
       // 1. Basic Fields Append (Text data)
@@ -446,10 +445,10 @@ function DistributorAgreement() {
 
       formDataToSend.append("partners", JSON.stringify(partnersData));
 
-      // ✅ 3. Companies (normal JSON)
-      formDataToSend.append("companies", JSON.stringify(companies));
+    //  3. Companies (normal JSON)
+    formDataToSend.append("companies", JSON.stringify(otherCompanies));
 
-      // ✅ 4. Documents (🔥 FIXED PART)
+    //  4. Documents ( FIXED PART)
 
       // PAN (single file)
       if (documents?.pan_photo) {
@@ -1365,7 +1364,7 @@ function DistributorAgreement() {
                   <Input
                     mb={2}
                     placeholder={`Company ${index + 1}`}
-                    value={company.name}
+                    value={otherCompanies.name}
                     onChange={(e) =>
                       handleOtherCompanyChange(index, "name", e.target.value)
                     }

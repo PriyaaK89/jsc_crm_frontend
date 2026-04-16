@@ -14,6 +14,8 @@ export const API_ENDPOINTS = {
   create_jobRole: `create-jobRole`,
   get_jobRole_list: `get-jobRole`,
   // upload_img: `upload-image`,
+   update_profile_image: `/auth/upload-profile-image`,
+ auth_my_profile:  `/auth/my-profile`,
   upload_img: `upload-document`,
   get_user_docs: "get-documents",
   get_emp_details: `auth/get-employee-details`,

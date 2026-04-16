@@ -61,6 +61,19 @@ export const API_ENDPOINTS = {
    Get_comapany_by_id:`get-company`,
    Update_comapany:`update-company`,
    Delete_company:`delete-company`,
+  //  stock group
+  create_stock_group:`create-stockGroup`,
+  stock_group_list:`get-stockGroup`,
+  Get_stock_group_by_id:`get-stockGroup`,
+  Update_stock_group:`update-stockGroup`,
+  Delete_stock_group:`delete-stockGroup`,
+
+  // stock category
+  Create_stock_category:`create-stock-category`,
+  View_stock_category:`get-stock-categories`,
+  View_stock_category_by_id:`/get-stock-category`,
+  Update_stock_category_by_id:`update-stock-category`,
+  Delete_Stock_category_by_id:`delete-stock-category`,
 
 };
 // 

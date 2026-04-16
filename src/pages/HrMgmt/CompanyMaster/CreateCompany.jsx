@@ -13,12 +13,14 @@ import {
 } from "@chakra-ui/react";
 import { Smile } from "lucide-react";
 import { GoHomeFill } from "react-icons/go";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 
 const CreateCompany = () => {
   const toast = useToast();
+    const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -109,31 +111,33 @@ const CreateCompany = () => {
           duration: 3000,
         });
         
-        setFormData({
-     email: "",
-    phone: "",
-    company_name: "",
-    account_no: "",
-    confirm_account_no: "",
-    country: "",
-    state: "",
-    pincode: "",
-    address: "",
-    financial_year_begin: "",
-    books_begin_from: "",
-    gstin: "",
-    license_no: "",
-    seeds_license_no: "",
-    pesticide_license_no: "",
-    fertilizer_license_no: "",
-    cin_no: "",
-    pan_no: "",
-    bank_name: "",
-    account_holder_name: "",
-    ifsc_code: "",
-    company_logo:null,
-    signature:null,
-        })
+    //     setFormData({
+    //  email: "",
+    // phone: "",
+    // company_name: "",
+    // account_no: "",
+    // confirm_account_no: "",
+    // country: "",
+    // state: "",
+    // pincode: "",
+    // address: "",
+    // financial_year_begin: "",
+    // books_begin_from: "",
+    // gstin: "",
+    // license_no: "",
+    // seeds_license_no: "",
+    // pesticide_license_no: "",
+    // fertilizer_license_no: "",
+    // cin_no: "",
+    // pan_no: "",
+    // bank_name: "",
+    // account_holder_name: "",
+    // ifsc_code: "",
+    //     })
+    setTimeout(() => {
+       navigate("/company-master/comapny-list");
+    }, 3000);
+        
       }
       
     } catch (error) {

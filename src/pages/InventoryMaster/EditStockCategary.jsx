@@ -1,59 +1,92 @@
 import {
-  FormControl,
-  SimpleGrid,
-  VStack,
   Box,
   Text,
+  FormControl,
   FormLabel,
-  Button,
-  HStack,
-  Select,
   Input,
+  Select,
+  SimpleGrid,
+  VStack,
+  Button,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  useToast
+  HStack,
+  useToast,
+  Spinner
 } from "@chakra-ui/react";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { GoHomeFill } from "react-icons/go";
-import { Link } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 
-const CreateStockCategory = () => {
+const EditStockCategory = () => {
 
+  const { id } = useParams();
+  const navigate = useNavigate();
   const toast = useToast();
 
   const [loading, setLoading] = useState(false);
-  const [stockGroups, setStockGroups] = useState([]);
+  const [fetchLoading, setFetchLoading] = useState(false);
+
+  const [categories, setCategories] = useState([]); // dropdown list
 
   const [formData, setFormData] = useState({
     name: "",
     stock_group_id: "",
   });
 
-  // FETCH STOCK GROUP LIST
-  const fetchStockGroups = async () => {
+  // FETCH CATEGORY LIST (dropdown)
+  const fetchCategories = async () => {
     try {
-      setLoading(true);
-
       const res = await API.get(API_ENDPOINTS.stock_group_list);
 
       if (res.status === 200) {
-        setStockGroups(res?.data?.data || []);
+        setCategories(res?.data?.data || []);
       }
     } catch (err) {
-      console.error("Error fetching stock groups:", err);
+      console.error("Error fetching categories:", err);
+    }
+  };
+
+  // FETCH SINGLE DATA (autofill)
+  const fetchStockCategoryById = async () => {
+    try {
+      setFetchLoading(true);
+
+      const res = await API.get(
+        `${API_ENDPOINTS.View_stock_category_by_id}/${id}`
+      );
+
+      if (res.status === 200) {
+        const data = res?.data?.data;
+
+        setFormData({
+          name: data?.name || "",
+          stock_group_id: data?.stock_group_id || "",
+        });
+      }
+
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Failed to fetch data",
+        status: "error",
+      });
     } finally {
-      setLoading(false);
+      setFetchLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchStockGroups();
-  }, []);
+    if (id) {
+      fetchCategories();
+      fetchStockCategoryById();
+    }
+  }, [id]);
 
-  //  HANDLE CHANGE
+  // HANDLE CHANGE
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -63,15 +96,14 @@ const CreateStockCategory = () => {
     }));
   };
 
-  
-  const handleSubmit = async () => {
-
+  // ✅ SUBMIT UPDATE
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     if (!formData.name) {
       return toast({
         title: "Name is required",
         status: "warning",
-        duration: 2000,
       });
     }
 
@@ -79,7 +111,6 @@ const CreateStockCategory = () => {
       return toast({
         title: "Please select stock group",
         status: "warning",
-        duration: 2000,
       });
     }
 
@@ -91,40 +122,43 @@ const CreateStockCategory = () => {
         stock_group_id: formData.stock_group_id,
       };
 
-      const res = await API.post(
-        API_ENDPOINTS.Create_stock_category,
+      const res = await API.put(
+        `${API_ENDPOINTS.Update_stock_category_by_id}/${id}`,
         payload
       );
 
-      if (res.status === 200 || res.status === 201) {
+      if (res.status === 200) {
         toast({
-          title: "Stock Category Created Successfully",
+          title: "Stock Category Updated Successfully",
           status: "success",
           duration: 3000,
         });
 
-        // reset form
-        setFormData({
-          name: "",
-          stock_group_id: "",
-        });
+        navigate("/inventory/view-stock-category");
       }
 
-    } catch (err) {
-      console.error(err);
-
+    } catch (error) {
+      console.error(error);
       toast({
-        title: "Failed to create stock category",
+        title: "Failed to update",
         status: "error",
-        duration: 3000,
       });
     } finally {
       setLoading(false);
     }
   };
 
+  // ⏳ loading state
+  if (fetchLoading) {
+    return (
+      <Box textAlign="center" mt={10}>
+        <Spinner />
+      </Box>
+    );
+  }
+
   return (
-    <Box bg="white" px={6} py={4} borderRadius="lg">
+    <Box bg="white" px={6} py={4}>
 
       {/* Breadcrumb */}
       <HStack justifyContent="space-between" mb={6}>
@@ -135,23 +169,27 @@ const CreateStockCategory = () => {
             </BreadcrumbLink>
           </BreadcrumbItem>
 
-          <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink fontSize="13px">
-              Create Stock Category
+          <BreadcrumbItem>
+            <BreadcrumbLink as={Link} to="/inventory/view-stock-category">
+              Stock Category List
             </BreadcrumbLink>
+          </BreadcrumbItem>
+
+          <BreadcrumbItem isCurrentPage>
+            <BreadcrumbLink>Edit Stock Category</BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>
       </HStack>
 
       {/* FORM */}
-      <Box>
-        <VStack spacing={6} align="stretch">
+      <Box as="form" onSubmit={handleSubmit}>
+        <VStack spacing={4} align="stretch">
 
           <Text fontSize="lg" fontWeight="bold">
-            Create Stock Category
+            Edit Stock Category
           </Text>
 
-          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
 
             {/* NAME */}
             <FormControl isRequired>
@@ -160,11 +198,10 @@ const CreateStockCategory = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Enter category name"
               />
             </FormControl>
 
-            {/* STOCK GROUP */}
+            {/* DROPDOWN */}
             <FormControl isRequired>
               <FormLabel>Select Stock Group</FormLabel>
               <Select
@@ -173,7 +210,7 @@ const CreateStockCategory = () => {
                 onChange={handleChange}
                 placeholder="Select Stock Group"
               >
-                {stockGroups.map((item) => (
+                {categories.map((item) => (
                   <option key={item.id} value={item.id}>
                     {item.name}
                   </option>
@@ -187,11 +224,10 @@ const CreateStockCategory = () => {
           <Box textAlign="right">
             <Button
               colorScheme="blue"
-              px={8}
-              onClick={handleSubmit}
+              type="submit"
               isLoading={loading}
             >
-              Create
+              Update Stock Category
             </Button>
           </Box>
 
@@ -201,4 +237,4 @@ const CreateStockCategory = () => {
   );
 };
 
-export default CreateStockCategory;
+export default EditStockCategory;

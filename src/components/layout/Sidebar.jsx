@@ -203,7 +203,6 @@ const Newsidebar = () => {
         children:[
           {label:"Create Stock Group",path:"/inventory/create-stock-group",icon:MdAddBox},
           {label:"View Stock Group",path:"/inventory/view-stock-group",icon:MdViewList},
-          {label:"Delete Stock Group",path:"/inventory/delete-stock-group",icon:MdDelete},
           {label:"Create Stock Category",path:"/inventory/create-stock-category",icon:MdCategory},
           {label:"View Stock Category",path:"/inventory/view-stock-category",icon:MdAddCircleOutline},
          

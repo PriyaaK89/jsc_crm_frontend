@@ -42,7 +42,6 @@ const CreateCompany = () => {
     bank_name: "",
     account_holder_name: "",
     ifsc_code: "",
-   
 
   });
 
@@ -60,6 +59,12 @@ const CreateCompany = () => {
 
     if (formData.account_no !== formData.confirm_account_no) {
       newErrors.confirm_account_no = "Account numbers do not match";
+       toast({
+          title: "Please Check Confirm Account no.",
+          status: "warning",
+          duration: 3000,
+        });
+      
     }
 
     setErrors(newErrors);
@@ -97,12 +102,38 @@ const CreateCompany = () => {
         },
       });
 
-      if (response.status == 200) {
+      if (response.status == 201) {
         toast({
           title: "Company Created Successfully",
           status: "success",
           duration: 3000,
         });
+        
+        setFormData({
+     email: "",
+    phone: "",
+    company_name: "",
+    account_no: "",
+    confirm_account_no: "",
+    country: "",
+    state: "",
+    pincode: "",
+    address: "",
+    financial_year_begin: "",
+    books_begin_from: "",
+    gstin: "",
+    license_no: "",
+    seeds_license_no: "",
+    pesticide_license_no: "",
+    fertilizer_license_no: "",
+    cin_no: "",
+    pan_no: "",
+    bank_name: "",
+    account_holder_name: "",
+    ifsc_code: "",
+    company_logo:null,
+    signature:null,
+        })
       }
       
     } catch (error) {

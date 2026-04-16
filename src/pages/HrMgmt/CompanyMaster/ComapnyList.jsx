@@ -314,7 +314,11 @@ const ComapnyList = () => {
                                                     variant="ghost"
                                                     color="blue.600"
                                                     _hover={{ bg: "blue.50" }}
-                                                    aria-label="view Company"        
+                                                    aria-label="view Company"   
+                                                    onClick={()=>
+                                                        navigate(`/company-master/comapny-list/view_comapny/${item?.id}`)
+
+                                                    }     
                                                 />
                                                 </Tooltip>
                                                 <Tooltip label="Edit comapny" hasArrow>

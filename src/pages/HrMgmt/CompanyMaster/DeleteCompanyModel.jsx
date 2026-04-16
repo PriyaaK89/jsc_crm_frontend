@@ -68,7 +68,7 @@ const DeleteCompanyModel = ({
 
         <Flex bg="#E53E3E" borderRadius="12px 12px 0px 0px " color="white" py={2} px={4} justify="space-between" alignItems="center"  size="xl">
          <Text fontWeight="bold">
-          Delete Employee
+          Delete Company
          </Text>
          <ModalCloseButton position="static" color="white"/>
         </Flex>

@@ -80,6 +80,7 @@ import Distributors from "../components/layout/Distributors";
 import EditDistributorLayout from "../components/layout/EditDistributeLayout"
 import KYCReport from "../components/layout/Reports/KYCReport";
 import EditComapnyLayout from "../components/layout/CompanyMaster/EditComapnyLayout";
+import ViewComapnyLayout from "../components/layout/CompanyMaster/ViewComapnyLayout";
 
 function App() {
   return (
@@ -168,10 +169,10 @@ function App() {
           path="/company-master/create-company"
           element={<CreateCompanyLayout />}
         />
-        <Route path="company-master/comapny-list" element={<CompanyListLayout/>}
+        <Route path="/company-master/comapny-list" element={<CompanyListLayout/>}
         />
-        <Route path="company-master/comapny-list/edit/:id" element={<EditComapnyLayout/>}/>
-   
+        <Route path="/company-master/comapny-list/edit/:id" element={<EditComapnyLayout/>}/>
+     <Route path="/company-master/comapny-list/view_comapny/:id" element={<ViewComapnyLayout/>}/>
 
         <Route
           path="/approve-ip-user-list"

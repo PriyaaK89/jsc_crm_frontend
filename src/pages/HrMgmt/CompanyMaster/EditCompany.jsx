@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
-    Box,
+    Box, Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,HStack,
     FormControl,
     FormLabel,
     Input,
@@ -10,6 +12,10 @@ import {
     useToast,
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useDisclosure } from "@chakra-ui/react";
+import { GoHomeFill } from "react-icons/go";
+import { Link } from "react-router-dom";
+import EditpageUploadedImagesModel from "./EditpageUploadedImagesModel";
 import { Spinner, Center } from "@chakra-ui/react";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
@@ -18,7 +24,7 @@ const EditCompany = () => {
     const { id } = useParams();
     const toast = useToast();
     const navigate = useNavigate();
-
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const [loading, setLoading] = useState(false);
     const [fetchLoading, setFetchLoading] = useState(true);
     const [preview, setPreview] = useState({
@@ -67,10 +73,6 @@ const EditCompany = () => {
             if (res.status === 200) {
 
                 const data = res.data?.data || {};
-                setPreview({
-                    logo: data.company_logo_url || "",
-                    signature: data.signature_url || "",
-                });
 
                 setFormData({
                     company_name: data.company_name || "",
@@ -94,6 +96,10 @@ const EditCompany = () => {
                     pesticide_license_no: data.pesticide_license_no || "",
                     fertilizer_license_no: data.fertilizer_license_no || "",
                     cin_no: data.cin_no || "",
+                });
+                setPreview({
+                    logo: data.company_logo_url || "",
+                    signature: data.signature_url || "",
                 });
 
             }
@@ -186,7 +192,30 @@ const EditCompany = () => {
 
 
     return (
-        <Box bg="white" p={6} borderRadius="lg" boxShadow="md">
+        <Box bg="white" p={6} borderRadius="lg" boxShadow="md">  
+            <EditpageUploadedImagesModel
+                isOpen={isOpen}
+                onClose={onClose}
+                images={preview}
+
+            />
+
+            <HStack justifyContent="space-between">
+                    <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+                        <BreadcrumbItem>
+                            <BreadcrumbLink as={Link} to="/dashboard">
+                                <GoHomeFill color="#5570F1" />
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+
+                        <BreadcrumbItem isCurrentPage>
+                            <BreadcrumbLink fontSize="13px" as={Link} to="/company-master/comapny-list">Company List</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbItem isCurrentPage>
+                            <BreadcrumbLink fontSize="13px">View Company</BreadcrumbLink>
+                        </BreadcrumbItem>
+                    </Breadcrumb>
+                </HStack>
             <Heading size="md" mb={6} textAlign="center">
                 Edit Company
             </Heading>
@@ -428,17 +457,10 @@ const EditCompany = () => {
                                     ...formData,
                                     company_logo: file,
                                 });
-
-                                if (file) {
-                                    setPreview({
-                                        ...preview,
-                                        logo: URL.createObjectURL(file),
-                                    });
-                                }
                             }}
                         />
                     </FormControl>
-                 
+
 
                     <FormControl>
                         <FormLabel>Upload Signature</FormLabel>
@@ -452,36 +474,17 @@ const EditCompany = () => {
                                     signature: file,
                                 });
 
-                                if (file) {
-                                    setPreview({
-                                        ...preview,
-                                        signature: URL.createObjectURL(file),
-                                    });
-                                }
                             }}
                         />
                     </FormControl>
-                    <Box display="flex" gridColumn="span 2" width="100%" justifyContent="space-between">
-                       {preview.logo && (
-                        <Box mt={2} border="1px solid gray" width="100%" m={2}>
-                            <FormLabel>Company logo</FormLabel>
-                            <img
-                                src={preview.logo}
-                                alt="Company Logo"
-                                style={{ width: "100px", borderRadius: "8px" }}
-                            />
+                    {(preview.logo || preview.signature) && (
+                        <Box textAlign="center" mt={{base:0,md:5}} width="100%">
+                            <Button colorScheme="teal" onClick={onOpen} width="100%">
+                                Show Images Preview 
+                            </Button>
                         </Box>
                     )}
-                    {preview.signature && (
-                        <Box mt={2} width="100%" border="1px solid gray" m={2}>
-                            <img
-                                src={preview.signature}
-                                alt="Signature"
-                                style={{ width: "100px", borderRadius: "8px" }}
-                            />
-                        </Box>
-                    )}
-                    </Box>
+
                     {loading && (
                         <Center
                             position="fixed"

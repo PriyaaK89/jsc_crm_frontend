@@ -19,7 +19,8 @@ import AssignTargetRSMLayout from "../components/layout/AssignTargetRSMLayout";
 import AssignTargetTSMLayout from "../components/layout/AssignTargetTSMLayout";
 import AssignTargetSMLayout from "../components/layout/AssignTargetSMLayout";
 import AssignTargetFALayout from "../components/layout/AssignTargetFALayout";
-import CreateCompanyLayout from "../components/layout/CreateCompanyLayout";
+import CreateCompanyLayout from "../components/layout/CompanyMaster/CreateCompanyLayout";
+import CompanyListLayout from '../components/layout/CompanyMaster/CompanyListLayout'
 import ApproveIpUserListLayout from "../components/layout/ApproveIpUserListLayout";
 import CreateGroupLayout from '../components/layout/AccountingMasterLayout/CreateGroupLayout';
 import ViewGroupLayout from '../components/layout/AccountingMasterLayout/ViewGroupLayout';
@@ -50,6 +51,7 @@ import DebitLayout from "../components/layout/DebitLayout";
 import ESignSuccess from "../components/redirection-pages/esign-success";
 import ESignError from "../components/redirection-pages/esign-error";
 import EmpAttendanceLayout from "../components/layout/Reports/EmpAttendaneLayout";
+import ViewDistributorLayout from "../components/layout/Reports/ViewDistributorLayout";
 
 import SchedulingAlertsReportLayout from "../components/layout/Reports/Scheduling&AlertReportLayout";
 import PartyTransactionReportLayout from '../components/layout/Reports/PartyTransactionReportLayout';
@@ -77,6 +79,8 @@ import UploadEmployeeExpenses from  "../components/layout/UploadEmployeeExpenses
 import Distributors from "../components/layout/Distributors";
 import EditDistributorLayout from "../components/layout/EditDistributeLayout"
 import KYCReport from "../components/layout/Reports/KYCReport";
+import EditComapnyLayout from "../components/layout/CompanyMaster/EditComapnyLayout";
+import ViewComapnyLayout from "../components/layout/CompanyMaster/ViewComapnyLayout";
 
 function App() {
   return (
@@ -122,9 +126,10 @@ function App() {
         <Route path='/accounting-master/view-group' element={<ViewGroupLayout/>}/>
         <Route path='/accounting-master/delete-group'   element={<DeleteGroupLayout/>}/>
         <Route path='/accounting-master/create-ledger' element={<CreateLedgerLayout/>}/>
-        <Route path='/accounting-master/distributor' element={<Distributors/>}/>
-        <Route path='/accounting-master/edit-distributor/:id' element={<EditDistributorLayout/>}/>
-        <Route path='/accounting-master/onboarding-ledger' element={<ONBordingdistributoragreement/>}/>
+        <Route path='/distributor/distributorlist' element={<Distributors/>}/>
+        <Route path='/distributor/distributorlist/edit-distributor/:id' element={<EditDistributorLayout/>}/>
+        <Route path='/distributor/distributorlist/view-distributor/:id' element={<ViewDistributorLayout/>}/>
+        <Route path='/distributor/onboarding-ledger' element={<ONBordingdistributoragreement/>}/>
         <Route path='/accounting-master/view-ledger' element={<ViewLedgerLayout/>}/>
         <Route path='/accounting-master/delete-ledger' element={<DeleteLedgerLayout/>}/>
         <Route path='/accounting-master/create-voucher' element={<CreateVoucherLayout/>}/>
@@ -164,7 +169,10 @@ function App() {
           path="/company-master/create-company"
           element={<CreateCompanyLayout />}
         />
-   
+        <Route path="/company-master/comapny-list" element={<CompanyListLayout/>}
+        />
+        <Route path="/company-master/comapny-list/edit/:id" element={<EditComapnyLayout/>}/>
+     <Route path="/company-master/comapny-list/view_comapny/:id" element={<ViewComapnyLayout/>}/>
 
         <Route
           path="/approve-ip-user-list"

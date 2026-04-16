@@ -28,11 +28,14 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import sort_icon from "../../assets/sort.svg";
 import ViewDistributorsDocumentsModal from "./ViewDistributorsDocumentsModal";
+import DistributorAgreementModel from "./DistributorAgreementModel";
 import ViewCompanyModal from "./ViewCompanyModal";
 import ViewPartnersModal from "./ViewPartnersModal";
 import Pagination from "../../Pagination/Pagination";
 import DeleteDistributorModal from "./DeleteDistributorModal";
 import { FiSearch } from "react-icons/fi";
+import { ViewIcon } from "@chakra-ui/icons";
+
 import { useNavigate } from "react-router-dom";
 import { FiEdit2 } from "react-icons/fi";
 import { FiTrash2 } from "react-icons/fi";
@@ -42,6 +45,7 @@ const DistributorsList = () => {
   const [loading, setLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedDistributor, setSelectedDistributor] = useState(null);
+  const [firmName, setFirmName] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -50,7 +54,7 @@ const DistributorsList = () => {
   const [selectedState, setSelectedState] = useState("");
   const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState("");
-  const {isOpen: isDeleteModalOpen, onOpen: onDeleteModalOpen, onClose: onDeleteModalClose  } = useDisclosure()
+  const { isOpen: isDeleteModalOpen, onOpen: onDeleteModalOpen, onClose: onDeleteModalClose } = useDisclosure()
 
   const {
     isOpen: isCompanyOpen,
@@ -62,6 +66,13 @@ const DistributorsList = () => {
     onOpen: onPartnersOpen,
     onClose: onPartnersClose,
   } = useDisclosure();
+
+  const {
+    isOpen: isAgreementOpen,
+    onOpen: onAgreementOpen,
+    onClose: onAgreementClose,
+  } = useDisclosure();
+
   const states = [
     "Andhra Pradesh",
     "Arunachal Pradesh",
@@ -96,58 +107,62 @@ const DistributorsList = () => {
   const headers = [
     "S.No",
     "Customer Name",
-    "Cutomer Date of Birth",
+    // "Cutomer Date of Birth",
     "Firm Name",
+    "view Dist.",
     "GST No",
-    "GST Type",
+    // "GST Type",
     "Firm Type",
     "Business Address",
     "State",
     "District",
-    "Tehsil",
-    "Landmark",
-    "Pincode",
+    // "Tehsil",
+    // "Landmark",
+    // "Pincode",
     "Contact Number",
-    "Alternate Contact Number",
-    "Renponsible Person Name",
-    "Renponsible Person Contact No",
+    // "Alternate Contact Number",
+    // "Renponsible Person Name",
+    // "Renponsible Person Contact No",
     "Firm Email",
-    "Firm Pan",
-    "Firm Aadhar",
-    "Jurisdiction Area",
-    "Branch",
+    // "Firm Pan",
+    // "Firm Aadhar",
+    // "Jurisdiction Area",
+    // "Branch",
     "Seed License No",
-    "Fertilizer License No",
-    "Pesticide License No",
-    "Source of Funds",
-    "Own Funds Details",
-    "Bank Name",
-    "Bank Account No",
-    "IFSC Code",
-    "Bank Branch",
-    "Security Cheque No",
+    // "Fertilizer License No",
+    // "Pesticide License No",
+    // "Source of Funds",
+    // "Own Funds Details",
+    // "Bank Name",
+    // "Bank Account No",
+    // "IFSC Code",
+    // "Bank Branch",
+    // "Security Cheque No",
     "Security Amount",
     "Credit Duration",
-    "Annual Turnover",
-    "Expected Sale",
-    "Approver Name",
-    "Approvering Date",
+    // "Annual Turnover",
+    // "Expected Sale",
+    // "Approver Name",
+    // "Approvering Date",
     "Created At",
     // "Approver Image",
-    "Business Territory",
-    "Firm Landmark",
-    "Responsible Person Address",
-    "Responsible Person Alt Contact No",
-    "Firm Since",
+    // "Firm Landmark",
+    // "Business Territory",
+    // "Firm Landmark",
+    // "Responsible Person Address",
+    // "Responsible Person Alt Contact No",
+    // "Firm Since",
     "Seed License Expiry",
     "Transport Name A",
-    "Transport Name B",
-    "Security Cheque No 2",
+    // "Transport Name B",
+    // "Security Cheque No 2",
     "Created By Name",
     "Partners",
     "Companies",
     "Documents",
+    "Distributor Agreement",
     "Action",
+    "Delete"
   ];
   const widthMap = {
     "S No": "80px",
@@ -206,10 +221,10 @@ const DistributorsList = () => {
     Action: "180px",
   };
 
-  const handleDelete = (id) =>{
+  const handleDelete = (id) => {
     onDeleteModalOpen();
     setSelectedId(id);
-    
+
   }
 
   const fetchDistributors = async () => {
@@ -258,12 +273,25 @@ const DistributorsList = () => {
     fetchDistributors();
   }, [page, limit, search, selectedState]);
 
+  const handleGenerateAgreement = (id, firm_name) => {
+    console.log("CLICKED", id); // debug
+    setSelectedId(id);
+    setFirmName(firm_name);
+    onAgreementOpen();
+  };
+
   return (
     <>
       <ViewDistributorsDocumentsModal
         isOpen={isOpen}
         onClose={onClose}
         distributor={selectedDistributor}
+      />
+      <DistributorAgreementModel
+        isOpen={isAgreementOpen}
+        onClose={onAgreementClose}
+        selectedId={selectedId}
+        firm_name={firmName}
       />
       <ViewPartnersModal
         isOpen={isPartnersOpen}
@@ -276,10 +304,10 @@ const DistributorsList = () => {
         companies={selectedDistributor}
       />
       <DeleteDistributorModal
-      isOpen={isDeleteModalOpen}
-      onClose={onDeleteModalClose}
-      selectedId={selectedId}
-      fetchDistributors={fetchDistributors}
+        isOpen={isDeleteModalOpen}
+        onClose={onDeleteModalClose}
+        selectedId={selectedId}
+        fetchDistributors={fetchDistributors}
       />
       <Box
         bg="white"
@@ -350,7 +378,7 @@ const DistributorsList = () => {
           overflowX="auto"
           whiteSpace="nowrap"
           sx={{
-            "&::-webkit-scrollbar": { width: "8px", height: "12px" },
+            "&::-webkit-scrollbar": { width: "8px", height: "8px" },
             "&::-webkit-scrollbar-thumb": {
               width: "8px",
               backgroundColor: "#7A7A7A",
@@ -366,7 +394,7 @@ const DistributorsList = () => {
             variant="striped"
             colorScheme="gray"
             size="sm"
-            minW="2000px"
+            minW="2400px"
             className="productsTable"
           >
             {/* THEAD */}
@@ -409,42 +437,54 @@ const DistributorsList = () => {
                   <Tr key={index}>
                     <Td>{(page - 1) * limit + index + 1}</Td>
                     <Td>{item?.customer_name || "-"}</Td>
-                    <Td> {formatDate(item?.customer_dob || "-")} </Td>
+                    {/* <Td> {formatDate(item?.customer_dob || "-")} </Td> */}
                     <Td>{item?.firm_name || "-"}</Td>
+
+                    <Td> <IconButton
+                      icon={<ViewIcon />}
+                      size="md"
+                      variant="ghost"
+                      color="blue.600"
+                      _hover={{ bg: "blue.50" }}
+                      aria-label="view Distributor"
+                      onClick={() => {
+                        navigate(`/distributor/distributorlist/view-distributor/${item?.id}`);
+                      }}
+                    /></Td>
                     <Td>{item?.gst_number || "-"}</Td>
-                    <Td>{item?.gst_type || "-"}</Td>
+                    {/* <Td>{item?.gst_type || "-"}</Td> */}
                     <Td>{item?.firm_type || "-"}</Td>
                     <Td>{item?.business_address || "-"}</Td>
                     <Td>{item?.state || "-"}</Td>
                     <Td>{item?.district || "-"}</Td>
-                    <Td>{item?.tehsil || "-"}</Td>
-                    <Td>{item?.landmark || "-"}</Td>
-                    <Td>{item?.pincode || "-"}</Td>
+                    {/* <Td>{item?.tehsil || "-"}</Td> */}
+                    {/* <Td>{item?.landmark || "-"}</Td> */}
+                    {/* <Td>{item?.pincode || "-"}</Td> */}
                     <Td>{item?.contact_number || "-"}</Td>
-                    <Td>{item?.alt_contact_number || "-"}</Td>
-                    <Td>{item?.responsible_person_name || "-"}</Td>
-                    <Td>{item?.responsible_person_contact || "-"}</Td>
+                    {/* <Td>{item?.alt_contact_number || "-"}</Td> */}
+                    {/* <Td>{item?.responsible_person_name || "-"}</Td> */}
+                    {/* <Td>{item?.responsible_person_contact || "-"}</Td> */}
                     <Td>{item?.firm_email || "-"}</Td>
-                    <Td>{item?.firm_pan || "-"}</Td>
-                    <Td>{item?.firm_aadhar || "-"}</Td>
-                    <Td>{item?.jurisdiction_area || "-"}</Td>
-                    <Td>{item?.branch || "-"}</Td>
+                    {/* <Td>{item?.firm_pan || "-"}</Td> */}
+                    {/* <Td>{item?.firm_aadhar || "-"}</Td> */}
+                    {/* <Td>{item?.jurisdiction_area || "-"}</Td> */}
+                    {/* <Td>{item?.branch || "-"}</Td> */}
                     <Td>{item?.seed_license_no || "-"}</Td>
-                    <Td>{item?.fertilizer_license_no || "-"}</Td>
-                    <Td>{item?.pesticide_license_no || "-"}</Td>
-                    <Td>{item?.source_of_funds || "-"}</Td>
-                    <Td>{item?.own_funds_details || "-"}</Td>
-                    <Td>{item?.bank_name || "-"}</Td>
-                    <Td>{item?.bank_account_no || "-"}</Td>
-                    <Td>{item?.ifsc_code || "-"}</Td>
-                    <Td>{item?.bank_branch || "-"}</Td>
-                    <Td>{item?.security_cheque_no || "-"}</Td>
+                    {/* <Td>{item?.fertilizer_license_no || "-"}</Td> */}
+                    {/* <Td>{item?.pesticide_license_no || "-"}</Td> */}
+                    {/* <Td>{item?.source_of_funds || "-"}</Td> */}
+                    {/* <Td>{item?.own_funds_details || "-"}</Td> */}
+                    {/* <Td>{item?.bank_name || "-"}</Td> */}
+                    {/* <Td>{item?.bank_account_no || "-"}</Td> */}
+                    {/* <Td>{item?.ifsc_code || "-"}</Td> */}
+                    {/* <Td>{item?.bank_branch || "-"}</Td> */}
+                    {/* <Td>{item?.security_cheque_no || "-"}</Td> */}
                     <Td>{item?.security_amount || "-"}</Td>
                     <Td>{item?.credit_duration || "-"}</Td>
-                    <Td>{item?.annual_turnover || "-"}</Td>
-                    <Td>{item?.expected_sale || "-"}</Td>
-                    <Td>{item?.approver_name || "-"}</Td>
-                    <Td> {formatDate(item?.approving_date || "-")} </Td>
+                    {/* <Td>{item?.annual_turnover || "-"}</Td> */}
+                    {/* <Td>{item?.expected_sale || "-"}</Td> */}
+                    {/* <Td>{item?.approver_name || "-"}</Td> */}
+                    {/* <Td> {formatDate(item?.approving_date || "-")} </Td> */}
 
                     <Td> {formatDateTime(item?.created_at || "-")} </Td>
                     {/* <Td>
@@ -455,15 +495,15 @@ const DistributorsList = () => {
                         cursor="pointer"
                       />
                     </Td> */}
-                    <Td>{item?.business_territory || "-"}</Td>
-                    <Td>{item?.firm_landmark || "-"}</Td>
-                    <Td>{item?.responsible_person_address || "-"}</Td>
-                    <Td>{item?.responsible_person_alt_contact || "-"}</Td>
-                    <Td> {formatDate(item?.firm_since || "-")}</Td>
+                    {/* <Td>{item?.business_territory || "-"}</Td> */}
+                    {/* <Td>{item?.firm_landmark || "-"}</Td> */}
+                    {/* <Td>{item?.responsible_person_address || "-"}</Td> */}
+                    {/* <Td>{item?.responsible_person_alt_contact || "-"}</Td> */}
+                    {/* <Td> {formatDate(item?.firm_since || "-")}</Td> */}
                     <Td> {formatDate(item?.seed_license_expiry || "-")}</Td>
                     <Td>{item?.transport_name_a || "-"}</Td>
-                    <Td>{item?.transport_name_b || "-"}</Td>
-                    <Td>{item?.security_cheque_no_2 || "-"}</Td>
+                    {/* <Td>{item?.transport_name_b || "-"}</Td> */}
+                    {/* <Td>{item?.security_cheque_no_2 || "-"}</Td> */}
                     <Td>{item?.created_by_name || "-"}</Td>
                     <Td>
                       <Button
@@ -502,6 +542,18 @@ const DistributorsList = () => {
                       </Button>
                     </Td>
                     <Td>
+                      <Button
+                        colorScheme="yellow"
+                        size="xs"
+                        onClick={() =>
+                          handleGenerateAgreement(item?.id, item?.firm_name)
+                        }
+                      >
+                        Verify Agreement
+                      </Button>
+                    </Td>
+
+                    <Td>
 
                       <IconButton
                         icon={<FiEdit2 />}
@@ -511,22 +563,23 @@ const DistributorsList = () => {
                         _hover={{ bg: "blue.50" }}
                         aria-label="edit Documents"
                         onClick={() => {
-                          navigate(`/accounting-master/edit-distributor/${item?.id}`);
-                      }}
+                          navigate(`/distributor/distributorlist/edit-distributor/${item?.id}`);
+                        }}
                       />
                     </Td>
                     <Td>
                       <IconButton
-                       icon={<FiTrash2/>}
+                        icon={<FiTrash2 />}
                         size="sm"
                         variant="ghost"
                         color="red.600"
-                        _hover={{bg:"red.50"}}
+                        _hover={{ bg: "red.50" }}
                         aria-label="Delete"
-                        onClick={()=>{
+                        onClick={() => {
                           handleDelete(item?.id)
+
                         }}
-                       
+
                       />
                     </Td>
                   </Tr>

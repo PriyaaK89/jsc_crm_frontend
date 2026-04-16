@@ -15,6 +15,7 @@ import { MdCategory } from "react-icons/md";
 import { MdAddCircleOutline,MdAccountTree   } from "react-icons/md";
 import { FaFileInvoice } from "react-icons/fa";
 import { FiMapPin } from "react-icons/fi";
+import { FaProjectDiagram } from "react-icons/fa";
 import { FaClipboardList,FaCalculator,FaWallet,FaList,FaTrash,FaFileInvoiceDollar,FaBookOpen,FaMoneyCheckAlt} from "react-icons/fa";
   import { FaEdit,FaStore } from "react-icons/fa";
   import { Receipt,CalendarCheck,BellRing,Handshake,BookText,Clock,FileSpreadsheet,BarChart3, User2 } from "lucide-react";
@@ -29,6 +30,7 @@ import { BiPurchaseTagAlt } from "react-icons/bi";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { FaShoppingCart } from "react-icons/fa";
 import { FaReceipt } from "react-icons/fa";
+import { FaCity } from "react-icons/fa";
 import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg'
 import { useState, useContext, useEffect ,memo } from "react";
 import { NavLink, useLocation,useNavigate} from "react-router-dom";
@@ -129,6 +131,15 @@ const Newsidebar = () => {
         {label:"Assign Target FA", path:"/Business-devt/assign-target-fa",icon:UserCheck ,}
       ],
     },
+    {   label: "Distributor",
+      key: "distributor",
+      icon: FaProjectDiagram,
+       children: [
+              {label:"ON Boarding Ledger",path:"/distributor/onboarding-ledger", icon:FaBookOpen},
+              {label: "Distributor List", path: "/distributor/distributorlist", icon: FaUsers },
+      ],
+      
+    },
     {
       label: "Accounting  Master",
       key: "accounting-master",
@@ -138,8 +149,6 @@ const Newsidebar = () => {
         {label:"View Group",path:"/accounting-master/view-group",icon:FaList},
         {label:"Delete Group",path:"/accounting-master/delete-group",icon:FaTrash},
         {label:"Create Ledger",path:"/accounting-master/create-ledger", icon:FaFileInvoiceDollar},
-        {label:"ON Boarding Ledger",path:"/accounting-master/onboarding-ledger", icon:FaBookOpen},
-        {label: "Distributor", path: "/accounting-master/distributor", icon: FaUsers },
         {label:"View Ledger",path:"/accounting-master/view-ledger", icon:FaFileInvoice},
         {label:"Delete Ledger",path:"/accounting-master/delete-ledger", icon:FaTrash},
         {label:"Create Voucher",path:"/accounting-master/create-voucher", icon:FaMoneyCheckAlt},
@@ -154,6 +163,7 @@ const Newsidebar = () => {
       icon: MdCorporateFare,
       children: [
         {label:"Create Company",path:"/company-master/create-company",icon:HiOfficeBuilding},
+        {label:"Company List",path:"/company-master/comapny-list",icon:FaCity},
          
 
       ]
@@ -225,13 +235,15 @@ useEffect(() => {
     "/hr-mgmt": "users",
     "/Business-dev": "business",
     "/Business-devt": "business",
+    "/distributor":"distributor",
     "/accounting-master": "accounting-master",
     "/company-master": "company-master",
     "/leads": "leads",
     "/report":"Reports",
     "/inventory": "inventory",
     "/order-vochor": "order-vochor",
-    "/print/mgmt": "print_mgmt"
+    "/print/mgmt": "print_mgmt",
+    
   };
 
   for (const route in menuMap) {

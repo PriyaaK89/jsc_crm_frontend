@@ -50,6 +50,17 @@ export const API_ENDPOINTS = {
   distributor_onbording_form:`/create-distributor`,
   update_distributor: `update-distributor`,
   get_distributor: `get-distributor`,
-    delete_distributor: `delete-distributor`,
-  uplaod_distributor_agreement_pdf: `/upload-agreement`
+  delete_distributor: `delete-distributor`,
+  uplaod_distributor_agreement_pdf: `/upload-agreement`,
+  get_distributor_agreement_pdf:`get-distributor-agreement`,
+  get_distributor_send_esign:`distributor/send-esign`,
+  get_distributor_esign_status:`/distributor/status`,
+  download_distributor_signed_agreement:`distributor/download`,
+   create_company:`create-company`,
+   Get_comapnies:`get-companies`,
+   Get_comapany_by_id:`get-company`,
+   Update_comapany:`update-company`,
+   Delete_company:`delete-company`,
+
 };
+// 

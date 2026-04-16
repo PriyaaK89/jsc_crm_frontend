@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -26,10 +26,13 @@ import {
 import { FiUpload } from "react-icons/fi";
 import { GoHomeFill } from "react-icons/go";
 import sort_icon from "../../assets/sort.svg";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 import useUsersapi from "../../Apis/GetUsersapi";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { Link } from "react-router-dom";
+import Pagination from '../../Pagination/Pagination'
 
 const EmpSalaryReport = () => {
   const { users } = useUsersapi();
@@ -37,6 +40,11 @@ const EmpSalaryReport = () => {
   const [hasDatafind, setDatafind] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   const [filters, setFilters] = useState({
     userId: "",
@@ -75,11 +83,12 @@ const EmpSalaryReport = () => {
   };
 
   //  Handle Search
-  const handleViewDailySalary = async () => {
-    if (!validateForm()) return;
+  const handleViewDailySalary = async (skipValidation = false) => {
+    if (!skipValidation && !validateForm()) return;
 
     setLoading(true);
     setDatafind(true);
+
     try {
       const res = await API.get(
         `${API_ENDPOINTS.get_daily_salary_report}/${filters.userId}`,
@@ -87,12 +96,25 @@ const EmpSalaryReport = () => {
           params: {
             startDate: filters.startDate,
             endDate: filters.endDate,
+            page,
+            limit,
           },
         }
       );
 
       if (res.status === 200) {
         setdailySalry(res.data.data || []);
+
+        const responseData = res.data;
+
+        setdailySalry(responseData.data || []);
+
+        setTotalItems(responseData.total || 0);
+        setPage(responseData.currentPage || 1);
+        setTotalPages(responseData.totalPages || 1);
+
+        // limit tum already state me manage kar rahe ho
+
       }
     } catch (error) {
       console.error("Error fetching salary report:", error);
@@ -102,6 +124,19 @@ const EmpSalaryReport = () => {
     }
   };
 
+ useEffect(() => {
+  if (hasDatafind) {
+    handleViewDailySalary();
+  }
+}, [page, limit]);
+
+  const handleSearchClick = () => {
+    setPage(1); //  reset page
+    handleViewDailySalary();
+  };
+
+
+
   const labelStyles = {
     fontSize: "14px",
     color: "#686868",
@@ -110,71 +145,71 @@ const EmpSalaryReport = () => {
 
 
 
-  const downloadCSV = () => {
-    if (!dailySalry.length) {
-      toast({
-        title: "No Data",
-        description: "No data available to download",
-        status: "warning",
-        duration: 2000,
-        isClosable: true,
-      });
-      return;
-    }
+  // const downloadCSV = () => {
+  //   if (!dailySalry.length) {
+  //     toast({
+  //       title: "No Data",
+  //       description: "No data available to download",
+  //       status: "warning",
+  //       duration: 2000,
+  //       isClosable: true,
+  //     });
+  //     return;
+  //   }
 
-    // CSV Headers
-    const headers = [
-      "Employee Id",
-      "Salary Date",
-      "Attendance Type",
-      "Working Hours",
-      "Per Day Salary",
-      "Basic Salary",
-      "Travelling Allowance",
-      "Daily Allowance",
-      "Gross Salary",
-      "Net Salary",
-      "Created At",
-    ];
+  //   // CSV Headers
+  //   const headers = [
+  //     "Employee Id",
+  //     "Salary Date",
+  //     "Attendance Type",
+  //     "Working Hours",
+  //     "Per Day Salary",
+  //     "Basic Salary",
+  //     "Travelling Allowance",
+  //     "Daily Allowance",
+  //     "Gross Salary",
+  //     "Net Salary",
+  //     "Created At",
+  //   ];
 
-    // Convert data to rows
-    const rows = dailySalry.map((emp, index) => [
-      index + 1,
-      new Date(emp.salary_date).toLocaleDateString(),
-      emp.attendance_type,
-      emp.working_hours,
-      emp.per_day_salary,
-      emp.basic_salary,
-      emp.travelling_allowance,
-      emp.daily_allowance,
-      emp.gross_salary,
-      emp.net_salary,
-      new Date(emp.created_at).toLocaleDateString(),
-    ]);
+  //   // Convert data to rows
+  //   const rows = dailySalry.map((emp, index) => [
+  //     index + 1,
+  //     new Date(emp.salary_date).toLocaleDateString(),
+  //     emp.attendance_type,
+  //     emp.working_hours,
+  //     emp.per_day_salary,
+  //     emp.basic_salary,
+  //     emp.travelling_allowance,
+  //     emp.daily_allowance,
+  //     emp.gross_salary,
+  //     emp.net_salary,
+  //     new Date(emp.created_at).toLocaleDateString(),
+  //   ]);
 
-    // Combine headers + rows
-    const csvContent =
-      [headers, ...rows]
-        .map((row) => row.join(","))
-        .join("\n");
+  //   // Combine headers + rows
+  //   const csvContent =
+  //     [headers, ...rows]
+  //       .map((row) => row.join(","))
+  //       .join("\n");
 
-    // Create Blob
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  //   // Create Blob
+  //   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 
-    // Create download link
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "salary_report.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  //   // Create download link
+  //   const url = URL.createObjectURL(blob);
+  //   const link = document.createElement("a");
+  //   link.href = url;
+  //   link.setAttribute("download", "salary_report.csv");
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // };
 
   // -------------------------------perday salary-------------------------------
   const totalPerDaySalary = dailySalry.reduce((total, emp) => {
     return total + Number(emp.per_day_salary || 0);
-  }, 0);
+  }, 0).toFixed(2);
   // -------------------------------basic  salary-------------------------------
   const totalBasicSalary = dailySalry.reduce((total, emp) => {
     return total + Number(emp.basic_salary || 0);
@@ -196,6 +231,122 @@ const EmpSalaryReport = () => {
     return total + Number(emp.net_salary || 0);
   }, 0).toFixed(2);
 
+  // time 
+  const formatDate = (date) => {
+    if (!date) return "-";
+
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+//  downolad cvc file 
+
+const downloadExcel = async () => {
+  if (!dailySalry.length) {
+    toast({
+      title: "No Data",
+      status: "warning",
+    });
+    return;
+  }
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Salary Report");
+
+  // 🧾 TITLE
+  worksheet.mergeCells("A1:K1");
+  worksheet.getCell("A1").value = "Employee Salary Report";
+  worksheet.getCell("A1").font = { size: 16, bold: true };
+  worksheet.getCell("A1").alignment = { horizontal: "center" };
+
+  // 📅 Filters info
+  worksheet.mergeCells("A2:K2");
+  worksheet.getCell("A2").value = `Date: ${filters.startDate || "-"} to ${filters.endDate || "-"}`;
+  worksheet.getCell("A2").alignment = { horizontal: "center" };
+
+  // 🧱 Headers
+  const headers = [
+    "S No",
+    "Salary Date",
+    "Attendance",
+    "Working Hours",
+    "Per Day Salary",
+    "Basic Salary",
+    "Travelling Allowance",
+    "Daily Allowance",
+    "Gross Salary",
+    "Net Salary",
+    "Created At",
+  ];
+
+  const headerRow = worksheet.addRow(headers);
+
+  headerRow.eachCell((cell) => {
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "center" };
+    cell.border = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+  });
+
+  // 📊 Data rows
+  dailySalry.forEach((emp, index) => {
+    worksheet.addRow([
+      index + 1,
+      formatDate(emp.salary_date),
+      emp.attendance_type,
+      emp.working_hours,
+      Number(emp.per_day_salary),
+      Number(emp.basic_salary),
+      Number(emp.travelling_allowance),
+      Number(emp.daily_allowance),
+      Number(emp.gross_salary),
+      Number(emp.net_salary),
+      formatDate(emp.created_at),
+    ]);
+  });
+
+  //  TOTAL ROW
+  const totalRow = worksheet.addRow([
+    "",
+    "",
+    "",
+    "TOTAL",
+    Number(totalPerDaySalary),
+    Number(totalBasicSalary),
+    Number(totalTravellingAllowance),
+    Number(totalDailyAllowance),
+    Number(totalGrossSalary),
+    Number(totalNetSalary),
+    "",
+  ]);
+
+  totalRow.eachCell((cell) => {
+    cell.font = { bold: true };
+  });
+
+  //  Currency format
+  ["E","F","G","H","I","J"].forEach((col) => {
+    worksheet.getColumn(col).numFmt = "₹#,##0.00";
+  });
+
+  //  Column Width
+  worksheet.columns.forEach((col) => {
+    col.width = 18;
+  });
+
+  // Freeze header
+  worksheet.views = [{ state: "frozen", ySplit: 3 }];
+
+  //  Download
+  const buffer = await workbook.xlsx.writeBuffer();
+  saveAs(new Blob([buffer]), "Employee_Salary_Report.xlsx");
+};
 
   return (
     <Box
@@ -269,7 +420,7 @@ const EmpSalaryReport = () => {
           <Button
             colorScheme="blue"
             isLoading={loading}
-            onClick={handleViewDailySalary}
+            onClick={handleSearchClick}
             w="full"
             p={{ base: "2px", md: "1px" }}
           >
@@ -292,7 +443,7 @@ const EmpSalaryReport = () => {
                   <Button
                     rightIcon={<FiUpload />}
                     colorScheme="green"
-                    onClick={downloadCSV}
+                    onClick={downloadExcel}
 
                   >
                     Export
@@ -358,7 +509,7 @@ const EmpSalaryReport = () => {
                             {dailySalry.map((emp, index) => (
                               <Tr key={emp.id}>
                                 <Td>{index + 1}</Td>
-                                <Td>{new Date(emp.salary_date).toLocaleDateString()}</Td>
+                                <Td>{formatDate(emp.salary_date)}</Td>
                                 <Td>{emp.attendance_type}</Td>
                                 <Td>{emp.working_hours}</Td>
                                 <Td>{emp.per_day_salary}</Td>
@@ -367,7 +518,7 @@ const EmpSalaryReport = () => {
                                 <Td>{emp.daily_allowance}</Td>
                                 <Td>{emp.gross_salary}</Td>
                                 <Td>{emp.net_salary}</Td>
-                                <Td>{new Date(emp.created_at).toLocaleDateString()}</Td>
+                                <Td>{formatDate(emp.created_at)}</Td>
                               </Tr>
                             ))}
 
@@ -402,8 +553,19 @@ const EmpSalaryReport = () => {
                 </Box>
               </Box>
             )}
+
+            <Pagination
+              page={page}
+              setPage={setPage}
+              limit={limit}
+              setLimit={setLimit}
+              totalItems={totalItems}
+              totalPages={totalPages}
+            />
           </>
         )}
+
+
       </VStack>
     </Box>
   );

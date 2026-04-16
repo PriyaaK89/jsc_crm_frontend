@@ -11,7 +11,7 @@ import NotificationBtn from '../../NotificationBtn/NotificationBtn';
 
 function JoiningLetterLayout() {
   return (
-      <Box bg="#F3F3F3" h="100%">
+      <Box bg="#F3F3F3" minH="100vh" >
         <Box display={{ base: "none", md: "block" }}>
           <Sidebar />
   

@@ -32,6 +32,9 @@ function UserLogin() {
       const response = await API.post(API_ENDPOINTS.LOGIN, { email, password });
       if (response?.status === 200) {
         loginUser(response.data);
+     const profileRes  = await API.get(API_ENDPOINTS.auth_my_profile);
+           console.log("Profile Data:", profileRes.data);
+
         toast({
           description: "Logged in Successfully.",
           status: "success",
@@ -63,7 +66,7 @@ function UserLogin() {
         display={{ base: "block", md: "none" }}
         position="relative"
         w="100vw"
-        h="100dvh"   // ✅ FIXED
+        h="100dvh"   //  FIXED
         bg="gray.100"
         overflow="hidden"
       >
@@ -86,7 +89,7 @@ function UserLogin() {
         {/* Overlay Form */}
         <Box
           position="absolute"
-          bottom="30px"   // ✅ FIXED
+          bottom="30px"   //  FIXED
           left="50%"
           transform="translateX(-50%)"
           w="100%"

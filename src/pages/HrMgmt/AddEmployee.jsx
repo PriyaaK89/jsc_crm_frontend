@@ -77,8 +77,8 @@ const AddEmployee = () => {
     "department_id",
     "job_role_id",
     "date_of_joining",
-    "two_travelling_allowance_per_km",
-    "four_travelling_allowance_per_km",
+   "two_wheeler_allowance_per_km",
+"four_wheeler_allowance_per_km",
     "avg_travel_km_per_day",
     "city_allowance_per_km",
     "daily_allowance_with_doc",
@@ -116,15 +116,15 @@ const AddEmployee = () => {
     salary: "",
     week_off: "Sunday",
 
-    two_travelling_allowance_per_km: "",
-    four_travelling_allowance_per_km: "",
-    travelling_per_day: "",
+    two_wheeler_allowance_per_km: "",
+    four_wheeler_allowance_per_km: "",
+    // travelling_per_day: "",
     avg_travel_km_per_day: "",
     city_allowance_per_km: "",
     daily_allowance_with_doc: "",
     daily_allowance_without_doc: "",
     hotel_allowance: "",
-    attendance_time: "",
+     attendance_time: "11 A.M.",
     total_leaves: "",
     authentication_amount: "",
     headquarter: "",
@@ -240,8 +240,12 @@ const AddEmployee = () => {
       formDataToSend.set("job_role_id", Number(formData.job_role_id));
       formDataToSend.set("salary", Number(formData.salary));
       formDataToSend.set(
-        "travelling_allowance_per_km",
-        Number(formData.travelling_allowance_per_km)
+        "four_wheeler_allowance_per_km",
+        Number(formData.four_wheeler_allowance_per_km)
+      );
+       formDataToSend.set(
+        "two_wheeler_allowance_per_km",
+        Number(formData.two_wheeler_allowance_per_km)
       );
       formDataToSend.set(
         "avg_travel_km_per_day",
@@ -275,11 +279,7 @@ const AddEmployee = () => {
       formDataToSend.set("esi", Number(formData.esi));
       formDataToSend.set(
         "attendance_time",
-        Number(formData.attendance_time)
-      );
-      formDataToSend.set(
-        "travelling_per_day",
-        Number(formData.travelling_per_day)
+        (formData.attendance_time || "11 A.M.")
       );
 
       //  DEFAULT VALUE
@@ -329,48 +329,61 @@ const AddEmployee = () => {
         });
 
         //  RESET FORM
-        setFormData({
-          name: "",
-          gender: "",
-          contact_no: "",
-          date_of_birth: "",
-          email: "",
-          address_line1: "",
-          address_line2: "",
-          country: "India",
-          state: "",
-          city: "",
-          district: "",
-          pincode: "",
-          area: "",
-          father_name: "",
-          pan_number: "",
-          aadhar_no: "",
-          blood_group: "",
-          department_id: "",
-          job_role_id: "",
-          date_of_joining: "",
-          salary: "",
-          total_leaves: "",
-          week_off: "Sunday",
-          approver_name: "",
-          travelling_per_day: "",
-          profile_image: null,        // RESET IMAGE
-          reporting_under: "",        // RESET REPORTING
-        });
+        // setFormData({
+        //   name: "",
+        //   gender: "",
+        //   contact_no: "",
+        //   date_of_birth: "",
+        //   email: "",
+        //   address_line1: "",
+        //   address_line2: "",
+        //   country: "India",
+        //   state: "",
+        //   city: "",
+        //   district: "",
+        //   pincode: "",
+        //   area: "",
+        //   father_name: "",
+        //   pan_number: "",
+        //   aadhar_no: "",
+        //   blood_group: "",
+        //   department_id: "",
+        //   job_role_id: "",
+        //   date_of_joining: "",
+        //   salary: "",
+        //   total_leaves: "",
+        //   week_off: "Sunday",
+        //   two_wheeler_allowance_per_km:"",
+        //   four_wheeler_allowance_per_km:"",
+        //   approver_name: "",
+        //   profile_image: null,        // RESET IMAGE
+        //   reporting_under: "",        // RESET REPORTING
+        // });
       }
     } catch (error) {
-      toast({
-        title: "Failed to create user",
-        description: error.response?.data?.message || "Something went wrong",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
+  const errorMessage = error?.response?.data?.error || "";
+
+  if (errorMessage.includes("Duplicate entry")) {
+    toast({
+      title: "Duplicate Email",
+      description: "This email is already registered. Try another one.",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
+  } else {
+    toast({
+      title: "Failed to create user",
+      description:
+        error?.response?.data?.message || "Something went wrong",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
+  }
       setLoading(false);
-    }
   };
+}
 
   const fetchDepartmentList = async () => {
     try {
@@ -379,7 +392,7 @@ const AddEmployee = () => {
         setDepartments(response.data);
       }
     } catch (error) {
-      // console.log("Department fetch error", error);
+      console.log("Department fetch error", error);
     }
   };
   useEffect(() => {
@@ -398,6 +411,7 @@ const AddEmployee = () => {
       console.log(error, "error");
     }
   };
+  
 
 
   const handleDepartmentChange = (e) => {
@@ -834,30 +848,31 @@ const AddEmployee = () => {
                 onChange={handleChange}
               />
               <FormErrorMessage>{error.salary}</FormErrorMessage>
-            </FormControl>
+            </FormControl>  
 
-            <FormControl isRequired isInvalid={error.two_travelling_allowance_per_km}>
+
+            <FormControl isRequired isInvalid={error.two_wheeler_allowance_per_km}>
               <FormLabel {...lableStyles}>
                 Two wheeler Travelling Allowance Per K.M.
               </FormLabel>
               <Input
-                name="two_travelling_allowance_per_km"
+                name="two_wheeler_allowance_per_km"
                 placeholder=" Two Wheeler Travelling Allowance (per km)"
                 onChange={handleChange}
               />
-              <FormErrorMessage>{error.two_travelling_allowance_per_km}</FormErrorMessage>
+              <FormErrorMessage>{error.two_wheeler_allowance_per_km}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isRequired isInvalid={error.four_travelling_allowance_per_km}>
+            <FormControl isRequired isInvalid={error.four_wheeler_allowance_per_km}>
               <FormLabel {...lableStyles}>
                 Four wheeler Travelling Allowance Per K.M.
               </FormLabel>
               <Input
-                name="four_travelling_allowance_per_km"
+                name="four_wheeler_allowance_per_km"
                 placeholder=" Four Wheeler Travelling Allowance (per km)"
                 onChange={handleChange}
               />
-              <FormErrorMessage>{error.four_travelling_allowance_per_km}</FormErrorMessage>
+              <FormErrorMessage>{error.four_wheeler_allowance_per_km}</FormErrorMessage>
             </FormControl>
 
             <FormControl isRequired isInvalid={error.avg_travel_km_per_day} >
@@ -992,7 +1007,7 @@ const AddEmployee = () => {
               <FormLabel {...lableStyles}>Attendance Time</FormLabel>
               <Input
                 name="attendance_time"
-                value={formData.attendance_time || "11 A.M."}
+                value={formData.attendance_time}
                 onChange={handleChange}
               />
             </FormControl>

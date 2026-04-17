@@ -395,7 +395,7 @@ useEffect(() => {
               <Box overflowX="auto"
               whiteSpace="nowrap"
               sx={{
-                "&::-webkit-scrollbar": { width: "8px", height: "12px" },
+                "&::-webkit-scrollbar": { width: "8px", height: "8px" },
                 "&::-webkit-scrollbar-thumb": {
                   width: "8px",
                   backgroundColor: "#7A7A7A",

@@ -115,23 +115,24 @@ const ViewStockGroup = () => {
       />
 
       {/* Breadcrumb */}
-      <HStack justifyContent="space-between">
-        <Breadcrumb color="#8B8D97">
-          <BreadcrumbItem>
-            <BreadcrumbLink as={Link} to="/dashboard">
-              <GoHomeFill color="#5570F1" />
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-
-          <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink>Stock Group List</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-      </HStack>
+       <HStack justifyContent="space-between">
+                      <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+                        <BreadcrumbItem>
+                          <BreadcrumbLink as={Link} to="/dashboard">
+                            <GoHomeFill color="#5570F1" />
+                          </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbItem>
+                          <BreadcrumbLink as={Link} color="#8B8D97" fontSize="13px" isCurrentPage>
+                             Stock Group List
+                          </BreadcrumbLink>
+                        </BreadcrumbItem>
+                      </Breadcrumb>
+                    </HStack>
 
       {/* Top Section */}
-      <Flex justifyContent="space-between" mt={4} mb={4}>
-        <Text fontSize="16px" fontWeight="600">
+      <Flex justifyContent="space-between" mt={4} mb={4} alignItems="baseline">
+        <Text fontSize="16px" fontWeight="500" color="#45464E">
           Stock Group Management
         </Text>
 
@@ -162,6 +163,8 @@ const ViewStockGroup = () => {
           size="sm"
           minW="1200px"
           borderRadius="md"
+            className="productsTable"
+                tableLayout="fixed"
         >
           <Thead bg="#F9FAFB">
             <Tr>
@@ -174,7 +177,12 @@ const ViewStockGroup = () => {
                   textTransform="capitalize" height="50px"
                 >
                   <Flex align="center" gap="7px">
-                    <Text fontSize="14px"> {head}</Text>
+                    <Text  fontSize="14px"
+                            color="#2C2D33"
+                            fontWeight="400"
+                            textTransform="capitalize"
+                            fontFamily="InterRegular"
+                            overflow="hidden"> {head}</Text>
                     <Img src={sort_icon} alt="sort" />
                   </Flex>
 

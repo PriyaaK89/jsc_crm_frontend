@@ -93,26 +93,26 @@ const CreateStockGroup = () => {
     <Box bg="white" px={6} py={4}>
       
       {/* Top */}
-      <HStack justifyContent="space-between" mb={6}>
-        <Breadcrumb color="#8B8D97">
-          <BreadcrumbItem>
-            <BreadcrumbLink as={Link} to="/dashboard">
-              <GoHomeFill color="#5570F1" />
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink isCurrentPage>
-              Create Stock Group
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-      </HStack>
+        <HStack justifyContent="space-between">
+                <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+                  <BreadcrumbItem>
+                    <BreadcrumbLink as={Link} to="/dashboard">
+                      <GoHomeFill color="#5570F1" />
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink as={Link} color="#8B8D97" fontSize="13px" isCurrentPage>
+                       Create Stock Group
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                </Breadcrumb>
+              </HStack>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>
         <VStack spacing={4} align="stretch">
           
-          <Text fontSize="lg" fontWeight="bold">
+          <Text fontSize="16px" fontWeight="500" color="#45464E">
             Create Stock Group
           </Text>
 

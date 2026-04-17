@@ -17,6 +17,7 @@ export const API_ENDPOINTS = {
    update_profile_image: `/auth/upload-profile-image`,
  auth_my_profile:  `/auth/my-profile`,
   upload_img: `upload-document`,
+  Get_notification:`auth/get-notifications`,
   get_user_docs: "get-documents",
   get_emp_details: `auth/get-employee-details`,
   update_emp_status: `/auth/user-status`,

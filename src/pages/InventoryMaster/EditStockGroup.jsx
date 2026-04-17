@@ -131,12 +131,12 @@ const EditStockGroup = () => {
             </BreadcrumbLink>
           </BreadcrumbItem>
             <BreadcrumbItem>
-            <BreadcrumbLink as={Link} to="/inventory/view-stock-group">
+            <BreadcrumbLink as={Link} to="/inventory/view-stock-group"  fontSize="13px">
               Stock Group List
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbItem>
-            <BreadcrumbLink isCurrentPage>
+            <BreadcrumbLink isCurrentPage fontSize="13px">
               Edit Stock Group
             </BreadcrumbLink>
           </BreadcrumbItem>

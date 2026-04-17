@@ -147,7 +147,7 @@ const CreateStockCategory = () => {
       <Box>
         <VStack spacing={6} align="stretch">
 
-          <Text fontSize="lg" fontWeight="bold">
+          <Text fontSize="16px" fontWeight="500" color="#45464E">
             Create Stock Category
           </Text>
 

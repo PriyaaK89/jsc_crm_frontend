@@ -158,8 +158,8 @@ const ViewCompany = () => {
               <Avatar
                 src={data.company_logo_url}
                 name={data.company_name}
-                size="lg"
-                border="2px solid"
+                size="xl"
+                border="1px solid"
                 borderColor="gray.200"
               />
             ) : (

@@ -170,13 +170,13 @@ const EditStockCategory = () => {
           </BreadcrumbItem>
 
           <BreadcrumbItem>
-            <BreadcrumbLink as={Link} to="/inventory/view-stock-category">
+            <BreadcrumbLink as={Link} to="/inventory/view-stock-category" fontSize="13px">
               Stock Category List
             </BreadcrumbLink>
           </BreadcrumbItem>
 
           <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink>Edit Stock Category</BreadcrumbLink>
+            <BreadcrumbLink fontSize="13px">Edit Stock Category</BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>
       </HStack>

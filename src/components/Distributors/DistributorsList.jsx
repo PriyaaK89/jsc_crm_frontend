@@ -334,7 +334,7 @@ const DistributorsList = () => {
 
         <Flex justifyContent="space-between" mb={4} alignItems="center" gap={4}>
           {/* TITLE */}
-          <Text color="#45464E" fontSize="13px" fontWeight="500">
+          <Text color="#45464E" fontSize="16px" fontWeight="500">
             Distributor List Management
           </Text>
 

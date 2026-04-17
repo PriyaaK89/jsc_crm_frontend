@@ -14,7 +14,10 @@ export const API_ENDPOINTS = {
   create_jobRole: `create-jobRole`,
   get_jobRole_list: `get-jobRole`,
   // upload_img: `upload-image`,
+   update_profile_image: `/auth/upload-profile-image`,
+ auth_my_profile:  `/auth/my-profile`,
   upload_img: `upload-document`,
+  Get_notification:`auth/get-notifications`,
   get_user_docs: "get-documents",
   get_emp_details: `auth/get-employee-details`,
   update_emp_status: `/auth/user-status`,
@@ -61,7 +64,19 @@ export const API_ENDPOINTS = {
    Get_comapany_by_id:`get-company`,
    Update_comapany:`update-company`,
    Delete_company:`delete-company`,
-  auth_my_profile:  `/auth/my-profile`,
-  update_profile_image: `/auth/upload-profile-image`,
+  //  stock group
+  create_stock_group:`create-stockGroup`,
+  stock_group_list:`get-stockGroup`,
+  Get_stock_group_by_id:`get-stockGroup`,
+  Update_stock_group:`update-stockGroup`,
+  Delete_stock_group:`delete-stockGroup`,
+
+  // stock category
+  Create_stock_category:`create-stock-category`,
+  View_stock_category:`get-stock-categories`,
+  View_stock_category_by_id:`/get-stock-category`,
+  Update_stock_category_by_id:`update-stock-category`,
+  Delete_Stock_category_by_id:`delete-stock-category`,
+
 };
 // 

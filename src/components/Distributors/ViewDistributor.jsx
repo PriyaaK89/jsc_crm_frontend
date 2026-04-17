@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
+  Box, VStack, HStack, BreadcrumbItem, BreadcrumbLink, Breadcrumb,
   Grid,
   GridItem,
   Heading,
   Text,
-  VStack,
   SimpleGrid,
   Divider,
   Badge,
@@ -13,6 +12,8 @@ import {
   Spinner,
   Center,
 } from "@chakra-ui/react";
+import { GoHomeFill } from "react-icons/go";
+import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
 import API from "../../services/api";
@@ -127,6 +128,24 @@ const formatDateTime = (date) => {
 
   return (
     <Box bg="#FFFFFF" minH="100vh" p={{ base: 2, md: 4 }} borderRadius="lg" boxShadow="sm">
+      <HStack justifyContent='space-between'>
+                      <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+                        <BreadcrumbItem>
+                          <BreadcrumbLink as={Link} to='/dashboard'> <GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbItem>
+                          <BreadcrumbLink as={Link} to='/distributor/distributorlist' color='#8B8D97' fontSize='13px'> Distributor List </BreadcrumbLink>
+                        </BreadcrumbItem>
+              
+                        <BreadcrumbItem>
+                          <BreadcrumbLink isCurrentPage color='#8B8D97' fontSize='13px'> View Distributor Details  </BreadcrumbLink>
+                        </BreadcrumbItem>
+              
+                      </Breadcrumb>
+              
+              
+                    </HStack>
+      
       <VStack align="stretch" spacing={5}>
         <Box
           bg="white"

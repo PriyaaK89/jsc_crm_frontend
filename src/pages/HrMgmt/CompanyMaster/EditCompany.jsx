@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
     Box, Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,HStack,
-    FormControl,
+    BreadcrumbItem,
+    BreadcrumbLink, HStack,
+    FormControl,Text,
     FormLabel,
     Input,
     Button,
@@ -19,6 +19,7 @@ import EditpageUploadedImagesModel from "./EditpageUploadedImagesModel";
 import { Spinner, Center } from "@chakra-ui/react";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
+import CustomDatePicker from "../../../components/common/CustomDatepicker";
 
 const EditCompany = () => {
     const { id } = useParams();
@@ -192,7 +193,7 @@ const EditCompany = () => {
 
 
     return (
-        <Box bg="white" p={6} borderRadius="lg" boxShadow="md">  
+        <Box bg="white" p={6} borderRadius="lg" boxShadow="md">
             <EditpageUploadedImagesModel
                 isOpen={isOpen}
                 onClose={onClose}
@@ -201,24 +202,24 @@ const EditCompany = () => {
             />
 
             <HStack justifyContent="space-between">
-                    <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
-                        <BreadcrumbItem>
-                            <BreadcrumbLink as={Link} to="/dashboard">
-                                <GoHomeFill color="#5570F1" />
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
+                <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+                    <BreadcrumbItem>
+                        <BreadcrumbLink as={Link} to="/dashboard">
+                            <GoHomeFill color="#5570F1" />
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
 
-                        <BreadcrumbItem isCurrentPage>
-                            <BreadcrumbLink fontSize="13px" as={Link} to="/company-master/comapny-list">Company List</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbItem isCurrentPage>
-                            <BreadcrumbLink fontSize="13px">View Company</BreadcrumbLink>
-                        </BreadcrumbItem>
-                    </Breadcrumb>
-                </HStack>
-            <Heading size="md" mb={6} textAlign="center">
+                    <BreadcrumbItem isCurrentPage>
+                        <BreadcrumbLink fontSize="13px" as={Link} to="/company-master/comapny-list">Company List</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbItem isCurrentPage>
+                        <BreadcrumbLink fontSize="13px">View Company</BreadcrumbLink>
+                    </BreadcrumbItem>
+                </Breadcrumb>
+            </HStack>
+            <Text size="16px" mb={6} >
                 Edit Company
-            </Heading>
+            </Text>
 
             <form onSubmit={handleSubmit}>
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
@@ -301,23 +302,30 @@ const EditCompany = () => {
                     </FormControl>
                     <FormControl>
                         <FormLabel>Financial Year Begin</FormLabel>
-                        <Input
-
+                        <CustomDatePicker
                             name="financial_year_begin"
-                            type="date"
                             value={formData.financial_year_begin}
-                            onChange={handleChange}
-                            placeholder="Select financial year begin date"
+                            onChange={(date) => {
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    financial_year_begin: date,
+                                }));
+                            }}
+                            placeholder="Select Financial Year Begin"
                         />
                     </FormControl>
                     <FormControl>
                         <FormLabel>Books Begin From</FormLabel>
-                        <Input
+                        <CustomDatePicker
                             name="books_begin_from"
-                            type="date"
                             value={formData.books_begin_from}
-                            onChange={handleChange}
-                            placeholder="Select books begin from date"
+                            onChange={(date) => {
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    books_begin_from: date,
+                                }));
+                            }}
+                            placeholder="Select Books Begin From"
                         />
                     </FormControl>
 
@@ -478,9 +486,9 @@ const EditCompany = () => {
                         />
                     </FormControl>
                     {(preview.logo || preview.signature) && (
-                        <Box textAlign="center" mt={{base:0,md:5}} width="100%">
+                        <Box textAlign="center" mt={{ base: 0, md: 5 }} width="100%">
                             <Button colorScheme="teal" onClick={onOpen} width="100%">
-                                Show Images Preview 
+                                Show Images Preview
                             </Button>
                         </Box>
                     )}

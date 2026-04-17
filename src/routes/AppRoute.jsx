@@ -36,7 +36,6 @@ import EditLedgerAssignmentLayout from '../components/layout/AccountingMasterLay
 import RetailerAssignmentLayout from '../components/layout/AccountingMasterLayout/RetailerAssignmentLayout';
 import CreateStockGroupLayout from "../components/layout/CreateStockGroupLayout";
 import ViewStockGroupLayout from "../components/layout/ViewStockGroupLayout";
-import DeleteStockGroupLayout from "../components/layout/DeleteStockGroupLayout";
 import CreateStockCategoryLayout from "../components/layout/CreateStockCategoryLayout";
 import ViewStockCategoryLayout from "../components/layout/ViewStockCategoryLayout";
 import UploadSalarySlipLayout from "../components/layout/UploadSalarySlipLayout";
@@ -81,6 +80,8 @@ import EditDistributorLayout from "../components/layout/EditDistributeLayout"
 import KYCReport from "../components/layout/Reports/KYCReport";
 import EditComapnyLayout from "../components/layout/CompanyMaster/EditComapnyLayout";
 import ViewComapnyLayout from "../components/layout/CompanyMaster/ViewComapnyLayout";
+import EditStockGroupLayout from '../components/layout/EditStockGroupLayout';
+import EditStockCategaryLayout from "../components/layout/EditStockCategaryLayout";
 
 function App() {
   return (
@@ -188,13 +189,14 @@ function App() {
           element={<ViewStockGroupLayout />}
         />
         <Route
-          path="/inventory/delete-stock-group"
-          element={<DeleteStockGroupLayout />}
+          path="/inventory/view-stock-group/edit/:id"
+          element={<EditStockGroupLayout />}
         />
         <Route
           path="/inventory/create-stock-category"
           element={<CreateStockCategoryLayout />}
         />
+        <Route path="/inventory/view-stock-category/edit/:id" element={<EditStockCategaryLayout/>}/>
         <Route
           path="/inventory/view-stock-category"
           element={<ViewStockCategoryLayout />}

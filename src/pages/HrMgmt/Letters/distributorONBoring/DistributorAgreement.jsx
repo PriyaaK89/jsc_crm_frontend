@@ -3,7 +3,7 @@ import {
   Box,
   Button, Text,
   FormControl,
-  FormLabel,
+  FormLabel, VStack, HStack, BreadcrumbItem, BreadcrumbLink, Breadcrumb,
   Input, useDisclosure, InputGroup, Tooltip,
   InputRightElement, IconButton,
   InputLeftElement,Spinner,
@@ -17,6 +17,8 @@ import { AddIcon, CheckIcon } from "@chakra-ui/icons";
 import { WarningIcon } from "@chakra-ui/icons";
 import { FiCheckCircle } from "react-icons/fi";
 import { CloseIcon } from "@chakra-ui/icons";
+import { GoHomeFill } from "react-icons/go";
+import { Link } from "react-router-dom";
 import DistributorAgreementPdfPreview from "./DistributorAgreementPdfPreview";
 import useUsersapi from "../../../../Apis/GetUsersapi"
 import DistributorDocuments from "./DistributorDocuments";
@@ -26,6 +28,7 @@ import { API_ENDPOINTS } from "../../../../services/endpoints";
 import DistributorAgreementPreview from "./DistributorAgreementPreviewModel";
 import AddressForm from './Distributoronboardingownerandpartneraddform';
 import DisBussinessAddressForm from "./DisBussinessAddressForm";
+import CustomDatePicker from "../../../../components/common/CustomDatepicker";
 
 
 function DistributorAgreement() {
@@ -869,6 +872,20 @@ function DistributorAgreement() {
         borderRadius="lg"
         boxShadow="md"
       >
+        <HStack justifyContent='space-between'>
+                <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+                  <BreadcrumbItem>
+                    <BreadcrumbLink as={Link} to='/dashboard'> <GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                  </BreadcrumbItem>
+        
+                  <BreadcrumbItem>
+                    <BreadcrumbLink isCurrentPage color='#8B8D97' fontSize='13px'>Distributor On Boarding </BreadcrumbLink>
+                  </BreadcrumbItem>
+        
+                </Breadcrumb>
+        
+        
+              </HStack>
 
         {loading && (
           <Flex
@@ -892,7 +909,7 @@ function DistributorAgreement() {
           Distributor Agreement Form
         </Text>
 
-        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5} >
 
           <FormControl isInvalid={!!errors.customer_name}>
             <FormLabel>Customer Name</FormLabel>
@@ -909,12 +926,18 @@ function DistributorAgreement() {
 
           <FormControl isInvalid={!!errors.customer_dob}>
             <FormLabel>Customer DOB</FormLabel>
-            <Input
-              type="date"
-              name="customer_dob"
-              value={formData.customer_dob || ""}
-              onChange={handleChange}
-            />
+             <CustomDatePicker
+            
+                            name="customer_dob"
+                            value={formData.customer_dob}
+                            onChange={(date) => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                customer_dob: date,
+                              }));
+                            }}
+                            placeholder="Select Customer DoB"
+                          />
             {errors.customer_dob && (
               <Text color="red.500" fontSize="sm">{errors.customer_dob}</Text>
             )}
@@ -1072,20 +1095,23 @@ function DistributorAgreement() {
 
           <FormControl isInvalid={!!errors.firm_since}>
             <FormLabel> Firm Since</FormLabel>
-            <Input
-              name="firm_since"
-              value={formData.firm_since || ""}
-              onChange={handleChange}
-              type="date"
-              placeholder="Select Firm Start Date"
-            />  {errors.firm_since && (
+            <CustomDatePicker
+            
+                            name="firm_since"
+                            value={formData.firm_since}
+                            onChange={(date) => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                customer_dob: date,
+                              }));
+                            }}
+                            placeholder="Select Firm Since"
+                          />
+             {errors.firm_since && ( 
               <Text color="red.500" fontSize="sm">
                 {errors.firm_since}
               </Text>
             )}
-
-
-
           </FormControl>
 
           <FormControl>
@@ -1358,17 +1384,18 @@ function DistributorAgreement() {
           <FormControl isInvalid={!!errors.seed_license_expiry} >
             <FormLabel>Seed License Expiry Date</FormLabel>
 
-            <Input
-              type="date"
-              name="seed_license_expiry"
-              value={formData.seed_license_expiry || ""}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  seed_license_expiry: e.target.value
-                }))
-              }
-            />  {errors.seed_license_expiry && (
+               <CustomDatePicker
+                            name="seed_license_expiry"
+                            value={formData.seed_license_expiry}
+                            onChange={(date) => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                seed_license_expiry: date,
+                              }));
+                            }}
+                            placeholder="Select Seed LIc. Expiry"
+                          />
+              {errors.seed_license_expiry && (
               <Text color="red.500" fontSize="sm">
                 {errors.seed_license_expiry}
               </Text>
@@ -1686,14 +1713,18 @@ function DistributorAgreement() {
 
             <FormControl isInvalid={!!errors.approving_date}>
               <FormLabel>Approvering Date</FormLabel>
-
-              <Input
-                type="date"
-                name="approving_date"
-                value={formData.approving_date || ""}
-                onChange={handleChange}
-                max={new Date().toISOString().split("T")[0]}
-              />
+               <CustomDatePicker
+            
+                            name="approving_date"
+                            value={formData.approving_date}
+                            onChange={(date) => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                approving_date: date,
+                              }));
+                            }}
+                            placeholder="Select Approving Date"
+                          />
               {errors.approving_date && (
                 <Text color="red.500" fontSize="sm">
                   {errors.approving_date}

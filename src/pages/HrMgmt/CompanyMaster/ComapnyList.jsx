@@ -189,7 +189,7 @@ const ComapnyList = () => {
 
                 <Flex justifyContent="space-between" mb={4} alignItems="center" gap={4}>
                     {/* TITLE */}
-                    <Text color="#45464E" fontSize="15px" fontWeight="600">
+                    <Text color="#45464E" fontSize="15px" fontWeight="500">
                         Company List Management
                     </Text>
 

@@ -23,15 +23,23 @@ import { FiLogOut } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 import NotofictionBarModel from './NotofictionBarModel'
+import CustomeAvater from "./CustomeAvater";
 
-const Topbar = () => {
+const Topbar = ({ profileImage }) => {
   const [full, setFull] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
   const { auth, logoutUser } = useContext(AuthContext);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const profile = auth?.user?.profile_image_url;
+  console.log(profile, "profile from")
 
   // Modal control
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  console.log("profile imahge url", profileImage);
+  // -----------------auth ------------
+
 
   // ---------------- Full Screen ----------------
   const toggleFullScreen = () => {
@@ -102,39 +110,55 @@ const Topbar = () => {
           onClick={onOpen}
         >
           <Popover placement="bottom-end" gutter={10}>
-  <PopoverTrigger>
-    <Box mr={6} position="relative" cursor="pointer">
-      <BellIcon size={20} />
-    </Box>
-  </PopoverTrigger>
+            <PopoverTrigger>
+              <Box position="relative">
+                <BellIcon size={20} />
 
-  <Portal>
-    <PopoverContent
-      w="380px"
-      borderRadius="16px"
-      overflow="hidden"
-      boxShadow="xl"
-    >
-      <PopoverArrow />
+                {unreadCount > 0 && (
+                  <Box
+                    position="absolute"
+                    top="-5px"
+                    right="-5px"
+                    bg="red.500"
+                    color="white"
+                    fontSize="10px"
+                    px="5px"
+                    borderRadius="full"
+                  >
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </Box>
+                )}
+              </Box>
+            </PopoverTrigger>
 
-      {/*  Yaha component use karo */}
-      <NotofictionBarModel />
-      
-    </PopoverContent>
-  </Portal>
-</Popover>
+            <Portal>
+              <PopoverContent
+                w="380px"
+                borderRadius="16px"
+                overflow="hidden"
+                boxShadow="xl"
+              >
+                <PopoverArrow />
+
+                {/*  Yaha component use karo */}
+                <NotofictionBarModel setUnreadCount={setUnreadCount} />
+
+              </PopoverContent>
+            </Portal>
+          </Popover>
 
         </Box>
 
         {/*  Profile */}
         <Popover placement="bottom-end">
           <PopoverTrigger>
-            <Avatar
-              name={auth?.user?.name}
-              size="sm"
-              cursor="pointer"
-              src={auth?.user?.profile_image_url}
-            />
+
+           <Box cursor="pointer">
+            <CustomeAvater
+             name={auth?.user?.name}
+              src={auth?.user?.profile_image_url}  cursor="pointer"
+              />
+              </Box>
           </PopoverTrigger>
 
           <Portal>

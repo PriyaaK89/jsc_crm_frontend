@@ -508,6 +508,7 @@ function DistributorAgreement() {
 
 
   // --------------------------owner ke liye pincode ------------------------------
+  // --------------------------owner ke liye pincode ------------------------------
   const handleOwnerPincodeChange = async (value) => {
     setOwnerAddress((prev) => ({
       ...prev,
@@ -530,6 +531,7 @@ function DistributorAgreement() {
     }
   };
 
+  // -----------------------------------for partners ----------------------------------------
   // -----------------------------------for partners ----------------------------------------
 
   const handlePartnerChange = async (index, field, value) => {
@@ -695,6 +697,7 @@ function DistributorAgreement() {
       console.error(error);
     } finally {
       setLoading(false);
+       isSubmitting.current = false;
     }
 
   };
@@ -816,6 +819,7 @@ function DistributorAgreement() {
     }
 
     //  Partners validation
+    if (formData.firm_type === "partnership") {
     if (formData.firm_type === "partnership") {
       partners.forEach((p, i) => {
         if (!p.name) newErrors[`partner_${i}_name`] = "Required";
@@ -1297,6 +1301,7 @@ function DistributorAgreement() {
           </FormControl>
 
           {/* <FormControl isInvalid={!!errors.responsible_person_contact}>
+          {/* <FormControl isInvalid={!!errors.responsible_person_contact}>
             <FormLabel>Responsible Persone Contact No</FormLabel>
             <Input
               name="responsible_person_contact"
@@ -1559,6 +1564,7 @@ function DistributorAgreement() {
             <Input
               name="security_cheque_no"
               value={formData.security_cheque_no}
+              value={formData.security_cheque_no}
               onChange={handleChange}
             />         {errors.security_cheque_no && (
               <Text color="red.500" fontSize="sm">
@@ -1684,6 +1690,7 @@ function DistributorAgreement() {
 
         <Box border="1px solid #313131" mt={5} p={5} borderRadius="lg">
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+  
             <FormControl isInvalid={!!errors.approver_name}>
               <FormLabel>Approver Name</FormLabel>
 
@@ -1783,6 +1790,7 @@ function DistributorAgreement() {
           colorScheme="teal"
           mt={6}
           type="button"
+          type="button"
           onClick={handleformSubmit}
         //  isDisabled={!formData.customer_name || !formData.gst_number}
         >
@@ -1820,6 +1828,7 @@ function DistributorAgreement() {
     </>
   )
 }
+};
 
 
 

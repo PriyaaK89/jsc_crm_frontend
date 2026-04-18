@@ -104,7 +104,7 @@ const EmpAttendance = () => {
           params: {
             page: pagination.page,
             employee_id: filters.userId || null,
-            search: debouncedSearch || null, // change here
+            search: debouncedSearch.trim() !== "" ? debouncedSearch : null,
             start_date: filters.startDate || null,
             end_date: filters.endDate || null,
             limit: pagination.limit,
@@ -117,7 +117,7 @@ const EmpAttendance = () => {
         setAttendance(res.data.attendance || []);
 
         setPagination({
-          page: res.data.pagination.page,
+           page: page,
           limit: res.data.pagination.limit,
           total_pages: res.data.pagination.total_pages,
           total_Items: res.data.pagination.total_records
@@ -138,10 +138,6 @@ const EmpAttendance = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
-  //  ONLY ON LOAD
-  // useEffect(() => {
-  //     fetchUsers();
-  // }, []);
   useEffect(() => {
     fetchAttendance(1);
   }, []);
@@ -156,6 +152,23 @@ const EmpAttendance = () => {
       fetchAttendance(1);
     }
   }, [debouncedSearch, filters.userId, filters.startDate, filters.endDate]);
+
+//    after user clear seacrh bar date and employee name  end dta every filter ----------
+  const query = useMemo(() => {
+  return {
+    search: debouncedSearch?.trim() || null,
+    userId: filters.userId || null,
+    startDate: filters.startDate || null,
+    endDate: filters.endDate || null,
+  };
+}, [debouncedSearch, filters]);
+
+useEffect(() => {
+  fetchAttendance(1);
+}, [query]);
+
+
+
 
   const handleImage = (id, date) => {
     setSelectedUserId(id);
@@ -216,24 +229,27 @@ const EmpAttendance = () => {
         return "gray";
     }
   };
-  const handleRefresh = () => {
-    setSearch("");
-    setDebouncedSearch("");
-
-    setFilters({
-      userId: "",
-      startDate: "",
-      endDate: "",
-    });
-
-    setPagination((prev) => ({
-      ...prev,
-      page: 1,
-    }));
-
-    fetchAttendance(1); //  reload data
+  // ---------------------------handle refresh toggle-----------------
+ const handleRefresh = () => {
+  const resetFilters = {
+    userId: "",
+    startDate: "",
+    endDate: "",
   };
 
+  setSearch("");
+  setDebouncedSearch("");
+  setFilters(resetFilters);
+
+  setPagination((prev) => ({
+    ...prev,
+    page: 1,
+  }));
+
+  //  call with fresh values
+  fetchAttendance(1, resetFilters, "");
+};
+// ---------------------pafter pagination=----------------------
   useEffect(() => {
   fetchAttendance(pagination.page);
 }, [pagination.page, pagination.limit]);
@@ -333,7 +349,7 @@ const EmpAttendance = () => {
           </FormControl>
         </SimpleGrid>
 
-        {/* 📊 Table */}
+        {/*  Table */}
         <Box
           bg="white"
           borderRadius="md"
@@ -350,7 +366,7 @@ const EmpAttendance = () => {
                 overflowX="auto"
                 whiteSpace="nowrap"
                 sx={{
-                  "&::-webkit-scrollbar": { width: "8px", height: "12px" },
+                  "&::-webkit-scrollbar": { width: "8px", height: "8px" },
                   "&::-webkit-scrollbar-thumb": {
                     width: "8px",
                     backgroundColor: "#7A7A7A",

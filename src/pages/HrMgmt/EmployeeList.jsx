@@ -287,6 +287,7 @@ const EmployeeList = () => {
             </InputGroup>
           </Box>
         </Flex>
+       
 
         <Box
           bg="white"

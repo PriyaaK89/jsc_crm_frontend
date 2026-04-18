@@ -4,41 +4,44 @@ import {
   Pie,
   Cell,
   Tooltip,
-  Legend,
 } from "recharts";
-import { API_ENDPOINTS } from "../../services/endpoints";
-import API from "../../services/api";
+import {
+  Box,
+  Text,
+  Flex,
+  Input,
+  FormControl,
+  FormLabel,
+  HStack,
+  VStack,
+  Divider,
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { FormControl, FormLabel, Input, Box, Text } from "@chakra-ui/react";
+import API from "../../services/api";
+import { API_ENDPOINTS } from "../../services/endpoints";
 
-// ✅ Colors
 const COLORS = [
-  "#0088FE",
-  "#00C49F",
-  "#FFBB28",
-  "#FF8042",
-  "#A28CFF",
-  "#FF6699",
-  "#33CC99",
-  "#FF4444",
+  "#4F46E5", // Indigo
+  "#22C55E", // Green
+  "#F59E0B", // Yellow
+  "#EF4444", // Red
+  "#0EA5E9", // Blue
 ];
 
-// ✅ Tooltip
+// 🔥 Modern Tooltip
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
-      <div
-        style={{
-          background: "#fff",
-          padding: "8px",
-          borderRadius: "6px",
-          fontSize: "11px",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-        }}
+      <Box
+        bg="white"
+        p={3}
+        borderRadius="lg"
+        boxShadow="lg"
+        fontSize="12px"
       >
-        <p><strong>{payload[0].name}</strong></p>
-        <p>Count: {payload[0].value}</p>
-      </div>
+        <Text fontWeight="bold">{payload[0].name}</Text>
+        <Text color="gray.600">Count: {payload[0].value}</Text>
+      </Box>
     );
   }
   return null;
@@ -58,20 +61,20 @@ export default function MyPieChart() {
         params: { date },
       });
 
-      const summaryData = res.data.summary;
-      setSummary(summaryData);
+      const s = res.data.summary;
+      setSummary(s);
 
-      const formattedData = [
-        { name: "Active Employees", value: summaryData.active_employees },
-        { name: "Checked In", value: summaryData.checked_in },
-        { name: "Half Day", value: summaryData.half_day },
-        { name: "Absent", value: summaryData.absent_count },
-        { name: "Leave", value: summaryData.leave_count },
+      const data = [
+        { name: "Active", value: s.active_employees },
+        { name: "Checked In", value: s.checked_in },
+        { name: "Half Day", value: s.half_day },
+        { name: "Absent", value: s.absent_count },
+        { name: "Leave", value: s.leave_count },
       ];
 
-      setChartData(formattedData);
-    } catch (error) {
-      console.error("Chart API Error:", error);
+      setChartData(data);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -79,84 +82,102 @@ export default function MyPieChart() {
     if (date) fetchChartData();
   }, [date]);
 
+  // 🔥 total for center
+  const total = chartData.reduce((acc, item) => acc + item.value, 0);
+
   return (
     <Box
-      mt={{ base: 2, md: 5 }}
-      px={{ base: 3, md: 6 }}
-      py={{ base: 3, md: 4 }}
-      borderRadius="lg"
-      boxShadow="md"
       bg="white"
-      width={{ base: "100%", md: "50%", lg: "40%" }}
-      overflow="hidden"
+      p={5}
+      borderRadius="2xl"
+      boxShadow="sm"
+      w="100%"
+      maxW="500px"
     >
-      {/* Title */}
-      <Text fontSize="lg" fontWeight="bold" mb={4}>
-        Employee Summary
-      </Text>
+      {/* Header */}
+      <Flex justify="space-between" align="center" mb={4}>
+        <Text fontWeight="bold" fontSize="lg">
+          Employee Summary
+        </Text>
 
-      {/* Date Picker */}
-      <FormControl maxW="200px" mb={4}>
-        <FormLabel fontSize="11px">Select Date:</FormLabel>
-        <Input
-          fontSize="11px"
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
-      </FormControl>
+        <FormControl maxW="160px">
+          <Input
+            size="sm"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </FormControl>
+      </Flex>
 
-      {/* ✅ Chart */}
-      <Box width="100%" height={{ base: "320px", md: "350px" }}>
+      {/* Chart */}
+      <Box position="relative" h="260px">
         <ResponsiveContainer>
-          <PieChart margin={{ top: 20, right: 30, left: 30, bottom: 20 }}>
+          <PieChart>
             <Pie
               data={chartData}
-              cx="50%"
-              cy="40%"
-              innerRadius={60}
-              outerRadius={75}
-              paddingAngle={3}
+              innerRadius={70}
+              outerRadius={95}
+              paddingAngle={4}
               dataKey="value"
-              label={({ name, value }) =>
-                value > 0
-                  ? window.innerWidth < 480
-                    ? `${name.split(" ")[0]}: ${value}`
-                    : `${name}: ${value}`
-                  : ""
-              }
-              labelLine={false}
-              fontSize={11}
             >
               {chartData.map((entry, index) => (
                 <Cell
                   key={index}
                   fill={COLORS[index % COLORS.length]}
-                  stroke="#fff"
-                  strokeWidth={2}
                 />
               ))}
             </Pie>
 
             <Tooltip content={<CustomTooltip />} />
-
-            <Legend
-              wrapperStyle={{
-                fontSize: "11px",
-                paddingTop: "10px", // space from chart
-              }}
-            />
           </PieChart>
         </ResponsiveContainer>
+
+        {/* 🔥 Center Content */}
+        <Flex
+          position="absolute"
+          top="50%"
+          left="50%"
+          transform="translate(-50%, -50%)"
+          direction="column"
+          align="center"
+        >
+          <Text fontSize="20px" fontWeight="bold">
+            {total}
+          </Text>
+          <Text fontSize="12px" color="gray.500">
+            Total
+          </Text>
+        </Flex>
       </Box>
 
-      {/* ✅ Summary with spacing */}
+      <Divider my={4} />
+
+      {/* 🔥 Legend (Custom Professional) */}
+      <VStack align="stretch" spacing={2}>
+        {chartData.map((item, index) => (
+          <Flex key={index} justify="space-between" align="center">
+            <HStack>
+              <Box
+                w="10px"
+                h="10px"
+                borderRadius="full"
+                bg={COLORS[index % COLORS.length]}
+              />
+              <Text fontSize="13px">{item.name}</Text>
+            </HStack>
+
+            <Text fontSize="13px" fontWeight="medium">
+              {item.value}
+            </Text>
+          </Flex>
+        ))}
+      </VStack>
+
+      {/* Extra Summary */}
       <Box mt={4}>
-        <Text fontSize="11px">
+        <Text fontSize="12px" color="gray.600">
           Completed Day: {summary.completed_day || 0}
-        </Text>
-        <Text fontSize="11px">
-          Checked In: {summary.checked_in || 0}
         </Text>
       </Box>
     </Box>

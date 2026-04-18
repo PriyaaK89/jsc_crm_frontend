@@ -2,6 +2,7 @@ import React from 'react'
 import Sidebar from '../Sidebar';
 import Topbar from '../Topbar';
 import { Flex, Box } from '@chakra-ui/react';
+
 import MobileTopbar from "../MobileTopbar";
 import NotificationBtn from '../../NotificationBtn/NotificationBtn';
 import ComapnyList from '../../../pages/HrMgmt/CompanyMaster/ComapnyList';

@@ -15,9 +15,15 @@ export const API_ENDPOINTS = {
   get_jobRole_list: `get-jobRole`,
   // upload_img: `upload-image`,
    update_profile_image: `/auth/upload-profile-image`,
- auth_my_profile:  `/auth/my-profile`,
+  auth_my_profile:  `/auth/my-profile`,
   upload_img: `upload-document`,
+  // notifiction 
   Get_notification:`auth/get-notifications`,
+  Mark_single_notificaction:`auth/mark-notification-as-read`,
+  Mark_all_asread_notifiction:`auth/mark-allAsRead`,
+  Delete_all_notifiction:`auth/deleteAllNotifications`,
+  Delete_single_one_notification:`auth/delete-notification`,
+  // get user/emp
   get_user_docs: "get-documents",
   get_emp_details: `auth/get-employee-details`,
   update_emp_status: `/auth/user-status`,

@@ -27,6 +27,7 @@ function DisBussinessAddressForm({
       <Box border="1px" borderColor="gray.900" gridColumn={{ base: "span 1", md: "span 2" }} p={4} borderRadius="lg">
     
                 <FormControl mt={3} isInvalid={!!errors.business_address}>
+                <FormControl mt={3} isInvalid={!!errors.business_address}>
                   <FormLabel>Business Address</FormLabel>
                   <Input
                     name="business_address"
@@ -41,6 +42,7 @@ function DisBussinessAddressForm({
                   )}
     
                 </FormControl>
+                <FormControl mt={3} isInvalid={!!errors.business_territory}>
                 <FormControl mt={3} isInvalid={!!errors.business_territory}>
                   <FormLabel>Business Territory</FormLabel>
                   <Input
@@ -68,6 +70,7 @@ function DisBussinessAddressForm({
     
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5} mt={5}>
                   <FormControl isInvalid={!!errors.state}>
+                  <FormControl isInvalid={!!errors.state}>
                     <FormLabel>State</FormLabel>
                     <Input name="state" value={formData.state || ""} onChange={handleChange} />
                     {errors.state && (
@@ -77,6 +80,7 @@ function DisBussinessAddressForm({
                     )}
                   </FormControl>
     
+                  <FormControl isInvalid={!!errors.district}>
                   <FormControl isInvalid={!!errors.district}>
                     <FormLabel>District</FormLabel>
                     <Input name="district" value={formData.district || ""} onChange={handleChange} />
@@ -88,6 +92,7 @@ function DisBussinessAddressForm({
                   </FormControl>
     
                   <FormControl isInvalid={!!errors.tehsil}>
+                  <FormControl isInvalid={!!errors.tehsil}>
                     <FormLabel>Tehsil</FormLabel>
                     <Input name="tehsil" value={formData.tehsil || ""} onChange={handleChange} />
                     {errors.tehsil && (
@@ -96,6 +101,7 @@ function DisBussinessAddressForm({
                       </Text>
                     )}
                   </FormControl>
+                  <FormControl isInvalid={!!errors.landmark}>
                   <FormControl isInvalid={!!errors.landmark}>
                     <FormLabel>Landmark</FormLabel>
                     <Input name="landmark" value={formData.landmark || ""} onChange={handleChange} />
@@ -121,6 +127,7 @@ function DisBussinessAddressForm({
                       </Text>
                     )}
                   </FormControl>
+                  <FormControl isInvalid={!!errors.alt_contact_number}>
                   <FormControl isInvalid={!!errors.alt_contact_number}>
                     <FormLabel> Alt. Contact No</FormLabel>
                     <Input type="number"

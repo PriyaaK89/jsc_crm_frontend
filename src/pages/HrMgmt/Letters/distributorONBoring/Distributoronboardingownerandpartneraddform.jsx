@@ -11,17 +11,7 @@ import {
   IconButton,
   SimpleGrid,
   Badge,
-  Box,
-  Text,
-  FormControl,
-  FormLabel,
-  Input,
-  InputGroup,
-  InputRightElement,
-  InputLeftElement,
-  IconButton,
-  SimpleGrid,
-  Badge,
+
 } from "@chakra-ui/react";
 import { FiCheckCircle } from "react-icons/fi";
 
@@ -33,38 +23,21 @@ const AddressForm = ({
   panStatus,
   handlePanVerification,
   errors,
-  data,
-  onChange,
-  index = 0,
-  label,
-  panStatus,
-  handlePanVerification,
-  errors,
 }) => {
   const isOwner = label.includes("Owner");
-  const isOwner = label.includes("Owner");
 
   const getError = (field) =>
     isOwner ? errors[`owner_${field}`] : errors[`partner_${index}_${field}`];
 
   const panKey = isOwner ? "owner_pan" : `partner_${index}`;
-  const getError = (field) =>
-    isOwner ? errors[`owner_${field}`] : errors[`partner_${index}_${field}`];
-
-  const panKey = isOwner ? "owner_pan" : `partner_${index}`;
+  
 
   const isValidPan = (pan) =>
     /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan || "");
-  const isValidPan = (pan) =>
-    /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan || "");
+ 
 
   return (
-    <Box border="1px solid black" borderRadius="lg" mt={4} gridColumn={{ base: "span 1", md: "span 2" }}>
-      
-      <Text fontWeight="bold" bg="#e9f2ff" p={3} borderTopRadius="lg">
-        {label}
-      </Text>
-  return (
+   
     <Box border="1px solid black" borderRadius="lg" mt={4} gridColumn={{ base: "span 1", md: "span 2" }}>
       
       <Text fontWeight="bold" bg="#e9f2ff" p={3} borderTopRadius="lg">
@@ -93,9 +66,9 @@ const AddressForm = ({
         </FormControl>
 
         {/* PAN */}
-        <FormControl isInvalid={!!getError("pan_no")}>
+        {/* <FormControl isInvalid={!!getError("pan_no")}>
           <FormLabel>PAN No.</FormLabel>
-      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} p={4}>
+      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} p={4}> */}
         
         {/* NAME */}
         <FormControl isInvalid={!!getError("name")}>
@@ -137,51 +110,7 @@ const AddressForm = ({
                 </Badge>
               </InputLeftElement>
             )}
-          <InputGroup>
-            {panStatus?.[panKey] && (
-              <InputLeftElement width="auto" ml={2}>
-                <Badge
-                  borderRadius="lg"
-                  colorScheme={
-                    panStatus[panKey].status === "verified"
-                      ? "green"
-                      : panStatus[panKey].status === "valid"
-                      ? "green"
-                      : "red"
-                  }
-                >
-                  {panStatus[panKey].status}
-                </Badge>
-              </InputLeftElement>
-            )}
-
-            <Input
-              value={data.pan_no || ""}
-              onChange={(e) =>
-                onChange(index, "pan_no", e.target.value.toUpperCase())
-              }
-              pl={panStatus?.[panKey] ? "90px" : "12px"}
-            />
-            <Input
-              value={data.pan_no || ""}
-              onChange={(e) =>
-                onChange(index, "pan_no", e.target.value.toUpperCase())
-              }
-              pl={panStatus?.[panKey] ? "90px" : "12px"}
-            />
-
-            <InputRightElement>
-              <IconButton
-                size="sm"
-                colorScheme="blue"
-                icon={<FiCheckCircle />}
-                isDisabled={!isValidPan(data.pan_no)}
-                onClick={() =>
-                  handlePanVerification(data.pan_no, panKey, index)
-                }
-              />
-            </InputRightElement>
-          </InputGroup>
+        
             <InputRightElement>
               <IconButton
                 size="sm"
@@ -199,10 +128,7 @@ const AddressForm = ({
             <Text color="red.500">{getError("pan_no")}</Text>
           )}
         </FormControl>
-          {getError("pan_no") && (
-            <Text color="red.500">{getError("pan_no")}</Text>
-          )}
-        </FormControl>
+         
 
         {/* AADHAR */}
         <FormControl isInvalid={!!getError("aadhar_no")}>
@@ -228,30 +154,7 @@ const AddressForm = ({
             }
           />
         </FormControl>
-        {/* AADHAR */}
-        <FormControl isInvalid={!!getError("aadhar_no")}>
-          <FormLabel>Aadhar No.</FormLabel>
-          <Input
-            type="text"
-            maxLength={12}
-            value={data.aadhar_no || ""}
-            onChange={(e) =>
-              onChange(index, "aadhar_no", e.target.value.replace(/\D/g, ""))
-            }
-          />
-        </FormControl>
-
-        {/* MOBILE */}
-        <FormControl isInvalid={!!getError("mobile_no")}>
-          <FormLabel>Mobile No.</FormLabel>
-          <Input
-            maxLength={10}
-            value={data.mobile_no || ""}
-            onChange={(e) =>
-              onChange(index, "mobile_no", e.target.value.replace(/\D/g, ""))
-            }
-          />
-        </FormControl>
+       
 
         {/* ALT MOBILE */}
         <FormControl isInvalid={!!getError("alt_mobile_no")}>

@@ -916,7 +916,6 @@ function DistributorAgreement() {
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5} >
 
           <FormControl isInvalid={!!errors.customer_name}>
-          <FormControl isInvalid={!!errors.customer_name}>
             <FormLabel>Customer Name</FormLabel>
             <Input
               name="customer_name"
@@ -929,7 +928,6 @@ function DistributorAgreement() {
 
           </FormControl>
 
-          <FormControl isInvalid={!!errors.customer_dob}>
           <FormControl isInvalid={!!errors.customer_dob}>
             <FormLabel>Customer DOB</FormLabel>
              <CustomDatePicker
@@ -1012,7 +1010,6 @@ function DistributorAgreement() {
           </FormControl>
 
           <FormControl isInvalid={!!errors.firm_name}>
-          <FormControl isInvalid={!!errors.firm_name}>
             <FormLabel>Firm Name</FormLabel>
             <Input
               name="firm_name"
@@ -1026,7 +1023,6 @@ function DistributorAgreement() {
             )}
           </FormControl>
 
-          <FormControl isInvalid={!!errors.firm_type}>
           <FormControl isInvalid={!!errors.firm_type}>
             <FormLabel>Firm Type</FormLabel>
             <Select
@@ -1059,7 +1055,6 @@ function DistributorAgreement() {
               </Text>
             )}
           </FormControl>
-          <FormControl isInvalid={!!errors.firm_email}>
           <FormControl isInvalid={!!errors.firm_email}>
             <FormLabel>Firm Email Id</FormLabel>
             <Input
@@ -1102,7 +1097,6 @@ function DistributorAgreement() {
             </FormControl>
           )}
 
-          <FormControl isInvalid={!!errors.firm_since}>
           <FormControl isInvalid={!!errors.firm_since}>
             <FormLabel> Firm Since</FormLabel>
             <CustomDatePicker
@@ -1179,7 +1173,6 @@ function DistributorAgreement() {
           </FormControl>
 
           <FormControl isInvalid={!!errors.branch}>
-          <FormControl isInvalid={!!errors.branch}>
             <FormLabel>branch</FormLabel>
             <Input
               name="branch"
@@ -1193,7 +1186,6 @@ function DistributorAgreement() {
           </FormControl>
 
 
-          <FormControl isInvalid={!!errors.firm_landmark}>
           <FormControl isInvalid={!!errors.firm_landmark}>
             <FormLabel>Landmark</FormLabel>
             <Input
@@ -1280,7 +1272,6 @@ function DistributorAgreement() {
 
 
           <FormControl isInvalid={!!errors.responsible_person_name}>
-          <FormControl isInvalid={!!errors.responsible_person_name}>
             <FormLabel>Responsible Persone Name</FormLabel>
             <Input
               name="responsible_person_name"
@@ -1295,7 +1286,6 @@ function DistributorAgreement() {
             )}
           </FormControl>
 
-          <FormControl isInvalid={!!errors.responsible_person_address}>
           <FormControl isInvalid={!!errors.responsible_person_address}>
             <FormLabel>Responsible Persone Address</FormLabel>
             <Input
@@ -1384,7 +1374,6 @@ function DistributorAgreement() {
 
 
           <FormControl isInvalid={!!errors.seed_license_no}>
-          <FormControl isInvalid={!!errors.seed_license_no}>
             <FormLabel>Seed License No.</FormLabel>
             <Input
               name="seed_license_no"
@@ -1397,7 +1386,6 @@ function DistributorAgreement() {
             )}
           </FormControl>
 
-          <FormControl isInvalid={!!errors.seed_license_expiry} >
           <FormControl isInvalid={!!errors.seed_license_expiry} >
             <FormLabel>Seed License Expiry Date</FormLabel>
 
@@ -1437,7 +1425,6 @@ function DistributorAgreement() {
           </FormControl>
 
           <FormControl isInvalid={!!errors.transport_name_a}>
-          <FormControl isInvalid={!!errors.transport_name_a}>
             <FormLabel>Tranport Name (A)</FormLabel>
             <Input
               name="transport_name_a"
@@ -1457,7 +1444,6 @@ function DistributorAgreement() {
               onChange={handleChange}
             />
           </FormControl>
-          <FormControl isInvalid={!!errors.source_of_funds}>
           <FormControl isInvalid={!!errors.source_of_funds}>
             <FormLabel>Source OF Funds For Bussiness</FormLabel>
             <Select
@@ -1523,7 +1509,6 @@ function DistributorAgreement() {
           )}
 
           <FormControl isInvalid={!!errors.bank_name}>
-          <FormControl isInvalid={!!errors.bank_name}>
             <FormLabel>Bank Name</FormLabel>
             <Input
               name="bank_name"
@@ -1536,7 +1521,6 @@ function DistributorAgreement() {
             )}
           </FormControl>
 
-          <FormControl isInvalid={!!errors.bank_account_no}>
           <FormControl isInvalid={!!errors.bank_account_no}>
             <FormLabel>Bank Account No</FormLabel>
             <Input
@@ -1551,7 +1535,6 @@ function DistributorAgreement() {
           </FormControl>
 
           <FormControl isInvalid={!!errors.ifsc_code}>
-          <FormControl isInvalid={!!errors.ifsc_code}>
             <FormLabel>Bank IFSC</FormLabel>
             <Input
               name="ifsc_code"
@@ -1565,7 +1548,6 @@ function DistributorAgreement() {
           </FormControl>
 
           <FormControl isInvalid={!!errors.bank_branch}>
-          <FormControl isInvalid={!!errors.bank_branch}>
             <FormLabel>Bank branch</FormLabel>
             <Input
               name="bank_branch"
@@ -1577,7 +1559,6 @@ function DistributorAgreement() {
               </Text>
             )}
           </FormControl>
-          <FormControl isInvalid={!!errors.security_cheque_no}>
           <FormControl isInvalid={!!errors.security_cheque_no}>
             <FormLabel>Security Cheque No.</FormLabel>
             <Input
@@ -1591,7 +1572,6 @@ function DistributorAgreement() {
               </Text>
             )}
           </FormControl>
-          <FormControl isInvalid={!!errors.security_cheque_no_2}>
           <FormControl isInvalid={!!errors.security_cheque_no_2}>
             <FormLabel>Security Cheque No.</FormLabel>
             <Input
@@ -1710,7 +1690,7 @@ function DistributorAgreement() {
 
         <Box border="1px solid #313131" mt={5} p={5} borderRadius="lg">
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-            <FormControl isInvalid={!!errors.approver_name}>
+  
             <FormControl isInvalid={!!errors.approver_name}>
               <FormLabel>Approver Name</FormLabel>
 
@@ -1738,7 +1718,6 @@ function DistributorAgreement() {
               )}
             </FormControl>
 
-            <FormControl isInvalid={!!errors.approving_date}>
             <FormControl isInvalid={!!errors.approving_date}>
               <FormLabel>Approvering Date</FormLabel>
                <CustomDatePicker
@@ -1849,6 +1828,7 @@ function DistributorAgreement() {
     </>
   )
 }
+};
 
 
 

@@ -1,12 +1,16 @@
 import { Box, flattenTokens, Flex } from "@chakra-ui/react";
 import Topbar from "./Topbar";
+import { AuthContext } from "../../context/AuthContext";
 import MobileTopbar from "./MobileTopbar";
+import {useContext} from  "react";
 import Sidebar from "./Sidebar";
 import RightSidebar from "./RightSidebar"
 import NotificationBtn from "../NotificationBtn/NotificationBtn";
 import PieChart from "../../pages/Dashboard/PieChart";
 
 const DashboardLayout = () => {
+   const { auth} = useContext(AuthContext);
+    const role = auth?.user?.role;
 
   return (
     <Box bg="#F3F3F3" minH="100vh" >
@@ -27,7 +31,9 @@ const DashboardLayout = () => {
             pb={6}
           >
             <NotificationBtn/>
+             {(role === "ADMIN" || role === "SUPER_ADMIN") && (
             <PieChart />
+             )}
           </Box>
         </Box>
   );

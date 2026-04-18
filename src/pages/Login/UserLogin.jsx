@@ -32,8 +32,8 @@ function UserLogin() {
       const response = await API.post(API_ENDPOINTS.LOGIN, { email, password });
       if (response?.status === 200) {
         loginUser(response.data);
-     const profileRes  = await API.get(API_ENDPOINTS.auth_my_profile);
-           console.log("Profile Data:", profileRes.data);
+        const profileRes = await API.get(API_ENDPOINTS.auth_my_profile);
+        console.log("Profile Data:", profileRes.data);
 
         toast({
           description: "Logged in Successfully.",
@@ -56,7 +56,7 @@ function UserLogin() {
   return (
     <Flex
       direction={{ base: "column", md: "row" }}
-      minH="100dvh"   
+      minH="100dvh"
       w="100%"
       bg="white"
       overflow="hidden"
@@ -165,7 +165,11 @@ function UserLogin() {
         align="center"
         justify="center"
         p={10}
-        bg="white"
+        bg="white" onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      handleLogin();
+    }
+  }}
       >
         <Box w="100%" maxW="400px">
           <Image
@@ -221,7 +225,9 @@ function UserLogin() {
               colorScheme="blue"
               w="100%"
               h="48px"
-              onClick={handleLogin}
+              onClick={handleLogin} onKeyDown={(e) => {
+                if (e.key === "Enter") handleLogin();
+              }}
             >
               Login
             </Button>

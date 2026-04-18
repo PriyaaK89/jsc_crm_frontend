@@ -8,11 +8,13 @@ import {
   Spinner
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
+import { Skeleton, SkeletonCircle } from "@chakra-ui/react";
 import NotifictionSocket from "./NotifictionSocket";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 
-const NotofictionBarModel = () => {
+const NotofictionBarModel = ({ setUnreadCount }) => {
+
   const [notifications, setNotifications] = useState([]);
   const [allNotifications, setAllNotifications] = useState([]);
   const [tab, setTab] = useState("unread");
@@ -20,19 +22,21 @@ const NotofictionBarModel = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [activeId, setActiveId] = useState(null);
+  // const [activeId, setActiveId] = useState(null);
 
-  // 🔥 SOCKET (Unread)
+  //  SOCKET (Unread)
   useEffect(() => {
     NotifictionSocket.on("locationStatusChanged", (data) => {
       const newNotification = {
-        id: Date.now(),
-        name: data.employee_name,
+        id: data.id || Date.now(),
+        name: data.name,
         message: data.message,
-        profile_image_url: data.profile_image,
+        profile_image_url: data.profile_image_url || "",
         created_at: data.time,
         is_read: 0
       };
+      console.log("MARK ID =>", data.id);
+      console.log(data, "data")
 
       setNotifications((prev) => [newNotification, ...prev]);
     });
@@ -41,8 +45,16 @@ const NotofictionBarModel = () => {
       NotifictionSocket.off("locationStatusChanged");
     };
   }, []);
+  //  ----------------this for first user seen count on bell ico
+  useEffect(() => {
+    const count = [...notifications, ...allNotifications].filter(
+      (n) => n.is_read === 0
+    ).length;
 
-  // 🌐 API (All)
+    setUnreadCount(count);
+  }, [notifications, allNotifications]);
+
+  //  API (All)
   const fetchAllNotifications = async (pageNo = 1) => {
     try {
       setLoading(true);
@@ -63,11 +75,111 @@ const NotofictionBarModel = () => {
     }
   };
 
-  const list = tab === "unread" ? notifications : allNotifications;
+  const mergedNotifications = Array.from(
+    new Map(
+      [...notifications, ...allNotifications].map(n => [n.id, n])
+    ).values()
+  );
 
-  const handleToggle = (id) => {
-  setActiveId((prev) => (prev === id ? null : id));
-};
+  const list =
+    tab === "unread"
+      ? mergedNotifications.filter((n) => n.is_read === 0)
+      : [...mergedNotifications].sort((a, b) => a.is_read - b.is_read);
+
+  //  const handleToggle = (id) => {
+  //   setActiveId((prev) => (prev === id ? null : id));
+  // };
+
+  //---------------------mark as read -----------------------------------------------------
+  //  MARK SINGLE
+  const markAsRead = async (id) => {
+    //  instant ui upadet
+    setNotifications(prev =>
+      prev.map(n => n.id === id ? { ...n, is_read: 1 } : n)
+    );
+
+    setAllNotifications(prev =>
+      prev.map(n => n.id === id ? { ...n, is_read: 1 } : n)
+    );
+
+    try {
+      const res = await API.post(`${API_ENDPOINTS.Mark_single_notificaction}/${id}`, {
+        data: { id },
+      });
+
+      if (res.status === 200) {
+        setNotifications(prev =>
+          prev.map(n => n.id === id ? { ...n, is_read: 1 } : n)
+        );
+
+        setAllNotifications(prev =>
+          prev.map(n => n.id === id ? { ...n, is_read: 1 } : n)
+        );
+      }
+
+    } catch (err) {
+      console.log("MARK ERROR =>", err.response || err);
+    }
+  };
+
+
+  // ----------------------mark all read ---------------------------------
+  // MARK ALL
+  const markAllAsRead = async () => {
+    try {
+      await API.patch(API_ENDPOINTS.Mark_all_asread_notifiction, {});
+
+      setNotifications((prev) =>
+        prev.map((n) => ({ ...n, is_read: 1 }))
+      );
+
+      setAllNotifications((prev) =>
+        prev.map((n) => ({ ...n, is_read: 1 }))
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  // -------------------------------------------delete single on -----------------------------
+  //DELETE SINGLE
+  const deleteNotification = async (id) => {
+    try {
+      await API.delete(`${API_ENDPOINTS.Delete_single_one_notification}/${id}`, {
+        data: { id },
+      });
+
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+      setAllNotifications((prev) => prev.filter((n) => n.id !== id));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  //  ------------------------------delete all =====----------------------
+  // DELETE ALL
+  const deleteAllNotifications = async () => {
+    try {
+      await API.delete(API_ENDPOINTS.Delete_all_notifiction);
+
+      setNotifications([]);
+      setAllNotifications([]);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // skeleton ------------------
+  const SkeletonItem = () => (
+    <Flex p={3} gap={3} align="center">
+      <SkeletonCircle size="10" />
+
+      <Box flex="1">
+        <Skeleton height="10px" mb={2} />
+        <Skeleton height="8px" width="60%" />
+      </Box>
+
+      <Skeleton height="20px" width="50px" />
+    </Flex>
+  );
 
   return (
     <>
@@ -76,39 +188,60 @@ const NotofictionBarModel = () => {
         <Flex justify="space-between" align="center">
           <Text fontWeight="bold">Notifications</Text>
 
-          <HStack bg="gray.100" p="3px" borderRadius="full">
-            <Button
-              size="xs"
-              borderRadius="full"
-              bg={tab === "all" ? "white" : "transparent"}
-              onClick={() => {
-                setTab("all");
-                fetchAllNotifications(1);
-              }}
-            >
-              All
+          <HStack spacing={2}>
+            <Button size="xs" onClick={markAllAsRead} bg="gray.200">
+              Mark All Read
             </Button>
 
-            <Button
-              size="xs"
-              borderRadius="full"
-              bg={tab === "unread" ? "white" : "transparent"}
-              onClick={() => setTab("unread")}
-            >
-              Unread
+            <Button size="xs" colorScheme="red" onClick={deleteAllNotifications}>
+              Clear All
             </Button>
           </HStack>
         </Flex>
+
+        {/* Tabs */}
+        <HStack mt={3} bg="gray.200" p="3px" borderRadius="full" width="fit-content">
+          <Button
+            size="xs"
+            borderRadius="full"
+            bg={tab === "all" ? "white" : "transparent"}
+            color={tab === "all" ? "black" : "gray.600"}
+            _hover={{
+              bg: tab === "all" ? "white" : "gray.700",
+              color: tab === "all" ? "black" : "white"
+            }}
+            onClick={() => {
+              setTab("all");
+              fetchAllNotifications(1);
+            }}
+          >
+            All
+          </Button>
+
+          <Button
+            size="xs"
+            borderRadius="full"
+            bg={tab === "unread" ? "white" : "transparent"}
+            _hover={{
+              bg: "gray.700",
+              color: "white"
+            }}
+            onClick={() => setTab("unread")}
+          >
+            Unread
+          </Button>
+
+        </HStack>
       </Box>
 
-      {/* ✅ PAGINATION (ONLY FOR ALL TAB) */}
+      {/* PAGINATION (ONLY FOR ALL TAB) */}
       {tab === "all" && (
         <Flex
           justify="space-between"
           align="center"
           px={4}
           py={2}
-          borderBottom="1px solid #eee"
+          borderBottom="1px solid #ffffff"
         >
           <Button
             size="xs"
@@ -135,67 +268,97 @@ const NotofictionBarModel = () => {
       {/* BODY */}
       <Box maxH="400px" overflowY="auto">
         {loading ? (
-          <Flex justify="center" p={4}>
-            <Spinner />
-          </Flex>
+          <>
+            {[...Array(5)].map((_, i) => (
+              <SkeletonItem key={i} />
+            ))}
+          </>
         ) : list.length === 0 ? (
           <Text p={4} textAlign="center">
             No Notifications
           </Text>
         ) : (
-        list.map((n, i) => (
-  <Box
-    key={i}
-    borderBottom="1px solid #f1f1f1"
-    _hover={{ bg: "gray.50" }}
-    cursor="pointer"
-    onClick={() => handleToggle(n.id)}
-  >
-    {/* TOP ROW */}
-    <Flex p={3} gap={3}>
-      <Avatar size="sm" src={n.profile_image_url} />
+          list.map((n, i) => (
+            <Box
+              key={i}
+              borderBottom="1px solid #f1f1f1"
+              _hover={{ bg: "gray.50" }}
+            >
+              <Flex p={3} gap={3} align="center">
 
-      <Box flex="1">
-        <Text fontSize="sm">
-          <b>{n.name}</b> {n.message}
-        </Text>
+                {/* Avatar */}
+                <Avatar
+                  size="sm" src={n.profile_image_url} name={n.name} onError={(e) => { e.target.src = "/default-avatar.png" }}
+                // fallback if any error whith image
+                />
 
-        <Text fontSize="xs" color="gray.500">
-          {new Date(n.created_at).toLocaleString()}
-        </Text>
-      </Box>
+                {/* Text */}
+                <Box flex="1">
+                  <Text fontSize="sm">
+                    <b>{n.name}</b> {n.message}
+                  </Text>
 
-      {n.is_read === 0 && (
-        <Box
-          w="8px"
-          h="8px"
-          bg="green.400"
-          borderRadius="full"
-          mt={2}
-        />
-      )}
-    </Flex>
+                  <Text fontSize="xs" color="gray.500">
+                    {new Date(n.created_at).toLocaleString()}
+                  </Text>
+                </Box>
 
-    {/* 🔽 EXPAND BOX */}
-    {activeId === n.id && (
-      <Box
-        px={4}
-        pb={3}
-        bg="gray.50"
-        borderTop="1px solid #eee"
-      >
-        <Text fontSize="sm" color="gray.700">
-          {n.message}
-        </Text>
+                {/* Status Dot */}
+                {n.is_read === 0 && (
+                  <Box
+                    w="8px"
+                    h="8px"
+                    bg="green.400"
+                    borderRadius="full"
+                  />
+                )}
 
-        {/* optional extra details */}
-        <Text fontSize="xs" color="gray.400" mt={1}>
-          Full details shown here...
-        </Text>
-      </Box>
-    )}
-  </Box>
-))
+                {/* Buttons */}
+                <HStack spacing={1} flexDirection="column" display="flex">
+
+                  {/*  MARK */}
+                  {n.is_read === 0 && (
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      borderColor="green.400"
+                      color="green.600"
+                      _hover={{
+                        bg: "green.500",
+                        color: "white"
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        markAsRead(n.id);
+                      }}
+                    >
+                      Mark
+                    </Button>
+                  )}
+
+                  {/*  DELETE */}
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    borderColor="red.400"
+                    color="red.600"
+                    _hover={{
+                      bg: "red.600",
+                      color: "white",
+                      borderColor: "red.500"
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteNotification(n.id)
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </HStack>
+
+              </Flex>
+            </Box>
+          ))
         )}
       </Box>
     </>

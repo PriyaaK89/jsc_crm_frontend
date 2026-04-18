@@ -10,20 +10,18 @@ import {
 } from "@chakra-ui/react";
 import { EditIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 import API  from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { useRef } from "react";
 import { IoCameraSharp } from "react-icons/io5";
-import { useContext } from "react";
+// import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
 const PersonalInfoCard = ({ data, fetchEmployeeDetails }) => {
   const toast = useToast();
   const [uploading, setUploading] = useState(false);
-    const fileInputRef = useRef(null);
-    const {updateUser} = useContext(AuthContext);
-  //  date formate 
+    const fileInputRef = useRef(null); 
   const formatTime = (time) => {
     if (!time) return "-";
 
@@ -58,7 +56,7 @@ const PersonalInfoCard = ({ data, fetchEmployeeDetails }) => {
       );
 
       if (res?.data?.success) {
-        await fetchEmployeeDetails(); //  refresh everywhere
+        await fetchEmployeeDetails(); 
 
         toast({
           title: "Profile image updated",

@@ -1790,7 +1790,6 @@ function DistributorAgreement() {
           colorScheme="teal"
           mt={6}
           type="button"
-          type="button"
           onClick={handleformSubmit}
         //  isDisabled={!formData.customer_name || !formData.gst_number}
         >

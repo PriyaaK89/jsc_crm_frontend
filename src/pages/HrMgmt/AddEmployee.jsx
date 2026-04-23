@@ -58,6 +58,7 @@ const AddEmployee = () => {
     week_off: "",
     total_leaves: "",
     headquarter: "",
+    working_area: "",
     approver_id: "",
     reporting_under: "",
     aadhar_no: "",
@@ -86,6 +87,7 @@ const AddEmployee = () => {
     "salary",
     "total_leaves",
     "headquarter",
+    "working_area",
     "approver_id",
     "reporting_under",
   ];
@@ -128,6 +130,7 @@ const AddEmployee = () => {
     total_leaves: "",
     authentication_amount: "",
     headquarter: "",
+    working_area: "",
     login_time: "",
     logout_time: "",
     pf: "",
@@ -954,7 +957,11 @@ const AddEmployee = () => {
               <Input name="headquarter" onChange={handleChange} />
               <FormErrorMessage>{error.headquarter}</FormErrorMessage>
             </FormControl>
-
+            <FormControl isRequired isInvalid={error.working_area}>
+              <FormLabel {...lableStyles}>Working Area</FormLabel>
+              <Input name="working_area" onChange={handleChange} />
+              <FormErrorMessage>{error.working_area}</FormErrorMessage>
+            </FormControl>
             <FormControl isRequired isInvalid={error.approver_id} >
               <FormLabel {...lableStyles}>Approver Name</FormLabel>
               <Select

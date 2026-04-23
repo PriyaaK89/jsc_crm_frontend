@@ -8,7 +8,7 @@ import NotificationBtn from "../NotificationBtn/NotificationBtn";
 
 const UploadSalarySlipLayout = () => {
   return (
-    <Box bg="#F3F3F3" minH="100vh" >
+    <Box bg="#F4F4F4" minH="100vh" >
          <Box display={{ base: "none", md: "block" }}>
            <Sidebar />
    

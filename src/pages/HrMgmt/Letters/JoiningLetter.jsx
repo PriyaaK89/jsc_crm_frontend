@@ -37,7 +37,7 @@ const EmpJoiningLetter = () => {
   const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
-    area: "",
+    working_area: "",
     appoint_under: "",
     appoint_under_name: "",
     job_role_name: "",
@@ -102,7 +102,8 @@ const EmpJoiningLetter = () => {
           appoint_under: String(data?.id || ""),
           job_role_name: data?.job_role_name || "",
           department_name: data?.department_name || "",
-          appointer_state: data?.state || ""
+          appointer_state: data?.state || "",
+          working_area: data?.working_area || "",
         }));
       }
 
@@ -150,6 +151,17 @@ const EmpJoiningLetter = () => {
     }
 
   }, [employee]);
+
+  useEffect(() => {
+  if (employee) {
+    setFormData((prev) => ({
+      ...prev,
+      working_area: employee.working_area || "",
+      department_name: employee.department_name || "",
+      job_role_name: employee.job_role_name || "",
+    }));
+  }
+}, [employee]);
 
   /* ================= LOADING ================= */
 
@@ -233,11 +245,11 @@ const EmpJoiningLetter = () => {
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
 
           <FormControl>
-            <FormLabel>Area</FormLabel>
+            <FormLabel>Working Area</FormLabel>
             <Input
-              value={formData.area}
+              value={formData.working_area}
               onChange={(e) =>
-                setFormData({ ...formData, area: e.target.value })
+                setFormData({ ...formData, working_area: e.target.value })
               }
             />
           </FormControl>
@@ -281,12 +293,16 @@ const EmpJoiningLetter = () => {
 
           <FormControl>
             <FormLabel>Department</FormLabel>
-            <Input value={formData.department_name} isReadOnly />
+            <Input value={formData.department_name}  onChange={(e) =>
+                setFormData({ ...formData, department_name: e.target.value })
+              } />
           </FormControl>
 
           <FormControl>
             <FormLabel>Job Role</FormLabel>
-            <Input value={formData.job_role_name} isReadOnly />
+            <Input value={formData.job_role_name}  onChange={(e) =>
+                setFormData({ ...formData, job_role_name: e.target.value })
+              } />
           </FormControl>
 
           <FormControl>

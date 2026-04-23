@@ -8,7 +8,7 @@ import ViewDistributor from '../../Distributors/ViewDistributor';
 
 const ViewDistributorLayout = () => {
   return (
-    <Box bg="#F3F3F3" h="100%" >
+    <Box bg="#F4F4F4" h="100%" >
       <Box display={{ base: "none", md: "block" }}>
         <Sidebar />
 

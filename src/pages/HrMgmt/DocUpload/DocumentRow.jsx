@@ -12,7 +12,7 @@ const DocumentRow = ({ label, documentType, userId }) => {
 
         <Button
           size="sm"
-          colorScheme="blue"
+          colorScheme="blue" fontWeight="500" 
           onClick={() => setOpen(true)}
         >
           Upload

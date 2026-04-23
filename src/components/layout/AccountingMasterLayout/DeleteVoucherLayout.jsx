@@ -1,78 +1,34 @@
 import React from 'react'
 import Sidebar from "../Sidebar";
 import Topbar from "../Topbar";
-import DesktopTopbar from "../Topbar";
 import MobileTopbar from "../MobileTopbar";
 import { Flex,Box } from '@chakra-ui/react';
 import DeleteVoucher from '../../../pages/HrMgmt/AccountingMaster/DeleteVoucher';
+import NotificationBtn from '../../NotificationBtn/NotificationBtn';
 
 function DeleteVoucherLayout() {
   return (
-    <>
-             <Flex minH="100vh" bg="#f4f4f4">
-       
-             {/* Fixed Sidebar */}
-             <Box
-               position="fixed"
-               top="0"
-               left="0"
-               w="280px"
-               h="100vh"
-               display={{ base: "none", md: "block" }}
-             >
-               <Sidebar />
-             </Box>
-       
-             {/* Main Content Area */}
-             <Flex
-               direction="column"
-               flex="1"
-               ml={{ base: 0, md: "268px" }}
-               
-             >
-       
-               {/* Desktop Topbar */}
-               <Box
-                 display={{ base: "none", md: "block" }}
-                 px={{ base: 4, md: 6 }}
-                 pt={4}
-                 mx={3}
-               >
-                 <DesktopTopbar />
-               </Box>
-       
-               {/* Mobile Topbar */}
-               <Box
-                 display={{ base: "block", md: "none" }}
-                 px={4}
-                 py={4}
-               >
-                 <MobileTopbar />
-               </Box>
-       
-               {/* Page Content */}
-               <Box
-                 flex="1"
-                 px={{ base: 0, md: 6 }}
-                 py={6}
-                 overflow="auto"
-                 mx={3}
-               >
-                 <Box
-                   bg="white"
-                   p={6}
-                   borderRadius="21px"
-                   boxShadow="sm"
-                   mt="75px"
-                 >
-              <DeleteVoucher/>
-                 </Box>
-               </Box>
-       
-             </Flex>
-           </Flex>
-          
-           </>
+  <Box bg="#F3F3F3" minH="100vh" >
+        <Box display={{ base: "none", md: "block" }}>
+          <Sidebar />
+  
+        </Box>
+        <Box display={{ base: "none", md: "block" }}>
+          <Topbar />
+        </Box>
+        <Box display={{ base: "block", md: "none" }}>
+          <MobileTopbar />
+        </Box>
+        <Box
+          ml={{ base: 5, md: "295px" }}
+          mr={{base:5, md:5}}
+          pt="5rem"
+          pb={6}
+        >
+          <NotificationBtn/>
+          <DeleteVoucher/>
+        </Box>
+      </Box>
   )
 }
 

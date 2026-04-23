@@ -13,22 +13,35 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import CustomDatePicker from "../../components/common/CustomDatepicker";
+import { useState } from "react";
+import useUsersapi from "../../Apis/GetUsersapi";
+import { Link } from "react-router-dom";
 
 function PartyTransactionReport() {
+   const {users} = useUsersapi();
+  const [formData, setFormData] = useState({
+     startDate: "",
+     endDate: "",
+  });
   return (
-   <Box p={6}>
-
+   <Box
+       bg="white"
+       mt={{base:2, md:5}}
+       px={{base:3, md:6}}
+       py={{base:3, md:4}}
+      borderRadius="lg"
+      boxShadow="md"
+   >
       {/* Breadcrumb */}
       <Breadcrumb mb={6} fontSize="sm">
        <BreadcrumbItem>
-                     <BreadcrumbLink href="/dashboard">
+                     <BreadcrumbLink as={Link} to="/dashboard">
                        <GoHomeFill color="#5570F1"  size={20}/>
                      </BreadcrumbLink>
                    </BreadcrumbItem>
 
-        <BreadcrumbItem>
-          <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-        </BreadcrumbItem>
+    
 
         <BreadcrumbItem isCurrentPage>
           <BreadcrumbLink>Party Transaction Report</BreadcrumbLink>
@@ -53,7 +66,7 @@ function PartyTransactionReport() {
 
           <FormControl>
             <FormLabel>Select Transaction</FormLabel>
-            <Select placeholder="Please Select">
+            <Select placeholder="--Please Select--">
               <option>Sale</option>
               <option>Purchase</option>
             </Select>
@@ -61,12 +74,16 @@ function PartyTransactionReport() {
 
           <FormControl>
             <FormLabel>Select Bills Under Employee</FormLabel>
-            <Select placeholder="Please Select" />
+            <Select placeholder="--Please Select--" >
+              {users?.map((emp)=>(
+                <option key={emp.id} value={emp.id}>{emp.name}</option>
+              ))}
+            </Select>
           </FormControl>
 
           <FormControl>
             <FormLabel>Select Party</FormLabel>
-            <Select placeholder="Please Select" />
+            <Select placeholder="--Please Select--" />
           </FormControl>
 
           <FormControl>
@@ -76,14 +93,33 @@ function PartyTransactionReport() {
 
           <FormControl>
             <FormLabel>Choose Bill</FormLabel>
-            <Select placeholder="Please Select" />
+            <Select placeholder="--Please Select--" />
           </FormControl>
 
           <FormControl>
-            <FormLabel>Select Date</FormLabel>
             <SimpleGrid columns={2} spacing={4}>
-              <Input type="date" />
-              <Input type="date" />
+             <CustomDatePicker
+                label="Start Date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={(date)=>{
+                 setFormData((prev)=>({
+                     ...prev,
+                     startDate: date
+                 }))
+                }}
+             />
+              <CustomDatePicker
+                label="End Date"
+                name="endDate"
+                value={formData.endDate}
+                onChange={(date)=>{
+                 setFormData((prev)=>({
+                     ...prev,
+                     endDate: date
+                 }))
+                }}
+             />
             </SimpleGrid>
           </FormControl>
 

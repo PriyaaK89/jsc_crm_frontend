@@ -31,6 +31,8 @@ import QRCode from "qrcode";
 import JsBarcode from "jsbarcode";
 // import autoTable from "jspdf-autotable";
 import logo from "../../assets/images/jamidaraBIllLogo.jpeg";
+import { Link } from "react-router-dom";
+
 const ShippingLablePrinter = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -162,7 +164,7 @@ const pdfBlob = doc.output("dataurlstring");
        <HStack justifyContent="space-between">
         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">
+            <BreadcrumbLink as={Link}  to="/dashboard">
               <GoHomeFill color="#5570F1" />
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -184,7 +186,7 @@ const pdfBlob = doc.output("dataurlstring");
         <SimpleGrid columns={{base:1,md:2}} spacing={5}>
           <FormControl>
             <FormLabel >Select Ledger</FormLabel>
-            <Select name="ledgerName" onChange={handleChange} placeholder="plese select">
+            <Select name="ledgerName" onChange={handleChange} placeholder="please select">
               <option>murli</option>
               <option>jaya bijj</option>
               <option>balaji khad bij bhandar chomu</option>
@@ -239,7 +241,7 @@ const pdfBlob = doc.output("dataurlstring");
 
           <FormControl>
             <FormLabel>Freight Charge Type</FormLabel>
-            <Select name="FreightChargeType" onChange={handleChange} placeholder="--plese select--">
+            <Select name="FreightChargeType" onChange={handleChange} placeholder="--please select--">
               <option Value="toPay">TO PAY</option>
               <option Value="Paid">PAID</option>
             </Select>

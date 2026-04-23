@@ -15,25 +15,30 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import useUsersapi from '../../Apis/GetUsersapi';
+import { Link } from 'react-router-dom';
 
 function EmployeeBalanceSheet() {
+  const {users}=useUsersapi();
   return (
-      <Box p={6}>
-        
+         <Box
+             bg="white"
+             mt={{base:2, md:5}}
+             px={{base:3, md:6}}
+             py={{base:3, md:4}}
+            borderRadius="lg"
+            boxShadow="md"
+         >
               {/* Breadcrumb */}
               <Breadcrumb mb={6} fontSize="sm">
                <BreadcrumbItem>
-                             <BreadcrumbLink href="/dashboard">
+                             <BreadcrumbLink as={Link} to="/dashboard">
                                <GoHomeFill color="#5570F1"  size={20}/>
                              </BreadcrumbLink>
                            </BreadcrumbItem>
         
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-                </BreadcrumbItem>
-        
                 <BreadcrumbItem isCurrentPage>
-                  <BreadcrumbLink>Employee Balance Sheet  </BreadcrumbLink>
+                  <BreadcrumbLink>Employee Balance Sheet</BreadcrumbLink>
                 </BreadcrumbItem>
               </Breadcrumb>
         
@@ -52,9 +57,10 @@ function EmployeeBalanceSheet() {
                   <FormControl>
                     <FormLabel>Select Employee</FormLabel>
                     <Select placeholder="Please Select">
-                      <option>SHAYAM </option>
-                      <option>gorauv</option>
-                     
+
+                      {users?.map((emp)=>(
+                       <option key={emp.id} value={emp.id}>{emp.name} </option>
+                      ))} 
                     </Select>
                   </FormControl>
       

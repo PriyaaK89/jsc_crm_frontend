@@ -4,19 +4,22 @@ import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack,VStack,Heading,
 import React, { useState } from "react";
 import { GoHomeFill } from "react-icons/go";
 import CreateLedgerBankAccount from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerBankAccount";
-import CreateLedgerActivationIntersetcalcuation from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerActivationIntersetcalcuation";
 import CreateLedgerMillingDetails from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerMillingDetails";
 import CreateLedgerbankconfi from '../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerbankconfi';
 import CreateLedgerGst from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerGst";
-import CreateLedgerSundrydr_cr from "../../../components/Accountingmastercomponents/CreateLedgerSundrydr_cr";
-
-
+import CreateLedgerSundrydr_cr from "../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerSundrydr_cr";
+import useUsersapi from '../../../Apis/GetUsersapi';
+import  CreateLedgerInterestParameter from '../../../components/Accountingmastercomponents/CreateLedgercomponents/CreateLedgerInterestParameter';
+import { Link } from "react-router-dom";
 
 
 const CreateLedger = () => {
 
+  const { users} = useUsersapi();
+  console.log(users)
 
         const [SelectGroup, setSelectGroup] = useState("");
+        const [activeInterest, setActiveInterest] = useState("");
 
     //  checks  where these fields open   
         const Actvationintersetcal = ["Bank_Account", "Capital_account","Bank_occ_a_c","Bank_od_a_c"
@@ -38,6 +41,8 @@ const CreateLedger = () => {
           const UseforPayroll=["Current_assets","Current_liabilities","Provision","Loans_advances_assets"].includes(SelectGroup);
          const Sundrycr_dr=["Sundry_debtors","Sundry_creditors"].includes(SelectGroup);
          const SetOdLimit=["Bank_occ_a_c","Bank_od_a_c"].includes(SelectGroup);
+          const activeinterestyes =["active-interest-yes"].includes(activeInterest);
+
 //    ..................custom style .............
        const labelStyles = {
         fontSize: "12px",
@@ -46,21 +51,29 @@ const CreateLedger = () => {
         };
 
 
-    return (
-    <Box w="100%" bg="white"  borderRadius="lg" >
+    return ( 
+      <>
+     <Box
+         bg="white"
+         mt={{base:2, md:5}}
+         px={{base:3, md:6}}
+         py={{base:3, md:4}}
+        borderRadius="lg"
+        boxShadow="md"
+     >
                 <HStack justifyContent='space-between'>
                       <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                          <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='/accounting-master/create-ledger' color='#8B8D97' fontSize='13px'>Create Ledger</BreadcrumbLink>
+                          <BreadcrumbLink isCurrentPage color='#8B8D97' fontSize='13px'>Create Ledger</BreadcrumbLink>
                         </BreadcrumbItem>
                       </Breadcrumb>
                     </HStack>
                 
-        <Text fontSize="2xl" fontWeight="bold" mb={6}>
+        <Text fontSize="xl" fontWeight="bold" mb={6} >
           Create Ledger
                     
                </Text> 
@@ -114,19 +127,32 @@ const CreateLedger = () => {
     <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
     <FormControl isRequired mt={5}> 
     <FormLabel {...labelStyles}>Employee Under</FormLabel>
-    <Select name="employeeUnder" fontSize="14px">
-    <option value="-1">Select Employee Name</option>
-    <option value="VIKASKUMAR">VIKASKUMAR</option>
-    <option value="RAJDEEPSINGH">RAJDEEPSINGH</option>
-    <option value="VIKASSINGH">VIKASSINGH</option>
+    <Select name="employeeUnder" fontSize="14px" placeholder="--Please Select--" >
+      {users?.map((emp) => (
+                <option key={emp.id} value={emp.id}>
+                  {emp.name}
+                </option>
+              ))}
    </Select>
    </FormControl>
 
   {/* activation interset calculation  */}
   {Actvationintersetcal && (
-  <CreateLedgerActivationIntersetcalcuation/>
+  <FormControl isRequired mt={5}>
+                         <FormLabel {...labelStyles} >Activate interest calculation</FormLabel>
+        <Select name="active_interest_calculation" fontSize="14px" onChange={(e) => setActiveInterest(e.target.value)}>
+            <option value="-1"> --Plaese Select--</option>
+            <option value="active-interest-yes">Yes</option>
+            <option value="active-interest-no">No</option>
+         </Select>
+         </FormControl>
   )}
   </SimpleGrid>
+{/* interest calculation  */}
+  {activeinterestyes && (
+        <CreateLedgerInterestParameter/>
+       )}
+
   {/* invertory values are affectd  */}
   {InventryValuesEffect &&(
   <FormControl isRequired mt={5}> 
@@ -178,8 +204,8 @@ const CreateLedger = () => {
    {Gst_un_Panno  && ( <CreateLedgerGst/>)}
    {OnlyGst && (
   <Box w="100%"   borderRadius="lg" mt={5}  border="1px" >
-  <HStack justifyContent='space-between'  bg="#e9f2ff" borderBottom="1px solid #d9e5f8" p={1} pl={6}>
-  <Breadcrumb  padding='10px 0px 1rem 0px' >
+  <HStack justifyContent='space-between'  bg="#e9f2ff" borderBottom="1px solid #d9e5f8"  borderTopRadius="lg" pt={1} pl={6}>
+  <Breadcrumb  padding='5px 0px 1rem 0px' >
   <BreadcrumbItem>
   <BreadcrumbLink  color='#000000' size="lg" >Tax Registration Details :</BreadcrumbLink>
   </BreadcrumbItem>
@@ -228,7 +254,11 @@ const CreateLedger = () => {
           </Box>
                   
 </Box>
+
 </Box>
+</>
+
+
 
     );
 }   

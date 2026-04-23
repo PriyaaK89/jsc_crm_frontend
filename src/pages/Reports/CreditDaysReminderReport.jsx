@@ -14,22 +14,67 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import { useState,useEffect} from 'react';
+import axios from "axios";
+import useUsersapi from '../../Apis/GetUsersapi';
+import { Link } from 'react-router-dom';
+
 
 function CreditDaysReminderReport() {
-  return (
-     <Box p={6}>
 
+  const {users}=useUsersapi();
+
+
+   const [states, setStates] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [selectedState, setSelectedState] = useState("");
+  
+    // Load states
+    useEffect(() => {
+      axios.post("https://countriesnow.space/api/v0.1/countries/states", {
+        country: "India"
+      })
+      .then(res => setStates(res.data.data.states));
+    }, []);
+  
+    // When state selected
+   const handleStateChange = async (state) => {
+  
+    setSelectedState(state);
+    setDistricts([]); // reset districts
+  
+    try {
+      const res = await axios.post(
+        "https://countriesnow.space/api/v0.1/countries/state/cities",
+        {
+          country: "India",
+          state: state,
+        }
+      );
+  
+      setDistricts(res.data.data);
+  
+    } catch (error) {
+      console.error("Error fetching districts", error);
+    }
+  };
+
+  return (
+ <Box
+      bg="white"
+      mt={{base:2, md:5}}
+      px={{base:3, md:6}}
+      py={{base:3, md:4}}
+     borderRadius="lg"
+     boxShadow="md"
+  >
       {/* Breadcrumb */}
       <Breadcrumb mb={6} fontSize="sm">
         <BreadcrumbItem>
-                                 <BreadcrumbLink href="/dashboard">
+                                 <BreadcrumbLink as={Link} to="/dashboard">
                                    <GoHomeFill color="#5570F1"  size={20}/>
                                  </BreadcrumbLink>
                                </BreadcrumbItem>
-
-        <BreadcrumbItem>
-          <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-        </BreadcrumbItem>
 
         <BreadcrumbItem isCurrentPage>
           <BreadcrumbLink>Credit Days Reminder Report</BreadcrumbLink>
@@ -59,17 +104,37 @@ function CreditDaysReminderReport() {
 
           <FormControl>
             <FormLabel>Select Employee</FormLabel>
-            <Select placeholder="Please Select" />
+            <Select placeholder="Please Select" >
+              {users?.map((emp)=>(
+                <option key={emp.id} value={emp.id}>{emp.name}</option>
+              ))}
+            </Select>
           </FormControl>
 
           <FormControl>
             <FormLabel>Select State</FormLabel>
-            <Select placeholder="Please Select" />
+            <Select
+               placeholder="Select State"
+               value={selectedState}
+               onChange={(e) => handleStateChange(e.target.value)}
+             >
+               {states.map((s) => (
+                 <option key={s.name} value={s.name}>
+                   {s.name}
+                 </option>
+               ))}
+             </Select>
           </FormControl>
 
           <FormControl>
             <FormLabel>Select District</FormLabel>
-            <Select placeholder="Please Select" />
+            <Select placeholder="Select District">
+               {districts.map((d, i) => (
+                 <option key={i} value={d}>
+                   {d}
+                 </option>
+               ))}
+             </Select>
           </FormControl>
 
           <FormControl >

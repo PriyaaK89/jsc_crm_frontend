@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
+  Box,HStack,Breadcrumb,BreadcrumbItem,BreadcrumbLink,
   Button,
   Checkbox,
   Flex,
   FormControl,
   FormLabel,
   Heading,
-  HStack,
   Image,
   Input,
   SimpleGrid,
@@ -23,7 +22,8 @@ import { API_ENDPOINTS } from "../../../services/endpoints";
 import OfferLetterPreviewModal from "./OfferLetterPreviewModal";
 import CustomDatePicker from "../../../components/common/CustomDatepicker";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png"
-
+import { GoHomeFill } from "react-icons/go";
+import {Link} from "react-router-dom";
 const OfferLetterPage = () => {
   const { id } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -85,6 +85,25 @@ const OfferLetterPage = () => {
 
   return (
     <Box bg="white" p={6} borderRadius="12px">
+       <HStack justifyContent='space-between'>
+                                  <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+                                    <BreadcrumbItem>
+                                      <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                                    </BreadcrumbItem>
+
+                                    
+                                    <BreadcrumbItem>
+                                      <BreadcrumbLink as={Link} to="/hr-mgmt/view-employee-list"  fontSize='13px'>Employee List</BreadcrumbLink>
+                                    </BreadcrumbItem>
+                        
+                                    <BreadcrumbItem>
+                                      <BreadcrumbLink isCurrentPage  fontSize='13px'>Generate Offer Letter</BreadcrumbLink>
+                                    </BreadcrumbItem>
+                        
+                                  </Breadcrumb>
+                               
+                        
+                                </HStack>
       <Heading size="md" mb={4}>
         Generate Offer Letter
       </Heading>
@@ -136,7 +155,12 @@ const OfferLetterPage = () => {
           <CustomDatePicker
             label="Date of Issue"
             value={formData.date_of_issue}
-            onChange={(e) => setFormData({ ...formData, date_of_issue: e.target.value })}
+            onChange={(date)=>{
+               setFormData((prev)=>({
+                   ...prev, date_of_issue: date
+               }))
+            }}
+
             placeholder="Select date of issue"
           />
           <FormControl>

@@ -1,55 +1,265 @@
-import { FormControl, SimpleGrid, HStack,VStack, Box, Text, FormLabel, Button,
-  Breadcrumb,BreadcrumbItem,BreadcrumbLink, Select,Input } from '@chakra-ui/react'
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  Flex,
+  HStack,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr, Img,
+  IconButton,
+  Tooltip, useDisclosure
+} from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
-import { Link } from "react-router-dom";
-
+import sort_icon from "../../assets/sort.svg";
+import { Link, useNavigate } from "react-router-dom";
+import { FiSearch, FiEdit2, FiTrash2 } from "react-icons/fi";
+// import { FaEye } from "react-icons/fa";
+import API from "../../services/api";
+import { API_ENDPOINTS } from "../../services/endpoints";
+import Pagination from "../../Pagination/Pagination";
+import DeleteStockGroupModel from "./DeleteStockGroupModel";
+import DeleteStockCategoryModel from "./DeleteStockCategoryModel";
 
 const ViewStockCategory = () => {
+  const [stockGroups, setStockGroups] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const {
+    isOpen: isDeleteOpen,
+    onOpen: onDeleteOpen,
+    onClose: onDeleteClose,
+  } = useDisclosure();
+
+  const [selectedId, setSelectedId] = useState('');
+
+  // const [page, setPage] = useState(1);
+  // const [limit, setLimit] = useState(10);
+  // const [totalItems, setTotalItems] = useState(0);
+  // const [totalPages, setTotalPages] = useState(1);
+
+  // const [search, setSearch] = useState("");
+
+  const navigate = useNavigate();
+
+
+  const headers = [
+    "S No",
+    "Name",
+    "Group Name",
+    "Actions",
+  ];
+
+  //  featch stock group
+  const fetchStockGroups = async () => {
+    try {
+      setLoading(true);
+
+      const res = await API.get(API_ENDPOINTS.View_stock_category, {
+        // params: { page, limit, search },
+      });
+
+      if (res.status === 200) {
+        const data = res?.data?.data || [];
+
+        setStockGroups(data);
+        // setSelectedId(data?.id);
+        // setTotalItems(res?.data?.pagination?.total || 0);
+        // setTotalPages(
+        //   Math.ceil(
+        //     (res?.data?.pagination?.total || 0) /
+        //       (res?.data?.pagination?.limit || 10)
+        //   )
+        // );
+      }
+    } catch (err) {
+      console.error("Error fetching stock groups:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStockGroups();
+  }, []);
+
+
+  // hnadle model open 
+  const handleDelete = (id) => {
+    setSelectedId(id);
+    console.log(id)
+    onDeleteOpen();
+  };
+
+
   return (
-    <Box bg="white" px={6} py={4}>
-       {/* Top Section */}
-           <HStack justifyContent="space-between" mb={6}>
+
+    <Box bg="white" px={6} py={4} borderRadius="lg" boxShadow="md">
+      <DeleteStockCategoryModel
+        isDeleteOpen={isDeleteOpen}
+        onDeleteClose={onDeleteClose}
+        selectedId={selectedId}   
+        fetchStockGroups={fetchStockGroups}
+
+      />
+
+      {/* Breadcrumb */}
+        <HStack justifyContent="space-between">
+                      <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+                        <BreadcrumbItem>
+                          <BreadcrumbLink as={Link} to="/dashboard">
+                            <GoHomeFill color="#5570F1" />
+                          </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbItem>
+                          <BreadcrumbLink as={Link} color="#8B8D97" fontSize="13px" isCurrentPage>
+                             Stock Category List
+                          </BreadcrumbLink>
+                        </BreadcrumbItem>
+                      </Breadcrumb>
+                    </HStack>
       
-                 <Breadcrumb color="#8B8D97">
-                 <BreadcrumbItem>
-                 <BreadcrumbLink as={Link} href="/dashboard"><GoHomeFill color="#5570F1"/></BreadcrumbLink>
-                 </BreadcrumbItem>
-                 <BreadcrumbItem>
-                  <BreadcrumbLink isCurrentPage>Create Stock Group</BreadcrumbLink>
-                 </BreadcrumbItem>
-                 </Breadcrumb>
-                      </HStack>
-                      <Box maxW="90%" mx="auto">
 
-      <VStack spacing={4} align="stretch">
-        <Text fontSize="lg" color="#4d4d4d" fontWeight="bold">
-          Create Stock Category
+      {/* Top Section */}
+      <Flex justifyContent="space-between" mt={4} mb={4}>
+        <Text fontSize="16px" fontWeight="500" color="#45464E">
+          Stock Category Management
         </Text>
-        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} width="100%">
-          <FormControl isRequired>
-            <FormLabel>Name</FormLabel>
-            <Input type="text"  />
-          </FormControl>
-          <FormControl>
-            <FormLabel isRequired>Select Stock Group</FormLabel>
-            <Select placeholder="Select Stock Name">
-              <option value="group1">Stock Group 1</option>
-              <option value="group2">Stock Group 2</option>
-            </Select>
 
-          </FormControl>
-        </SimpleGrid>
-        <Box textAlign="right">
+        {/* Search */}
 
-        <Button  colorScheme="blue" px={8}>Create</Button>
-              </Box>
 
-      </VStack>
-                            </Box>
+      </Flex>
 
+      {/* TABLE */}
+      <Box
+        overflowX="auto"
+        whiteSpace="nowrap"
+        sx={{
+          "&::-webkit-scrollbar": { width: "8px", height: "8px" },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#7A7A7A",
+            borderRadius: "4px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "#E8E8E8",
+            borderRadius: "4px",
+          },
+        }}
+      >
+        <Table
+          variant="striped"
+          colorScheme="gray"
+          size="sm"
+          minW="1000px"
+          borderRadius="md"
+           className="productsTable"
+                tableLayout="fixed"
+        >
+          <Thead bg="#F9FAFB">
+            <Tr>
+              {headers.map((head, i) => (
+                <Th
+                  key={i}
+                  fontSize="15px"
+                  fontWeight="600"
+                  color="#2C2D33"
+                  textTransform="capitalize" height="50px"
+                >
+                  <Flex align="center" gap="7px">
+                    <Text  fontSize="14px"
+                            color="#2C2D33"
+                            fontWeight="400"
+                            textTransform="capitalize"
+                            fontFamily="InterRegular"
+                            overflow="hidden"> {head}</Text>
+                    <Img src={sort_icon} alt="sort" />
+                  </Flex>
+
+                </Th>
+              ))}
+            </Tr>
+          </Thead>
+
+          <Tbody>
+            {loading ? (
+              <Tr>
+                <Td colSpan={headers.length} textAlign="center">
+                  Loading...
+                </Td>
+              </Tr>
+            ) : stockGroups.length === 0 ? (
+              <Tr>
+                <Td colSpan={headers.length} textAlign="center">
+                  No Data Found
+                </Td>
+              </Tr>
+            ) : (
+              stockGroups.map((item, index) => (
+                <Tr key={item.id}>
+                  <Td>{index + 1}</Td>
+
+                  <Td>{item?.name || "-"}</Td>
+
+                  <Td>{item?.group_name ?? "-"}</Td>
+
+                  <Td>
+                    <Flex gap="8px">
+                      <Tooltip label="Edit Stock Category" hasArrow>
+                        <IconButton
+                          icon={<FiEdit2 />}
+                          size="md"
+                          variant="ghost"
+                          color="blue.600"
+                          _hover={{ bg: "blue.50" }}
+                          aria-label="Edit Stock Group"
+                          onClick={() =>
+                            navigate(`/inventory/view-stock-category/edit/${item.id}`)
+                          }
+                        />
+                      </Tooltip>
+
+                      <Tooltip label="Delete Stock Category" hasArrow>
+                        <IconButton
+                          icon={<FiTrash2 />}
+                          size="md"
+                          variant="ghost"
+                          color="red.600"
+                          _hover={{ bg: "red.50" }}
+                          aria-label="Delete Stock Group"
+                          onClick={() => handleDelete(item?.id)}
+                        />
+                      </Tooltip>
+                    </Flex>
+                  </Td>
+                </Tr>
+              ))
+            )}
+          </Tbody>
+        </Table>
+      </Box>
+
+      {/* Pagination */}
+      {/* <Pagination
+        page={page}
+        setPage={setPage}
+        limit={limit}
+        setLimit={setLimit}
+        totalItems={totalItems}
+        totalPages={totalPages}
+      /> */}
     </Box>
-  )
-}
+  );
+};
+
 
 export default ViewStockCategory

@@ -16,12 +16,14 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  Center
+  Center,
+  TableContainer
 } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import ApproveIpRequestModal from "./ApproveIpRequestModal";
 import { GoHomeFill } from "react-icons/go";
+import {Link} from "react-router-dom";
 
 const ApproveIpUserList = () => {
   const [userList, setUserList] = useState([]);
@@ -66,7 +68,7 @@ const ApproveIpUserList = () => {
         <HStack justifyContent="space-between" flexWrap="wrap">
           <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">
+              <BreadcrumbLink as={Link} to="/dashboard">
                 <GoHomeFill color="#5570F1" />
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -92,11 +94,12 @@ const ApproveIpUserList = () => {
             </Center>
           ) : (
             <Box overflowX="auto">
+              <TableContainer border="1px solid" borderColor="gray.300" borderRadius="xl">
 
             <Table
               className="productsTable"
               maxW="1500px"
-              border="1px solid #cdcdcd"
+              
             >
               <Thead bg="gray.100">
                 <Tr>
@@ -145,6 +148,7 @@ const ApproveIpUserList = () => {
                 )}
               </Tbody>
             </Table>
+            </TableContainer>
                         </Box>
 
           )         

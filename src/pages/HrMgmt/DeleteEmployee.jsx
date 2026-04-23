@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
-
+ 
 const DeleteEmployeeModel = ({
   selectedId,
   isDeleteModalOpen,
@@ -64,14 +64,13 @@ const DeleteEmployeeModel = ({
       isCentered
     >
       <ModalOverlay />
-      <ModalContent mx="12px">
-        {/* <ModalHeader>Delete Employee</ModalHeader> */}
+      <ModalContent mx="12px" borderRadius="12px">
 
-        <Flex bg="#E53E3E" color="white" py={2} px={4} justify="space-between" alignItems="center"  size="xl">
+        <Flex bg="#E53E3E" borderRadius="12px 12px 0px 0px " color="white" py={2} px={4} justify="space-between" alignItems="center"  size="xl">
          <Text fontWeight="bold">
           Delete Employee
          </Text>
-         <ModalCloseButton position="static" size="md"/>
+         <ModalCloseButton position="static" color="white"/>
         </Flex>
        
 

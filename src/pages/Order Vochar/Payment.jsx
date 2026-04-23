@@ -18,9 +18,11 @@ import {
   Textarea,
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink
+  BreadcrumbLink,
+  TableContainer
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import { Link } from "react-router-dom";
 
 const Payment = () => {
   const [rows, setRows] = useState([
@@ -41,11 +43,18 @@ const Payment = () => {
   };
 
   return (
-    <Box p={6}>
-         <HStack justifyContent="space-between" flexWrap="wrap">
+        <Box
+         bg="white"
+         mt={{base:2, md:5}}
+         px={{base:3, md:6}}
+         py={{base:3, md:4}}
+        borderRadius="lg"
+        boxShadow="md"
+     >
+         <HStack justifyContent="space-between">
                   <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
                     <BreadcrumbItem>
-                      <BreadcrumbLink href="/dashboard">
+                      <BreadcrumbLink as={Link}  to="/dashboard">
                         <GoHomeFill color="#5570F1" />
                       </BreadcrumbLink>
                     </BreadcrumbItem>
@@ -77,8 +86,9 @@ const Payment = () => {
       </FormControl>
 
       {/* Table */}
-      <Table variant="simple" mb={6} border="1px solid #cdcdcd" mt={2}>
-        <Thead bgColor="aliceblue">
+      <TableContainer border="1px solid #e0e2e6"  mb={6} mt={2} borderRadius="lg">
+      <Table variant="simple" >
+        <Thead bgColor="#d9e5f8">
           <Tr>
             <Th>Particulars</Th>
             <Th>Current Balance</Th>
@@ -148,6 +158,7 @@ const Payment = () => {
           ))}
         </Tbody>
       </Table>
+      </TableContainer>
 
       {/* Total Amount */}
       <FormControl mb={4}>

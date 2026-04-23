@@ -10,57 +10,18 @@ import {
 } from "@chakra-ui/react";
 import { EditIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 import API  from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import { useRef } from "react";
+import { IoCameraSharp } from "react-icons/io5";
+// import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
-const PersonalInfoCard = () => {
-
-  const [employeeDetails, setEmployeeDetails] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const { empId } = useParams();
+const PersonalInfoCard = ({ data, fetchEmployeeDetails }) => {
   const toast = useToast();
-
-  // Fetch
- const fetchEmployeeDetails = async () => {
-  try {
-    setLoading(true);
-
-    const res = await API.get(
-      `${API_ENDPOINTS.get_emp_details}/${empId}`
-    );
-
-    console.log("API Response:", res);
-
-    if (res?.data.success) {
-      setEmployeeDetails(res.data.data);
-    }
-
-  } catch (err) {
-    console.error("Error:", err.response || err.message);
-    toast({
-      title: "Failed to load employee data",
-      status: "error",
-      duration: 3000,
-    });
-  } finally {
-    setLoading(false);
-  }
-};
-
-  useEffect(() => {
-    if (empId) fetchEmployeeDetails();
-    
-  }, [empId]);
-
-  // Loading state
-  if (loading) return <Text>Loading...</Text>;
-
-  // Safety check
-  if (!employeeDetails) return <Text>No Data Found</Text>;
-  console.log(employeeDetails)
-  //  date formate 
+  const [uploading, setUploading] = useState(false);
+    const fileInputRef = useRef(null); 
   const formatTime = (time) => {
     if (!time) return "-";
 
@@ -74,6 +35,45 @@ const PersonalInfoCard = () => {
       hour12: true,
     });
   };
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+
+      const formData = new FormData();
+      formData.append("profile_image", file);
+
+      const res = await API.put(
+        API_ENDPOINTS.update_profile_image,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (res?.data?.success) {
+        await fetchEmployeeDetails(); 
+
+        toast({
+          title: "Profile image updated",
+          status: "success",
+        });
+      }
+    } catch (err) {
+      toast({
+        title: "Upload failed",
+        status: "error",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  
 
   return (
    
@@ -93,7 +93,6 @@ const PersonalInfoCard = () => {
       <Text fontSize={{ base: "md", md: "lg" }} fontWeight="bold">
         Personal Information
       </Text>
-      <EditIcon boxSize={5} color="#5570F1" cursor="pointer"  />
     </Flex>
 
     <Divider my={3} />
@@ -106,27 +105,50 @@ const PersonalInfoCard = () => {
       mb={4}
       minW="0"   
     >
+      <Box position="relative">
+
       <Avatar
   size="xl"
-  name={employeeDetails?.name}
+  name={data?.name}
+        src= {data?.profile_image_url}
+
   sx={{
     "& span": {
       lineHeight: "3",
-    },
+    }
   }}
 />
+ <Box
+            position="absolute"
+            bottom="0"
+            right="0"
+            bg="blue.500"
+            borderRadius="full"
+            p={2}
+            cursor="pointer"
+            onClick={() => fileInputRef.current.click()}
+          >
+            <IoCameraSharp color="white" size={18} />
+          </Box>
+          <input
+        type="file"
+        ref={fileInputRef}
+        hidden
+        onChange={handleImageChange}
+      />
+</Box>
 
       <Box textAlign={{ base: "center", md: "left" }} minW="0">
         <Text fontWeight="bold" fontSize="md">
-          {employeeDetails?.name || "-"}
+          {data?.name || "-"}
         </Text>
 
         <Text fontSize="sm" color="gray.500">
-          {employeeDetails?.department_name || "-"}
+          {data?.department_name || "-"}
         </Text>
 
         <Text fontSize="sm" color="gray.500">
-          {employeeDetails?.role || "-"}
+          {data?.role || "-"}
         </Text>
 
         <Flex
@@ -138,9 +160,9 @@ const PersonalInfoCard = () => {
         >
           <Text fontWeight="medium">Joining Date:</Text>
           <Text fontSize="sm" color="gray.500">
-            {employeeDetails?.date_of_joining
+            {data?.date_of_joining
               ? new Date(
-                  employeeDetails.date_of_joining
+                  data.date_of_joining
                 ).toLocaleDateString("en-IN")
               : "-"}
           </Text>
@@ -161,52 +183,52 @@ const PersonalInfoCard = () => {
     >
       {/* Row Template */}
       {[
-        ["Father Name", employeeDetails?.father_name],
-        ["Date of Birth",employeeDetails?.date_of_birth],
-        ["Pan Number", employeeDetails?.pan_number],
-        ["Aadhar No", employeeDetails?.aadhar_no],
-        ["Blood group",employeeDetails?.blood_group],
+        ["Father Name", data?.father_name],
+        ["Date of Birth", data?.date_of_birth],
+        ["Pan Number", data?.pan_number],
+        ["Aadhar No", data?.aadhar_no],
+        ["Blood group", data?.blood_group],
         
         
-        ["Salary", employeeDetails?.salary],
+        ["Salary", data?.salary],
         [
           "Travelling Allowance Per Km",
-          employeeDetails?.travelling_allowance_per_km,
+          data?.travelling_allowance_per_km,
         ],
         [
           "AVG Travel KM per day",
-          employeeDetails?.avg_travel_km_per_day,
+          data?.avg_travel_km_per_day,
         ],
         [
           "City Allowance per km",
-          employeeDetails?.city_allowance_per_km,
+          data?.city_allowance_per_km,
         ],
         [
           "Daily Allowance Without Doc",
-          employeeDetails?.daily_allowance_without_doc,
+          data?.daily_allowance_without_doc,
         ],
-        ["Hotel Allowance", employeeDetails?.hotel_allowance],
-        ["Total Leaves", employeeDetails?.total_leaves],
+        ["Hotel Allowance", data?.hotel_allowance],
+        ["Total Leaves", data?.total_leaves],
         [
           "Authentication Amount",
-          employeeDetails?.authentication_amount,
+          data?.authentication_amount,
         ],
-        ["HeadQuarter", employeeDetails?.headquarter],
-        ["Approver Name", employeeDetails?.approver_name],
+        ["HeadQuarter", data?.headquarter],
+        ["Approver Name", data?.approver_name],
         [
           "Login Time",
-          employeeDetails?.login_time
-            ? formatTime(employeeDetails.login_time)
+          data?.login_time
+            ? formatTime(data.login_time)
             : "-",
         ],
         [
           "Logout Time",
-          employeeDetails?.logout_time
-            ? formatTime(employeeDetails.logout_time)
+          data?.logout_time
+            ? formatTime(data.logout_time)
             : "-",
         ],
-        ["PF", employeeDetails?.pf],
-        ["ESI", employeeDetails?.esi],
+        ["PF", data?.pf],
+        ["ESI", data?.esi],
       ].map(([label, value], index) => (
         <Flex
           key={index}

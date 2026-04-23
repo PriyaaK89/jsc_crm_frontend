@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   Flex,
   IconButton,
@@ -9,57 +9,496 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
-  DrawerHeader,
   DrawerBody,
   VStack,
   Button,
   Collapse,
   Icon,
+  Box,
+  Divider,
+  Image,
+ useToast,
+ PopoverTrigger,
+ PopoverContent,
+ PopoverBody,
+ PopoverArrow,
+ Popover,
+ Portal
+
+  
 } from "@chakra-ui/react";
-import { HamburgerIcon, ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { NavLink } from "react-router-dom";
-import { FaUser, FaUserPlus } from "react-icons/fa";
+
+import {
+  HamburgerIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+} from "@chakra-ui/icons";
+
+import { NavLink, useLocation ,useNavigate, useNavigation} from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+
 import {
   RiDashboardLine,
   RiUserAddLine,
   RiUser3Line,
+  RiSettings3Line,
   RiFileList3Line,
   RiBarChartLine,
-  RiSettings3Line,
 } from "react-icons/ri";
-import { UserCheck } from "lucide-react";
-import { AuthContext } from "../../context/AuthContext";
+import{FaBookOpen} from "react-icons/fa";
+
+import {
+  FaChartLine,
+  FaUserTie,
+  FaBullseye,
+  FaList,
+  FaTrash, 
+  FaFileInvoiceDollar,
+  FaFileInvoice,
+  FaMoneyCheckAlt,
+  FaEdit,
+  FaStore,
+  FaShoppingCart,
+  FaReceipt,
+  FaMoneyBillWave,
+} from "react-icons/fa";
+
+import {
+  MdAccountTree,
+  MdAssignmentInd,
+  MdGroupAdd,
+  MdCorporateFare,
+  MdInventory,
+  MdAddBox,
+  MdViewList,
+  MdDelete,
+  MdCategory,
+  MdAddCircleOutline,
+} from "react-icons/md";
+
+import {
+  HiUserGroup,
+  HiOfficeBuilding,
+  HiOutlinePrinter,
+} from "react-icons/hi";
+import { FaKey } from "react-icons/fa";
+
+import { FiMapPin } from "react-icons/fi";
+import { BiPurchaseTagAlt } from "react-icons/bi";
+import { BsCreditCard2Front, BsUpcScan } from "react-icons/bs";
+import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
+import { HiOutlineDocumentReport } from "react-icons/hi";
+import {
+  UserCheck,
+  Receipt,
+  CalendarCheck,
+  BellRing,
+  Handshake,
+  BookText,
+  Clock,
+  FileSpreadsheet,
+  BarChart3,
+  DollarSign,
+  Package,
+  Ticket,
+} from "lucide-react";
+
+import { FaUser, FaUserPlus, FaWallet } from "react-icons/fa";
+import { FiLogOut } from "react-icons/fi";
+import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg';
+import { MdUploadFile } from "react-icons/md";
+
+
 
 const MobileTopbar = () => {
-  const { auth } = useContext(AuthContext);
+  const { auth, logoutUser} = useContext(AuthContext);
   const role = auth?.user?.role;
+
+  const location = useLocation();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
+    const toast = useToast();
+    const navigate = useNavigate();
+  
 
   const onOpen = () => setIsDrawerOpen(true);
   const onClose = () => setIsDrawerOpen(false);
 
-  const toggleMenu = (menu) => setOpenMenu(openMenu === menu ? null : menu);
+  const toggleMenu = (key) => {
+    setOpenMenu(openMenu === key ? null : key);
+  };
+    const logout = () => {
+
+    logoutUser();
+    // Show toast
+    toast({
+      title: "Logged out",
+      description: "You are logged out successfully.",
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+    });
+
+    // Redirect after delay
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 1500);
+  };
 
   const sidebarButtonStyle = {
     variant: "ghost",
     justifyContent: "flex-start",
-    borderRadius: "12px",
-    fontWeight: "700",
-    color: "#333333",
+    borderRadius: "10px",
+    fontWeight: "600",
+    color: "#333",
     _hover: { bg: "#C084FA", color: "black" },
   };
 
   const activeLinkStyle = ({ isActive }) =>
     isActive ? { backgroundColor: "#C084FA", color: "black" } : undefined;
 
+  const menuSection = [
+    {
+      label: "Dashboard",
+      path: "/dashboard",
+      icon: RiDashboardLine,
+    },
+
+    {
+      label: "HR Management",
+      key: "users",
+      icon: FaUser,
+      children: [
+        {
+          label: "Add Employee",
+          path: "/hr-mgmt/add-employee",
+          icon: FaUserPlus,
+        },
+        {
+          label: "Employee List",
+          path: "/hr-mgmt/view-employee-list",
+          icon: RiUser3Line,
+        },
+        {
+          label: "Create Job Role",
+          path: "/hr-mgmt/roles/add-job-role",
+          icon: HiUserGroup,
+        },
+        {
+          label: "Create Department",
+          path: "/hr-mgmt/dept/add-department",
+          icon: MdAccountTree,
+        },
+       {label: "Upload Employee Expenses", path: "/upload-employee-expenses", icon: MdUploadFile },
+        
+        {
+          label: "Upload Salary Slip",
+          path: "/hr-mgmt/upload-emp-salary",
+          icon: RiFileList3Line,
+        },
+               {label:"Change Password", path:"/hr-mgmt/change-password", icon:FaKey}
+        
+      ],
+    },
+
+    {
+      label: "Business Development",
+      key: "business",
+      icon: FaChartLine,
+      children: [
+        {
+          label: "Create Team",
+          path: "/Business-dev/create-team",
+          icon: FaUserPlus,
+        },
+        {
+          label: "Create Sub Team",
+          path: "/Business-devt/create-sub-team",
+          icon: HiUserGroup,
+        },
+        {
+          label: "Assign Target RSM",
+          path: "/Business-devt/assign-target-rsm",
+          icon: MdAssignmentInd,
+        },
+        {
+          label: "Assign Target TSM",
+          path: "/Business-devt/assign-target-tsm",
+          icon: FaUserTie,
+        },
+        {
+          label: "Assign Target SM",
+          path: "/Business-devt/assign-target-sm",
+          icon: FaBullseye,
+        },
+        {
+          label: "Assign Target FA",
+          path: "/Business-devt/assign-target-fa",
+          icon: UserCheck,
+        },
+      ],
+    },
+
+    {
+      label: "Accounting Master",
+      key: "accounting-master",
+      icon: FaWallet,
+      children: [
+        {
+          label: "Create Group",
+          path: "/accounting-master/create-group",
+          icon: MdGroupAdd,
+        },
+        {
+          label: "View Group",
+          path: "/accounting-master/view-group",
+          icon: FaList,
+        },
+        {
+          label: "Delete Group",
+          path: "/accounting-master/delete-group",
+          icon: FaTrash,
+        },
+        {
+          label: "Create Ledger",
+          path: "/accounting-master/create-ledger",
+          icon: FaFileInvoiceDollar,
+        },
+                {label:"ON Boarding Ledger",path:"/accounting-master/onboarding-ledger", icon:FaBookOpen},
+        
+        {
+          label: "View Ledger",
+          path: "/accounting-master/view-ledger",
+          icon: FaFileInvoice,
+        },
+        {
+          label: "Delete Ledger",
+          path: "/accounting-master/delete-ledger",
+          icon: FaTrash,
+        },
+        {
+          label: "Create Voucher",
+          path: "/accounting-master/create-voucher",
+          icon: FaMoneyCheckAlt,
+        },
+        {
+          label: "View Voucher",
+          path: "/accounting-master/view-voucher",
+          icon: FaFileInvoice,
+        },
+        {
+          label: "Delete Voucher",
+          path: "/accounting-master/delete-voucher",
+          icon: FaTrash,
+        },
+        {
+          label: "Edit Ledger Assignment",
+          path: "/accounting-master/edit-ledger-assignment",
+          icon: FaEdit,
+        },
+        {
+          label: "Retail Assignment",
+          path: "/accounting-master/retail-assignment",
+          icon: FaStore,
+        },
+       
+      ],
+    },
+
+    {
+      label: "Company Master",
+      key: "company-master",
+      icon: MdCorporateFare,
+      children: [
+        {
+          label: "Create Company",
+          path: "/company-master/create-company",
+          icon: HiOfficeBuilding,
+        },
+      ],
+    },
+
+
+    {
+      label: "Reports",
+      key: "reports",
+      icon: RiBarChartLine,
+      children: [
+        {
+          label: "Attendance Report",
+          path: "/report/emp-attendance-report",
+          icon: CalendarCheck,
+        },
+        {
+          label: "Scheduling & Alert Report",
+          path: "/report/scheduling-alert-report",
+          icon: BellRing,
+        },
+        {
+          label: "Party Transaction Report",
+          path: "/report/party-transaction-report",
+          icon: Handshake,
+        },
+        {
+          label: "Employee Expense Report",
+          path: "/report/get-emp-expense-report",
+          icon: Receipt,
+        },
+        {
+          label: "Party Ledger Report",
+          path: "/report/party-ledger-report",
+          icon: BookText,
+        },
+        {
+          label: "Credit Days Reminder Report",
+          path: "/report/credit-days-reminder-report",
+          icon: Clock,
+        },
+        {
+          label: "Employee Balance Sheet",
+          path: "/report/emp-balance-sheet",
+          icon: FileSpreadsheet,
+        },
+        {
+          label: "Interest Report",
+          path: "/report/interest-report",
+          icon: BarChart3,
+        },
+        {
+          label: "Salary Report",
+          path: "/report/emp-salary-report",
+          icon: DollarSign,
+        },
+        {
+          label: "Product Report",
+          path: "/report/product-report",
+          icon: Package,
+        },
+        {
+          label: "Item Stock Report",
+          path: "/report/item-stock-report",
+          icon: Package,
+        },
+         {label:"Track Employee",path:"/report/track-employee",icon:FiMapPin},
+                    {label:"Employee Visit Report",path:"/report/emp-visit-report",icon:HiOutlineDocumentReport},
+                    {label:"Employee Distributor Details",path:"/report/emp-distributor-details",icon:MdPeople},
+                    {label:"Super Cash Bill Report",path:"/report/supercash-bill-report",icon:MdReceiptLong},
+                    {label:"P & L Report",path:"/report/psl-report",icon:MdAssessment},
+                    {label:"Fright Report",path:"/report/fright-report",icon:MdLocalShipping},
+                    {label:"Transport Fright Report",path:"/report/transport-fright-report",icon:MdDirectionsBus},
+                    {label:"Item P & L Report",path:"/report/item-psl-report",icon:MdInventory},
+                    {label:"manufacturing Report",path:"/report/manufacturing-report",icon:MdFactory},
+                    {label:"Stock Transfer Report",path:"/report/stock-transfer-report",icon:MdSwapHoriz},
+                    {label:"Pending Collection Report",path:"/report/pending-collection-report",icon:MdPendingActions},
+                    {label:"Employee Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
+      ],
+    },
+
+    {
+      label: "Inventory Master",
+      key: "inventory",
+      icon: MdInventory,
+      children: [
+        {
+          label: "Create Stock Group",
+          path: "/inventory/create-stock-group",
+          icon: MdAddBox,
+        },
+        {
+          label: "View Stock Group",
+          path: "/inventory/view-stock-group",
+          icon: MdViewList,
+        },
+        {
+          label: "Delete Stock Group",
+          path: "/inventory/delete-stock-group",
+          icon: MdDelete,
+        },
+        {
+          label: "Create Stock Category",
+          path: "/inventory/create-stock-category",
+          icon: MdCategory,
+        },
+        {
+          label: "View Stock Category",
+          path: "/inventory/view-stock-category",
+          icon: MdAddCircleOutline,
+        },
+      ],
+    },
+
+    {
+      label: "Order Voucher",
+      key: "order-voucher",
+      icon: FaFileInvoice,
+      children: [
+        { label: "Payment", path: "/order-vochor/payment", icon: FiMapPin },
+        {
+          label: "Purchase",
+          path: "/order-vochor/purchase",
+          icon: BiPurchaseTagAlt,
+        },
+        { label: "Sales", path: "/order-vochor/sales", icon: FaShoppingCart },
+        { label: "Receipt", path: "/order-vochor/receipt", icon: FaReceipt },
+        {
+          label: "Credit",
+          path: "/order-vochor/credit",
+          icon: BsCreditCard2Front,
+        },
+        { label: "Debit", path: "/order-vochor/debit", icon: FaMoneyBillWave },
+      ],
+    },
+
+    {
+      label: "Print Management",
+      key: "print_mgmt",
+      icon: HiOutlinePrinter,
+      children: [
+        {
+          label: "Shipping Label Printer",
+          path: "/print/mgmt/shipping_lable_printer",
+          icon: BsUpcScan,
+        },
+        {
+          label: "TruthFull Label Print",
+          path: "/print/mgmt/truthful_labelprint",
+          icon: Ticket,
+        },
+      ],
+    },
+
+    {
+      label: "Settings",
+      path: "/settings",
+      icon: RiSettings3Line,
+    },
+  ];
+
+  useEffect(() => {
+    const path = location.pathname;
+
+    const menuMap = {
+      "/hr-mgmt": "users",
+      "/accounting-master": "accounting",
+      "/report": "reports",
+    };
+
+    for (const route in menuMap) {
+      if (path.startsWith(route)) {
+        setOpenMenu(menuMap[route]);
+        break;
+      }
+    }
+  }, [location.pathname]);
+
   return (
     <>
-      {/* 🔹 Topbar */}
+      {/* Topbar */}
+
       <Flex
         w="100%"
-        h="75px"
+        h="70px"
         bg="white"
         align="center"
         px={4}
@@ -74,160 +513,185 @@ const MobileTopbar = () => {
           aria-label="Open Menu"
           onClick={onOpen}
           mr={2}
-          bg="transparent"
         />
-        <Text fontWeight="bold" fontSize="lg">Dashboard</Text>
+
+        <Text fontWeight="bold">Dashboard</Text>
+
         <Spacer />
-        <Avatar name={auth?.user?.name || "User"} size="sm" />
+            <Popover placement="bottom-end">
+             <PopoverTrigger>
+               <Avatar name={auth?.user?.name} size="sm" cursor="pointer" />
+             </PopoverTrigger>
+           
+             <Portal>
+               <PopoverContent w="170px" boxShadow="lg">
+                 <PopoverArrow  bg="white" borderColor="gray.200" />
+           
+                 <PopoverBody p={2}>
+                   <Text fontSize="sm" fontWeight="bold" color="#747A80" px={2} py={1}>
+                     {auth?.user?.name}
+                   </Text>
+           
+                   <Button
+                     size="sm"
+                     fontSize="xs"
+                     variant="ghost"
+                     w="100%"
+                     justifyContent="flex-start"
+                     onClick={() =>
+                       (navigate(`/dashboard/profile/${auth?.user?.id}`))
+                     }
+                   >
+                     My Account
+                   </Button>
+           
+                   <Divider my={2} />
+           
+                 <Button
+             size="sm"
+             rightIcon={<FiLogOut />}
+             fontSize="xs"
+             variant="ghost"
+             w="100%"
+             border="1px solid gray"
+             textAlign="center"
+             justifyContent="center"   
+           
+             onClick={logout}
+           
+             _hover={{
+               bgColor: "#f4bfbf",
+               border: "1px solid #e48f8f",
+               color: "#971345"
+             }}
+           >
+             Logout
+           </Button>
+                 </PopoverBody>
+               </PopoverContent>
+             </Portal>
+           </Popover>
+        {/* <Avatar name={auth?.user?.name || "User"} size="sm" /> */}
       </Flex>
 
-      {/* 🔹 Drawer */}
+      {/* Drawer Sidebar */}
+
       <Drawer placement="left" isOpen={isDrawerOpen} onClose={onClose}>
         <DrawerOverlay />
+
         <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>CRM</DrawerHeader>
-          <DrawerBody p={0}>
-            <VStack spacing={2} align="stretch" p={4}>
-              {/* Dashboard */}
-              <Button
-                leftIcon={<RiDashboardLine />}
-                as={NavLink}
-                to="/dashboard"
-                {...sidebarButtonStyle}
-                style={activeLinkStyle}
-                onClick={onClose}
-              >
-                Dashboard
-              </Button>
 
-              {/* HR Management */}
-              <Button
-                leftIcon={<FaUser />}
-                rightIcon={<Icon as={openMenu === "users" ? ChevronDownIcon : ChevronRightIcon} />}
-                {...sidebarButtonStyle}
-                onClick={() => toggleMenu("users")}
-              >
-                HR Management
-              </Button>
+  <Flex align="center" justify="space-between" p={4} borderBottom="1px solid #eee">
+    <Image src={logo} alt="logo" w="115px" h="54px" />
+    <DrawerCloseButton position="static" />
+  </Flex>
 
-              <Collapse in={openMenu === "users"} animateOpacity>
-                <VStack pl={6} align="stretch" spacing={1}>
-                  <Button
-                    leftIcon={<FaUserPlus />}
-                    {...sidebarButtonStyle}
-                    size="sm"
-                    as={NavLink}
-                    to="/hr-mgmt/add-employee"
-                    style={activeLinkStyle}
-                    onClick={onClose}
-                  >
-                    Add Employee
-                  </Button>
-                  <Button
-                    leftIcon={<RiUser3Line />}
-                    {...sidebarButtonStyle}
-                    size="sm"
-                    as={NavLink}
-                    to="/hr-mgmt/view-employee-list"
-                    style={activeLinkStyle}
-                    onClick={onClose}
-                  >
-                    Employee List
-                  </Button>
-                  <Button
-                    leftIcon={<RiFileList3Line />}
-                    {...sidebarButtonStyle}
-                    size="sm"
-                    as={NavLink}
-                    to="/hr-mgmt/upload-emp-salary"
-                    style={activeLinkStyle}
-                    onClick={onClose}
-                  >
-                    Upload Salary
-                  </Button>
-                  <Button
-                    leftIcon={<UserCheck />}
-                    {...sidebarButtonStyle}
-                    size="sm"
-                    as={NavLink}
-                    to="/emp-attendance-report"
-                    style={activeLinkStyle}
-                    onClick={onClose}
-                  >
-                    Attend Report
-                  </Button>
-                </VStack>
-              </Collapse>
+          <DrawerBody mt={2}>
+            <VStack spacing={2} align="stretch">
+              {menuSection.map((menu, index) => {
+                const IconComponent = menu.icon;
 
-              {/* Leads */}
-              <Button
-                leftIcon={<RiUser3Line />}
-                rightIcon={<Icon as={openMenu === "leads" ? ChevronDownIcon : ChevronRightIcon} />}
-                {...sidebarButtonStyle}
-                onClick={() => toggleMenu("leads")}
-              >
-                Leads
-              </Button>
-              <Collapse in={openMenu === "leads"} animateOpacity>
-                <VStack pl={6} align="stretch" spacing={1}>
-                  <Button
-                    leftIcon={<RiUserAddLine />}
-                    {...sidebarButtonStyle}
-                    size="sm"
-                    as={NavLink}
-                    to="/leads/new"
-                    onClick={onClose}
-                  >
-                    New Lead
-                  </Button>
-                  <Button
-                    leftIcon={<RiFileList3Line />}
-                    {...sidebarButtonStyle}
-                    size="sm"
-                    as={NavLink}
-                    to="/leads/list"
-                    onClick={onClose}
-                  >
-                    Lead List
-                  </Button>
-                </VStack>
-              </Collapse>
+                if (!menu.children) {
+                  return (
+                    <Button
+                     w="90%"
+                      key={index}
+                      leftIcon={<IconComponent />}
+                      as={NavLink}
+                      to={menu.path}
+                      style={activeLinkStyle}
+                      {...sidebarButtonStyle}
+                    >
+                      {menu.label}
+                    </Button>
+                  );
+                }
 
-              {/* Reports */}
-              <Button
-                leftIcon={<RiBarChartLine />}
-                {...sidebarButtonStyle}
-                as={NavLink}
-                to="/reports"
-                onClick={onClose}
-              >
-                Reports
-              </Button>
+                const parentActive = menu.children.some((child) =>
+                  location.pathname.startsWith(child.path),
+                );
 
-              {/* Settings */}
-              <Button
-                leftIcon={<RiSettings3Line />}
-                {...sidebarButtonStyle}
-                as={NavLink}
-                to="/settings"
-                onClick={onClose}
-              >
-                Settings
-              </Button>
+                return (
+                  <Box key={index}>
+                    <Button
+                    w="90%"
+                      leftIcon={<IconComponent />}
+                      rightIcon={
+                        <Icon
+                          as={
+                            openMenu === menu.key
+                              ? ChevronDownIcon
+                              : ChevronRightIcon
+                          }
+                        />
+                      }
+                      onClick={() => toggleMenu(menu.key)}
+                      {...sidebarButtonStyle}
+                      style={parentActive ? { bg: "#E9D8FD" } : undefined}
+                    >
+                      {menu.label}
+                    </Button>
 
-              {/* IP Request for Admin */}
-              {(role === "ADMIN" || role === "SUPER_ADMIN") && (
+                    <Collapse in={openMenu === menu.key}>
+                      <VStack pl={6} mt={2} align="stretch">
+                        {menu.children.map((child, i) => {
+                          const ChildIcon = child.icon;
+
+                          return (
+                            <Button
+                             w="90"
+                              key={i}
+                              size="sm"
+                              leftIcon={<ChildIcon />}
+                              as={NavLink}
+                              to={child.path}
+                              style={activeLinkStyle}
+                              {...sidebarButtonStyle}
+                            >
+                              {child.label}
+                            </Button>
+                          );
+                        })}
+                      </VStack>
+                    </Collapse>
+                  </Box>
+                );
+              })}
+
+              {/* Role Based Button */}
+
+              {/* {(role === "ADMIN" || role === "SUPER_ADMIN") && (
                 <Button
+                 w="90%"
                   leftIcon={<RiUserAddLine />}
-                  {...sidebarButtonStyle}
                   as={NavLink}
                   to="/approve-ip-user-list"
-                  onClick={onClose}
+                  {...sidebarButtonStyle}
                 >
                   IP Request
                 </Button>
-              )}
+              )} */}
+               
+                     <Button
+                 size="sm"
+                 rightIcon={<FiLogOut />}
+                 fontSize="xs"
+                 variant="ghost"
+                 w="100%"
+                 border="1px solid gray"
+                 textAlign="center"
+                 justifyContent="center"   
+               
+                 onClick={logout}
+               
+                 _hover={{
+                   bgColor: "#f4bfbf",
+                   border: "1px solid #e48f8f",
+                   color: "#971345"
+                 }}
+               >
+                 Logout
+               </Button>
             </VStack>
           </DrawerBody>
         </DrawerContent>

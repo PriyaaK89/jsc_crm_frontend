@@ -24,13 +24,30 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("auth", JSON.stringify(data));
   };
 
+  const updateUser = (newData) => {
+  setAuth((prev) => {
+    const updatedAuth = {
+      ...prev,
+      user: {
+        ...prev.user,
+        ...newData,
+      },
+    };
+
+    //  localStorage bhi update karo
+    localStorage.setItem("auth", JSON.stringify(updatedAuth));
+
+    return updatedAuth;
+  });
+};
+
   const logoutUser = () => {
     setAuth({ token: null, user: null });
     localStorage.removeItem("auth");
   };
 
   return (
-    <AuthContext.Provider value={{ auth, loginUser, logoutUser }}>
+    <AuthContext.Provider value={{ auth, loginUser, logoutUser,updateUser }}>
       {children}
     </AuthContext.Provider>
   );

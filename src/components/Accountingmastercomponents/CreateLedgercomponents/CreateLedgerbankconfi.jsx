@@ -12,8 +12,8 @@ function CreateLedgerbankconfi() {
   return (
     <>
       <Box w="100%"    mt={5} border="1px" borderRadius="lg">
-            <HStack justifyContent='space-between' bg="#e9f2ff" borderBottom="1px solid #d9e5f8" p={1} pl={6}>
-                             <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+            <HStack justifyContent='space-between' bg="#e9f2ff" borderBottom="1px solid #d9e5f8" borderTopRadius="lg" pt={1} pl={6}>
+                             <Breadcrumb color="#8B8D97" padding='5px 0px 1rem 0px' >
                                
                    
                                <BreadcrumbItem>
@@ -25,7 +25,7 @@ function CreateLedgerbankconfi() {
            
                     <FormControl isRequired  p={4}>
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
-                         <FormControl isRequired mt={2}>
+                         <FormControl isRequired mt={5}>
        
                                          <FormLabel {...labelStyles} >Set cheque books</FormLabel>
                               <Select name="Set_cheque_books" fontSize="14px">

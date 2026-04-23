@@ -14,22 +14,27 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import { Link } from 'react-router-dom';
 
 function GetEmpExpenseReport() {
   return (
-    <Box p={6}>
+    <Box
+         bg="white"
+         mt={{base:2, md:5}}
+         px={{base:3, md:6}}
+         py={{base:3, md:4}}
+        borderRadius="lg"
+        boxShadow="md"
+     >
   
         {/* Breadcrumb */}
         <Breadcrumb mb={6} fontSize="sm">
          <BreadcrumbItem>
-                       <BreadcrumbLink href="/dashboard">
+                       <BreadcrumbLink as={Link} to="/dashboard">
                          <GoHomeFill color="#5570F1"  size={20}/>
                        </BreadcrumbLink>
                      </BreadcrumbItem>
   
-          <BreadcrumbItem>
-            <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-          </BreadcrumbItem>
   
           <BreadcrumbItem isCurrentPage>
             <BreadcrumbLink>Get Employee Expense Report </BreadcrumbLink>
@@ -54,15 +59,14 @@ function GetEmpExpenseReport() {
               <FormLabel>Expense Type</FormLabel>
               <Select placeholder="Please Select">
                 <option>Bus/Train/Toll expense</option>
-                <option>Petrol/Desialexpense</option>
+                <option>Petrol/Diesel expense</option>
                 <option value="">Hotel expense</option>
                 <option value="">Other expense</option>
               </Select>
             </FormControl>
 
              <FormControl>
-              <FormLabel>Form Date</FormLabel>
-             
+              <FormLabel>From Date</FormLabel>
                 <Input type="date" />
               
               

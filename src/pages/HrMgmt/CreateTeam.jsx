@@ -2,8 +2,7 @@ import { FormControl,FormLabel,Input } from "@chakra-ui/react";
 import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack,VStack,Heading,Button} from "@chakra-ui/react";
 
 import { GoHomeFill } from "react-icons/go";
-
-
+import { Link } from "react-router-dom";
 
 
 const CreateTeam = () => {
@@ -14,15 +13,22 @@ const CreateTeam = () => {
     };
 
     return (
-    <Box w="100%" >
+      <Box
+           bg="white"
+           mt={{base:2, md:5}}
+           px={{base:3, md:6}}
+           py={{base:3, md:4}}
+          borderRadius="lg"
+          boxShadow="md"
+       >
                 <HStack justifyContent='space-between'>
                       <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                          <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
                         </BreadcrumbItem>
             
                         <BreadcrumbItem>
-                          <BreadcrumbLink href='#' color='#8B8D97' fontSize='13px'>Create Business Development Team</BreadcrumbLink>
+                          <BreadcrumbLink isCurrentPage  color='#8B8D97' fontSize='13px'>Create Business Development Team</BreadcrumbLink>
                         </BreadcrumbItem>
             
                       </Breadcrumb>

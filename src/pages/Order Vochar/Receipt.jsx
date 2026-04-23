@@ -19,11 +19,13 @@ import {
   Textarea,
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink
+  BreadcrumbLink,
+  TableContainer
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import { IoMdAdd } from "react-icons/io";
 import { IoMdRemove } from "react-icons/io";
+import { Link } from 'react-router-dom';
 
  const Receipt = () => {
    const [rows, setRows] = useState([
@@ -45,11 +47,18 @@ import { IoMdRemove } from "react-icons/io";
 
 
   return (
- <Box p={6}>
-         <HStack justifyContent="space-between" flexWrap="wrap">
+    <Box
+         bg="white"
+         mt={{base:2, md:5}}
+         px={{base:3, md:6}}
+         py={{base:3, md:4}}
+        borderRadius="lg"
+        boxShadow="md"
+     >
+         <HStack justifyContent="space-between" >
                   <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
                     <BreadcrumbItem>
-                      <BreadcrumbLink href="/dashboard">
+                      <BreadcrumbLink as={Link} to="/dashboard"> 
                         <GoHomeFill color="#5570F1" />
                       </BreadcrumbLink>
                     </BreadcrumbItem>
@@ -81,8 +90,15 @@ import { IoMdRemove } from "react-icons/io";
       </FormControl>
 
       {/* Table */}
-      <Table variant="simple" mb={6} border="1px solid #cdcdcd" mt={2}>
-        <Thead bgColor="aliceblue">
+          <Box w="100%" overflowX="auto" >
+         <Table
+            border="1px solid #ccc"
+            width="100%"
+            size={{ base: "sm", md: "md", lg:"lg" }}
+            variant="simple"
+          >
+
+        <Thead bgColor="#d9e5f8">
           <Tr>
             <Th>Particulars</Th>
             <Th>Current Balance</Th>
@@ -158,6 +174,7 @@ import { IoMdRemove } from "react-icons/io";
           ))}
         </Tbody>
       </Table>
+      </Box>
 
       {/* Total Amount */}
       <FormControl mb={4}>

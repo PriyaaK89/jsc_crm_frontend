@@ -1,69 +1,35 @@
-// EmpAttendanceLayout.js
 import React from "react";
 import { Flex, Box } from "@chakra-ui/react";
 import Sidebar from "../Sidebar";
-import DesktopTopbar from "../Topbar";
+import Topbar from "../Topbar";
 import MobileTopbar from "../MobileTopbar";
 import EmpAttendance from "../../../pages/Employee/EmpAttendance";
+import NotificationBtn from "../../NotificationBtn/NotificationBtn";
 
 const EmpAttendanceLayout = () => {
   return (
-    <Flex minH="100vh" bg="#f4f4f4">
-
-      {/* Fixed Sidebar */}
-      <Box
-        position="fixed"
-        top="0"
-        left="0"
-        w="280px"
-        display={{ base: "none", md: "block" }}
-      >
+<Box bg="#F3F3F3" minH="100vh" >
+      <Box display={{ base: "none", md: "block" }}>
         <Sidebar />
+
       </Box>
-
-      {/* Main Content Area */}
-      <Flex
-        direction="column"
-        flex="1"
-        ml={{ base: 0, md: "268px" }}
+      <Box display={{ base: "none", md: "block" }}>
+        <Topbar />
+      </Box>
+      <Box display={{ base: "block", md: "none" }}>
+        <MobileTopbar />
+      </Box>
+      <Box
+        ml={{ base: 5, md: "295px" }}
+        mr={{base:5, md:5}}
+        pt="5rem"
+        pb={6}
       >
-
-        {/* Desktop Topbar */}
-        <Box
-          display={{ base: "none", md: "block" }}
-          px={{ base: 4, md: 6 }}
-          pt={4}
-          mx={3}
-          flexShrink={0}
-        >
-          <DesktopTopbar />
-        </Box>
-
-        {/* Mobile Topbar */}
-        <Box
-          display={{ base: "block", md: "none" }}
-          px={4}
-          py={4}
-          flexShrink={0}
-        >
-          <MobileTopbar />
-        </Box>
-
-        {/* Page Content */}
-        <Box
-          flex="1"
-          px={{ base: 0, md: 6 }}
-          py={6}
-          mx={3}
-          overflow="visible"   mt="75px" // remove scroll
-        >
-            <EmpAttendance />
-          </Box>
-      
-
-      </Flex>
-    </Flex>
-  );
+        <NotificationBtn/>
+        <EmpAttendance />
+      </Box>
+    </Box>
+  )
 };
 
 export default EmpAttendanceLayout;

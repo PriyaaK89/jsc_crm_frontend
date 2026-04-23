@@ -1,4 +1,4 @@
-import {Box,VStack,Text,Button,Collapse,Icon, Image } from "@chakra-ui/react";
+import {Box,VStack,Text,Button,Collapse,Icon, Image, useToast } from "@chakra-ui/react";
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
@@ -15,9 +15,10 @@ import { MdCategory } from "react-icons/md";
 import { MdAddCircleOutline,MdAccountTree   } from "react-icons/md";
 import { FaFileInvoice } from "react-icons/fa";
 import { FiMapPin } from "react-icons/fi";
+import { FaProjectDiagram } from "react-icons/fa";
 import { FaClipboardList,FaCalculator,FaWallet,FaList,FaTrash,FaFileInvoiceDollar,FaBookOpen,FaMoneyCheckAlt} from "react-icons/fa";
   import { FaEdit,FaStore } from "react-icons/fa";
-  import { Receipt,CalendarCheck,BellRing,Handshake,BookText,Clock,FileSpreadsheet,BarChart3 } from "lucide-react";
+  import { Receipt,CalendarCheck,BellRing,Handshake,BookText,Clock,FileSpreadsheet,BarChart3, User2 } from "lucide-react";
   import { HiOutlinePrinter } from "react-icons/hi";
   import { Printer, Barcode } from "lucide-react";
 import {RiDashboardLine,RiUserAddLine,RiUser3Line,RiFileList3Line,RiBarChartLine,RiSettings3Line,} from "react-icons/ri";
@@ -29,15 +30,18 @@ import { BiPurchaseTagAlt } from "react-icons/bi";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { FaShoppingCart } from "react-icons/fa";
 import { FaReceipt } from "react-icons/fa";
+import { FaCity } from "react-icons/fa";
 import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg'
 import { useState, useContext, useEffect ,memo } from "react";
-import { NavLink, useLocation } from "react-router-dom";
-
-
+import { NavLink, useLocation,useNavigate} from "react-router-dom";
+import { FiLogOut } from "react-icons/fi";
+import { MdUploadFile } from "react-icons/md";
+import { FaKey } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa";
 
 const Newsidebar = () => {
   const location = useLocation();
-  const { auth } = useContext(AuthContext);
+  const { auth, logoutUser } = useContext(AuthContext);
   const role = auth?.user?.role;
 
   const [openMenu, setOpenMenu] = useState(null);
@@ -46,14 +50,39 @@ const Newsidebar = () => {
     setOpenMenu((prev) => (prev === menu ? null : menu));
   };
 
+  const toast = useToast();
+  const navigate = useNavigate();
+  
+  const logout = () =>{
+    logoutUser();
+
+   //  show toast
+    toast({
+      title: "Logged out",
+      description: "You are logged out successfully",
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+    });
+    // Redirect after delay
+     setTimeout(()=>{
+       navigate("/login")
+     },1500)
+ 
+  }
+
   const sidebarButtonStyle = {
     variant: "ghost",
     justifyContent: "flex-start",
     fontWeight: "700",
     color: "#333333",
+    transition: "all 0.3s ease", 
+
     _hover: {
       bg: "gray.100",
       borderRadius: "28px",
+      transform: "translateX(5px)"
+
     },
     height: "39px",
   };
@@ -83,8 +112,9 @@ const Newsidebar = () => {
         {label: "Employee List", path: "/hr-mgmt/view-employee-list",icon: RiUser3Line,},
         {label: "Create Job Role", path: "/hr-mgmt/roles/add-job-role",icon: HiUserGroup,},
         {label: "Create Department",path: "/hr-mgmt/dept/add-department",icon: MdAccountTree,},
+        {label: "Upload Employee Expenses", path: "/hr-mgmt/upload-employee-expenses", icon: MdUploadFile },
         {label:"Upload Salary Slip",path:'/hr-mgmt/upload-emp-salary',icon: RiFileList3Line,},
-       
+       {label:"Change Password", path:"/hr-mgmt/change-password", icon:FaKey}
 
       ],},
 
@@ -101,6 +131,15 @@ const Newsidebar = () => {
         {label:"Assign Target FA", path:"/Business-devt/assign-target-fa",icon:UserCheck ,}
       ],
     },
+    {   label: "Distributor",
+      key: "distributor",
+      icon: FaProjectDiagram,
+       children: [
+              {label:"ON Boarding Ledger",path:"/distributor/onboarding-ledger", icon:FaBookOpen},
+              {label: "Distributor List", path: "/distributor/distributorlist", icon: FaUsers },
+      ],
+      
+    },
     {
       label: "Accounting  Master",
       key: "accounting-master",
@@ -112,7 +151,7 @@ const Newsidebar = () => {
         {label:"Create Ledger",path:"/accounting-master/create-ledger", icon:FaFileInvoiceDollar},
         {label:"View Ledger",path:"/accounting-master/view-ledger", icon:FaFileInvoice},
         {label:"Delete Ledger",path:"/accounting-master/delete-ledger", icon:FaTrash},
-        {label:"Create Voucher",path:"/accounting-master/create-vouche", icon:FaMoneyCheckAlt},
+        {label:"Create Voucher",path:"/accounting-master/create-voucher", icon:FaMoneyCheckAlt},
         {label:"View Voucher", path:"/accounting-master/view-voucher", icon:FaFileInvoice },
         {label:"Delete Voucher",path:"/accounting-master/delete-voucher", icon:FaTrash},
         {label:"Edit Ledger Assignment",path:"/accounting-master/edit-ledger-assignment",  icon:FaEdit },
@@ -124,23 +163,19 @@ const Newsidebar = () => {
       icon: MdCorporateFare,
       children: [
         {label:"Create Company",path:"/company-master/create-company",icon:HiOfficeBuilding},
+        {label:"Company List",path:"/company-master/comapny-list",icon:FaCity},
          
 
       ]
       },
+      
       {
-        label:"Leads",key:"leads",icon:RiUser3Line,
-        children:[
-          {label:"New Lead",path:"/leads/new",icon:RiUserAddLine},
-          {label:"Lead List",path:"/leads/list",icon:RiFileList3Line}
-        ]
-      },{
           label:"Reports",key:"Reports",icon:RiBarChartLine,path:"/report",
           children:[
             {label:"Attendance Report",path:"/report/emp-attendance-report",icon:CalendarCheck},
             {label:"Scheduling & Alert Report",path:"/report/scheduling-alert-report",icon:BellRing },
             {label:"Party Transaction Report",path:"/report/party-transaction-report",icon:Handshake},
-            {label:"Get Employee Expense Report",path:"/report/get-emp-expense-report",icon:Receipt},
+            {label:" Employee Expense Report",path:"/report/get-emp-expense-report",icon:Receipt},
             {label:"Party Ledger Report",path:"/report/party-ledger-report",icon:BookText},
             {label:"Credit Days Reminder Report",path:"/report/credit-days-reminder-report",icon:Clock},
             {label:"Employee Balance Sheet",path:"/report/emp-balance-sheet",icon:FileSpreadsheet},
@@ -160,13 +195,14 @@ const Newsidebar = () => {
             {label:"Stock Transfer Report",path:"/report/stock-transfer-report",icon:MdSwapHoriz},
             {label:"Pending Collection Report",path:"/report/pending-collection-report",icon:MdPendingActions},
             {label:"Employee Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
+            {label:"Digio KYC Report",path:"/report/emp-kyc-report",icon:MdTrendingUp},
           ]
-      },{
+      },
+      {
         label:"Inventory Master",key:"inventory",icon:MdInventory,
         children:[
           {label:"Create Stock Group",path:"/inventory/create-stock-group",icon:MdAddBox},
           {label:"View Stock Group",path:"/inventory/view-stock-group",icon:MdViewList},
-          {label:"Delete Stock Group",path:"/inventory/delete-stock-group",icon:MdDelete},
           {label:"Create Stock Category",path:"/inventory/create-stock-category",icon:MdCategory},
           {label:"View Stock Category",path:"/inventory/view-stock-category",icon:MdAddCircleOutline},
          
@@ -198,13 +234,15 @@ useEffect(() => {
     "/hr-mgmt": "users",
     "/Business-dev": "business",
     "/Business-devt": "business",
+    "/distributor":"distributor",
     "/accounting-master": "accounting-master",
     "/company-master": "company-master",
     "/leads": "leads",
     "/report":"Reports",
     "/inventory": "inventory",
     "/order-vochor": "order-vochor",
-    "/print/mgmt": "print_mgmt"
+    "/print/mgmt": "print_mgmt",
+    
   };
 
   for (const route in menuMap) {
@@ -218,10 +256,17 @@ useEffect(() => {
 
   return (
     <Box
+
+  top="0"
+  left="0"
+
       w="280px"
       bg="#FFFFFF"
       color="#333333"
+     position="fixed"
+
      
+
   borderRight="1px solid #e5e7eb"
     borderColor="gray.200"
       overflowY="auto"
@@ -236,10 +281,10 @@ useEffect(() => {
     >
       {/* Logo */}
       <Box borderBottom="1px solid #e5e7eb" bg="#FFFF" position="fixed" zIndex="9999" w="100%" >
-        <Image src={logo} alt="Company Logo" h="74px" w="224px" pl='2.5rem'/>
-      </Box>
+        <Image src={logo} alt="Company Logo" h="74px" w="224px" pl='2.5rem'  loading="eager" fetchpriority="high"/>
+      </Box> 
 
-      <VStack spacing={2} align="stretch" mt="75px"  p={4}>
+      <VStack spacing={2} align="stretch" mt="75px" pt={4}>
         {menuSections.map((menu, index) => {
           const IconComponent = menu.icon;
 
@@ -247,6 +292,7 @@ useEffect(() => {
           if (!menu.children) {
             return (
               <Button
+              w="92%"
                 key={index}
                 leftIcon={<IconComponent />}
                 as={NavLink}
@@ -267,6 +313,7 @@ useEffect(() => {
           return (
             <Box key={index}>
               <Button
+              w="92%"
                 leftIcon={<IconComponent />}
                 rightIcon={
                   <Icon
@@ -290,6 +337,7 @@ useEffect(() => {
                     const ChildIcon = item.icon;
                     return (
                       <Button
+                      w="92%"
                         key={i}
                         leftIcon={<ChildIcon size={17}/>}
                         size="sm"
@@ -318,8 +366,9 @@ useEffect(() => {
 
        
 {/* ip request  */}
-        {(role === "ADMIN" || role === "SUPER_ADMIN") && (
+        {/* {(role === "ADMIN" || role === "SUPER_ADMIN") && (
           <Button
+          w="100%"
             leftIcon={<RiUserAddLine />}
             {...sidebarButtonStyle}
             as={NavLink}
@@ -328,8 +377,20 @@ useEffect(() => {
           >
             IP Request
           </Button>
-        )}
-      </VStack>
+        )} */}
+      <Button
+         rightIcon={<FiLogOut/>}
+         variant="ghost"
+         size="md"  
+         onClick={logout}
+         border="1px solid gray"
+         w="100%"
+         _hover={{bgColor:"#f4bfbf", border:"1px solid #e48f8f", color:"#971345"}}
+      >
+        Logout
+      </Button>
+          </VStack>
+
     </Box>
   );
 };

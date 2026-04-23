@@ -1,13 +1,16 @@
-import { Box, Button, HStack, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, VStack, Divider, Flex, useToast } from "@chakra-ui/react";
+import { Box, Button, HStack, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Text, VStack, Divider, Flex, useToast, Table, Thead, Tr, Th, Tbody, Td } from "@chakra-ui/react";
 import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
 import top_ele from "../../../assets/images/top_left_ele.png";
 import bottom_ele from "../../../assets/images/bottom_right_ele.png";
-import company_logo from "../../../assets/images/logo-removebg-preview.png";
+import top_ele1 from "../../../assets/images/pdf_logo__1.png";
+import bottom_ele1 from "../../../assets/images/pdf_logo__2.png";
+
+import company_logo from "../../../assets/images/jsc_logo_.png";
 import r_logo from "../../../assets/images/jamidara_logo.png";
 import { formatDate } from "../../../components/common/helper";
-import emailIcon from "../../../assets/images/email.png";
-import webIcon from "../../../assets/images/web.png";
+import emailIcon from "../../../assets/images/email_pdf.png";
+import webIcon from "../../../assets/images/web_pdf.png";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png"
 import axios from "axios";
 import API from "../../../services/api";
@@ -15,7 +18,29 @@ import { API_ENDPOINTS } from "../../../services/endpoints";
 
 const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
 
-  const toast = useToast()
+  const toast = useToast();
+  const salaryPolicy = [
+    {
+      target: "Below 60% Target Achievement",
+      payout: "Only the basic component of the salary will be payable",
+    },
+    {
+      target: "60% – 70% Target Achievement",
+      payout: "Basic salary plus 20% of applicable allowances will be payable",
+    },
+    {
+      target: "70% – 80% Target Achievement",
+      payout: "Basic salary plus 30% of applicable allowances will be payable",
+    },
+    {
+      target: "80% – 90% Target Achievement",
+      payout: "Basic salary plus 40% of applicable allowances will be payable",
+    },
+    {
+      target: "90% – 100% Target Achievement",
+      payout: "Full salary payout along with applicable allowances will be payable",
+    },
+  ];
 
   const handleDownloadPDF = async () => {
     try {
@@ -118,13 +143,13 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
             <Box className="pdf-page" >
               <Box className="pdf-inner">
 
-                <Image src={top_ele} position="absolute" top="0" left="0" width="175px" />
+                <Image src={top_ele1} position="absolute" top="0" right="0" width="250px" />
 
-                <Image src={bottom_ele} position="absolute" bottom="0" right="0" width="175px" />
+                <Image src={bottom_ele1} position="absolute" bottom="0" left="0" width="250px" />
 
                 {/* Header */}
                 <VStack spacing={0} align="center" ml="1rem">
-                  <HStack spacing={4} alignItems="baseline" mb="4px">
+                  <HStack spacing={4} alignItems="center" mb="4px">
                     <Image src={company_logo} width="250px" />
                     <Image src={r_logo} width="110px" />
                   </HStack>
@@ -134,7 +159,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
       </Text> */}
                   <Text mt="16px" fontSize="11px" color="green.800">North zone Office Add.-73 GANESH NAGAR-2, MURLIPURA JAIPUR, REG.OFFICE-105, NEMI CHAND MARKET, ALWAR</Text>
 
-                  <Divider borderColor="blue.600" borderWidth="2px" w="92%" mt="10px" />
+                  <Divider borderColor="green.600" borderWidth="2px" w="92%" mt="10px" />
                 </VStack>
 
                 <Box width="89%" marginLeft="3rem" className="letter-content">
@@ -187,6 +212,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                       <Text>• &nbsp; Copy of PAN / Aadhaar / DL / Voter ID.</Text>
                       <Text>• &nbsp; Bank passbook copy.</Text>
                     </Box>
+                     <Text> After checking the above documents, we will return the originals to you. </Text>
                   </VStack>
                 </Box>
               </Box>
@@ -198,34 +224,98 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
               <Box className="pdf-inner">
                 {/* Decorative Images */}
                 <Image
-                  src={top_ele}
+                  src={top_ele1}
                   position="absolute"
                   top="0"
-                  left="0"
-                  width="175px"
+                  right="0"
+                  width="250px"
                 />
 
                 <Image
-                  src={bottom_ele}
+                  src={bottom_ele1}
                   position="absolute"
                   bottom="0"
-                  right="0"
-                  width="175px"
+                  left="0"
+                  width="250px"
                 />
 
                 <VStack align="flex-start" spacing={4} width="89%" marginLeft="4rem" className="letter-content">
                   <Image src={r_logo} alt="Round Logo" className="watermark_img1" />
                   <Text textAlign="center" mt="2rem" mb="2rem" width="89%">CONTD:-2</Text>
-                  <Text> After checking the above documents, we will return the originals to you. </Text>
+                 
+
+                  <VStack align="flex-start" width="100%">
+                    <Text fontSize="14px" textAlign="justify"><Text fontWeight="600" fontSize="18px">Performance Linked Compensation Policy:</Text></Text>
+                    <Text>As part of the employee’s role in the organization, the employee will be assigned annual and monthly performance targets aligned with the company’s business objectives.</Text>
+                    <Text>The employee’s monthly salary payout will be linked to the percentage of the assigned monthly target achieved, and the payout will be determined as per the following performance criteria:</Text>
+                    {/* <TableContainer borderTop="1px solid black" borderRight="1px solid black" borderLeft="1px solid black"> */}
+                    <Table variant="simple" className="performancePayoutTable" border="1px solid black">
+                      <Thead>
+                        <Tr>
+                          <Th style={{ borderRight: '1px solid black', borderBottom: "1px solid black" }}>Target Achievement</Th>
+                          <Th style={{ borderBottom: "1px solid black" }}>Salary Payout</Th>
+                        </Tr>
+                      </Thead>
+
+                      <Tbody>
+                        {salaryPolicy.map((item, index) => (
+                          <Tr key={index}>
+                            <Td style={{ borderBottom: "1px solid black", borderRight: '1px solid black' }} whiteSpace="normal" wordBreak="break-word">{item.target}</Td>
+                            <Td style={{ borderBottom: "1px solid black" }} whiteSpace="normal" wordBreak="break-word">{item.payout}</Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                    {/* </TableContainer> */}
+                  </VStack>
+                 
+
+              
+                  {/* Footer */}
+               
+                </VStack>
+               
+              </Box>
+            </Box>
+
+             <Box className="pdf-page page-break">
+              <Box className="pdf-inner">
+                {/* Decorative Images */}
+                <Image
+                  src={top_ele1}
+                  position="absolute"
+                  top="0"
+                  right="0"
+                  width="250px"
+                />
+
+                <Image
+                  src={bottom_ele1}
+                  position="absolute"
+                  bottom="0"
+                  left="0"
+                  width="250px"
+                />
+
+                <VStack align="flex-start" spacing={4} width="89%" marginLeft="4rem" className="letter-content">
+                  <Image src={r_logo} alt="Round Logo" className="watermark_img1" />
+                  <Text textAlign="center" mt="2rem" mb="2rem" width="89%">CONTD:-3</Text>
+              
+
+                  <VStack align="flex-start" width="100%">
+                   
+
+                   
+                  </VStack>
                   <Text> We will issue a detailed appointment letter with the salary break up and other service's condition on your joining with us. Please send your acceptance to this offer by indicating your joining date on or before above mentioned date, failing which this offer will stand cancelled. </Text>
                   <Text> Welcome to <strong>Jamidara Seeds Corporation</strong> and look forward to your association & contribution to achieve the organizational objectives.</Text>
                   <Text fontWeight="bold" mt="10px"> Other Terms </Text>
 
                   <Text>
-                    As per company norms your salary package is Rs. {employee?.salary} per annum with incentives.
+                    As per company norms your salary package is Rs. <strong style={{textDecoration: "underline"}}>{employee?.salary}</strong> per annum with incentives.
                   </Text>
 
-                  <Text fontWeight="bold" textDecoration="underline">Incentive in case you achieve your targets i.e. your target is {formData?.yearly_collection}/ year. You will be responsible to add {formData?.first_new_channel_partner} new distributor in first month and {formData?.second_new_channel_partner} in second month and {formData?.third_new_channel_partner} in third month & {formData?.monthly_collection} individual plus team per month minimum collection deposit in company account from date of joining. </Text>
+                  <Text fontWeight="bold" textDecoration="underline">Incentive in case you achieve your targets i.e. your sale target is {formData?.yearly_collection}/ year. You will be responsible to add {formData?.first_new_channel_partner} new distributor in first month and {formData?.second_new_channel_partner} in second month and {formData?.third_new_channel_partner} in third month & minimum collection {formData?.monthly_collection} individual plus team per month deposit in company account from date of joining. </Text>
                   <Text textDecoration="underline" fontWeight="bold">{formData?.salary_norms}</Text>
                   <Text textDecoration="underline" fontWeight="bold">{formData?.salary_norms1}</Text>
 
@@ -236,21 +326,22 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                   <Text>{formData?.sales_target}</Text>
 
                   {/* Footer */}
-                  <Box mt="60px">
+                  <Box mt="50px">
                     <Text>Warm Regards,</Text>
-                    <Text mt="30px" fontWeight="bold">
+                     {formData.show_stamp && (
+                      <Image src={jsc_stamp} alt="Company Stamp" boxSize="84px" mt={4} />)}
+                    <Text mt="10px" fontWeight="bold">
                       HR Department,
                       <br />
                       Jamidara Seeds Corporation
                     </Text>
-                    {formData.show_stamp && (
-                      <Image src={jsc_stamp} alt="Company Stamp" boxSize="120px" mt={4} />)}
+                   
                   </Box>
                 </VStack>
-                <VStack alignItems="flex-start" mt="10rem" spacing="4px" width="76%" position='absolute' left='0px'>
-                  <Divider borderColor="blue.600" borderWidth="1px" w="100%" mt="1rem" />
-                  <Divider borderColor="blue.300" borderWidth="2px" w="90%" mt="0px" />
-                  <Flex ml="1rem" gap="1rem" mt="2px">
+                <VStack alignItems="flex-end" mt="10rem" spacing="4px" width="76%" position='absolute' right='0px'>
+                  <Divider borderColor="green.600" borderWidth="1px" w="100%" mt="1rem" />
+                  <Divider borderColor="green.300" borderWidth="2px" w="90%" mt="0px" />
+                  <Flex mr="1rem" gap="1rem" mt="2px">
                     <Flex alignItems="center" gap="8px" ><Image src={emailIcon} width="24px" mt="12px" /><Text fontSize="14px">jamidaraseedscorporation@gmail.com</Text></Flex>
                     <Flex alignItems="center" gap="8px"><Image src={webIcon} width="24px" mt="12px" /><Text fontSize="14px">www.jamidaraseeds.com</Text></Flex>
                   </Flex>

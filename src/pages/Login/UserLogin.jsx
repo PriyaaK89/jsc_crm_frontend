@@ -8,11 +8,13 @@ import {
   Button,
   Link,
   useToast,
-
+  InputGroup,
+  InputRightElement,
 } from "@chakra-ui/react";
 import { Eye, EyeOff } from "lucide-react";
 import login_img from "../../assets/crm_login.png";
-import API from "../../services/api"; // Axios instance
+import logoRemovebgPreview from "../../assets/images/logo-removebg-preview.png";
+import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -23,117 +25,215 @@ function UserLogin() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { loginUser } = useContext(AuthContext);
-  const toast = useToast()
+  const toast = useToast();
 
   const handleLogin = async () => {
     try {
       const response = await API.post(API_ENDPOINTS.LOGIN, { email, password });
-      console.log(response.data);
-      if(response?.status === 200){
+      if (response?.status === 200) {
         loginUser(response.data);
+        const profileRes = await API.get(API_ENDPOINTS.auth_my_profile);
+        console.log("Profile Data:", profileRes.data);
+
         toast({
-          description: 'You have Logged in Successfully.',
-          status: 'success',
+          description: "Logged in Successfully.",
+          status: "success",
+          duration: 2000,
           isClosable: true,
-          duration: 2000
-        })
-        navigate("/dashboard"); 
+        });
+        navigate("/dashboard");
       }
-      if(response?.status === 403){
-        toast({
-          description: response?.data?.message || "Your Id is deactivated, you can't login!",
-          status: 'warning',
-          isClosable: true,
-          duration: 2000
-        })
-      }
-
-
-    }  catch (error) {
-    console.log(error);
-
-    const status = error?.response?.status;
-    const message =
-      error?.response?.data?.message ||
-      "Something went wrong. Please try again.";
-
-    if (status === 403) {
+    } catch (error) {
       toast({
-        description: message || "Your ID is deactivated, you can't login!",
-        status: "warning",
-        isClosable: true,
-        duration: 2000,
-      });
-    } else {
-      toast({
-        description: message,
+        description: error?.response?.data?.message || "Login failed.",
         status: "error",
-        isClosable: true,
         duration: 2000,
+        isClosable: true,
       });
     }
-  }
   };
 
   return (
-    <Flex minH="100vh">
-      {/* LEFT SIDE IMAGE */}
-      <Box flex="1" bg="#ffffff" display={{ base: "none", md: "flex" }} alignItems="center" justifyContent="flex-start">
-        <Image src={login_img} alt="CRM Illustration" maxW="93%" />
+    <Flex
+      direction={{ base: "column", md: "row" }}
+      minH="100dvh"
+      w="100%"
+      bg="white"
+      overflow="hidden"
+    >
+      {/* --- MOBILE VIEW --- */}
+      <Box
+        display={{ base: "block", md: "none" }}
+        position="relative"
+        w="100vw"
+        h="100dvh"   //  FIXED
+        bg="gray.100"
+        overflow="hidden"
+      >
+        {/* Background Image */}
+        <Image src={login_img} w="100%" h="100%" objectFit="fit" />
+
+        {/* Title */}
+        <Text
+          position="absolute"
+          top="20px"
+          left="20px"
+          fontSize="sm"
+          color="white"
+          fontWeight="bold"
+          textShadow="1px 1px 2px black"
+        >
+          Welcome Back!
+        </Text>
+
+        {/* Overlay Form */}
+        <Box
+          position="absolute"
+          bottom="30px"   //  FIXED
+          left="50%"
+          transform="translateX(-50%)"
+          w="100%"
+          maxW="400px"
+          px={4}
+          zIndex={10}
+        >
+          <Box textAlign="center">
+            {/* Email */}
+            <Input
+              placeholder="Enter email"
+              size="sm"
+              h="40px"
+              bg="white"
+              borderRadius="6px"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              mb={4}
+            />
+
+            {/* Password */}
+            <InputGroup size="sm" mb={4}>
+              <Input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                h="40px"
+                bg="white"
+                borderRadius="6px"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <InputRightElement
+                h="40px"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </InputRightElement>
+            </InputGroup>
+
+            {/* Button */}
+            <Button
+              w="100%"
+              colorScheme="blue"
+              h="40px"
+              fontSize="sm"
+              onClick={handleLogin}
+              mb={3}
+            >
+              Login
+            </Button>
+
+            {/* Footer */}
+            <Text
+              color="white"
+              textShadow="1px 1px 2px black"
+              fontSize="10px"
+              fontWeight="bold"
+            >
+              © Jamidara Seeds Corporation
+            </Text>
+          </Box>
+        </Box>
       </Box>
 
-      {/* RIGHT SIDE LOGIN FORM */}
-      <Flex flex="1" alignItems="center" justifyContent="center" px={10}>
-        <Box w="100%" maxW="420px">
-          <Text fontSize="3xl" fontWeight="bold" color="blue.500" mb={6}>CRM</Text>
-          <Text fontSize="sm" color="blue.500" mb={1}>Welcome Back!</Text>
-          <Text fontSize="md" mb={6} color="gray.600">Sign in to continue to CRM.</Text>
+      {/* --- DESKTOP VIEW --- */}
+      <Flex display={{ base: "none", md: "flex" }} flex="1" bg="#ffff" align="center" justify="flex-start">
+        <Image src={login_img} alt="CRM Illustration" maxW="93%" />
+      </Flex>
 
-          {/* EMAIL */}
-          <Box mb={4}>
-            <Text fontSize="sm" mb={1}>E-mail</Text>
+      <Flex
+        display={{ base: "none", md: "flex" }}
+        flex="1"
+        align="center"
+        justify="center"
+        p={10}
+        bg="white" onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      handleLogin();
+    }
+  }}
+      >
+        <Box w="100%" maxW="400px">
+          <Image
+            src={logoRemovebgPreview}
+            maxW="150px"
+            mx="auto"
+            mb={10}
+          />
+
+          <Text fontSize="2xl" fontWeight="bold" color="blue.600" mb={1}>
+            Welcome Back!
+          </Text>
+          <Text fontSize="md" color="gray.500" mb={8}>
+            Sign in to continue to CRM.
+          </Text>
+
+          <Box textAlign="left">
+            <Text mb={1} fontWeight="500" fontSize="sm">
+              E-mail
+            </Text>
             <Input
+              mb={4}
               placeholder="Enter email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-          </Box>
 
-          {/* PASSWORD */}
-          <Box mb={2}>
-            <Flex justify="space-between">
-              <Text fontSize="sm">Password</Text>
-              <Link fontSize="sm" color="blue.500">Forgot password?</Link>
+            <Flex justify="space-between" mb={1}>
+              <Text fontWeight="500" fontSize="sm">
+                Password
+              </Text>
+              <Link fontSize="xs" color="blue.500">
+                Forgot password?
+              </Link>
             </Flex>
 
-            <Box position="relative" mt={1}>
+            <InputGroup mb={6}>
               <Input
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter password"
-                pr="40px"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <Box
-                position="absolute"
-                top="50%"
-                right="12px"
-                transform="translateY(-50%)"
-                cursor="pointer"
-                zIndex={1}
+              <InputRightElement
+                h="100%"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </Box>
-            </Box>
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </InputRightElement>
+            </InputGroup>
+
+            <Button
+              colorScheme="blue"
+              w="100%"
+              h="48px"
+              onClick={handleLogin} onKeyDown={(e) => {
+                if (e.key === "Enter") handleLogin();
+              }}
+            >
+              Login
+            </Button>
           </Box>
 
-          {/* LOGIN BUTTON */}
-          <Button mt={6} colorScheme="blue" w="100%" size="md" onClick={handleLogin}>
-            Login
-          </Button>
-
-          <Text mt={10} fontSize="xs" textAlign="center" color="gray.500">
+          <Text mt={12} fontSize="xs" color="gray.400" textAlign="center">
             © CRM. Crafted by Jamidara Seeds Corporation
           </Text>
         </Box>

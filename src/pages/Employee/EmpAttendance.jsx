@@ -1,4 +1,4 @@
- import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -7,7 +7,6 @@ import {
   SimpleGrid,
   FormControl,
   FormLabel,
-  VStack,
   Table,
   Thead,
   Tbody,
@@ -26,385 +25,485 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  HStack
+  HStack,
+  TableContainer,
 } from "@chakra-ui/react";
-
+import { Badge } from "@chakra-ui/react";
+import { useMemo } from "react";
+import { InputGroup, InputRightElement } from "@chakra-ui/react";
+import { RepeatIcon } from "@chakra-ui/icons";
+import { Link } from "react-router-dom";
+import { SearchIcon } from "@chakra-ui/icons";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import sort_icon from "../../assets/sort.svg";
 import EmployeeImageModal from "./EmployeeImageModal";
 import { GoHomeFill } from "react-icons/go";
+import CustomDatePicker from "../../components/common/CustomDatepicker";
+import useUsersapi from "../../Apis/GetUsersapi";
+import { FaRegEye } from "react-icons/fa";
+import EmpCard from "./EmpCard";
+import Pagination from "../../Pagination/Pagination";
 
 const EmpAttendance = () => {
-  const [users, setUsers] = useState([]);
+  const { users } = useUsersapi();
   const [attendance, setAttendance] = useState([]);
-  const [empRep, setEmpRep] = useState([]);
+  const memoizedData = useMemo(() => attendance, [attendance]);
   const [loading, setLoading] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(null);
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [filters, setFilters] = useState({
     userId: "",
     startDate: "",
     endDate: "",
-    month: "",
-    year: "",
   });
 
-  // Fetch Users
-  const fetchUsers = async () => {
-    try {
-      const res = await API.get(API_ENDPOINTS.GET_USERS);
-      if (res.status === 200) {
-        setUsers(res.data.data || []);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total_pages: 1,
+    total_Items: 0
+  });
 
-  useEffect(() => {
-    fetchUsers();
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
 
-    const today = new Date();
-    setFilters((prev) => ({
-      ...prev,
-      month: today.getMonth() + 1,
-      year: today.getFullYear(),
-    }));
-  }, []);
-  const formatToIST = (date, time) => {
-    if (!date || !time) return "-";
-
-    const onlyDate = date.split("T")[0]; // 2026-02-25
-    const utcDateTime = new Date(`${onlyDate}T${time}Z`); // treat as UTC
-
-    return utcDateTime.toLocaleTimeString("en-IN", {
-      timeZone: "Asia/Kolkata",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-    });
-  };
-  const handleImage = (id, date) => {
-    setSelectedUserId(id);
-    setSelectedDate(date);
-    onOpen();
-
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const headers = [ 
+                        "S.No",
+                        "Employee Id",
+                        "Name",
+                        "Date",
+                        "Login",
+                        "Logout",
+                        "Hours",
+                        "Status",
+                        "Attendance Unit",
+                        "Odometer Reading",
+                        "Day Over Odometer",
+                        "Total KM",
+                        "Visit location",
+                        "Work Type",
+                        "Leave Reason",
+                        "Vehicle  Type",
+                        "Action",
+                      ]
+  const widthMap = {
 
   }
+   
 
-  const handleViewAttendance = async () => {
-    if (!filters.userId) {
-      alert("Please select user");
-      return;
-    }
-
+  //  Fetch API
+  const fetchAttendance = async (page = 1) => {
     setLoading(true);
-    setAttendance([]);
-    setEmpRep([]);
 
     try {
-      const attendanceRes = await API.get(
-        `${API_ENDPOINTS.get_Emp_Attendance}/${filters.userId}`,
+      const res = await API.get(
+        API_ENDPOINTS.get_Emp_Attendance_filter_search,
         {
           params: {
-            start_date: filters.startDate,
-            end_date: filters.endDate,
+            page: pagination.page,
+            employee_id: filters.userId || null,
+            search: debouncedSearch.trim() !== "" ? debouncedSearch : null,
+            start_date: filters.startDate || null,
+            end_date: filters.endDate || null,
+            limit: pagination.limit,
+
           },
-        }
+        },
       );
 
-      if (attendanceRes.status === 200) {
-        setAttendance(attendanceRes.data.attendance || []);
-      }
+      if (res.status === 200) {
+        setAttendance(res.data.attendance || []);
 
-      const summaryRes = await API.get(
-        `${API_ENDPOINTS.get_Emp_Attendance_Summary}/${filters.userId}`,
-        {
-          params: {
-            month: filters.month,
-            year: filters.year,
-          },
-        }
-      );
-
-      if (summaryRes.status === 200 && summaryRes.data?.summary) {
-        setEmpRep([summaryRes.data.summary]);
+        setPagination({
+           page: page,
+          limit: res.data.pagination.limit,
+          total_pages: res.data.pagination.total_pages,
+          total_Items: res.data.pagination.total_records
+        });
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500); // 500ms delay
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    const date = new Date(dateString);
+    return () => clearTimeout(timer);
+  }, [search]);
 
-    return `${date.getFullYear()}-${String(
-      date.getMonth() + 1
-    ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  useEffect(() => {
+    fetchAttendance(1);
+  }, []);
+
+  useEffect(() => {
+    if (
+      filters.userId ||
+      filters.startDate ||
+      filters.endDate || 
+      debouncedSearch
+    ) {
+      fetchAttendance(1);
+    }
+  }, [debouncedSearch, filters.userId, filters.startDate, filters.endDate]);
+
+//    after user clear seacrh bar date and employee name  end dta every filter ----------
+  const query = useMemo(() => {
+  return {
+    search: debouncedSearch?.trim() || null,
+    userId: filters.userId || null,
+    startDate: filters.startDate || null,
+    endDate: filters.endDate || null,
+  };
+}, [debouncedSearch, filters]);
+
+useEffect(() => {
+  fetchAttendance(1);
+}, [query]);
+
+
+
+
+  const handleImage = (id, date) => {
+    setSelectedUserId(id);
+    setSelectedDate(date);
+    onOpen();
   };
 
-  const formatMinutesToHours = (minutes) => {
-    if (!minutes) return "0h 0m";
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    return `${hours}h ${remainingMinutes}m`;
+  // Utils
+
+  const formatDate = (date) => {
+    if (!date) return "-";
+    return new Date(date).toLocaleDateString("en-IN");
   };
 
-  const labelStyles = {
-    fontSize: "12px",
-    color: "#686868",
-    marginBottom: "3px",
+  const formatTime = (date, time) => {
+    if (!date || !time) return "-";
+    const d = new Date(`${date.split("T")[0]}T${time}Z`);
+    return d.toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
   };
+
+  const formatMinutes = (min) => {
+    if (!min) return "0h 0m";
+    return `${Math.floor(min / 60)}h ${min % 60}m`;
+  };
+
+  const formatStatus = (status) => {
+    if (!status) return "-";
+
+    switch (status) {
+      case "present":
+        return "Present";
+      case "day_over":
+        return "Day Over";
+      case "absent":
+        return "Absent";
+      case "leave":
+        return "On Leave";
+      default:
+        return status;
+    }
+  };
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "present":
+        return "green";
+      case "day_over":
+        return "orange";
+      case "absent":
+        return "red";
+      case "leave":
+        return "purple";
+      default:
+        return "gray";
+    }
+  };
+  // ---------------------------handle refresh toggle-----------------
+ const handleRefresh = () => {
+  const resetFilters = {
+    userId: "",
+    startDate: "",
+    endDate: "",
+  };
+
+  setSearch("");
+  setDebouncedSearch("");
+  setFilters(resetFilters);
+
+  setPagination((prev) => ({
+    ...prev,
+    page: 1,
+  }));
+
+  //  call with fresh values
+  fetchAttendance(1, resetFilters, "");
+};
+// ---------------------pafter pagination=----------------------
+  useEffect(() => {
+  fetchAttendance(pagination.page);
+}, [pagination.page, pagination.limit]);
 
   return (
     <>
-      <EmployeeImageModal isOpen={isOpen} onClose={onClose} selectedUserId={selectedUserId} selectedDate={selectedDate} />
-      <Box bg="white" p={6} borderRadius="md">
-         <HStack justifyContent="space-between" flexWrap="wrap">
-                  <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
-                    <BreadcrumbItem>
-                      <BreadcrumbLink href="/dashboard">
-                        <GoHomeFill color="#5570F1" />
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-        
-                    <BreadcrumbItem isCurrentPage>
-                      <BreadcrumbLink fontSize="13px">
-                      Attendace Report
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                  </Breadcrumb>
-                </HStack>
-        
-                <Text fontSize="lg" fontWeight="bold" mb={6}>
-                Attendace Report
-                </Text>
+      <EmployeeImageModal
+        isOpen={isOpen}
+        onClose={onClose}
+        selectedUserId={selectedUserId}
+        selectedDate={selectedDate}
+      />
 
-       
+      <Box
+        bg="white"
+        mt={{ base: 2, md: 5 }}
+        px={{ base: 3, md: 6 }}
+        py={{ base: 3, md: 4 }}
+        borderRadius="lg"
+        boxShadow="md"
+      >
+        {/* Header */}
+        <Breadcrumb mb={4}>
+          <BreadcrumbItem>
+            <BreadcrumbLink as={Link} to="/dashboard">
+              <GoHomeFill color="blue" />
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbLink isCurrentPage fontSize="13px">
+              Attendance Report
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </Breadcrumb>
 
-        <VStack spacing={6} align="stretch">
-          {/* Filters */}
-          <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4}>
-            <FormControl>
-              <FormLabel {...labelStyles}>User Name</FormLabel>
-              <Select
-                placeholder="Select User"
-                value={filters.userId}
-                onChange={(e) =>
-                  setFilters({ ...filters, userId: e.target.value })
-                }
-              >
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
+        <EmpCard />
 
-            <FormControl>
-              <FormLabel {...labelStyles}>Start Date</FormLabel>
+        <Heading size="md" mb={6}>
+          Attendance Report
+        </Heading>
+
+        {/*  Filters */}
+        <SimpleGrid columns={{ base: 1, md: 5 }} spacing={4} mb={6}>
+          <FormControl>
+            <FormLabel>Search Employee</FormLabel>
+
+            <InputGroup>
               <Input
-                type="date"
-                value={filters.startDate}
-                onChange={(e) =>
-                  setFilters({ ...filters, startDate: e.target.value })
-                }
+                placeholder="Search Employee..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                pr="40px" // space for icon
               />
-            </FormControl>
 
-            <FormControl>
-              <FormLabel {...labelStyles}>End Date</FormLabel>
-              <Input
-                type="date"
-                value={filters.endDate}
-                onChange={(e) =>
-                  setFilters({ ...filters, endDate: e.target.value })
-                }
-              />
-            </FormControl>
+              <InputRightElement pointerEvents="none">
+                <SearchIcon color="gray.400" />
+              </InputRightElement>
+            </InputGroup>
+          </FormControl>
 
-            <Button
-              colorScheme="blue"
-              alignSelf="end"
-              isLoading={loading}
-              onClick={handleViewAttendance}
+          <FormControl>
+            <FormLabel>Employee List</FormLabel>
+            <Select
+              placeholder="Select Employee"
+              value={filters.userId}
+              onChange={(e) =>
+                setFilters({ ...filters, userId: e.target.value })
+              }
             >
-              View
-            </Button>
-          </SimpleGrid>
-                  </VStack>
-
-
-          {/* Summary Cards */}
-          {empRep.length > 0 && (
-            <SimpleGrid columns={{ base: 1, md: 5 }} spacing={6} mt={5} mb={5} >
-              {empRep.map((emp, index) => (
-                <Fragment key={index}>
-                  <Card border="1px solid" borderColor="gray.300">
-                    <CardHeader bg="green.100">
-                      <Heading size="sm" textAlign="center" lineHeight="1.4">
-                        Full Days
-                      </Heading>
-                    </CardHeader>
-                    <CardBody>
-                      <Text textAlign="center">{emp.full_days}</Text>
-                    </CardBody>
-                  </Card>
-
-                  <Card   border="1px solid" borderColor="gray.300">
-                    <CardHeader bg="yellow.100">
-                      <Heading size="sm" textAlign="center" lineHeight="1.4">
-                        Half Days
-                      </Heading>
-                    </CardHeader>
-                    <CardBody>
-                      <Text textAlign="center">{emp.half_days}</Text>
-                    </CardBody>
-                  </Card>
-
-                  <Card  border="1px solid" borderColor="gray.300">
-                    <CardHeader bg="red.100">
-                      <Heading size="sm" textAlign="center" lineHeight="1.4">
-                        Absent Days
-                      </Heading>
-                    </CardHeader>
-                    <CardBody>
-                      <Text textAlign="center">{emp.absent_days}</Text>
-                    </CardBody>
-                  </Card>
-
-                  <Card  border="1px solid" borderColor="gray.300">
-                    <CardHeader bg="blue.100">
-                      <Heading size="sm" textAlign="center" lineHeight="1.4">
-                        Leave Days
-                      </Heading>
-                    </CardHeader>
-                    <CardBody>
-                      <Text textAlign="center">{emp.leave_days}</Text>
-                    </CardBody>
-                  </Card>
-
-                  <Card  border="1px solid" borderColor="gray.300">
-                    <CardHeader bg="purple.100">
-                      <Heading size="sm" textAlign="center" lineHeight="1.4">
-                        Total Work Days
-                      </Heading>
-                    </CardHeader>
-                    <CardBody>
-                      <Text textAlign="center">
-                        {emp.total_working_days}
-                      </Text>
-                    </CardBody>
-                  </Card>
-                </Fragment>
+              {users.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.name}
+                </option>
               ))}
-            </SimpleGrid>
-          )}
+            </Select>
+          </FormControl>
 
-          {/* Attendance Table */}
-          
-          <Box 
-            bg="white"
-            borderRadius="md"
-            overflowX="auto"
-          
-            
-          >
-            {loading ? (
-              <Flex justify="center" align="center" py={10}>
-                <Spinner size="lg" />
-              </Flex>
-            ) : attendance.length > 0 ? (
-              <Table 
-              border="1px solid" borderColor="gray.300"
-               borderRadius="md"
-                variant="striped"
-                colorScheme="gray"
-                size="sm"
-                width="2650px"
-                className="productsTable"
+          <FormControl>
+            <CustomDatePicker
+              label="Start Date"
+              value={filters.startDate}
+              onChange={(d) => setFilters((p) => ({ ...p, startDate: d }))}
+            />
+          </FormControl>
+
+          <FormControl>
+            <CustomDatePicker
+              label="End Date"
+              value={filters.endDate}
+              onChange={(d) => setFilters((p) => ({ ...p, endDate: d }))}
+            />
+          </FormControl>
+          <FormControl mt={5}>
+            <Button onClick={handleRefresh} leftIcon={<RepeatIcon />}>
+              Reset
+            </Button>
+          </FormControl>
+        </SimpleGrid>
+
+        {/*  Table */}
+        <Box
+          bg="white"
+          borderRadius="md"
+          boxShadow="sm"
+          border="1px solid #e5e5e5"
+          width="100%"
+        >
+          {loading ? (
+            <Flex justify="center" py={10}>
+              <Spinner />
+            </Flex>
+          ) : (
+              <Box
+                overflowX="auto"
+                whiteSpace="nowrap"
+                sx={{
+                  "&::-webkit-scrollbar": { width: "8px", height: "8px" },
+                  "&::-webkit-scrollbar-thumb": {
+                    width: "8px",
+                    backgroundColor: "#7A7A7A",
+                    borderRadius: "4px",
+                  },
+                  "&::-webkit-scrollbar-track": {
+                    background: "#E8E8E8",
+                    borderRadius: "4px",
+                  },
+                }}
               >
-                <Thead>
-                  <Tr>
-                    {[
-                      "Employee Id",
-                      "Employee Name",
-                      "Attendance Date",
-                      "Login Time",
-                      "Logout Time",
-                      "Working Hours",
-                      "Status",
-                      "Action",
-                    ].map((header, index) => (
-                      <Th
-                        key={index}
-                        fontSize="14px"
-                        fontWeight="500"
-                        color="#2C2D33"
-                        textTransform="capitalize"
-                        borderColor="#D9D9D9"
-                      >
-                        <Flex align="center" gap="7px">
-                          <Text
-                            fontSize="14px"
-                            color="#2C2D33"
-                            fontWeight="400"
-                            fontFamily="InterRegular"
-                          >
-                            {header}
-                          </Text>
-                          <Img src={sort_icon} alt="sort_icon" />
-                        </Flex>
-                      </Th>
-                    ))}
-                  </Tr>
-                </Thead>
-
-                <Tbody>
-                  {attendance.map((item, index) => (
-                    <Tr key={index}>
-                      <Td fontWeight="medium">
-                        CRM - {item.employee_id}
-                      </Td>
-                      <Td>{item.employee_name}</Td>
-                      <Td>{formatDate(item.attendance_date)}</Td>
-                      <Td>{formatToIST(item.attendance_date, item.check_in_time)}</Td>
-                      <Td>{formatToIST(item.attendance_date, item.check_out_time)}</Td>
-                      <Td>
-                        {formatMinutesToHours(item.working_minutes)}
-                      </Td>
-                      <Td>{item.status}</Td>
-                      <Td>
-                        <Button
-                          size="sm"
-                          colorScheme="blue"
-                          onClick={() => handleImage(item.employee_id, item.attendance_date)
-                          }
+                <Table
+                  variant="striped"
+                  colorScheme="gray"
+                  size="sm"
+                  minW="2000px"
+                  className="productsTable"
+                >
+                  <Thead>
+                    <Tr>
+                        {
+                     headers.map((header, index) => (
+                        <Th key={index}
+                          fontSize="14px"
+                          fontWeight="500"
+                          color="#2C2D33"
+                          textTransform="capitalize"
+                          width={widthMap[header]}
                         >
-                          View
-                        </Button>
-                      </Td>
+                          <Flex align="center" gap="7px">
+                            <Text
+                            fontSize="14px"
+                            >
+                              {header}
+                            </Text>
+
+                            <Img src={sort_icon} />
+                          </Flex>
+                        </Th>
+     ))}
                     </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            ) : ""
-            }
-          </Box>
+                     
+                  </Thead>
+
+                  <Tbody>
+                    {attendance.length === 0 ? (
+                      <Tr>
+                        <Td colSpan={10} textAlign="center" py={6}>
+                          <Text fontSize="md" color="gray.500">
+                            No Data Found
+                          </Text>
+                        </Td>
+                      </Tr>
+                    ) : (
+                      memoizedData.map((item, index) => (
+                        <Tr key={index}>
+                    <Td>{(pagination.page - 1) * pagination.limit + index + 1}</Td>
+                          <Td>CRM-{item.employee_id}</Td>
+                          <Td>{item.employee_name}</Td>
+                          <Td>{formatDate(item.attendance_date)}</Td>
+                          <Td>
+                            {formatTime(
+                              item.attendance_date,
+                              item.check_in_time,
+                            )}
+                          </Td>
+                          <Td>
+                            {formatTime(
+                              item.attendance_date,
+                              item.check_out_time,
+                            )}
+                          </Td>
+                          <Td>{formatMinutes(item.working_minutes)}</Td>
+                          <Td>
+                            <Badge
+                              colorScheme={getStatusColor(item.status)}
+                              variant="subtle"
+                              px={2}
+                              py={1}
+                              borderRadius="md"
+                            >
+                              {formatStatus(item.status)}
+                            </Badge>
+                          </Td>
+                          <Td>{item.attendance_unit}</Td>
+                          <Td>{item.odometer_reading || 0}</Td>
+                          <Td>{item.day_over_odometer_reading || 0}</Td>
+<Td>
+  {item?.day_over_odometer_reading != null && item?.odometer_reading != null
+    ? item.day_over_odometer_reading - item.odometer_reading
+    : "-"}
+</Td>
+                          <Td>{item.visit_location || "-"}</Td>
+                          <Td>{item.work_type || "-"}</Td>
+                          <Td>{item.leave_reason || "-"}</Td>
+                          <Td>{item.vehicle_type || "-"}</Td>
+
+                          <Td>
+                            <Button
+                              size="md"
+                              color="purple.600"
+                              bg="white"
+                              border="1px solid blue"
+                              onClick={() =>
+                                handleImage(
+                                  item.employee_id,
+                                  item.attendance_date,
+                                )
+                              }
+                            >
+                              <FaRegEye />
+                            </Button>
+                          </Td>
+                        </Tr>
+                      ))
+                    )}
+                  </Tbody>
+                </Table>
+              </Box>
+          )}
+        </Box>
+
+        {/*  Pagination */}
+         <Pagination
+  page={pagination.page}
+  setPage={(newPage) =>
+    setPagination((prev) => ({ ...prev, page: newPage }))
+  }
+  limit={pagination.limit}
+  setLimit={(newLimit) =>
+    setPagination((prev) => ({ ...prev, limit: newLimit }))
+  }
+  totalItems={pagination.total_Items}
+  totalPages={pagination.total_pages}
+/>
       </Box>
     </>
-
   );
 };
 

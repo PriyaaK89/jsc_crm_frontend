@@ -8,6 +8,7 @@ import JobRoleLayout from "../components/layout/AddJobRoleLayout";
 import EmployeeListLayout from "../components/layout/EmployeeList";
 import UploadEmpDocumentsLayout from "../components/layout/UploadEmpDocumentsLayout";
 import EditEmployeePage from "../components/layout/EditEmployee";
+import ViewEmpDetailsLayout from '../components/layout/ViewEmpDetailsLayout'
 import OfferLetterLayout from "../components/layout/GenerateLetters/OfferLetterLayout";
 import JoiningLetterLayout from "../components/layout/GenerateLetters/JoiningLetterLayout";
 import AgreementLetterLayout from '../components/layout/GenerateLetters/AgreementLetterLayout';
@@ -18,12 +19,14 @@ import AssignTargetRSMLayout from "../components/layout/AssignTargetRSMLayout";
 import AssignTargetTSMLayout from "../components/layout/AssignTargetTSMLayout";
 import AssignTargetSMLayout from "../components/layout/AssignTargetSMLayout";
 import AssignTargetFALayout from "../components/layout/AssignTargetFALayout";
-import CreateCompanyLayout from "../components/layout/CreateCompanyLayout";
+import CreateCompanyLayout from "../components/layout/CompanyMaster/CreateCompanyLayout";
+import CompanyListLayout from '../components/layout/CompanyMaster/CompanyListLayout'
 import ApproveIpUserListLayout from "../components/layout/ApproveIpUserListLayout";
 import CreateGroupLayout from '../components/layout/AccountingMasterLayout/CreateGroupLayout';
 import ViewGroupLayout from '../components/layout/AccountingMasterLayout/ViewGroupLayout';
 import DeleteGroupLayout from '../components/layout/AccountingMasterLayout/DeleteGroupLayout';
 import CreateLedgerLayout from '../components/layout/AccountingMasterLayout/CreateLedgerLayout';
+import ONBordingdistributoragreement from '../components/layout/AccountingMasterLayout/ONBordingdistributoragreement';
 import ViewLedgerLayout from "../components/layout/AccountingMasterLayout/ViewLedgerLayout";
 import DeleteLedgerLayout from '../components/layout/AccountingMasterLayout/DeleteLedgerLayout';
 import CreateVoucherLayout from '../components/layout/AccountingMasterLayout/CreateVoucherLayout';
@@ -33,7 +36,6 @@ import EditLedgerAssignmentLayout from '../components/layout/AccountingMasterLay
 import RetailerAssignmentLayout from '../components/layout/AccountingMasterLayout/RetailerAssignmentLayout';
 import CreateStockGroupLayout from "../components/layout/CreateStockGroupLayout";
 import ViewStockGroupLayout from "../components/layout/ViewStockGroupLayout";
-import DeleteStockGroupLayout from "../components/layout/DeleteStockGroupLayout";
 import CreateStockCategoryLayout from "../components/layout/CreateStockCategoryLayout";
 import ViewStockCategoryLayout from "../components/layout/ViewStockCategoryLayout";
 import UploadSalarySlipLayout from "../components/layout/UploadSalarySlipLayout";
@@ -47,9 +49,9 @@ import CreditLayout from "../components/layout/CreditLayout";
 import DebitLayout from "../components/layout/DebitLayout"; 
 import ESignSuccess from "../components/redirection-pages/esign-success";
 import ESignError from "../components/redirection-pages/esign-error";
-
-
 import EmpAttendanceLayout from "../components/layout/Reports/EmpAttendaneLayout";
+import ViewDistributorLayout from "../components/layout/Reports/ViewDistributorLayout";
+
 import SchedulingAlertsReportLayout from "../components/layout/Reports/Scheduling&AlertReportLayout";
 import PartyTransactionReportLayout from '../components/layout/Reports/PartyTransactionReportLayout';
 import GetEmployeeExpenseReportLayout from '../components/layout/Reports/GetEmployeeExpenseReportLayout';
@@ -72,7 +74,14 @@ import StockTransferReportLayout from "../components/layout/Reports/StockTransfe
 import PendingCollectionReportLayout from "../components/layout/Reports/PendingCollectionReportLayout";
 import EmpPerformanceReportLayout from "../components/layout/Reports/EmpPerformanceReportLayout";
 import TrackEmpLayout from "../components/layout/Reports/TrackEmpLayout";
-
+import UploadEmployeeExpenses from  "../components/layout/UploadEmployeeExpensesLayout";
+import Distributors from "../components/layout/Distributors";
+import EditDistributorLayout from "../components/layout/EditDistributeLayout"
+import KYCReport from "../components/layout/Reports/KYCReport";
+import EditComapnyLayout from "../components/layout/CompanyMaster/EditComapnyLayout";
+import ViewComapnyLayout from "../components/layout/CompanyMaster/ViewComapnyLayout";
+import EditStockGroupLayout from '../components/layout/EditStockGroupLayout';
+import EditStockCategaryLayout from "../components/layout/EditStockCategaryLayout";
 
 function App() {
   return (
@@ -82,7 +91,7 @@ function App() {
         <Route path="/login" element={<UserLogin />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/hr-mgmt/add-employee" element={<AddEmpLayout />} />
-        <Route path="/change-password" element={<ChangePasswordLayout />} />
+        <Route path="/hr-mgmt/change-password" element={<ChangePasswordLayout />} />
         <Route path="/hr-mgmt/dept/add-department" element={<DepartmentLayout />} />
         <Route path="/hr-mgmt/roles/add-job-role" element={<JobRoleLayout />} />
         <Route
@@ -99,6 +108,7 @@ function App() {
           path="/edit-employee-details/:empId"
           element={<EditEmployeePage />}
         />
+        <Route path="/view-employee-details/:id" element={<ViewEmpDetailsLayout/>}/>
         <Route
           path="/generate-offer-letter/:id"
           element={<OfferLetterLayout />}
@@ -108,6 +118,7 @@ function App() {
           path="/generate-joining-letter/:id"
           element={<JoiningLetterLayout />}
         />
+      
         <Route path="/generate-agreement/:id" element={<AgreementLetterLayout/>}/>
         <Route path="/dashboard/profile/:empId" element={<ProfileLayout />} />
         <Route path="/approve-ip-user-list" element={<ApproveIpUserListLayout />}/>
@@ -116,6 +127,10 @@ function App() {
         <Route path='/accounting-master/view-group' element={<ViewGroupLayout/>}/>
         <Route path='/accounting-master/delete-group'   element={<DeleteGroupLayout/>}/>
         <Route path='/accounting-master/create-ledger' element={<CreateLedgerLayout/>}/>
+        <Route path='/distributor/distributorlist' element={<Distributors/>}/>
+        <Route path='/distributor/distributorlist/edit-distributor/:id' element={<EditDistributorLayout/>}/>
+        <Route path='/distributor/distributorlist/view-distributor/:id' element={<ViewDistributorLayout/>}/>
+        <Route path='/distributor/onboarding-ledger' element={<ONBordingdistributoragreement/>}/>
         <Route path='/accounting-master/view-ledger' element={<ViewLedgerLayout/>}/>
         <Route path='/accounting-master/delete-ledger' element={<DeleteLedgerLayout/>}/>
         <Route path='/accounting-master/create-voucher' element={<CreateVoucherLayout/>}/>
@@ -152,10 +167,13 @@ function App() {
           element={<AssignTargetFALayout />}
         />
         <Route
-          path="company-master/create-company"
+          path="/company-master/create-company"
           element={<CreateCompanyLayout />}
         />
-   
+        <Route path="/company-master/comapny-list" element={<CompanyListLayout/>}
+        />
+        <Route path="/company-master/comapny-list/edit/:id" element={<EditComapnyLayout/>}/>
+     <Route path="/company-master/comapny-list/view_comapny/:id" element={<ViewComapnyLayout/>}/>
 
         <Route
           path="/approve-ip-user-list"
@@ -171,13 +189,14 @@ function App() {
           element={<ViewStockGroupLayout />}
         />
         <Route
-          path="/inventory/delete-stock-group"
-          element={<DeleteStockGroupLayout />}
+          path="/inventory/view-stock-group/edit/:id"
+          element={<EditStockGroupLayout />}
         />
         <Route
           path="/inventory/create-stock-category"
           element={<CreateStockCategoryLayout />}
         />
+        <Route path="/inventory/view-stock-category/edit/:id" element={<EditStockCategaryLayout/>}/>
         <Route
           path="/inventory/view-stock-category"
           element={<ViewStockCategoryLayout />}
@@ -191,8 +210,6 @@ function App() {
         <Route path="/esign-success" element={<ESignSuccess/>} />
         <Route path="/esign-error" element={<ESignError />} />  
         
-
-
         {/* reports */}
          <Route path="/report/emp-attendance-report" element={<EmpAttendanceLayout/>}/>
          <Route path="/report/scheduling-alert-report" element={<SchedulingAlertsReportLayout/>}/>
@@ -217,7 +234,9 @@ function App() {
          <Route path="/report/pending-collection-report" element={<PendingCollectionReportLayout/>}/>
          <Route path="/report/emp-performance-report" element={<EmpPerformanceReportLayout/>}/>
            <Route path="/report/track-employee" element={<TrackEmpLayout />} />
-      
+           <Route path="/hr-mgmt/upload-employee-expenses" element={<UploadEmployeeExpenses/>} />
+           <Route path="/report/emp-kyc-report" element={<KYCReport/>}/>
+
       </Routes>
     </Router>
   );

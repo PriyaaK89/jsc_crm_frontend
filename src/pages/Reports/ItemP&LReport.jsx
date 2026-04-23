@@ -18,6 +18,7 @@ import {
 import { GoHomeFill } from "react-icons/go";
 import { useState,useEffect} from 'react';
 import axios from "axios";
+import { Link } from 'react-router-dom';
 
 
 function ItemPLReport() {
@@ -62,20 +63,22 @@ function ItemPLReport() {
       const statewise =["state-wise"].includes(SelectGroup);
       const districwise=["distric-wise"].includes(SelectGroup);
     return (
-     <Box
-           
-             p={6}
-           >
+     
+          <Box
+           bg="white"
+           mt={{base:2, md:5}}
+           px={{base:3, md:6}}
+           py={{base:3, md:4}}
+          borderRadius="lg"
+          boxShadow="md"
+       >
               <Breadcrumb mb={6} fontSize="sm">
                             <BreadcrumbItem>
-                                          <BreadcrumbLink href="/dashboard">
+                                          <BreadcrumbLink as={Link} to="/dashboard">
                                             <GoHomeFill color="#5570F1"  size={20}/>
                                           </BreadcrumbLink>
                                         </BreadcrumbItem>
-                     
-                             <BreadcrumbItem>
-                               <BreadcrumbLink href="#">Reports</BreadcrumbLink>
-                             </BreadcrumbItem>
+               
                      
                              <BreadcrumbItem isCurrentPage>
                                <BreadcrumbLink>  Item  Profit Loss Report</BreadcrumbLink>
@@ -123,21 +126,15 @@ function ItemPLReport() {
                </FormControl>
        )}
   
-   {statewise &&(
-  <FormControl>
-                 <FormLabel>Select state</FormLabel>
-                 <Select placeholder="--Please Select--" />
-               </FormControl>
-       )}
   
-   {districwise &&(
+   {(statewise ||districwise) &&(
    
       
   <FormControl mb={4}>
   <FormLabel>State</FormLabel>
 
   <Select
-    placeholder="Select State"
+    placeholder="--Select State--"
     value={selectedState}
     onChange={(e) => handleStateChange(e.target.value)}
   >
@@ -158,7 +155,7 @@ function ItemPLReport() {
           <FormControl>
   <FormLabel>District</FormLabel>
 
-  <Select placeholder="Select District">
+  <Select placeholder="--Select District--">
     {districts.map((d, i) => (
       <option key={i} value={d}>
         {d}

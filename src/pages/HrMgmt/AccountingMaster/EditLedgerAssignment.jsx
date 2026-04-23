@@ -1,22 +1,33 @@
 import React from 'react'
 import {Box,FormControl,FormLabel,Select,Button,Flex,HStack,Breadcrumb,BreadcrumbItem,Heading,BreadcrumbLink, SimpleGrid} from "@chakra-ui/react";
-import { GoHomeFill } from "react-icons/go";  
+import { GoHomeFill } from "react-icons/go"; 
+import useUsersapi from '../../../Apis/GetUsersapi';
+import {Link} from "react-router-dom";
+
 function EditLedgerAssignment() {
+  const {users}=useUsersapi();
+  
   return (
     <>
-    <Box >
+    <Box
+         bg="white"
+         mt={{base:2, md:5}}
+         px={{base:3, md:6}}
+         py={{base:3, md:4}}
+        borderRadius="lg"
+        boxShadow="md">
        <HStack justifyContent='space-between'>
                             <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                               <BreadcrumbItem>
-                                <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                                <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
                               </BreadcrumbItem>
                   
                               <BreadcrumbItem>
-                                <BreadcrumbLink href='/accounting-master/edit-ledger-assignment' color='#8B8D97' fontSize='13px'>Assign Ledger</BreadcrumbLink>
+                                <BreadcrumbLink color='#8B8D97' fontSize='13px'>Assign Ledger</BreadcrumbLink>
                               </BreadcrumbItem>
                             </Breadcrumb>
                         </HStack>
-                         < Heading size="lg" textAlign="center" mb={6}>
+                         < Heading size="md" textAlign="center" mb={6}>
                                                                  Assign Ledger 
                                                                   </Heading>
                         <SimpleGrid columns={{base:1,md:2}} spacing={5}>
@@ -29,6 +40,11 @@ function EditLedgerAssignment() {
             <FormControl mt={5}>
                      <FormLabel>Employee under</FormLabel>
                    <Select fontSize="13px" placeholder='Select employee under' >
+                    {users?.map((emp)=>(
+                      <option key={emp.id} value={emp.id}>
+                        {emp.name}
+                      </option>
+                    ))}
             </Select>
            </FormControl>
            </SimpleGrid>

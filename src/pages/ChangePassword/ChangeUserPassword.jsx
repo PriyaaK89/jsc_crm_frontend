@@ -11,19 +11,29 @@ import {
   useToast,
   Select, InputGroup,
   InputRightElement,
-  IconButton
+  IconButton,
+  Breadcrumb,
+  BreadcrumbLink,
+  BreadcrumbItem,
+  HStack
+  
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import useUserapi    from '../../Apis/GetUsersapi'
+import { GoHomeFill } from "react-icons/go";
+import {Link} from "react-router-dom";
+
 
 
 const ChangePassword = () => {
+  const {users,fetchUsers}=useUserapi();
 
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 const [selectedUserId, setSelectedUserId] = useState("");
-const [users, setUsers] = useState([]);
+// const [users, setUsers] = useState([]);
 
   const location = useLocation();
   const toast = useToast();
@@ -33,25 +43,25 @@ const [users, setUsers] = useState([]);
   const mail = location?.state?.email;
    
 // if gmail doesnot recive form probes  
- const fetchEmployeeList = async () => {
-    try {
-      const response = await API.get(API_ENDPOINTS.GET_USERS);
-      if (response?.status === 200) {
-        setUsers(response.data.data || []);
-      }
-    } catch (error) {
-      toast({
-        title: "Failed to load employees",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
+//  const fetchEmployeeList = async () => {
+//     try {
+//       const response = await API.get(API_ENDPOINTS.GET_USERS);
+//       if (response?.status === 200) {
+//         setUsers(response.data.data || []);
+//       }
+//     } catch (error) {
+//       toast({
+//         title: "Failed to load employees",
+//         status: "error",
+//         duration: 3000,
+//         isClosable: true,
+//       });
+//     }
+//   };
 
   useEffect(() => {
   if (!mail) {
-   fetchEmployeeList();
+   fetchUsers();
   }
 }, [mail]);
 
@@ -119,28 +129,51 @@ const [users, setUsers] = useState([]);
 
 
   return (
-    <Box
-
-      display="flex"
-      alignItems="flex-start"
-      justifyContent="center" >
+    
       <Box
         bg="white"
-        p={8}
-        rounded="md"
-        w="100%"
+     mt={{base:2, md:5}}
+     px={{base:3, md:6}}
+     py={{base:3, md:4}}
+    borderRadius="lg"
+    boxShadow="md"
       >
+        <HStack justifyContent="space-between" flexWrap="wrap" spacing="space-between">
+                <Breadcrumb  color="#8B8D97" padding="10px 0px 1rem 0px">
+        
+                  <BreadcrumbItem>
+                    <BreadcrumbLink as={Link} to="/dashboard">
+                      <GoHomeFill color="#5570F1" />
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink as={Link} fontSize="13px" to="/hr-mgmt/view-employee-list">
+                      Employee List
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+        
+                  
+        
+                  <BreadcrumbItem isCurrentPage>
+                    <BreadcrumbLink fontSize="13px">
+                      Change Password
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+        
+                </Breadcrumb>
+              </HStack>
         <Heading size="md" textAlign="center" mb={6}  lineHeight="1.4">
           Change Password
         </Heading>
 
-       <SimpleGrid columns={{ base: 1, md: 1 }} spacing={5}>
+       <SimpleGrid columns={{base:1 , md:2}} spacing={5}>
           {mail ? (
   <FormControl>
     <FormLabel>Email</FormLabel>
     <Input
       type="email"
       value={mail}
+      
       isReadOnly
       bg="gray.50"
     />
@@ -149,11 +182,13 @@ const [users, setUsers] = useState([]);
   <FormControl isRequired>
     <FormLabel>Select User</FormLabel>
     <Select
+    w="100%"
+      size="sm"
       placeholder="Select User"
       value={selectedUserId}
       onChange={(e) => setSelectedUserId(e.target.value)}
     >
-      {users.map((user) => (
+      {users?.map((user) => (
         <option key={user.id} value={user.id}>
           {user.name}
         </option>
@@ -204,7 +239,6 @@ const [users, setUsers] = useState([]);
 
        
       </Box>
-    </Box>
   );
 };
 

@@ -1,5 +1,5 @@
 import {
-  Box,
+  Box,HStack,Breadcrumb,BreadcrumbItem,BreadcrumbLink,
   Button,
   Checkbox,
   Flex,
@@ -15,6 +15,7 @@ import {
   useDisclosure,
   VStack
 } from "@chakra-ui/react";
+import { GoHomeFill } from "react-icons/go";
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -23,6 +24,7 @@ import { API_ENDPOINTS } from "../../../services/endpoints";
 import EmpJoiningLetterPreview from "./EmpJoiningLetterPreview";
 import CustomDatePicker from "../../../components/common/CustomDatepicker";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png";
+import {Link} from "react-router-dom";
 
 const EmpJoiningLetter = () => {
 
@@ -109,6 +111,17 @@ const EmpJoiningLetter = () => {
     }
   };
 
+  useEffect(() => {
+  if (employee?.salary) {
+    const monthly = (employee.salary / 12).toFixed(0);
+
+    setFormData((prev) => ({
+      ...prev,
+      salary: monthly
+    })); 
+  }
+}, [employee]);
+
   /* ================= USE EFFECTS ================= */
 
   useEffect(() => {
@@ -152,6 +165,23 @@ const EmpJoiningLetter = () => {
 
   return (
     <Box bg="white" p={6} borderRadius="12px">
+       <HStack justifyContent='space-between'>
+                            <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+                              <BreadcrumbItem>
+                                <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                              </BreadcrumbItem>
+                               <BreadcrumbItem>
+                                <BreadcrumbLink as={Link} to="/hr-mgmt/view-employee-list"   fontSize='13px'>Employee List</BreadcrumbLink>
+                              </BreadcrumbItem>
+                  
+                              <BreadcrumbItem>
+                                <BreadcrumbLink isCurrentPage fontSize='13px'>Create Joining letter</BreadcrumbLink>
+                              </BreadcrumbItem>
+                  
+                            </Breadcrumb>
+                         
+                  
+                          </HStack>
 
       <Heading size="md" mb={4}>
         Generate Joining Letter 
@@ -285,13 +315,20 @@ const EmpJoiningLetter = () => {
           <FormControl>
             <FormLabel>Monthly Gross Salary</FormLabel>
             <Input
-              value={
-                employee?.salary
-                  ? (employee.salary / 12).toFixed(0)
-                  : ""
+              // value={
+              //   employee?.salary
+              //     ? (employee.salary / 12).toFixed(0)
+              //     : ""
+              // }
+              value={formData.salary}
+               onChange={(e) =>
+                setFormData({
+                  ...formData,
+                   salary: e.target.value
+                })
               }
-              isReadOnly
             />
+          
           </FormControl>
 
           <FormControl>

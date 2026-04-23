@@ -1,34 +1,32 @@
-import React, { useRef, useState } from "react";
-import {
-  Box,
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  ModalCloseButton,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import React, { useRef, useState, useEffect } from "react";
+import { Box, Button, Modal, ModalOverlay, ModalContent, Flex, Image, ModalBody, ModalFooter, ModalCloseButton, Text, useToast,} from "@chakra-ui/react";
 import { FiUpload } from "react-icons/fi";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import API from "../../../services/api";
 
-const UploadDocumentModal = ({ isOpen, onClose, userId, documentType}) => {
+const UploadDocumentModal = ({ isOpen, onClose, userId, documentType }) => {
   const toast = useToast();
   const fileInputRef = useRef(null);
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
 
+  console.log(userId, "userID123456")
   const handleBrowseClick = () => {
     fileInputRef.current.click();
   };
 
+  
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
+  const selectedFile = e.target.files[0];
+  if (!selectedFile) return;
+
+  setFile(selectedFile);
+
+  // ✅ Preview generate karo
+  const previewUrl = URL.createObjectURL(selectedFile);
+  setPreviewImage(previewUrl);
+};
 
   const handleUpload = async () => {
     if (!file) {
@@ -57,13 +55,14 @@ const UploadDocumentModal = ({ isOpen, onClose, userId, documentType}) => {
         status: "success",
         duration: 2000,
       });
+
       setFile(null);
       onClose();
-    
     } catch (error) {
       toast({
         title: "Upload failed",
-        description: error?.response?.data?.message || "Something went wrong",
+        description:
+          error?.response?.data?.message || "Something went wrong",
         status: "error",
         duration: 3000,
       });
@@ -71,30 +70,50 @@ const UploadDocumentModal = ({ isOpen, onClose, userId, documentType}) => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+  return () => {
+    if (previewImage) {
+      URL.revokeObjectURL(previewImage);
+    }
+  };
+}, [previewImage]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
       <ModalOverlay />
-      <ModalContent borderRadius="12px" mx="10px" >
-        <ModalHeader bg="blue.500" color="white" border="12px" fontSize={{base:"15px",md:"lg"}}>Upload Document 
-        </ModalHeader>
-        <ModalCloseButton />
+  
+ <ModalContent mx="12px" borderRadius="12px">
 
-        <ModalBody>
-        
+        <Flex bg="blue.500" borderTopRadius="12px" color="white" py={2} px={4} justify="space-between" alignItems="center"  size="xl">
+         <Text fontWeight="bold">
+          Upload Document
+         </Text>
+               <ModalCloseButton position="static" size="md"/>
+      
+     </Flex>
+
+
+        {/* Body */}
+        <ModalBody mt={4}>
           <Box
             border="2px dashed #CBD5E0"
             borderRadius="md"
-            p={10}
+            p={7}
             textAlign="center"
             cursor="pointer"
             onClick={handleBrowseClick}
             _hover={{ bg: "gray.50" }}
           >
             <FiUpload size={40} style={{ margin: "0 auto" }} />
-            <Text mt={2}>
+
+            <Text mt={2} fontSize="13px">
               {file ? file.name : "Drag and Drop Files here or"}
             </Text>
+              
+              {previewImage&&(
+               <Image src={previewImage} alt="Preview" mt={4} maxW="300px" maxH="150px" mx="auto" /> 
+              )
+            }  
 
             <Button mt={3} colorScheme="blue" variant="outline">
               Browse Files
@@ -111,10 +130,12 @@ const UploadDocumentModal = ({ isOpen, onClose, userId, documentType}) => {
           </Box>
         </ModalBody>
 
+        {/*  Footer */}
         <ModalFooter>
           <Button variant="outline" mr={3} onClick={onClose}>
             Cancel
           </Button>
+
           <Button
             colorScheme="blue"
             isLoading={loading}

@@ -1,39 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { Box, Button, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Input, HStack, Breadcrumb, BreadcrumbItem, BreadcrumbLink,} from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import useUsersapi from "../../Apis/GetUsersapi";
+import { Link } from "react-router-dom";
+import { FiUpload } from "react-icons/fi";
 
 const UploadSalarySlip = () => {
   const toast = useToast();
+  // --------------featch employee---
+  const {users}=useUsersapi();
 
-  const [employeeList, setEmployeeList] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [formData, setFormData] = useState({ employeeId: "", employeeName: "", month: "",});
   const [file, setFile] = useState(null);
   const labelStyles = { fontSize: "12px", color: "#686868", marginBottom: "3px", };
-
-  // 🔹 Fetch Employees
-  const fetchEmployeeList = async () => {
-    try {
-      const response = await API.get(API_ENDPOINTS.GET_USERS);
-      if (response?.status === 200) {
-        setEmployeeList(response.data.data || []);
-      }
-    } catch (error) {
-      toast({
-        title: "Failed to load employees",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-
-  useEffect(() => {
-    fetchEmployeeList();
-  }, []);
 
   // 🔹 Handle File
   const handleFileChange = (e) => {
@@ -45,7 +27,7 @@ const UploadSalarySlip = () => {
     const { name, value } = e.target;
 
     if (name === "employeeId") {
-      const selectedEmployee = employeeList.find(
+      const selectedEmployee = users.find(
         (emp) => String(emp.id) === String(value),
       );
 
@@ -145,16 +127,11 @@ const UploadSalarySlip = () => {
       <HStack justifyContent="space-between" flexWrap="wrap">
         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">
+            <BreadcrumbLink as={Link} to="/dashboard">
               <GoHomeFill color="#5570F1" />
             </BreadcrumbLink>
           </BreadcrumbItem>
 
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/hr-mgmt/view-employee-list" fontSize="13px">
-              Employee List
-            </BreadcrumbLink>
-          </BreadcrumbItem>
 
           <BreadcrumbItem isCurrentPage>
             <BreadcrumbLink fontSize="13px">Upload Salary Slip</BreadcrumbLink>
@@ -180,7 +157,7 @@ const UploadSalarySlip = () => {
               value={formData.employeeId}
               onChange={handleChange}
             >
-              {employeeList.map((emp) => (
+              {users.map((emp) => (
                 <option key={emp.id} value={emp.id}>
                   {emp.name}
                 </option>
@@ -201,11 +178,47 @@ const UploadSalarySlip = () => {
 
           {/* File */}
           <FormControl isRequired>
-            <FormLabel {...labelStyles}>
-              Upload Salary Slip (PDF/Image)
-            </FormLabel>
-            <Input type="file" accept=".pdf,.jpg,.png" onChange={handleFileChange} p={1}/>
-          </FormControl>
+  <FormLabel {...labelStyles}>
+    Upload Salary Slip (PDF/Image)
+  </FormLabel>
+
+  <Box
+    border="2px dashed #CBD5E0"
+    borderRadius="lg"
+    p={6}
+    textAlign="center"
+    cursor="pointer"
+    _hover={{ borderColor: "blue.400" }}
+    position="relative"
+  >
+    {/* Hidden Input */}
+    <Input
+      type="file"
+      accept=".pdf,.jpg,.png"
+      onChange={handleFileChange}
+      position="absolute"
+      top="0"
+      left="0"
+      width="100%"
+      height="100%"
+      opacity="0"
+      cursor="pointer"
+    />
+
+    {/* UI Content */}
+    <VStack spacing={2}>
+      <FiUpload size={24} color="#4A5568" />
+      
+      <Text fontSize="sm" color="gray.600">
+        {file ? file.name : "Click to upload or drag & drop"}
+      </Text>
+
+      <Text fontSize="xs" color="gray.400">
+        PDF, JPG, PNG allowed
+      </Text>
+    </VStack>
+  </Box>
+</FormControl>
         </SimpleGrid>
 
         <Button colorScheme="blue" alignSelf="center" isLoading={isSubmitting} onClick={handleSubmit}>

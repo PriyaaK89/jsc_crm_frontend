@@ -106,6 +106,9 @@ padding: 40px;
   width:100%;
   height:auto;
 }
+.disagr{box-sizing: border-box;
+  page-break-after: always;
+  break-after: page;}
 
 .page-break {
   page-break-before: always;
@@ -165,4 +168,22 @@ padding: 40px;
 .chakra-modal__header {
   line-height: 0 !important;
 }
+
+.empsalaryreporttableres{
+  width: 71% !important;
+}
+
+@media (min-width: 766px) and (max-width:900px) {
+
+  .empsalaryreporttableres{
+    width: 60% !important;
+  }
+
+}
+
+
+.empsalaryreporttablebodytd {
+height: 50px !important;
+}
+
 

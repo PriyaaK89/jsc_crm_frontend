@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import { useParams } from "react-router-dom";
-import { Box, Button, Checkbox, Flex, FormControl, FormLabel, Heading, Image, Select, SimpleGrid, Spinner, Text, useDisclosure, VStack } from "@chakra-ui/react";
+import { Box, Button, Checkbox, Flex, FormControl,HStack,Breadcrumb,BreadcrumbItem,BreadcrumbLink, FormLabel, Heading, Image, Select, SimpleGrid, Spinner, Text, useDisclosure, VStack } from "@chakra-ui/react";
 import EmpAgreementLetterPreview from "./EmpAgreementLetterPreview";
 import CustomDatePicker from "../../../components/common/CustomDatepicker";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png"
+import { GoHomeFill } from "react-icons/go";
+import {Link} from "react-router-dom"
 
 const AgreementLetter = () => {
 
@@ -88,6 +90,24 @@ const AgreementLetter = () => {
   return (
     <>
       <Box bg="white" p={6} borderRadius="12px">
+        <HStack justifyContent='space-between'>
+                                          <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+                                            <BreadcrumbItem>
+                                              <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                                            </BreadcrumbItem>
+                                              <BreadcrumbItem>
+                                              <BreadcrumbLink as={Link}  to="/hr-mgmt/view-employee-list"  fontSize='13px'>Employee List</BreadcrumbLink>
+                                            </BreadcrumbItem>
+                                
+                                
+                                            <BreadcrumbItem>
+                                              <BreadcrumbLink   fontSize='13px'>Generate Agreement Letter</BreadcrumbLink>
+                                            </BreadcrumbItem>
+                                
+                                          </Breadcrumb>
+                                       
+                                
+                                        </HStack>
         <Heading size="md" mb={4}> 
           Generate Agreement Letter  
         </Heading>
@@ -134,7 +154,11 @@ const AgreementLetter = () => {
         <VStack spacing={6} align="stretch">
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
             <CustomDatePicker label="Date of Issue" value={formData.date_of_issue}
-              onChange={(e) => setFormData({ ...formData, date_of_issue: e.target.value })}
+               onChange={(date)=>{
+                  setFormData((prev)=>({
+                   ...prev, date_of_issue : date
+                  }))
+               }}
               placeholder="Select date of issue" />
 
             <FormControl >

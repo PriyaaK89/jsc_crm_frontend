@@ -1,51 +1,155 @@
 import React, { useEffect, useState } from "react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
-import { data, useNavigate } from "react-router-dom";
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Flex, HStack, IconButton, Img, Input, InputGroup, Select, Spinner, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useDisclosure } from "@chakra-ui/react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Avatar,
+  Box,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  Button,
+  Flex,
+  HStack,
+  IconButton,
+  Image,
+  Img,
+  Input,
+  InputGroup,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalOverlay,
+  Spinner,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tooltip,
+  Tr,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
-import { FiSearch } from "react-icons/fi";
-import sort_icon from "../../assets/sort.svg"
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiEdit2, FiTrash2, FiSearch, FiFileText } from "react-icons/fi";
 import { FaEye } from "react-icons/fa";
+import { CloseIcon } from "@chakra-ui/icons";
+import sort_icon from "../../assets/sort.svg";
+
 import ViewUploadedDocument from "./DocUpload/ViewDocuments";
 import UpdateEmpStatus from "../../utils/Emp/UpdateEmpStatus";
 import DeleteEmployeeModel from "./DeleteEmployee";
 import VerifyDocumentModel from "./models/VerifyDocuments";
+import Pagination from "../../Pagination/Pagination";
 
 const EmployeeList = () => {
-
   const [empList, setEmpList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const { onOpen, onClose, isOpen } = useDisclosure();
-  const [selectedId, setSelectedId] = useState('');
+  const [selectedId, setSelectedId] = useState("");
+  const [selectedImage, setSelectedImage] = useState("");
+  const [empName, setEmpName] = useState("");
+
   const navigate = useNavigate();
-  const { isOpen: isDeleteModalOpen, onOpen: onDeleteModalOpen, onClose: onDeleteModalClose } = useDisclosure();
-  const {isOpen: isVerifyModelOpen, onOpen: onVerifyModalOpen, onClose: onVerifyModalClose} = useDisclosure();
+
+  const {
+    isOpen,
+    onOpen,
+    onClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isImageOpen,
+    onOpen: onImageOpen,
+    onClose: onImageClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isDeleteModalOpen,
+    onOpen: onDeleteModalOpen,
+    onClose: onDeleteModalClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isVerifyModelOpen,
+    onOpen: onVerifyModalOpen,
+    onClose: onVerifyModalClose,
+  } = useDisclosure();
+
+  const headers = [
+    "Profile Image",
+    "Name",
+    "Email",
+    "Department",
+    "Role",
+    "Contact",
+    "City / State",
+    "Salary (Rs.)",
+    "DOJ",
+    "Leaves",
+    "Login",
+    "Logout",
+    // "Last Seen",
+    "Approver",
+    "View Doc",
+    "Action",
+    "Generate Letters",
+  ];
+
+  const getColumnWidth = (header) => {
+    switch (header) {
+      case "Profile Image":
+        return "140px";
+      case "Name":
+        return "150px";
+      case "Email":
+        return "250px";
+      case "Department":
+      case "Role":
+      case "Approver":
+        return "180px";
+      case "Contact":
+      case "Salary (Rs.)":
+      case "DOJ":
+      case "Login":
+      case "Logout":
+      // case "Last Seen":
+      case "View Doc":
+      case "Action":
+        return "160px";
+      case "City / State":
+        return "200px";
+      case "Generate Letters":
+        return "320px";
+      default:
+        return "160px";
+    }
+  };
 
   const fetchEmployeeList = async () => {
     try {
       setLoading(true);
+
       const response = await API.get(API_ENDPOINTS.GET_USERS, {
-        params: { page, limit, search }
+        params: { page, limit, search },
       });
 
       if (response.status === 200) {
-        setEmpList(response.data.data);
-        const pg = response.data.pagination;
-        setTotalItems(pg.total);
-        setPage(pg.page);
-        setLimit(pg.limit);
-        setTotalPages(pg.totalPages);
-        console.log(response.data, "EMPLOYEE RESPONSE");
+        setEmpList(response?.data?.data || []);
+
+        const pg = response?.data?.pagination || {};
+        setTotalItems(pg.total || 0);
+        setPage(pg.page || 1);
+        setLimit(pg.limit || 10);
+        setTotalPages(pg.totalPages || 1);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Failed to fetch employee list:", error);
     } finally {
       setLoading(false);
     }
@@ -55,14 +159,12 @@ const EmployeeList = () => {
     fetchEmployeeList();
   }, [page, limit, search]);
 
-  const headers = ["Name", "Email", "Department", "Role", "Contact", "City / State", "Salary(Rs.)", "DOJ", "Leaves", "Login", "Logout", "Approver",];
-
   const formatTime = (time) => {
     if (!time) return "-";
 
     const [hours, minutes] = time.split(":");
     const date = new Date();
-    date.setHours(hours, minutes);
+    date.setHours(Number(hours), Number(minutes));
 
     return date.toLocaleString("en-US", {
       hour: "numeric",
@@ -72,249 +174,409 @@ const EmployeeList = () => {
   };
 
   const handleEdit = (empId) => {
-    navigate(`/edit-employee-details/${empId}`)
+    navigate(`/edit-employee-details/${empId}`);
+  };
+
+  const handleView = (id) => {
+    navigate(`/view-employee-details/${id}`);
   };
 
   const handleDelete = (id) => {
+    setSelectedId(id);
     onDeleteModalOpen();
-    setSelectedId(id)
   };
 
   const handleViewDocs = (id) => {
+    setSelectedId(id);
     onOpen();
-    setSelectedId(id)
-  }
+  };
 
-  const handleVerifyModal = (id)=>{
+  const handleVerifyModal = (id, name) => {
+    setSelectedId(id);
+    setEmpName(name);
     onVerifyModalOpen();
-    setSelectedId(id)
-  }
+  };
+
+  const getImageUrl = (url) => {
+    const BASE_URL = "https://your-api-domain.com";
+
+    if (!url) return "";
+    if (url.startsWith("http")) return url;
+
+    return `${BASE_URL}${url}`;
+  };
+
   return (
     <>
-  
-    <VerifyDocumentModel isVerifyModelOpen={isVerifyModelOpen} onVerifyModalClose={onVerifyModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList}/>
-      <ViewUploadedDocument isOpen={isOpen} onClose={onClose} selectedId={selectedId} />
-      <DeleteEmployeeModel isDeleteModalOpen={isDeleteModalOpen} onDeleteModalClose={onDeleteModalClose} selectedId={selectedId} fetchEmployeeList={fetchEmployeeList} />
-      <Box backgroundColor='white' mt='1rem' padding='12px 20px' borderRadius='15px 15px 0px 0px'>
-        {/* Header */}
-        <HStack justifyContent='space-between'>
-          <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
-            <BreadcrumbItem>
-              <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
-            </BreadcrumbItem>
+      <VerifyDocumentModel
+        isVerifyModelOpen={isVerifyModelOpen}
+        onVerifyModalClose={onVerifyModalClose}
+        selectedId={selectedId}
+        fetchEmployeeList={fetchEmployeeList}
+        empName={empName}
+      />
 
-            <BreadcrumbItem>
-              <BreadcrumbLink href='/products' color='#8B8D97' fontSize='13px'>Employee List</BreadcrumbLink>
-            </BreadcrumbItem>
+      <ViewUploadedDocument
+        isOpen={isOpen}
+        onClose={onClose}
+        selectedId={selectedId}
+      />
 
+      <DeleteEmployeeModel
+        isDeleteModalOpen={isDeleteModalOpen}
+        onDeleteModalClose={onDeleteModalClose}
+        selectedId={selectedId}
+        fetchEmployeeList={fetchEmployeeList}
+      />
+
+      <Box
+        backgroundColor="white"
+        mt="1rem"
+        padding="12px 20px"
+        pt={{ base: 2, md: 3 }}
+        px={{ base: 1, md: 4 }}
+        borderRadius="15px 15px 0px 0px"
+        width="100%"
+      >
+        <HStack justifyContent="space-between">
+          <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+            <BreadcrumbItem>
+              <BreadcrumbLink as={Link} to="/dashboard">
+                <GoHomeFill color="#5570F1" />
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbLink as={Link} color="#8B8D97" fontSize="13px">
+                Employee List
+              </BreadcrumbLink>
+            </BreadcrumbItem>
           </Breadcrumb>
-          {/* <Button backgroundColor='#3E60AA' color='white' fontWeight='400' height='36px' fontSize='14px' borderRadius='12px' _hover={{ backgroundColor: '#5570F1' }}><span style={{ fontSize: '18px', paddingRight: '10px' }}><FaPlus /></span> Create a New Product</Button> */}
-
         </HStack>
-        <Flex justifyContent="space-between" mb={4} alignItems='baseline'>
 
+        <Flex justifyContent="space-between" mb={4} alignItems="baseline">
           <Box>
-            <Text color='#45464E' fontSize='13px' fontWeight='500'>Employee List Management</Text>
+            <Text color="#45464E" fontSize="13px" fontWeight="500">
+              Employee List Management
+            </Text>
           </Box>
-          <Box position='relative' w='40%'>
-            <InputGroup justifyContent='end'>
-              <FiSearch fontSize='20px' style={{ color: '#8C8C91', position: 'absolute', top: '10px', right: '16px' }} />
-              <Input placeholder="Search by Employee Name" border='1px solid #CFD3D4' borderRadius='32px' _placeholder={{ fontSize: '16px', color: '#8C8C91' }} boxShadow='0px 2px 2px #e5e5e5'
-                value={search} onChange={(e) => setSearch(e.target.value)} />
-            </InputGroup>
-          </Box></Flex>
 
-        {/* Table */}
-        <Box bg="white" borderRadius="md" boxShadow="sm"  border="1px solid #e5e5e5" width="100%" >
+          <Box position="relative" w="40%">
+            <InputGroup justifyContent="end">
+              <Box
+                display={{ base: "none", md: "none", lg: "block" }}
+                style={{
+                  color: "#8C8C91",
+                  position: "absolute",
+                  top: "10px",
+                  right: "16px",
+                  zIndex: 1,
+                }}
+              >
+                <FiSearch fontSize="20px" />
+              </Box>
+
+              <Input
+                placeholder="Search by Employee Name"
+                border="1px solid #CFD3D4"
+                borderRadius="32px"
+                _placeholder={{ fontSize: "16px", color: "#8C8C91" }}
+                boxShadow="0px 2px 2px #e5e5e5"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </InputGroup>
+          </Box>
+        </Flex>
+       
+
+        <Box
+          bg="white"
+          borderRadius="md"
+          boxShadow="sm"
+          border="1px solid #e5e5e5"
+          width="100%"
+        >
           {loading ? (
             <Flex justify="center" align="center" py={10}>
               <Spinner size="lg" />
             </Flex>
           ) : (
-            <Box overflowX="auto" px={1} maxW="100vw">
-                    <Box overflowX="auto" whiteSpace="nowrap" sx={{
-                        "&::-webkit-scrollbar": { width: "8px", height: '8px' },
-                        "&::-webkit-scrollbar-thumb": {
-                            width: "8px", backgroundColor: "#7A7A7A", borderRadius: "4px",
-                        },
-                        "&::-webkit-scrollbar-track": {
-                            background: "#E8E8E8", borderRadius: "4px",},
-                    }}>
-            <Table variant="striped" colorScheme="gray" size="sm" minW="3950px" className="productsTable">
-              <Thead>
-                <Tr>
-                  {["Name", "Email", "Department", "Role", "Contact", "City / State", "Salary(Rs.)", "DOJ", "Leaves", "Login", "Logout", "Approver", "View Doc", "Action", "Generate Letters"].map((header, index) => (
-                    <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize' 
-                      width={header === "Name" ? "3%" : "auto" && header === "Email" ? "5%" : "auto" && header === "Role" ? '8%' : 'auto' && header === "Generate Letters" ? "20%" : 'auto'} borderColor='#D9D9D9'
-                    >
-                      <Flex alignItems="center" gap='7px'>
-                        <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' overflow="hidden">
-                          {header}
-                        </Text>
-                        <Img src={sort_icon} alt='sort_icon' />
-                      </Flex>
-                    </Th>
-                  ))}
-                </Tr>
-              </Thead>
-
-              <Tbody>
-                {empList?.length > 0 ? (
-                  empList.map((emp) => (
-                    <Tr key={emp?.id}>
-                      <Td fontWeight="medium">{emp?.name}</Td>
-                      <Td>{emp?.email}</Td>
-                      <Td>{emp?.department_name}</Td>
-                      <Td>{emp?.job_role_name}</Td>
-                      <Td>{emp?.contact_no || "-"}</Td>
-                      <Td>{emp?.city || "-"}, {emp?.state || "-"}</Td>
-                      <Td>{emp?.salary || "-"}</Td>
-                      <Td>
-                        {emp?.date_of_joining
-                          ? new Date(emp?.date_of_joining).toLocaleDateString()
-                          : "-"}
-                      </Td>
-                      <Td>{emp.total_leaves}</Td>
-                      <Td>{formatTime(emp?.login_time) || "-"}</Td>
-                      <Td>{formatTime(emp?.logout_time) || "-"}</Td>
-                      <Td>{emp?.approver_name || "-"}</Td>
-                      <Td>
-                        <Tooltip label="View Employee Documents" hasArrow>
-                          <IconButton
-                            icon={<FaEye style={{ width: "21px" }} />}
-                            size="sm" variant="ghost" color="blue.600"
-                            _hover={{ bg: "blue.50" }} aria-label="View Documents"
-                            onClick={() => handleViewDocs(emp?.id)}
-                          />
-                        </Tooltip>
-                      </Td>
-                      {/* ACTIONS */}
-                      <Td>
-                        <Flex gap="10px" justify="center">
-
-                          <UpdateEmpStatus userId={emp?.id}
-                            currentStatus={emp?.is_active === 1 ? "activate" : "deactivate"}
-                            onSuccess={fetchEmployeeList}
-                          />
-
-                          <Tooltip label="Edit Employee" hasArrow>
-                            <IconButton
-                              icon={<FiEdit2 />}
-                              size="sm" variant="ghost"
-                              color="blue.600" _hover={{ bg: "blue.50" }}
-                              aria-label="Edit"
-                              onClick={() => handleEdit(emp?.id)} />
-                          </Tooltip>
-
-                          <Tooltip label="Delete Employee" hasArrow>
-                            <IconButton
-                              icon={<FiTrash2 />} size="sm"
-                              variant="ghost" color="red.600"
-                              _hover={{ bg: "red.50" }} aria-label="Delete"
-                              onClick={() => handleDelete(emp.id)} />
-                          </Tooltip>
+            <Box
+              overflowX="auto"
+              whiteSpace="nowrap"
+              sx={{
+                "&::-webkit-scrollbar": { width: "8px", height: "8px" },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "#7A7A7A",
+                  borderRadius: "4px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  background: "#E8E8E8",
+                  borderRadius: "4px",
+                },
+              }}
+            >
+              <Table
+                variant="striped"
+                colorScheme="gray"
+                size="sm"
+                minW="2950px"
+                className="productsTable"
+                tableLayout="fixed"
+              >
+                <Thead>
+                  <Tr>
+                    {headers.map((header, index) => (
+                      <Th
+                        key={index}
+                        fontSize="14px"
+                        fontWeight="500"
+                        color="#2C2D33"
+                        textTransform="capitalize"
+                        width={getColumnWidth(header)}
+                      >
+                        <Flex alignItems="center" gap="7px">
+                          <Text
+                            fontSize="14px"
+                            color="#2C2D33"
+                            fontWeight="400"
+                            textTransform="capitalize"
+                            fontFamily="InterRegular"
+                            overflow="hidden"
+                          >
+                            {header}
+                          </Text>
+                          <Img src={sort_icon} alt="sort_icon" />
                         </Flex>
-                      </Td>
-                      <Td >
-                        <Flex gap="8px">
-                          <Tooltip label="Generate Offer Letter">
-                            <Button size="xs" colorScheme="blue"
-                              onClick={() => navigate(`/generate-offer-letter/${emp.id}`)}>
-                              Offer
-                            </Button>
-                          </Tooltip>
+                      </Th>
+                    ))}
+                  </Tr>
+                </Thead>
 
-                          <Tooltip label="Generate Joining Letter">
-                            <Button size="xs" colorScheme="green"
-                              onClick={() => navigate(`/generate-joining-letter/${emp.id}`)}>
-                              Joining
-                            </Button>
-                          </Tooltip>
+                <Tbody>
+                  {empList?.length > 0 ? (
+                    empList.map((emp) => (
+                      <Tr key={emp?.id}>
+                        <Td width="140px" fontWeight="medium">
+                          <Avatar
+                            h="40px"
+                            w="40px"
+                            name={emp?.name}
+                            src={getImageUrl(emp?.profile_image_url)}
+                            cursor={emp?.profile_image_url ? "pointer" : "default"}
+                            onClick={() => {
+                              if (emp?.profile_image_url) {
+                                setSelectedImage(getImageUrl(emp.profile_image_url));
+                                onImageOpen();
+                              }
+                            }}
+                          />
+                        </Td>
 
-                          <Tooltip label="Generate Agreement">
-                            <Button size="xs" colorScheme="purple"
-                              onClick={() => navigate(`/generate-agreement/${emp.id}`)}>
-                              Agreement
-                            </Button>
-                          </Tooltip>
+                        <Td fontWeight="medium">{emp?.name || "-"}</Td>
+                        <Td>{emp?.email || "-"}</Td>
+                        <Td>{emp?.department_name || "-"}</Td>
+                        <Td>{emp?.job_role_name || "-"}</Td>
+                        <Td>{emp?.contact_no || "-"}</Td>
+                        <Td>
+                          {emp?.city || "-"}, {emp?.state || "-"}
+                        </Td>
+                        <Td>{emp?.salary || "-"}</Td>
+                        <Td>
+                          {emp?.date_of_joining
+                            ? new Date(emp.date_of_joining).toLocaleDateString()
+                            : "-"}
+                        </Td>
+                        <Td>{emp?.total_leaves ?? "-"}</Td>
+                        <Td>{formatTime(emp?.login_time)}</Td>
+                        <Td>{formatTime(emp?.logout_time)}</Td>
+                       {/* <Td>
+                          {emp?.last_seen
+                            ? new Date(emp.last_seen).toLocaleString()
+                            : "-"}
+                        </Td> */}
+                        <Td>{emp?.approver_name || "-"}</Td>
 
-                          <Tooltip label="Verify Documents">
-                            <Button size="xs" colorScheme="yellow" onClick={()=>handleVerifyModal(emp?.id)}>
-                              Verify Documents
-                            </Button>
+                        <Td>
+                          <Tooltip label="View Employee Documents" hasArrow>
+                            <IconButton
+                              icon={<FaEye style={{ width: "21px" }} />}
+                              size="sm"
+                              variant="ghost"
+                              color="blue.600"
+                              _hover={{ bg: "blue.50" }}
+                              aria-label="View Documents"
+                              onClick={() => handleViewDocs(emp?.id)}
+                            />
                           </Tooltip>
+                        </Td>
 
-                        </Flex>
+                        <Td>
+                          <Flex gap="10px" justify="center">
+                            <UpdateEmpStatus
+                              userId={emp?.id}
+                              currentStatus={
+                                emp?.is_active === 1 ? "activate" : "deactivate"
+                              }
+                              onSuccess={fetchEmployeeList}
+                            />
+
+                            <Tooltip label="Edit Employee" hasArrow>
+                              <IconButton
+                                icon={<FiEdit2 />}
+                                size="sm"
+                                variant="ghost"
+                                color="blue.600"
+                                _hover={{ bg: "blue.50" }}
+                                aria-label="Edit"
+                                onClick={() => handleEdit(emp?.id)}
+                              />
+                            </Tooltip>
+
+                            <Tooltip label="View Employee" hasArrow>
+                              <IconButton
+                                icon={<FiFileText />}
+                                size="sm"
+                                variant="ghost"
+                                color="blue.600"
+                                _hover={{ bg: "blue.50" }}
+                                aria-label="View"
+                                onClick={() => handleView(emp?.id)}
+                              />
+                            </Tooltip>
+
+                            <Tooltip label="Delete Employee" hasArrow>
+                              <IconButton
+                                icon={<FiTrash2 />}
+                                size="sm"
+                                variant="ghost"
+                                color="red.600"
+                                _hover={{ bg: "red.50" }}
+                                aria-label="Delete"
+                                onClick={() => handleDelete(emp?.id)}
+                              />
+                            </Tooltip>
+                          </Flex>
+                        </Td>
+
+                        <Td>
+                          <Flex gap="8px">
+                            <Tooltip label="Generate Offer Letter">
+                              <Button
+                                size="xs"
+                                colorScheme="blue"
+                                onClick={() =>
+                                  navigate(`/generate-offer-letter/${emp?.id}`)
+                                }
+                              >
+                                Offer
+                              </Button>
+                            </Tooltip>
+
+                            <Tooltip label="Generate Joining Letter">
+                              <Button
+                                size="xs"
+                                colorScheme="green"
+                                onClick={() =>
+                                  navigate(`/generate-joining-letter/${emp?.id}`)
+                                }
+                              >
+                                Joining
+                              </Button>
+                            </Tooltip>
+
+                            <Tooltip label="Generate Agreement">
+                              <Button
+                                size="xs"
+                                colorScheme="purple"
+                                onClick={() =>
+                                  navigate(`/generate-agreement/${emp?.id}`)
+                                }
+                              >
+                                Agreement
+                              </Button>
+                            </Tooltip>
+
+                            <Tooltip label="Verify Documents">
+                              <Button
+                                size="xs"
+                                colorScheme="yellow"
+                                onClick={() =>
+                                  handleVerifyModal(emp?.id, emp?.name)
+                                }
+                              >
+                                Verify Documents
+                              </Button>
+                            </Tooltip>
+                          </Flex>
+                        </Td>
+                      </Tr>
+                    ))
+                  ) : (
+                    <Tr>
+                      <Td colSpan={17} textAlign="center">
+                        No employees found.
                       </Td>
                     </Tr>
-                  ))
-                ) : (
-                  <Tr>
-                    <Td colSpan={13} textAlign="center"> No employees found. </Td>
-                  </Tr>
-                )}
-              </Tbody>
-
-            </Table></Box></Box>
+                  )}
+                </Tbody>
+              </Table>
+            </Box>
           )}
         </Box>
 
-        {/* Pagination */}
-        <Box w="full" p={4}>
-          <Flex justify="space-between" align="center">
-            {/* Items per page */}
-            <Flex align="center" gap="4px">
-              <Select w="69px" h="25px" size="sm" value={limit} border="none" bg="#5e63661a" color="#8B8D97" borderRadius="10px"
-                onChange={(e) => {
-                  setLimit(Number(e.target.value));
-                  setPage(1);
-                }}
-              >
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </Select>
-
-              <Flex gap="18px" ml={2}>
-                <Text fontSize="14px" color="#A6A8B1"> Items per page </Text>
-                <Text fontSize="14px" color="#666">
-                  {(page - 1) * limit + 1}–
-                  {Math.min(page * limit, totalItems)} of {totalItems} items
-                </Text>
-              </Flex>
-            </Flex>
-
-            {/* Page selector */}
-            <Flex align="center">
-              <Select w="60px" h="25px" size="sm" value={page} border="none" bg="#5e63661a" color="#8B8D97" borderRadius="10px"
-                onChange={(e) => setPage(Number(e.target.value))}>
-                {Array.from({ length: totalPages }, (_, i) => (
-                  <option key={i + 1} value={i + 1}> {i + 1} </option>
-                ))}
-              </Select>
-
-              <Text ml={2} fontSize="14px" color="#666"> of {totalPages} pages </Text>
-
-              <Flex ml={2}>
-                <Button size="sm" variant="ghost"
-                  isDisabled={page === 1}
-                  onClick={() => setPage((p) => Math.max(p - 1, 1))}>
-                  ‹
-                </Button>
-                <Button size="sm" variant="ghost"
-                  isDisabled={page === totalPages}
-                  onClick={() => setPage((p) => Math.min(p + 1, totalPages))}>
-                  ›
-                </Button>
-              </Flex>
-            </Flex>
-          </Flex>
-        </Box>
-
+        <Pagination
+          page={page}
+          setPage={setPage}
+          limit={limit}
+          setLimit={setLimit}
+          totalItems={totalItems}
+          totalPages={totalPages}
+        />
       </Box>
-    </>
-  )
-}
 
-export default EmployeeList
+      <Modal isOpen={isImageOpen} onClose={onImageClose} size="xl" isCentered>
+        <ModalOverlay />
+        <ModalContent bg="transparent" boxShadow="none">
+          <ModalBody p={0}>
+            <Box
+              position="relative"
+              borderRadius="xl"
+              overflow="hidden"
+              maxH="80vh"
+              maxW="500px"
+              mx="auto"
+            >
+              <IconButton
+                icon={<CloseIcon />}
+                position="absolute"
+                top="10px"
+                right="10px"
+                zIndex="2"
+                size="sm"
+                borderRadius="full"
+                bg="blackAlpha.600"
+                color="white"
+                _hover={{ bg: "blackAlpha.800" }}
+                onClick={onImageClose}
+                aria-label="Close"
+              />
+
+              <Image
+                src={selectedImage}
+                alt="Profile"
+                w="100%"
+                h="100%"
+                maxH="80vh"
+                objectFit="contain"
+                borderRadius="xl"
+              />
+            </Box>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};
+
+export default EmployeeList;

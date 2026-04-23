@@ -24,6 +24,7 @@ import {
 
 import { GoHomeFill } from "react-icons/go";
 import { IoMdAdd, IoMdRemove } from "react-icons/io";
+import { Link } from "react-router-dom";
 
 const Sales = () => {
 
@@ -48,13 +49,20 @@ const Sales = () => {
   };
 
   return (
-    <Box p={6}>
+    <Box 
+     bg="white"
+     mt={{base:2, md:5}}
+     px={{base:3 ,md:6}}
+     py={{base:3, md:4}}
+     borderRadius="lg"
+     boxShadow="md"
+    >
 
       {/* Breadcrumb */}
-      <HStack justifyContent="space-between" flexWrap="wrap">
+      <HStack justifyContent="space-between">
         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">
+            <BreadcrumbLink as={Link} to="/dashboard">
               <GoHomeFill color="#5570F1" />
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -67,21 +75,23 @@ const Sales = () => {
         </Breadcrumb>
       </HStack>
 
-      <Text fontSize="lg" fontWeight="bold" mb={6}>
+      <Text fontSize="xl" fontWeight="bold" mb={6}>
         Sales
       </Text>
 
       {/* Sales No */}
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>Sales No.</FormLabel>
         <Input value="2104" />
       </FormControl>
 
       {/* Party Name */}
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>Party A/c Name</FormLabel>
 
         <Select
+         size="sm"
+         w="100%"
           placeholder="--Please Select--"
           value={party}
           onChange={(e) => setParty(e.target.value)}
@@ -92,11 +102,13 @@ const Sales = () => {
       </FormControl>
 
       {/* Consignee */}
-      <FormControl mb={6}>
+      <FormControl mb={6} w="100%">
         <FormLabel>Is Consignee</FormLabel>
 
         <Select
           placeholder="--Please Select--"
+          w="100%"
+          size="sm"
           value={consignee}
           onChange={(e) => setConsignee(e.target.value)}
         >
@@ -110,11 +122,11 @@ const Sales = () => {
       {consignee === "yes" && (
 
         <SimpleGrid columns={5} spacing={4} mb={6}>
-          <Input placeholder="Dealer Name" />
-          <Input placeholder="Prop Name" />
-          <Input placeholder="Contact" />
-          <Input placeholder="Address" />
-          <Input placeholder="GST No" />
+          <Input placeholder="Dealer Name" size="sm"w="100%" />
+          <Input placeholder="Prop Name" size="sm" w="100%" />
+          <Input placeholder="Contact" size="sm" w="100%" />
+          <Input placeholder="Address" size="sm" w="100%" />
+          <Input placeholder="GST No" size="sm" w="100%" />
         </SimpleGrid>
 
       )}
@@ -123,17 +135,17 @@ const Sales = () => {
       {party && (
 
         <SimpleGrid columns={3} spacing={4} mb={6}>
-          <FormControl>
+          <FormControl mb={6} w="100%">
             <FormLabel>Current Balance</FormLabel>
             <Input defaultValue="0" />
           </FormControl>
 
-          <FormControl>
+          <FormControl mb={6} w="100%">
             <FormLabel>Security Amount</FormLabel>
             <Input defaultValue="10000" />
           </FormControl>
 
-          <FormControl>
+          <FormControl mb={6} w="100%">
             <FormLabel>Credit Limit</FormLabel>
             <Input defaultValue="50000" />
           </FormControl>
@@ -143,17 +155,23 @@ const Sales = () => {
 
       {/* Item Table */}
       {party && (
+        <Box w="100%" overflowX="auto">
 
-        <Table variant="simple" border="1px solid #cdcdcd" mb={6}>
+            <Table
+               border="1px solid #ccc"
+               width="100%"
+               size={{ base: "sm", md: "md", lg:"lg" }}
+               variant="simple"
+             >
 
           <Thead bg="gray.100">
             <Tr>
-              <Th>Name of Item</Th>
-              <Th>Billed Qty.</Th>
-              <Th>Rate</Th>
-              <Th>Unit</Th>
-              <Th>Amount</Th>
-              <Th>Action</Th>
+              <Th minW="150px">Name of Item</Th>
+              <Th minW="120px">Billed Qty.</Th>
+              <Th minW="150px">Rate</Th>
+              <Th minW="180px">Unit</Th>
+              <Th minW="180px">Amount</Th>
+              <Th minW="180px">Action</Th>
             </Tr>
           </Thead>
 
@@ -164,26 +182,26 @@ const Sales = () => {
               <Tr key={index}>
 
                 <Td>
-                  <Select>
+                  <Select size="sm" w="100%">
                     <option>End Of List</option>
                     <option>Item 1</option>
                   </Select>
                 </Td>
 
                 <Td>
-                  <Input type="number" defaultValue="0" />
+                  <Input type="number" defaultValue="0" size="sm" w="100%" />
                 </Td>
 
                 <Td>
-                  <Input type="number" defaultValue="0" />
+                  <Input type="number" defaultValue="0" size="sm" w="100%" />
                 </Td>
 
                 <Td>
-                  <Input />
+                  <Input size="sm" w="100%" />
                 </Td>
 
                 <Td>
-                  <Input type="number" defaultValue="0" />
+                  <Input type="number" defaultValue="0" size="sm" w="100%" />
                 </Td>
 
                 <Td>
@@ -223,6 +241,7 @@ const Sales = () => {
           </Tbody>
 
         </Table>
+        </Box>
 
       )}
 
@@ -231,22 +250,22 @@ const Sales = () => {
 
         <SimpleGrid columns={2} spacing={4} mb={6}>
 
-          <FormControl>
+          <FormControl size="sm" w="100%">
             <FormLabel>IGST</FormLabel>
             <Input />
           </FormControl>
 
-          <FormControl>
+          <FormControl size="sm" w="100%">
             <FormLabel>CGST</FormLabel>
             <Input />
           </FormControl>
 
-          <FormControl>
+          <FormControl size="sm" w="100%">
             <FormLabel>SGST</FormLabel>
             <Input />
           </FormControl>
 
-          <FormControl>
+          <FormControl size="sm" w="100%">
             <FormLabel>Total Amount</FormLabel>
             <Input />
           </FormControl>
@@ -258,7 +277,7 @@ const Sales = () => {
       {/* Narration */}
       
 
-        <FormControl mb={4}>
+        <FormControl mb={4} w="100%">
           <FormLabel>Narration</FormLabel>
           <Textarea defaultValue="Sale" />
         </FormControl>
@@ -267,7 +286,7 @@ const Sales = () => {
       {/* Upload */}
       
 
-        <FormControl mb={6}>
+        <FormControl mb={6} w="100%">
           <FormLabel>Upload Document *</FormLabel>
           <Input type="file" />
         </FormControl>
@@ -275,7 +294,7 @@ const Sales = () => {
       {/* Save Button */}
       
 
-        <Flex justify="flex-end">
+        <Flex justify={{base:"center", md: "flex-end"}}>
           <Button colorScheme="blue">
             SAVE
           </Button>

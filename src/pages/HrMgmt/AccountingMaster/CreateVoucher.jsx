@@ -18,27 +18,34 @@ import {
   Divider,Text
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import {Link} from "react-router-dom";
 
 function CreateVoucher() {
  const [selectedOption, setSelectedOption] = useState("");
   return (
-    <Box   minH="100vh">
-
+<Box
+     bg="white"
+     mt={{base:2, md:5}}
+     px={{base:3, md:6}}
+     py={{base:3, md:4}}
+    borderRadius="lg"
+    boxShadow="md"
+ >
       {/* 🔹 Breadcrumb */}
        <HStack justifyContent='space-between'>
                             <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
                               <BreadcrumbItem>
-                                <BreadcrumbLink href='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+                                <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
                               </BreadcrumbItem>
                   
                               <BreadcrumbItem>
-                                <BreadcrumbLink href='/accounting-master/create-ledger' color='#8B8D97' fontSize='13px'>Create Voucher</BreadcrumbLink>
+                                <BreadcrumbLink  color='#8B8D97' fontSize='13px'>Create Voucher</BreadcrumbLink>
                               </BreadcrumbItem>
                             </Breadcrumb>
                           </HStack>
 
       {/* 🔹 Page Title */}
-       <Text fontSize="2xl" fontWeight="bold" mb={6}>
+       <Text fontSize="xl" fontWeight="bold" mb={6} textAlign="center">
                 Create Voucher
               </Text> 
 

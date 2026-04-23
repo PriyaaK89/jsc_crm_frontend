@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+ import React, { useState } from "react";
 import {
   Box,
   Text,
@@ -18,9 +18,11 @@ import {
   BreadcrumbLink,
   Textarea,
   Button,
-  Flex
+  Flex,
+  
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import { Link } from "react-router-dom";
 
 const Debit = () => {
 
@@ -29,14 +31,20 @@ const Debit = () => {
   const [item, setItem] = useState("");
 
   return (
-    <Box p={6}>
-
+    <Box
+     bg="white"
+     mt={{base:2, md:5}}
+     px={{base:3, md:6}}
+     py={{base:3, md:4}}
+    borderRadius="lg"
+    boxShadow="md"
+ >
       {/* Breadcrumb */}
-      <HStack justifyContent="space-between" flexWrap="wrap">
+      <HStack justifyContent="space-between"  spacing="space-between">
         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
 
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">
+            <BreadcrumbLink as={Link} to="/dashboard">
               <GoHomeFill color="#5570F1" />
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -56,16 +64,18 @@ const Debit = () => {
       </Text>
 
       {/* Debit Note No */}
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>Debit Note No.</FormLabel>
         <Input defaultValue="1" />
       </FormControl>
 
       {/* Party Name */}
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>Party A/c Name</FormLabel>
 
         <Select
+         size="sm"
+         w="100%"
           placeholder="--Please Select--"
           value={party}
           onChange={(e) => setParty(e.target.value)}
@@ -76,16 +86,18 @@ const Debit = () => {
       </FormControl>
 
       {/* Current Balance */}
-      <FormControl mb={6}>
+      <FormControl mb={6} w="100%">
         <FormLabel>Current Balance</FormLabel>
         <Input defaultValue="1" />
       </FormControl>
 
       {/* Consignee */}
-      <FormControl mb={6}>
+      <FormControl mb={6} w="100%">
         <FormLabel>Is Consignee</FormLabel>
 
         <Select
+         sm="sm"
+         w="100%"
           value={consignee}
           onChange={(e) => setConsignee(e.target.value)}
         >
@@ -98,80 +110,78 @@ const Debit = () => {
       {/* Item Table */}
       {consignee === "yes" && (
 
-        <Table border="1px solid #ccc" mb={6}>
+    <Box w="100%" overflowX="auto" >
 
-          <Thead bg="#f5f5f5">
-            <Tr>
-              <Th>Name of item</Th>
-              <Th>Billed Qty</Th>
-              <Th>Rate</Th>
-              <Th>Unit</Th>
-              <Th>Amount</Th>
-            </Tr>
-          </Thead>
+  <Table
+    border="1px solid #ccc"
+    width="100%"
+    size={{ base: "sm", md: "md", lg:"lg" }}
+    variant="simple"
+  >
 
-          <Tbody>
-            <Tr>
+    <Thead bg="#f5f5f5">
+      <Tr>
+        <Th minW="150px">Name of item</Th>
+        <Th minW="150px">Billed Qty</Th>
+        <Th minW="80px">Rate</Th>
+        <Th minW="120px">Unit</Th>
+        <Th minW="150px">Amount</Th>
+      </Tr>
+    </Thead>
 
-              <Td>
-                <Select
-                  value={item}
-                  onChange={(e) => setItem(e.target.value)}
-                >
-                  <option value="">End Of List</option>
-                  <option value="ZYME DRUM STICKER">ZYME DRUM STICKER</option>
-                  <option value="ACTIVE GOLD (BAG) -5 KG.">ACTIVE GOLD (BAG) -5 KG.</option>
-                  <option value="ACTIVE GOLD (DRUM) -50 KG">ACTIVE GOLD (DRUM) -50 KG</option>
-                  <option value="ACTIVE GOLD BKT - 20 KG">ACTIVE GOLD BKT - 20 KG</option>
-                  <option value="ACTIVE GOLD BKT -10 KG">ACTIVE GOLD BKT -10 KG</option>
-                  <option value="ACTIVE GOLD DRUM -50 KG.">ACTIVE GOLD DRUM -50 KG.</option>
-                  <option value="ADVERTISMENT MATTERIALS">ADVERTISMENT MATTERIALS</option>
-                  <option value="AGITATOR">AGITATOR</option>
-                  <option value="ALUMINIUM FOIL (55MM)">ALUMINIUM FOIL (55MM)</option>
-                  <option value="BAJRA VIRAT - 7799">BAJRA VIRAT - 7799</option>
-                  <option value="Bajri Multicut Loose">Bajri Multicut Loose</option>
-                  <option value="BALTI -20 K.G.">BALTI -20 K.G.</option>
-                  <option value="BALTI-10">BALTI-10</option>
-                  <option value="BARLE SEED(BH-902)">BARLE SEED(BH-902)</option>
-                  <option value="BHINDI(GARIMA)">BHINDI(GARIMA)</option>
-                </Select>
-              </Td>
+    <Tbody>
+      <Tr>
 
-              <Td>
-                <Input type="number" defaultValue="0" />
-              </Td>
+        <Td>
+          <Select
+            value={item}
+            onChange={(e) => setItem(e.target.value)}
+            w="100%"
+            size="sm"
+          >
+            <option value="">End Of List</option>
+          </Select>
+        </Td>
 
-              <Td>
-                <Input type="number" defaultValue="0" />
-              </Td>
+        <Td>
+          <Input type="number" defaultValue="0" size="sm" w="100%"  />
+        </Td>
 
-              <Td>
-                <Input type="text" defaultValue="0" />
-              </Td>
+        <Td>
+          <Input type="number" defaultValue="0" size="sm" w="100%" />
+        </Td>
 
-              <Td>
-                <Input type="number" defaultValue="0" />
-              </Td>
+        <Td>
+          <Input type="text" defaultValue="0" size="sm" w="100%" />
+        </Td>
 
-            </Tr>
-          </Tbody>
+        <Td>
+          <Input type="number" defaultValue="0" size="sm" w="100%" />
+        </Td>
 
-        </Table>
+      </Tr>
+    </Tbody>
 
+  </Table>
+
+</Box>
       )}
 
       {/* Transport Details */}
-      <Text fontWeight="bold" mb={3}>
+      <Text fontWeight="bold" mb={3} mt={3}>
         Transport Details
       </Text>
+             <Box overflowX="auto" w="100%" mb={2}>
 
-      <Table border="1px solid #ccc">
+      <Table  w="100%"
+  size={{ base: "sm", md: "md", xl: "lg" }}
+  variant="simple">
 
-        <Thead bg="#f5f5f5">
+        <Thead bg="#d9e5f8">
           <Tr>
-            <Th>Transport Name</Th>
-            <Th>LR No</Th>
-            <Th>Vehicle No</Th>
+            <Th minW="180px">Transport Name </Th>
+            <Th minW="100px">LR No</Th>
+            <Th minW="180px">Vehicle No</Th>
           </Tr>
         </Thead>
 
@@ -184,46 +194,46 @@ const Debit = () => {
         </Tbody>
 
       </Table>
+      </Box> 
 
       {/* Tax Section */}
 
-      <FormControl mb={4} mt={6}>
+      <FormControl mb={4} mt={6} w="100%">
         <FormLabel>IGST</FormLabel>
         <Input type="text" />
       </FormControl>
 
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>CGST</FormLabel>
         <Input type="text" />
       </FormControl>
 
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>SGST</FormLabel>
         <Input type="text" />
       </FormControl>
 
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>Total Amount</FormLabel>
         <Input type="number" />
       </FormControl>
 
       {/* Narration */}
 
-      <FormControl mb={4}>
+      <FormControl mb={4} w="100%">
         <FormLabel>Narration</FormLabel>
         <Textarea defaultValue="debit note" />
       </FormControl>
 
       {/* Upload */}
 
-      <FormControl mb={6}>
+      <FormControl mb={6} w="100%">
         <FormLabel>Upload Document *</FormLabel>
         <Input type="file" />
       </FormControl>
 
       {/* Button */}
-
-      <Flex justify="flex-end">
+<Flex justify={{ base: "center", md: "flex-end" }}>
         <Button colorScheme="blue">
           Create
         </Button>
@@ -234,3 +244,4 @@ const Debit = () => {
 };
 
 export default Debit;
+ 

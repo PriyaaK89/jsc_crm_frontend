@@ -239,7 +239,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                       {employee?.department_name} department in our organization.
                     </Text>
                     <Text>As per requirements of our organization, your appointment will be on the terms and conditions mentioned below.</Text>
-                    <Text>Your appointment is effective from {formatDate(employee?.date_of_joining)} {formatTime(employee?.login_time)} based at H.Q.- {employee?.headquarter} ({employee?.state}), AREA - {formData?.area}.</Text>
+                    <Text>Your appointment is effective from {formatDate(employee?.date_of_joining)} {formatTime(employee?.login_time)} based at H.Q.- {employee?.headquarter} ({employee?.state}), AREA - {formData?.working_area}.</Text>
 
                     <HStack>
                       <Text> <Text fontWeight="600" fontSize="18px">Salary:</Text> You will receive salary and benefits as detailed in the Annexure. </Text>

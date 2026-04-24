@@ -190,7 +190,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                       {formData?.emp_state || employee?.state}.
                     </Text>
 
-                    <Text>Area – {formData?.area ? formData?.area : employee?.area}</Text>
+                    <Text>Area – {formData?.working_area ? formData?.working_area : employee?.working_area}</Text>
                     <Text>H.Q. – {formData?.headquarter ? formData?.headquarter : employee?.headquarter}</Text>
 
                     <Text>You will receive salary and benefits as detailed in the Annexure.</Text>

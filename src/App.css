@@ -36,15 +36,15 @@
     color: #6E7079;
     font-size: 13px;
     font-family: 'InterRegular';
-    border-bottom: 2px solid #f3f3f3;
-    border-top: 2px solid #f3f3f3;
+    border-bottom: 2px solid #F4F4F4;
+    border-top: 2px solid #F4F4F4;
     padding: 4px 20px;
     height: 50px;
 
 }
 .productsTable tbody{
-  border-left: 1px solid #f3f3f3;
-  border-right: 1px solid #f3f3f3;
+  border-left: 1px solid #F4F4F4;
+  border-right: 1px solid #F4F4F4;
 }
 
 .productsTable Thead Tr Th{

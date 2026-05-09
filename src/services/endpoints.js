@@ -84,5 +84,17 @@ export const API_ENDPOINTS = {
   Update_stock_category_by_id:`update-stock-category`,
   Delete_Stock_category_by_id:`delete-stock-category`,
 
+  //set-team-target
+  create_team: `create-team`,
+  create_sub_team: `create-subteam`,
+  get_subTeam_by_team: 'get-subteams',
+  get_team_list: `get-teams`,
+  get_team_by_id: `getTeam`,
+  get_users_by_role: `users-by-level`,
+  assign_target: 'assign-target',
+  get_assigned_targets: 'get-assigned-targets',
+  assign_individual_targets: 'assign-employee-target',
+   delete_team: "/delete-team",
+
 };
 // 

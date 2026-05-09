@@ -16,7 +16,7 @@ const EditEmployee = () => {
     const [departments, setDepartments] = useState([]);
     const [jobRole, setJobRole] = useState([]);
     const { users = [], fetchUsers } = useUsersapi();
-    const [profilePhoto, setProfilePhoto] = useState(null); // new upload
+    const [profilePhoto, setProfilePhoto] = useState(null); 
     const [formData, setFormData] = useState({
         approver_id: "",
         reporting_id: "",

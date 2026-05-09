@@ -21,7 +21,7 @@ import { FaClipboardList,FaCalculator,FaWallet,FaList,FaTrash,FaFileInvoiceDolla
   import { Receipt,CalendarCheck,BellRing,Handshake,BookText,Clock,FileSpreadsheet,BarChart3, User2 } from "lucide-react";
   import { HiOutlinePrinter } from "react-icons/hi";
   import { Printer, Barcode } from "lucide-react";
-import {RiDashboardLine,RiUserAddLine,RiUser3Line,RiFileList3Line,RiBarChartLine,RiSettings3Line,} from "react-icons/ri";
+import {RiDashboardLine,RiUserAddLine,RiUser3Line,RiFileList3Line,RiBarChartLine,RiSettings3Line, RiTeamFill,} from "react-icons/ri";
 import { UserCheck,DollarSign,Package } from "lucide-react";
 import { BsUpcScan } from "react-icons/bs";
 import { Ticket } from "lucide-react";
@@ -123,15 +123,14 @@ const Newsidebar = () => {
       key: "business",
       icon: FaChartLine,
       children: [
-        {label: "Create Team",path: "/Business-dev/create-team",icon: FaUserPlus, },
-        {label: "Create Sub Team",path: "/Business-devt/create-sub-team",icon: HiUserGroup,},
-        { label: "Assign Target RSM", path: "/Business-devt/assign-target-rsm",  icon: MdAssignmentInd,},
-        {label:"Assign Target TSM", path:"/Business-devt/assign-target-tsm",icon:FaUserTie,},
-        {label:"Assign Target SM",path:"/Business-devt/assign-target-sm",icon:FaBullseye,},
-        {label:"Assign Target FA", path:"/Business-devt/assign-target-fa",icon:UserCheck ,}
+        {label: "Create Team",path: "/business-development/create-team",icon: FaUserPlus, },
+        {label: "Create Sub Team",path: "/business-development/create-sub-team",icon: HiUserGroup,},
+        { label: "Assign Target", path: "/business-development/assign-target",  icon: MdAssignmentInd,},
+        // { label: "View Teams", path: "/business-development/view-teams",  icon: RiTeamFill ,},
+
       ],
     },
-    {   label: "Distributor",
+    {   label: "Distributor Argeement",
       key: "distributor",
       icon: FaProjectDiagram,
        children: [
@@ -232,8 +231,8 @@ useEffect(() => {
 
   const menuMap = {
     "/hr-mgmt": "users",
-    "/Business-dev": "business",
-    "/Business-devt": "business",
+    "/business-development": "business",
+    "/business-developmentelopment": "business",
     "/distributor":"distributor",
     "/accounting-master": "accounting-master",
     "/company-master": "company-master",

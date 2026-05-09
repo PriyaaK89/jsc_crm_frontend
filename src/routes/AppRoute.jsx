@@ -16,9 +16,6 @@ import ProfileLayout from "../components/layout/ProfileLayout";
 import CreateTeamLayout from "../components/layout/CreateteamLayout";
 import CreateSubTeamLayout from "../components/layout/CreateSubTeamLayout";
 import AssignTargetRSMLayout from "../components/layout/AssignTargetRSMLayout";
-import AssignTargetTSMLayout from "../components/layout/AssignTargetTSMLayout";
-import AssignTargetSMLayout from "../components/layout/AssignTargetSMLayout";
-import AssignTargetFALayout from "../components/layout/AssignTargetFALayout";
 import CreateCompanyLayout from "../components/layout/CompanyMaster/CreateCompanyLayout";
 import CompanyListLayout from '../components/layout/CompanyMaster/CompanyListLayout'
 import ApproveIpUserListLayout from "../components/layout/ApproveIpUserListLayout";
@@ -82,6 +79,9 @@ import EditComapnyLayout from "../components/layout/CompanyMaster/EditComapnyLay
 import ViewComapnyLayout from "../components/layout/CompanyMaster/ViewComapnyLayout";
 import EditStockGroupLayout from '../components/layout/EditStockGroupLayout';
 import EditStockCategaryLayout from "../components/layout/EditStockCategaryLayout";
+import AssignTargetLayout from "../components/layout/BusinessDevelopment/AssignTargetLayout";
+import TeamLayout from "../components/layout/BusinessDevelopment/TeamLayout";
+
 
 function App() {
   return (
@@ -142,29 +142,16 @@ function App() {
         <Route path='/print/mgmt/shipping_lable_printer' element={<PrintShippingLablePrinterLayout/>}/>
         <Route path='/print/mgmt/truthful_labelprint' element={<PrintTruthfulLablePrintLayout/>}/>
         {/*  */}
+        <Route path="/business-development/create-team" element={<CreateTeamLayout />}/>
+        <Route path="/business-development/view-teams" element={<TeamLayout/>}/>
         <Route
-          path="/Business-dev/create-team"
-          element={<CreateTeamLayout />}
-        />
-        <Route
-          path="/Business-devt/create-sub-team"
+          path="/business-development/create-sub-team"
           element={<CreateSubTeamLayout />}
         />
+        <Route path="/business-development/assign-target" element={<AssignTargetLayout/>}/>
         <Route
-          path="/Business-devt/assign-target-rsm"
+          path="/business-development/assign-target-rsm"
           element={<AssignTargetRSMLayout />}
-        />
-        <Route
-          path="/Business-devt/assign-target-tsm"
-          element={<AssignTargetTSMLayout />}
-        />
-        <Route
-          path="/Business-devt/assign-target-sm"
-          element={<AssignTargetSMLayout />}
-        />
-        <Route
-          path="/Business-devt/assign-target-fa"
-          element={<AssignTargetFALayout />}
         />
         <Route
           path="/company-master/create-company"

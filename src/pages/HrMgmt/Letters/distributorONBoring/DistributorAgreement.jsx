@@ -1564,7 +1564,6 @@ function DistributorAgreement() {
             <Input
               name="security_cheque_no"
               value={formData.security_cheque_no}
-              value={formData.security_cheque_no}
               onChange={handleChange}
             />         {errors.security_cheque_no && (
               <Text color="red.500" fontSize="sm">

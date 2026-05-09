@@ -48,7 +48,7 @@ useEffect(() => {
   if (path.startsWith("/hr-mgmt")) {
     setOpenMenu("users");
   } 
-  else if (path.startsWith("/Business-dev") || path.startsWith("/Business-devt")) {
+  else if (path.startsWith("/business-development") || path.startsWith("/business-developmentelopment")) {
     setOpenMenu("business");
   } 
   else if (path.startsWith("/accounting-master")) {
@@ -260,8 +260,8 @@ useEffect(() => {
             />
           }
           bg={  isParentActive([
-      "/business","/Business-dev/create-team","/Business-devt/create-sub-team","/Business-devt/assign-target-rsm"
-   ,"/Business-devt/assign-target-tsm","/Business-devt/assign-target-sm","/Business-devt/assign-target-fa"
+      "/business","/business-development/create-team","/business-developmentelopment/create-sub-team","/business-developmentelopment/assign-target-rsm"
+   ,"/business-developmentelopment/assign-target-tsm","/business-developmentelopment/assign-target-sm","/business-developmentelopment/assign-target-fa"
     ])
       ? "#f3f4f6"
       : "transparent"
@@ -281,7 +281,7 @@ useEffect(() => {
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
-              to="/Business-dev/create-team"
+              to="/business-development/create-team"
               style={activeLinkStyle}
             >
               Create Team
@@ -292,7 +292,7 @@ useEffect(() => {
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
-              to="/Business-devt/create-sub-team"
+              to="/business-developmentelopment/create-sub-team"
               style={activeLinkStyle}
             >
               Create Sub Team
@@ -303,7 +303,7 @@ useEffect(() => {
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
-              to="/Business-devt/assign-target-rsm"
+              to="/business-developmentelopment/assign-target-rsm"
               style={activeLinkStyle}
             >
               Assign Target RSM
@@ -314,7 +314,7 @@ useEffect(() => {
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
-              to="/Business-devt/assign-target-tsm"
+              to="/business-developmentelopment/assign-target-tsm"
               style={activeLinkStyle}
             >
               Assign Target TSM
@@ -324,7 +324,7 @@ useEffect(() => {
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
-              to="/Business-devt/assign-target-sm"
+              to="/business-developmentelopment/assign-target-sm"
               style={activeLinkStyle}
             >
               Assign Target SM
@@ -334,7 +334,7 @@ useEffect(() => {
               {...sidebarButtonStyle}
               size="sm"
               as={NavLink}
-              to="/Business-devt/assign-target-fa"
+              to="/business-developmentelopment/assign-target-fa"
               style={activeLinkStyle}
             >
               Assign Target FA

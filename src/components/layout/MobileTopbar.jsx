@@ -209,32 +209,32 @@ const MobileTopbar = () => {
       children: [
         {
           label: "Create Team",
-          path: "/Business-dev/create-team",
+          path: "/business-development/create-team",
           icon: FaUserPlus,
         },
         {
           label: "Create Sub Team",
-          path: "/Business-devt/create-sub-team",
+          path: "/business-developmentelopment/create-sub-team",
           icon: HiUserGroup,
         },
         {
           label: "Assign Target RSM",
-          path: "/Business-devt/assign-target-rsm",
+          path: "/business-developmentelopment/assign-target-rsm",
           icon: MdAssignmentInd,
         },
         {
           label: "Assign Target TSM",
-          path: "/Business-devt/assign-target-tsm",
+          path: "/business-developmentelopment/assign-target-tsm",
           icon: FaUserTie,
         },
         {
           label: "Assign Target SM",
-          path: "/Business-devt/assign-target-sm",
+          path: "/business-developmentelopment/assign-target-sm",
           icon: FaBullseye,
         },
         {
           label: "Assign Target FA",
-          path: "/Business-devt/assign-target-fa",
+          path: "/business-developmentelopment/assign-target-fa",
           icon: UserCheck,
         },
       ],

@@ -75,21 +75,15 @@ const CreateStockCategory = () => {
       });
     }
 
-    if (!formData.stock_group_id) {
-      return toast({
-        title: "Please select stock group",
-        status: "warning",
-        duration: 2000,
-      });
-    }
+ 
 
     try {
       setLoading(true);
 
-      const payload = {
-        name: formData.name,
-        stock_group_id: formData.stock_group_id,
-      };
+     const payload = {
+  name: formData.name,
+  stock_group_id: formData.stock_group_id || null,
+};
 
       const res = await API.post(
         API_ENDPOINTS.Create_stock_category,
@@ -168,17 +162,20 @@ const CreateStockCategory = () => {
             <FormControl isRequired>
               <FormLabel>Select Stock Group</FormLabel>
               <Select
-                name="stock_group_id"
-                value={formData.stock_group_id}
-                onChange={handleChange}
-                placeholder="Select Stock Group"
-              >
-                {stockGroups.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name}
-                  </option>
-                ))}
-              </Select>
+  name="stock_group_id"
+  value={formData.stock_group_id}
+  onChange={handleChange}
+>
+  <option value="">Primary</option>
+
+  {stockGroups
+    .filter((item) => item.id !== null)
+    .map((item) => (
+      <option key={item.id} value={item.id}>
+        {item.name}
+      </option>
+    ))}
+</Select>
             </FormControl>
 
           </SimpleGrid>

@@ -17,7 +17,7 @@ const NotificationBtn = () => {
     ];
 
     return (
-        <Box display="flex" justifyContent="end" gap={{base: "4px",sm: "4px",md:"7.5px"}}  flexWrap="wrap" mt={5} margin={5}>
+        <Box display="flex" justifyContent="end" gap={{base: "4px",sm: "4px",md:"7.5px"}}  flexWrap="wrap" mt={5} margin={{base: 1, sm: 1, md: 5}}>
 
             {buttons.map((btn, i) => (
                 <Box key={i} position="relative">

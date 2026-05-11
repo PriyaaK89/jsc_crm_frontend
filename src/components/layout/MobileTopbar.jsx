@@ -44,6 +44,7 @@ import {
   RiSettings3Line,
   RiFileList3Line,
   RiBarChartLine,
+  RiTeamFill,
 } from "react-icons/ri";
 import{FaBookOpen} from "react-icons/fa";
 
@@ -83,7 +84,7 @@ import {
 } from "react-icons/hi";
 import { FaKey } from "react-icons/fa";
 
-import { FiMapPin } from "react-icons/fi";
+import { FiMapPin, FiTarget } from "react-icons/fi";
 import { BiPurchaseTagAlt } from "react-icons/bi";
 import { BsCreditCard2Front, BsUpcScan } from "react-icons/bs";
 import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
@@ -207,36 +208,11 @@ const MobileTopbar = () => {
       key: "business",
       icon: FaChartLine,
       children: [
-        {
-          label: "Create Team",
-          path: "/business-development/create-team",
-          icon: FaUserPlus,
-        },
-        {
-          label: "Create Sub Team",
-          path: "/business-developmentelopment/create-sub-team",
-          icon: HiUserGroup,
-        },
-        {
-          label: "Assign Target RSM",
-          path: "/business-developmentelopment/assign-target-rsm",
-          icon: MdAssignmentInd,
-        },
-        {
-          label: "Assign Target TSM",
-          path: "/business-developmentelopment/assign-target-tsm",
-          icon: FaUserTie,
-        },
-        {
-          label: "Assign Target SM",
-          path: "/business-developmentelopment/assign-target-sm",
-          icon: FaBullseye,
-        },
-        {
-          label: "Assign Target FA",
-          path: "/business-developmentelopment/assign-target-fa",
-          icon: UserCheck,
-        },
+               {label: "Create Team",path: "/business-development/create-team",icon: FaUserPlus, },
+               {label: "Create Sub Team",path: "/business-development/create-sub-team",icon: HiUserGroup,},
+               { label: "Assign Target", path: "/business-development/assign-target",  icon: MdAssignmentInd,},
+               { label: "View Teams", path: "/business-development/view-teams",  icon: RiTeamFill ,},
+               { label: "View Assigned Targets", path: "/business-development/view-assigned-targets",  icon: FiTarget  ,},
       ],
     },
 

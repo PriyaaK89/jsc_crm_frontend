@@ -479,7 +479,7 @@ return (
             </Text>
 
             <Heading
-              size="lg"
+              size="md"
               color="gray.700" lineHeight={1}
             >
               ₹ {pendingTarget}
@@ -490,8 +490,8 @@ return (
           <Flex
             align="center"
             justify="center"
-            w="52px"
-            h="52px"
+            w="45px"
+            h="45px"
             borderRadius="12px"
             bg="#EDF2F7"
           >
@@ -530,7 +530,7 @@ return (
             </Text>
 
             <Heading
-              size="lg" lineHeight={1}
+              size="md" lineHeight={1}
               color={
                 remainingTarget < 0
                   ? "red.500"
@@ -545,8 +545,8 @@ return (
           <Flex
             align="center"
             justify="center"
-            w="52px"
-            h="52px"
+            w="45px"
+            h="45px"
             borderRadius="12px"
             bg={
               remainingTarget < 0
@@ -584,14 +584,6 @@ return (
       mb={6}
     >
 
-      <Heading
-        size="md"
-        mb={6}
-        color="gray.700"
-      >
-        Target Configuration
-      </Heading>
-
       <SimpleGrid
         columns={{
           base: 1,
@@ -607,7 +599,7 @@ return (
 
           <FormLabel
             fontSize="14px"
-            fontWeight="600"
+            fontWeight="500"
             color="gray.600"
           >
             Team
@@ -617,9 +609,11 @@ return (
             placeholder="Select Team"
             value={selectedTeam}
             onChange={handleTeamChange}
-            h="48px"
+            h="40px"
             borderRadius="12px"
             borderColor="gray.200"
+            color="gray.700"
+            fontSize="15px"
             _focus={{
               borderColor: "#237086",
               boxShadow:
@@ -644,7 +638,7 @@ return (
 
           <FormLabel
             fontSize="14px"
-            fontWeight="600"
+            fontWeight="500"
             color="gray.600"
           >
             Sub Team
@@ -654,9 +648,11 @@ return (
             placeholder="Select Sub Team"
             value={selectedSubTeam}
             onChange={handleSubTeamChange}
-            h="48px"
+            h="40px"
             borderRadius="12px"
             borderColor="gray.200"
+             color="gray.700"
+            fontSize="15px"
             _focus={{
               borderColor: "#237086",
               boxShadow:
@@ -681,7 +677,7 @@ return (
 
           <FormLabel
             fontSize="14px"
-            fontWeight="600"
+            fontWeight="500"
             color="gray.600"
           >
             Assign From
@@ -694,9 +690,11 @@ return (
                 e.target.value
               )
             }
-            h="48px"
+            h="40px"
             borderRadius="12px"
             borderColor="gray.200"
+             color="gray.700"
+            fontSize="14px"
             _focus={{
               borderColor: "#237086",
               boxShadow:
@@ -737,7 +735,7 @@ return (
 
           <FormLabel
             fontSize="14px"
-            fontWeight="600"
+            fontWeight="500"
             color="gray.600"
           >
             Assign To Role
@@ -751,9 +749,11 @@ return (
                 e.target.value
               )
             }
-            h="48px"
+            h="40px"
             borderRadius="12px"
             borderColor="gray.200"
+             color="gray.700"
+            fontSize="15px"
             _focus={{
               borderColor: "#237086",
               boxShadow:
@@ -786,7 +786,7 @@ return (
 
             <FormLabel
               fontSize="14px"
-              fontWeight="600"
+              fontWeight="500"
               color="gray.600"
             >
               Parent Assignment
@@ -800,7 +800,7 @@ return (
               onChange={
                 handleAssignmentSelect
               }
-              h="48px"
+              h="40px"
               borderRadius="12px"
               borderColor="gray.200"
               _focus={{
@@ -868,7 +868,6 @@ return (
           <Text
             fontSize="13px"
             color="gray.500"
-            mt={1}
           >
             Assign targets to users
           </Text>
@@ -876,13 +875,14 @@ return (
         </Box>
 
         <Button
-          leftIcon={<AddIcon />}
+          leftIcon={<AddIcon fontSize="14px"/>}
           onClick={addRow}
           bg="#237086"
           color="white" fontWeight='500'
           _hover={{
             bg: "#1B5A6B"
           }}
+          fontSize="14px" 
           borderRadius="6px"
           px={5}
         >
@@ -933,7 +933,7 @@ return (
                   <Box>
 
                     <Text
-                      fontWeight="600"
+                      fontWeight="500"
                       color="gray.700"
                     >
                       Assignment #
@@ -984,7 +984,7 @@ return (
 
                   <FormLabel
                     fontSize="14px"
-                    fontWeight="600"
+                    fontWeight="500"
                     color="gray.600"
                   >
                     Select User
@@ -1004,9 +1004,10 @@ return (
                         e.target.value
                       )
                     }
-                    h="48px"
+                    h="40px"
                     bg="white"
-                    borderRadius="12px"
+                    borderRadius="12px"  color="gray.700"
+            fontSize="15px"
                     borderColor="gray.200"
                     _focus={{
                       borderColor:
@@ -1041,7 +1042,7 @@ return (
 
                   <FormLabel
                     fontSize="14px"
-                    fontWeight="600"
+                    fontWeight="500"
                     color="gray.600"
                   >
                     Target Amount
@@ -1051,7 +1052,7 @@ return (
 
                     <InputLeftElement
                       pointerEvents="none"
-                      h="48px"
+                      h="40px"
                     >
                       ₹
                     </InputLeftElement>
@@ -1071,7 +1072,7 @@ return (
                           e.target.value
                         )
                       }
-                      h="48px"
+                      h="40px"
                       bg="white"
                       borderRadius="12px"
                       borderColor="gray.200"
@@ -1120,7 +1121,7 @@ return (
           py={3}
           borderRadius="12px"
           fontSize="14px"
-          fontWeight="600"
+          fontWeight="500"
         >
           Total Assigned :
           {" "}
@@ -1134,7 +1135,7 @@ return (
             bg: "#1B5A6B"
           }}
           px={10}
-          h="48px" fontWeight='500'
+          h="40px" fontWeight='500'
           borderRadius="6px"
           onClick={handleSubmit}
           isDisabled={loading}

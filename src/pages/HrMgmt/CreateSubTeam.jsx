@@ -177,7 +177,10 @@ const CreateSubTeam = () => {
   };
 
   return (
-    <Box w="100%" bg="white" p={6} borderRadius="lg">
+    <Box
+      bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 4 }} borderRadius="lg" boxShadow="md"
+    >
+
       <HStack justifyContent="space-between">
         <Breadcrumb
           color="#8B8D97"
@@ -198,40 +201,33 @@ const CreateSubTeam = () => {
               color="#8B8D97"
               fontSize="13px"
             >
-              Create Business Development Sub Team
+              Create Sub Team
             </BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>
       </HStack>
 
-      <Heading size="md" textAlign="center" mb={6}>
-        Create Business Development Sub Team
-      </Heading>
+ <Heading
+          size="md"
+          color="gray.600" fontSize="18px" mb="1.25rem"
+        >Create Sub-Team
+
+        </Heading>
 
       <Box as="form">
-        <SimpleGrid
-          columns={{ base: 1, md: 2 }}
-          spacing={5}
-        >
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5} >
           {/* SUB TEAM NAME */}
           <FormControl isRequired>
             <FormLabel {...labelStyles}>
               Sub Team Name
             </FormLabel>
 
-            <Input
-              placeholder="Enter Sub Team Name"
-              name="name"
-              value={formData?.name}
-              onChange={handleChange}
-            />
+            <Input placeholder="Enter Sub Team Name" name="name" value={formData?.name} onChange={handleChange}/>
           </FormControl>
 
           {/* SELECT TEAM */}
           <FormControl isRequired>
-            <FormLabel {...labelStyles}>
-              Select Under Team
-            </FormLabel>
+            <FormLabel {...labelStyles}> Select Under Team </FormLabel>
 
             <ChakraSelect
               placeholder="Select Team"
@@ -242,10 +238,7 @@ const CreateSubTeam = () => {
               onChange={handleChange}
             >
               {team?.map((item) => (
-                <option
-                  key={item?.id}
-                  value={item?.id}
-                >
+                <option key={item?.id} value={item?.id}>
                   {item?.name}
                 </option>
               ))}
@@ -254,9 +247,7 @@ const CreateSubTeam = () => {
 
           {/* PRODUCT CATEGORY MULTI SELECT */}
           <FormControl isRequired>
-  <FormLabel {...labelStyles}>
-    Select Product Category
-  </FormLabel>
+  <FormLabel {...labelStyles}>  Select Product Category </FormLabel>
 
   <ReactSelect
     isMulti
@@ -337,11 +328,15 @@ const CreateSubTeam = () => {
         {/* BUTTON */}
         <Box textAlign="center" mt={8}>
           <Button
-            w={{ base: "100%", md: "200px" }}
-            colorScheme="blue"
+            bg="#237086"
+                fontWeight="500" fontSize="14px"
+                color="white"
+                _hover={{
+                  bg: "#1B5A6B"
+                }} borderRadius="12px" px={8}
             onClick={handleCreateSubTeam}
           >
-            Create
+            Create Subteam
           </Button>
         </Box>
       </Box>

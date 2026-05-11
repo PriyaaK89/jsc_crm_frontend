@@ -94,7 +94,10 @@ export const API_ENDPOINTS = {
   assign_target: 'assign-target',
   get_assigned_targets: 'get-assigned-targets',
   assign_individual_targets: 'assign-employee-target',
-   delete_team: "/delete-team",
-
+  get_team_by_id: 'getTeam',
+  edit_team: 'update-team',
+  delete_team: "delete-team",
+  edit_suTeam: "update-subteam",
+  delete_subTeam: "delete-subteam",
 };
 // 

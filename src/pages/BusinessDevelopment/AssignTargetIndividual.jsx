@@ -185,7 +185,7 @@ const AssignTargetIndividual = () => {
 }));
 
   return (
-    <Box p={0}>
+    <Box p={0} >
           <VStack spacing={6} align="stretch">
             <Grid
               templateColumns={{
@@ -202,7 +202,8 @@ const AssignTargetIndividual = () => {
 
                 <Select
                   placeholder="Select Role"
-                  name="role" bg="white"
+                  name="role" bg="white" color="gray.700"
+            fontSize="15px"
                   value={formData.role}
                   onChange={handleChange}
                 >
@@ -226,7 +227,8 @@ const AssignTargetIndividual = () => {
                       ? "Loading employees..."
                       : "Select Employee"
                   } bg="white"
-                  name="user_id"
+                  name="user_id" color="gray.700"
+            fontSize="15px"
                   value={formData.user_id}
                   onChange={handleChange}
                 >
@@ -250,7 +252,8 @@ const AssignTargetIndividual = () => {
                   placeholder="Select Target Type"
                   name="target_type" bg="white"
                   value={formData.target_type}
-                  onChange={handleChange}
+                  onChange={handleChange} color="gray.700"
+            fontSize="15px"
                 >
                   <option value="SALE">SALE</option>
                   <option value="COLLECTION">
@@ -268,7 +271,8 @@ const AssignTargetIndividual = () => {
                   placeholder="Select Duration"
                   name="duration_type" bg="white"
                   value={formData.duration_type}
-                  onChange={handleChange}
+                  onChange={handleChange} color="gray.700"
+            fontSize="15px"
                 >
                   <option value="MONTHLY">
                     MONTHLY
@@ -297,7 +301,8 @@ const AssignTargetIndividual = () => {
                   type="date"
                   name="start_date" bg="white" placeholder="Enter Start Date"
                   value={formData.start_date}
-                  onChange={handleChange}
+                  onChange={handleChange} color="gray.700"
+            fontSize="15px"
                 />
               </FormControl>
 
@@ -327,7 +332,7 @@ const AssignTargetIndividual = () => {
     onChange={(selected) =>
       setSelectedCategories(selected || [])
     }
-    placeholder="Select Categories" bg="white"
+    placeholder="Select Categories" bg="white" 
   />
 </FormControl>
 

@@ -1,33 +1,15 @@
 import React, { useState } from "react";
 
-import {
-  Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Heading,
-  HStack,
-  Tabs,
-  TabList,
-  TabPanels,
-  TabPanel,
-  Tab,
-  Text,
-  Flex
-} from "@chakra-ui/react";
-
+import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Heading, HStack, Tabs, TabList, TabPanels, TabPanel, Tab, Text, Flex} from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import { FiUsers, FiUser } from "react-icons/fi";
-
 import { Link } from "react-router-dom";
-
 import AssignTargetRSM from "../HrMgmt/AssignTargetRSM";
 import AssignTargetIndividual from "./AssignTargetIndividual";
 
 const AssignTarget = () => {
 
   const [tabIndex, setTabIndex] = useState(0);
-
   const headings = [
     {
       title: "Team-wise Target Assignment",
@@ -43,33 +25,29 @@ const AssignTarget = () => {
 
   return (
     <Box
-      w="100%"
-      minH="100vh"
-      bg="#ffffff"
-      p={{ base: 4, md: 6 }} borderRadius="lg" boxShadow="md"
+      bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 4 }} borderRadius="lg" boxShadow="md"
     >
 
-      {/* ================= BREADCRUMB ================= */}
-
-      <HStack
-        justifyContent="space-between"
-        mb={4}
-      >
+      <HStack justifyContent="space-between">
         <Breadcrumb
-          fontSize="14px"
-          color="gray.500"
+          color="#8B8D97"
+          padding="10px 0px 1rem 0px"
         >
           <BreadcrumbItem>
             <BreadcrumbLink
               as={Link}
               to="/dashboard"
             >
-              <GoHomeFill color="#4A5568" />
+              <GoHomeFill color="#5570F1" />
             </BreadcrumbLink>
           </BreadcrumbItem>
 
-          <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink>
+          <BreadcrumbItem>
+            <BreadcrumbLink
+              isCurrentPage
+              color="#8B8D97"
+              fontSize="13px"
+            >
               Assign Target
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -80,17 +58,16 @@ const AssignTarget = () => {
 
       <Box mb={5}>
         <Heading
-          size="lg"
-          color="gray.700"
-          fontWeight="700"
+         size="md"
+          color="gray.600" fontSize="18px" height="36px"
         >
           {headings[tabIndex].title}
         </Heading>
 
         <Text
-          mt={1}
+         
           color="gray.500"
-          fontSize="14px"
+          fontSize="12px"
         >
           {headings[tabIndex].subtitle}
         </Text>
@@ -203,7 +180,7 @@ const AssignTarget = () => {
 
           <TabPanel p={0}>
             <Box
-              bg="white"
+              bg="#f5f5f5"
               borderRadius="14px"
               border="1px solid"
               borderColor="gray.200"

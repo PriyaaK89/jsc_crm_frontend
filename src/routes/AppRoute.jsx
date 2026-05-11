@@ -81,6 +81,8 @@ import EditStockGroupLayout from '../components/layout/EditStockGroupLayout';
 import EditStockCategaryLayout from "../components/layout/EditStockCategaryLayout";
 import AssignTargetLayout from "../components/layout/BusinessDevelopment/AssignTargetLayout";
 import TeamLayout from "../components/layout/BusinessDevelopment/TeamLayout";
+import ViewSubTeamLayout from "../components/layout/BusinessDevelopment/ViewSubteamLayout";
+import ViewAssignedTargets from "../pages/BusinessDevelopment/ViewAssignedTargets";
 
 
 function App() {
@@ -143,16 +145,18 @@ function App() {
         <Route path='/print/mgmt/truthful_labelprint' element={<PrintTruthfulLablePrintLayout/>}/>
         {/*  */}
         <Route path="/business-development/create-team" element={<CreateTeamLayout />}/>
+        <Route path="/business-development/edit-team/:id" element={<CreateTeamLayout />}/>
+
         <Route path="/business-development/view-teams" element={<TeamLayout/>}/>
+        <Route path="/business-development/view-subteams/:id" element={<ViewSubTeamLayout/>}/>
+
         <Route
           path="/business-development/create-sub-team"
           element={<CreateSubTeamLayout />}
         />
         <Route path="/business-development/assign-target" element={<AssignTargetLayout/>}/>
-        <Route
-          path="/business-development/assign-target-rsm"
-          element={<AssignTargetRSMLayout />}
-        />
+        <Route path="/business-development/assign-target-rsm" element={<AssignTargetRSMLayout />} />
+        <Route path="/business-development/view-assigned-targets" element={<ViewAssignedTargets/>}/>
         <Route
           path="/company-master/create-company"
           element={<CreateCompanyLayout />}

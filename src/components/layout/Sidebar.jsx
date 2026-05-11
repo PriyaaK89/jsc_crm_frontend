@@ -14,7 +14,7 @@ import { MdInventory, MdAddBox, MdViewList, MdDelete } from "react-icons/md";
 import { MdCategory } from "react-icons/md";
 import { MdAddCircleOutline,MdAccountTree   } from "react-icons/md";
 import { FaFileInvoice } from "react-icons/fa";
-import { FiMapPin } from "react-icons/fi";
+import { FiMapPin, FiTarget } from "react-icons/fi";
 import { FaProjectDiagram } from "react-icons/fa";
 import { FaClipboardList,FaCalculator,FaWallet,FaList,FaTrash,FaFileInvoiceDollar,FaBookOpen,FaMoneyCheckAlt} from "react-icons/fa";
   import { FaEdit,FaStore } from "react-icons/fa";
@@ -74,8 +74,9 @@ const Newsidebar = () => {
   const sidebarButtonStyle = {
     variant: "ghost",
     justifyContent: "flex-start",
-    fontWeight: "700",
-    color: "#333333",
+    fontWeight: "600",
+    color: "#353535",
+    fontSize: "15px",
     transition: "all 0.3s ease", 
 
     _hover: {
@@ -126,7 +127,8 @@ const Newsidebar = () => {
         {label: "Create Team",path: "/business-development/create-team",icon: FaUserPlus, },
         {label: "Create Sub Team",path: "/business-development/create-sub-team",icon: HiUserGroup,},
         { label: "Assign Target", path: "/business-development/assign-target",  icon: MdAssignmentInd,},
-        // { label: "View Teams", path: "/business-development/view-teams",  icon: RiTeamFill ,},
+        { label: "View Teams", path: "/business-development/view-teams",  icon: RiTeamFill ,},
+        { label: "View Assigned Targets", path: "/business-development/view-assigned-targets",  icon: FiTarget  ,},
 
       ],
     },
@@ -325,7 +327,7 @@ useEffect(() => {
                 }
                 {...sidebarButtonStyle}
                 onClick={() => toggleMenu(menu.key)}
-                style={parentActive ? activeStyle : undefined} // ⭐ APPLY STYLE
+                style={parentActive ? activeStyle : undefined} //  APPLY STYLE
               >
                 {menu.label}
               </Button>

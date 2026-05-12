@@ -440,7 +440,7 @@ const AssignTargetRSM = () => {
   };
 
 return (
-  <Box w="100%" bg="#f5f5f5">
+  <Box w="100%" bg="#f2f1f1">
 
     {/* ================= TOP STATS ================= */}
 
@@ -611,7 +611,7 @@ return (
             onChange={handleTeamChange}
             h="40px"
             borderRadius="12px"
-            borderColor="gray.200"
+            borderColor="gray.300"
             color="gray.700"
             fontSize="15px"
             _focus={{
@@ -650,7 +650,7 @@ return (
             onChange={handleSubTeamChange}
             h="40px"
             borderRadius="12px"
-            borderColor="gray.200"
+            borderColor="gray.300"
              color="gray.700"
             fontSize="15px"
             _focus={{
@@ -692,7 +692,7 @@ return (
             }
             h="40px"
             borderRadius="12px"
-            borderColor="gray.200"
+            borderColor="gray.300"
              color="gray.700"
             fontSize="14px"
             _focus={{
@@ -751,7 +751,7 @@ return (
             }
             h="40px"
             borderRadius="12px"
-            borderColor="gray.200"
+            borderColor="gray.300"
              color="gray.700"
             fontSize="15px"
             _focus={{
@@ -802,7 +802,7 @@ return (
               }
               h="40px"
               borderRadius="12px"
-              borderColor="gray.200"
+              borderColor="gray.300"
               _focus={{
                 borderColor:
                   "#237086",
@@ -1008,7 +1008,7 @@ return (
                     bg="white"
                     borderRadius="12px"  color="gray.700"
             fontSize="15px"
-                    borderColor="gray.200"
+                    borderColor="gray.300"
                     _focus={{
                       borderColor:
                         "#237086",
@@ -1075,7 +1075,7 @@ return (
                       h="40px"
                       bg="white"
                       borderRadius="12px"
-                      borderColor="gray.200"
+                      borderColor="gray.300"
                       _focus={{
                         borderColor:
                           "#237086",

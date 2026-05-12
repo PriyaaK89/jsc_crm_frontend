@@ -283,67 +283,38 @@ const CreateTeam = () => {
     >
 
       <HStack justifyContent="space-between">
-        <Breadcrumb
-          color="#8B8D97"
-          padding="10px 0px 1rem 0px"
-        >
+        <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px" >
           <BreadcrumbItem>
-            <BreadcrumbLink
-              as={Link}
-              to="/dashboard"
-            >
+            <BreadcrumbLink as={Link} to="/dashboard" >
               <GoHomeFill color="#5570F1" />
             </BreadcrumbLink>
           </BreadcrumbItem>
 
           <BreadcrumbItem>
-            <BreadcrumbLink
-              isCurrentPage
-              color="#8B8D97"
-              fontSize="13px"
-            >
+            <BreadcrumbLink isCurrentPage color="#8B8D97" fontSize="13px" >
               {isEditMode ? "Edit Team" : "Create Team"}
             </BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>
       </HStack>
 
-      {/* ================= PAGE HEADER ================= */}
-
       <Box mb={6}>
-
-        <Heading
-          size="md"
-          color="gray.600" fontSize="18px" height="36px"
-        >
-
-          {isEditMode
-            ? "Edit Business Development Team"
-            : "Create Business Development Team"}
-
+        <Heading size="md" color="gray.600" fontSize="18px" height="36px" >
+          {isEditMode ? "Edit Business Development Team" : "Create Business Development Team"}
         </Heading>
 
-        <Text
-         
-          color="gray.500"
-          fontSize="12px"
-        >
-
-          {isEditMode
-            ? "Update team details and target amount"
-            : "Create a new team and assign target"}
-
+        <Text color="gray.500" fontSize="12px" >
+          {isEditMode ? "Update team details and target amount" : "Create a new team and assign target"}
         </Text>
-
       </Box>
 
       {/* ================= FORM CARD ================= */}
 
       <Box
-        bg="#f5f5f5"
+        bg="#f2f1f1"
         borderRadius="18px"
         border="1px solid"
-        borderColor="gray.200"
+        borderColor="gray.300"
         boxShadow="sm"
         p={{
           base: 5,
@@ -380,7 +351,7 @@ const CreateTeam = () => {
                 h="40px"
                 bg="white"
                 borderRadius="12px"
-                borderColor="gray.200"
+                borderColor="gray.300"
                 _focus={{
                   borderColor:
                     "#237086",
@@ -412,7 +383,7 @@ const CreateTeam = () => {
                 h="40px"
                 bg="white"
                 borderRadius="12px"
-                borderColor="gray.200"
+                borderColor="gray.300"
                 _focus={{
                   borderColor:
                     "#237086",
@@ -450,14 +421,15 @@ const CreateTeam = () => {
                 _hover={{
                   bg: "#1B5A6B"
                 }}
+                 px={8}
+                borderRadius="12px"
                 isLoading={loading}
                 loadingText={
                   isEditMode
                     ? "Updating..."
                     : "Creating..."
                 }
-                px={8}
-                borderRadius="12px"
+               
               >
 
                 {isEditMode
@@ -465,15 +437,10 @@ const CreateTeam = () => {
                   : "Create Team"}
 
               </Button>
-
             </HStack>
-
           </VStack>
-
         </Box>
-
       </Box>
-
     </Box>
   );
 };

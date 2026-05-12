@@ -8,7 +8,7 @@ import ViewCompany from '../../../pages/HrMgmt/CompanyMaster/ViewCompany';
 
 function ViewComapnyLayout() {
   return (
-   <Box bg="#F4F4F4" h="100%" >
+   <Box bg="#f2f1f1" h="100%" >
         <Box display={{ base: "none", md: "block" }}>
           <Sidebar />
   

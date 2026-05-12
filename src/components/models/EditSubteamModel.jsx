@@ -230,7 +230,7 @@ const EditSubteamModel = ({ isEditModelOpen, onEditModelClose, getSubteamsList, 
                 onChange={handleChange}
                 h="48px"
                 borderRadius="12px"
-                borderColor="gray.200"
+                borderColor="gray.300"
                 _focus={{
                   borderColor:
                     "#237086",
@@ -274,7 +274,7 @@ const EditSubteamModel = ({ isEditModelOpen, onEditModelClose, getSubteamsList, 
                   onChange={handleChange}
                   h="48px"
                   borderRadius="12px"
-                  borderColor="gray.200"
+                  borderColor="gray.300"
                   _focus={{
                     borderColor:
                       "#237086",

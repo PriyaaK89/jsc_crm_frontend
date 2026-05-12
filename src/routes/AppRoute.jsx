@@ -83,6 +83,10 @@ import AssignTargetLayout from "../components/layout/BusinessDevelopment/AssignT
 import TeamLayout from "../components/layout/BusinessDevelopment/TeamLayout";
 import ViewSubTeamLayout from "../components/layout/BusinessDevelopment/ViewSubteamLayout";
 import ViewAssignedTargets from "../pages/BusinessDevelopment/ViewAssignedTargets";
+import CreateGodownLayout from "../components/layout/InventoryMaster/CreateGodownLayout";
+import ViewGodownLayout from "../components/layout/InventoryMaster/ViewGodownList";
+import CreateUnitLayout from "../components/layout/InventoryMaster/CreateUnitOfMeasureLayout";
+import UnitLayout from "../components/layout/InventoryMaster/UnitOfMeasureList";
 
 
 function App() {
@@ -171,23 +175,19 @@ function App() {
           element={<ApproveIpUserListLayout />}
         />
    
-        <Route
-          path="/inventory/create-stock-group"
-          element={<CreateStockGroupLayout />}
-        />
-        <Route
-          path="/inventory/view-stock-group"
-          element={<ViewStockGroupLayout />}
-        />
-        <Route
-          path="/inventory/view-stock-group/edit/:id"
-          element={<EditStockGroupLayout />}
-        />
-        <Route
-          path="/inventory/create-stock-category"
-          element={<CreateStockCategoryLayout />}
-        />
+        <Route path="/inventory/create-stock-group" element={<CreateStockGroupLayout />} />
+        <Route path="/inventory/view-stock-group" element={<ViewStockGroupLayout />} />
+        <Route path="/inventory/view-stock-group/edit/:id" element={<EditStockGroupLayout />} />
+        <Route path="/inventory/create-stock-category" element={<CreateStockCategoryLayout />} />
         <Route path="/inventory/view-stock-category/edit/:id" element={<EditStockCategaryLayout/>}/>
+        <Route path="/inventory/create-godown" element={<CreateGodownLayout/>}/>
+        <Route path="/inventory/edit-godown/:id" element={<CreateGodownLayout/>}/>
+        <Route path="/inventory/view-godown-list" element={<ViewGodownLayout/>}/>
+        <Route path="/inventory/create-unitOfMeasure" element={<CreateUnitLayout/>}/>
+        <Route path="/inventory/unit-list" element={<UnitLayout/>}/>
+        
+
+
         <Route
           path="/inventory/view-stock-category"
           element={<ViewStockCategoryLayout />}

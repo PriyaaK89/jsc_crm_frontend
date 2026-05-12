@@ -452,7 +452,7 @@ const downloadExcel = async () => {
 
                 <Box
                   borderWidth="1px"
-                  borderColor="gray.200"
+                  borderColor="gray.300"
                   borderRadius="lg"
                   mt={5}
                   maxW="100%"

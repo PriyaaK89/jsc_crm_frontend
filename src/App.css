@@ -45,12 +45,14 @@
 .productsTable tbody{
   border-left: 1px solid #F4F4F4;
   border-right: 1px solid #F4F4F4;
+
 }
 
 .productsTable Thead Tr Th{
   padding: 4px 20px;
   /* border-top: 1px solid #E1E2E9; */
   border-bottom: 1px solid #E1E2E9;
+  text-transform: capitalize;
 
 }
 .productsTable Thead{

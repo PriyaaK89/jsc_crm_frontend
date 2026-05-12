@@ -59,7 +59,7 @@ function PartyTransactionReport() {
         p={6}
         borderRadius="md"
         border="1px solid"
-        borderColor="gray.200"
+        borderColor="gray.300"
       >
 
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>

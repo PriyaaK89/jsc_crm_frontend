@@ -87,7 +87,7 @@ const AssignTarget = () => {
           mb={6}
           gap={3}
           borderBottom="1px solid"
-          borderColor="gray.200"
+          borderColor="gray.300"
           pb={3} justifyContent="center"
         >
 
@@ -96,7 +96,7 @@ const AssignTarget = () => {
           <Tab
             bg="white"
             border="1px solid"
-            borderColor="gray.200"
+            borderColor="gray.300"
             borderRadius="10px"
             px={5}
             py={3}
@@ -128,7 +128,7 @@ const AssignTarget = () => {
           <Tab
             bg="white"
             border="1px solid"
-            borderColor="gray.200"
+            borderColor="gray.300"
             borderRadius="10px"
             px={5}
             py={3}
@@ -165,10 +165,10 @@ const AssignTarget = () => {
 
           <TabPanel p={0}>
             <Box
-              bg="#f5f5f5"
+              bg="#f2f1f1"
               borderRadius="14px"
               border="1px solid"
-              borderColor="gray.200"
+              borderColor="gray.300"
               p={{ base: 4, md: 6 }}
               boxShadow="sm"
             >
@@ -180,10 +180,10 @@ const AssignTarget = () => {
 
           <TabPanel p={0}>
             <Box
-              bg="#f5f5f5"
+              bg="#f2f1f1"
               borderRadius="14px"
               border="1px solid"
-              borderColor="gray.200"
+              borderColor="gray.300"
               p={{ base: 4, md: 6 }}
               boxShadow="sm"
             >

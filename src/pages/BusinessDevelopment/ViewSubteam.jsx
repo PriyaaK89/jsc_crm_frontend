@@ -180,7 +180,7 @@ const handleCloseEditModal = () => {
                 )
               }
               borderRadius="12px"
-              borderColor="gray.200"
+              borderColor="gray.300"
               _focus={{
                 borderColor:
                   "#237086",

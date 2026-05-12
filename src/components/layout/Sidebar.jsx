@@ -4,7 +4,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
 import { MdAssignmentInd, MdOutlineTrackChanges } from "react-icons/md";
 import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
-import { FaUserTie } from 'react-icons/fa';
+import { FaListAlt, FaTable, FaUserTie, FaWarehouse } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
 import { MdCorporateFare, MdGroupAdd } from "react-icons/md";
 import { HiOfficeBuilding ,HiOutlineDocumentReport} from "react-icons/hi";
@@ -38,6 +38,7 @@ import { FiLogOut } from "react-icons/fi";
 import { MdUploadFile } from "react-icons/md";
 import { FaKey } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa";
+import { RxComponent1 } from "react-icons/rx";
 
 const Newsidebar = () => {
   const location = useLocation();
@@ -75,9 +76,10 @@ const Newsidebar = () => {
     variant: "ghost",
     justifyContent: "flex-start",
     fontWeight: "600",
-    color: "#353535",
+    color: "#29404a",
     fontSize: "15px",
     transition: "all 0.3s ease", 
+    paddingLeft: "21px !important",
 
     _hover: {
       bg: "gray.100",
@@ -206,7 +208,10 @@ const Newsidebar = () => {
           {label:"View Stock Group",path:"/inventory/view-stock-group",icon:MdViewList},
           {label:"Create Stock Category",path:"/inventory/create-stock-category",icon:MdCategory},
           {label:"View Stock Category",path:"/inventory/view-stock-category",icon:MdAddCircleOutline},
-         
+          {label:"Create Godown",path:"/inventory/create-godown",icon:FaWarehouse},
+          {label:"View Godown",path:"/inventory/view-godown-list",icon:FaListAlt  },
+          {label:"Create Unit of Measure",path:"/inventory/create-unitOfMeasure",icon:RxComponent1  },
+          {label:"View Unit of Measure ",path:"/inventory/unit-list",icon:FaTable   },
         ]
       },{
         label:"Order Vochor",key:"order-vochor",icon:FaFileInvoice,
@@ -269,7 +274,7 @@ useEffect(() => {
      
 
   borderRight="1px solid #e5e7eb"
-    borderColor="gray.200"
+    borderColor="gray.300"
       overflowY="auto"
       h="100vh"
      sx={{
@@ -315,7 +320,7 @@ useEffect(() => {
             <Box key={index}>
               <Button
               w="92%"
-                leftIcon={<IconComponent />}
+                leftIcon={<IconComponent color="#526869" />}
                 rightIcon={
                   <Icon
                     as={
@@ -340,7 +345,7 @@ useEffect(() => {
                       <Button
                       w="92%"
                         key={i}
-                        leftIcon={<ChildIcon size={17}/>}
+                        leftIcon={<ChildIcon size={17} color="#526869"/>}
                         size="sm"
                         as={NavLink}
                         to={item.path}

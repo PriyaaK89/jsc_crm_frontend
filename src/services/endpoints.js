@@ -99,5 +99,17 @@ export const API_ENDPOINTS = {
   delete_team: "delete-team",
   edit_suTeam: "update-subteam",
   delete_subTeam: "delete-subteam",
+  create_godown: "create-godown",
+  godown_list: "getGodownList",
+  view_godown_by_id: "getGodownDetails",
+  update_godown: "update-godown",
+  delete_godown: "delete-godown",
+  get_unique_quantity_codes: "get-unitOfMeasure-list",
+  create_unit_of_measure: "create-unitOfMeasure",
+  getUnitList: "getAllUnits",
+  getSimpleUnitList: "get-simple-units",
+  get_unit_by_id: "getUnitById",
+  edit_unitOfMeasure: "editUnitOfMeasure",
+  delete_unitOfMeasure: "deleteUnit",
 };
 // 

@@ -10,7 +10,7 @@ import DistributorAgreement from '../../../pages/HrMgmt/Letters/distributorONBor
 function ONBordingdistributoragreement() {
 
   return(
-    <Box bg="#F4F4F4" minH="100%" >
+    <Box bg="#f2f1f1" minH="100%" >
       <Box display={{ base: "none", md: "block" }}>
         <Sidebar />
 

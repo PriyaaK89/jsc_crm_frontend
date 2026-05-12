@@ -206,7 +206,7 @@ const EmpJoiningLetter = () => {
         bg="gray.50"
         borderRadius="lg"
         border="1px solid"
-        borderColor="gray.200"
+        borderColor="gray.300"
         mb={8}
       >
 

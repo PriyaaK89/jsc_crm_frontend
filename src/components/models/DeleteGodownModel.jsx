@@ -51,7 +51,7 @@ deleteModelIsOpen, deleteModelOnClose,selectedId, fetchGodownList
 
         <Flex bg="#c23333" borderRadius="12px 12px 0px 0px " color="white" py={2} px={4} justify="space-between" alignItems="center"  size="xl">
          <Text fontWeight="500">
-          Delete Team
+          Delete Godown
          </Text>
          <ModalCloseButton position="static" color="white"/>
         </Flex>
@@ -60,7 +60,7 @@ deleteModelIsOpen, deleteModelOnClose,selectedId, fetchGodownList
         <ModalBody mt={4}>
           <Text fontSize={{base:"12px",md:"14px"}}>
             Are you sure you want to{" "}
-            <b style={{ color: "red" }}>delete</b> this Team?
+            <b style={{ color: "red" }}>delete</b> this Godown?
             <br />
             This action cannot be undone.
           </Text>

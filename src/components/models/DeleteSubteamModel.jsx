@@ -71,7 +71,7 @@ deleteModelIsOpen, deleteModelOnClose, getSubteamsList, selectedId
 
         <Flex bg="#E53E3E" borderRadius="12px 12px 0px 0px " color="white" py={2} px={4} justify="space-between" alignItems="center"  size="xl">
          <Text fontWeight="bold">
-          Delete Team
+          Delete Subteam
          </Text>
          <ModalCloseButton position="static" color="white"/>
         </Flex>
@@ -80,7 +80,7 @@ deleteModelIsOpen, deleteModelOnClose, getSubteamsList, selectedId
         <ModalBody mt={4}>
           <Text fontSize={{base:"12px",md:"14px"}}>
             Are you sure you want to{" "}
-            <b style={{ color: "red" }}>delete</b> this Team?
+            <b style={{ color: "red" }}>delete</b> this Subteam?
             <br />
             This action cannot be undone.
           </Text>

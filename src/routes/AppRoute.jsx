@@ -87,6 +87,8 @@ import CreateGodownLayout from "../components/layout/InventoryMaster/CreateGodow
 import ViewGodownLayout from "../components/layout/InventoryMaster/ViewGodownList";
 import CreateUnitLayout from "../components/layout/InventoryMaster/CreateUnitOfMeasureLayout";
 import UnitLayout from "../components/layout/InventoryMaster/UnitOfMeasureList";
+import ViewEmployeeTargets from "../pages/BusinessDevelopment/ViewEmployeeTargets";
+import CreateStockItemLayout from "../components/layout/InventoryMaster/CreateStockItemLayout";
 
 
 function App() {
@@ -161,6 +163,8 @@ function App() {
         <Route path="/business-development/assign-target" element={<AssignTargetLayout/>}/>
         <Route path="/business-development/assign-target-rsm" element={<AssignTargetRSMLayout />} />
         <Route path="/business-development/view-assigned-targets" element={<ViewAssignedTargets/>}/>
+        <Route path="/business-development/view-employee-targets" element={<ViewEmployeeTargets/>}/>
+        
         <Route
           path="/company-master/create-company"
           element={<CreateCompanyLayout />}
@@ -185,6 +189,7 @@ function App() {
         <Route path="/inventory/view-godown-list" element={<ViewGodownLayout/>}/>
         <Route path="/inventory/create-unitOfMeasure" element={<CreateUnitLayout/>}/>
         <Route path="/inventory/unit-list" element={<UnitLayout/>}/>
+        <Route path="/inventory/create-stock-item" element={<CreateStockItemLayout/>}/>
         
 
 

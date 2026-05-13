@@ -2,9 +2,9 @@ import {Box,VStack,Text,Button,Collapse,Icon, Image, useToast } from "@chakra-ui
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
-import { MdAssignmentInd, MdOutlineTrackChanges } from "react-icons/md";
+import { MdAssignmentInd, MdOutlineInventory2, MdOutlineTrackChanges } from "react-icons/md";
 import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
-import { FaListAlt, FaTable, FaUserTie, FaWarehouse } from 'react-icons/fa';
+import { FaListAlt, FaTable, FaUserAlt, FaUserTie, FaWarehouse } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
 import { MdCorporateFare, MdGroupAdd } from "react-icons/md";
 import { HiOfficeBuilding ,HiOutlineDocumentReport} from "react-icons/hi";
@@ -131,6 +131,7 @@ const Newsidebar = () => {
         { label: "Assign Target", path: "/business-development/assign-target",  icon: MdAssignmentInd,},
         { label: "View Teams", path: "/business-development/view-teams",  icon: RiTeamFill ,},
         { label: "View Assigned Targets", path: "/business-development/view-assigned-targets",  icon: FiTarget  ,},
+        { label: "View Employee Targets", path: "/business-development/view-employee-targets",  icon: FaUserAlt   ,},
 
       ],
     },
@@ -166,9 +167,7 @@ const Newsidebar = () => {
       icon: MdCorporateFare,
       children: [
         {label:"Create Company",path:"/company-master/create-company",icon:HiOfficeBuilding},
-        {label:"Company List",path:"/company-master/comapny-list",icon:FaCity},
-         
-
+        {label:"Company List",path:"/company-master/comapny-list",icon:FaCity},        
       ]
       },
       
@@ -208,6 +207,7 @@ const Newsidebar = () => {
           {label:"View Stock Group",path:"/inventory/view-stock-group",icon:MdViewList},
           {label:"Create Stock Category",path:"/inventory/create-stock-category",icon:MdCategory},
           {label:"View Stock Category",path:"/inventory/view-stock-category",icon:MdAddCircleOutline},
+          {label:"Create Stock Item",path:"/inventory/create-stock-item",icon:MdOutlineInventory2  },
           {label:"Create Godown",path:"/inventory/create-godown",icon:FaWarehouse},
           {label:"View Godown",path:"/inventory/view-godown-list",icon:FaListAlt  },
           {label:"Create Unit of Measure",path:"/inventory/create-unitOfMeasure",icon:RxComponent1  },
@@ -345,6 +345,7 @@ useEffect(() => {
                       <Button
                       w="92%"
                         key={i}
+                       
                         leftIcon={<ChildIcon size={17} color="#526869"/>}
                         size="sm"
                         as={NavLink}
@@ -353,12 +354,12 @@ useEffect(() => {
                         style={activeLinkStyle}
                         overflowX="auto"
                          sx={{
-    scrollbarWidth: "none",      
-    msOverflowStyle: "none",       
-    "&::-webkit-scrollbar": {
-      display: "none",             
-    },
-  }}
+                      scrollbarWidth: "none",      
+                         msOverflowStyle: "none",       
+                         "&::-webkit-scrollbar": {
+                           display: "none",             
+                         },
+                       }}
                       >
                         {item.label}
                       </Button>
@@ -387,10 +388,9 @@ useEffect(() => {
       <Button
          rightIcon={<FiLogOut/>}
          variant="ghost"
-         size="md"  
+         size="md"   className="logout_btn"
          onClick={logout}
-         border="1px solid gray"
-         w="100%"
+        
          _hover={{bgColor:"#f4bfbf", border:"1px solid #e48f8f", color:"#971345"}}
       >
         Logout

@@ -46,7 +46,7 @@ import {
   RiTeamFill,
 } from "react-icons/ri";
 
-import { FaBookOpen, FaListAlt, FaTable, FaWarehouse } from "react-icons/fa";
+import { FaBookOpen, FaListAlt, FaTable, FaUserAlt, FaWarehouse } from "react-icons/fa";
 
 import {
   FaChartLine,
@@ -88,6 +88,7 @@ import {
   MdPendingActions,
   MdTrendingUp,
   MdUploadFile,
+  MdOutlineInventory2,
 } from "react-icons/md";
 
 import {
@@ -240,31 +241,12 @@ const MobileTopbar = () => {
       key: "business",
       icon: FaChartLine,
       children: [
-        {
-          label: "Create Team",
-          path: "/business-development/create-team",
-          icon: FaUserPlus,
-        },
-        {
-          label: "Create Sub Team",
-          path: "/business-development/create-sub-team",
-          icon: HiUserGroup,
-        },
-        {
-          label: "Assign Target",
-          path: "/business-development/assign-target",
-          icon: MdAssignmentInd,
-        },
-        {
-          label: "View Teams",
-          path: "/business-development/view-teams",
-          icon: RiTeamFill,
-        },
-        {
-          label: "View Assigned Targets",
-          path: "/business-development/view-assigned-targets",
-          icon: FiTarget,
-        },
+               {label: "Create Team",path: "/business-development/create-team",icon: FaUserPlus, },
+               {label: "Create Sub Team",path: "/business-development/create-sub-team",icon: HiUserGroup,},
+               { label: "Assign Target", path: "/business-development/assign-target",  icon: MdAssignmentInd,},
+               { label: "View Teams", path: "/business-development/view-teams",  icon: RiTeamFill ,},
+               { label: "View Assigned Targets", path: "/business-development/view-assigned-targets",  icon: FiTarget  ,},
+               { label: "View Employee Targets", path: "/business-development/view-employee-targets",  icon: FaUserAlt   ,},
       ],
     },
 
@@ -330,10 +312,11 @@ const MobileTopbar = () => {
         { label: "View Stock Group", path: "/inventory/view-stock-group", icon: MdViewList },
         { label: "Create Stock Category", path: "/inventory/create-stock-category", icon: MdCategory },
         { label: "View Stock Category", path: "/inventory/view-stock-category", icon: MdAddCircleOutline },
-        { label: "Create Godown", path: "/inventory/create-godown", icon: FaWarehouse },
-        { label: "View Godown", path: "/inventory/view-godown-list", icon: FaListAlt },
-              {label:"Create Unit of Measure",path:"/inventory/create-unitOfMeasure",icon:RxComponent1  },
-                  {label:"View Unit of Measure ",path:"/inventory/unit-list",icon:FaTable   },
+        {label:"Create Stock Item",path:"/inventory/create-stock-item",icon:MdOutlineInventory2  },
+                 {label:"Create Godown",path:"/inventory/create-godown",icon:FaWarehouse},
+                 {label:"View Godown",path:"/inventory/view-godown-list",icon:FaListAlt  },
+                 {label:"Create Unit of Measure",path:"/inventory/create-unitOfMeasure",icon:RxComponent1  },
+                 {label:"View Unit of Measure ",path:"/inventory/unit-list",icon:FaTable   },
       ]
     },
 

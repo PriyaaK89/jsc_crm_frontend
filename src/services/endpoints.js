@@ -76,6 +76,7 @@ export const API_ENDPOINTS = {
   Get_stock_group_by_id:`get-stockGroup`,
   Update_stock_group:`update-stockGroup`,
   Delete_stock_group:`delete-stockGroup`,
+  get_categories_by_stock_group: 'get-categories-by-stock-group',
 
   // stock category
   Create_stock_category:`create-stock-category`,
@@ -93,7 +94,16 @@ export const API_ENDPOINTS = {
   get_users_by_role: `users-by-level`,
   assign_target: 'assign-target',
   get_assigned_targets: 'get-assigned-targets',
+  get_assigned_targets_by_id: "get-assigned-target",
+  edit_assigned_targets: "edit-assigned-target",
+  delete_assigned_targets: "delete-assigned-target",
+
   assign_individual_targets: 'assign-employee-target',
+  get_individual_targets: 'get-employee-targets',
+  get_individual_targets_by_id: 'get-employee-targets-by-id',
+  edit_individual_target: 'update-employee-targets',
+  delete_individual_target: 'delete-employee-targets',
+
   get_team_by_id: 'getTeam',
   edit_team: 'update-team',
   delete_team: "delete-team",
@@ -111,5 +121,6 @@ export const API_ENDPOINTS = {
   get_unit_by_id: "getUnitById",
   edit_unitOfMeasure: "editUnitOfMeasure",
   delete_unitOfMeasure: "deleteUnit",
+  create_stock_item: "create-stock-item",
 };
 // 

@@ -24,6 +24,8 @@ import {
     VStack,
     Avatar,
     TableContainer,
+    IconButton,
+    useDisclosure,
 } from "@chakra-ui/react";
 
 import { SearchIcon } from "@chakra-ui/icons";
@@ -37,72 +39,59 @@ import NotificationBtn from "../../components/NotificationBtn/NotificationBtn";
 
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import EditAssignTargetForm from "../../components/models/EditAssignTargetModal";
+import DeleteAssignTarget from "../../components/models/DeleteAssignTarget";
 
 const ViewAssignedTargets = () => {
 
     const [targetList, setTargetList] = useState([]);
-
     const [loading, setLoading] = useState(false);
-
     const [page, setPage] = useState(1);
-
     const [limit, setLimit] = useState(10);
-
     const [totalPages, setTotalPages] = useState(1);
-
     const [search, setSearch] = useState("");
-
-    // GET TARGET LIST
+    const {isOpen: isEditModalOpen, onOpen: onEditModalOpen, onClose: onEditModalClose} = useDisclosure();
+    const {isOpen: isDeleteModalOpen, onOpen: onDeleteModalOpen, onClose: onDeleteModalClose} = useDisclosure();
+    const [selectedId, setSelectedId] = useState();
 
     const getTargetList = async () => {
-
         try {
-
             setLoading(true);
-
             const response = await API.get(
                 API_ENDPOINTS.get_assigned_targets,
-                {
-                    params: {
-                        page,
-                        limit,
-                        search,
-                    },
-                }
-            );
+                { params: { page, limit, search, }, });
 
             if (response?.status === 200) {
-
                 setTargetList(response?.data?.data || []);
-
                 setTotalPages(response?.data?.totalPages || 1);
-
             }
 
         } catch (error) {
-
             console.log(error);
-
         } finally {
-
             setLoading(false);
-
         }
     };
 
     // SEARCH + PAGINATION + LIMIT
 
     useEffect(() => {
-
         const delayDebounce = setTimeout(() => {
-
             getTargetList();
-
         }, 500);
-
         return () => clearTimeout(delayDebounce);
-
     }, [page, search, limit]);
+
+    const handleEditModal = (id)=>{
+       setSelectedId(id);
+       onEditModalOpen();
+    }
+
+    const handleDeleteModal = (id)=>{
+        setSelectedId(id);
+        onDeleteModalOpen()
+    }
 
     // ROLE BADGE COLOR
 
@@ -161,79 +150,77 @@ const ViewAssignedTargets = () => {
 
                     <NotificationBtn />
 
-                        <Box
-      bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 4 }} borderRadius="lg" boxShadow="md"
-    >
+                    <Box bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 4 }} borderRadius="lg" boxShadow="md">
 
-      <HStack justifyContent="space-between">
-        <Breadcrumb
-          color="#8B8D97"
-          padding="10px 0px 1rem 0px"
-        >
-          <BreadcrumbItem>
-            <BreadcrumbLink
-              as={Link}
-              to="/dashboard"
-            >
-              <GoHomeFill color="#5570F1" />
-            </BreadcrumbLink>
-          </BreadcrumbItem>
+                        <HStack justifyContent="space-between">
+                            <Breadcrumb
+                                color="#8B8D97"
+                                padding="10px 0px 1rem 0px"
+                            >
+                                <BreadcrumbItem>
+                                    <BreadcrumbLink
+                                        as={Link}
+                                        to="/dashboard"
+                                    >
+                                        <GoHomeFill color="#5570F1" />
+                                    </BreadcrumbLink>
+                                </BreadcrumbItem>
 
-          <BreadcrumbItem>
-            <BreadcrumbLink
-              isCurrentPage
-              color="#8B8D97"
-              fontSize="13px"
-            >
-              View Assigned Target List
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-      </HStack>
+                                <BreadcrumbItem>
+                                    <BreadcrumbLink
+                                        isCurrentPage
+                                        color="#8B8D97"
+                                        fontSize="13px"
+                                    >
+                                        View Assigned Target List
+                                    </BreadcrumbLink>
+                                </BreadcrumbItem>
+                            </Breadcrumb>
+                        </HStack>
 
                         {/* SEARCH + LIMIT */}
                         <HStack justifyContent="space-between" mb={4} alignItems="end">
-                        <Text
-                            fontSize={{ base: "15px", md: "16px" }}
-                            fontWeight="600"
-                            color="gray.700"
-                        >
-                            Assigned Targets List
-                        </Text>
-                        <Flex
-                            gap={3}
-                            flexDirection={{ base: "column", md: "row" }}
-                            w={{ base: "100%", md: "auto" }}
-                        >
+                            <Text
+                                fontSize={{ base: "15px", md: "16px" }}
+                                fontWeight="600"
+                                color="gray.700"
+                            >
+                                Assigned Targets List
+                            </Text>
+                            <Flex
+                                gap={3}
+                                flexDirection={{ base: "column", md: "row" }}
+                                w={{ base: "100%", md: "auto" }}
+                            >
 
-                            <InputGroup maxW={{ base: "100%", md: "320px" }}>
+                                <InputGroup maxW={{ base: "100%", md: "320px" }}>
 
-                                <InputLeftElement pointerEvents="none">
-                                    <SearchIcon color="gray.400" />
-                                </InputLeftElement>
+                                    <InputLeftElement pointerEvents="none">
+                                        <SearchIcon color="gray.400" />
+                                    </InputLeftElement>
 
-                                <Input
-                                    placeholder="Search user, email, role..."
-                                    value={search}
-                                    onChange={(e) => {
-                                        setSearch(e.target.value);
-                                        setPage(1);
-                                    }}
-                                    bg="gray.50"
-                                    border="1px solid #E2E8F0"
-                                    _focus={{
-                                        borderColor: "#3182CE",
-                                        boxShadow: "0 0 0 1px #3182CE",
-                                    }}
-                                />
+                                    <Input
+                                        placeholder="Search user, email, role..."
+                                        value={search}
+                                        onChange={(e) => {
+                                            setSearch(e.target.value);
+                                            setPage(1);
+                                        }}
+                                        bg="gray.50"
+                                        border="1px solid #E2E8F0"
+                                        _focus={{
+                                            borderColor: "#3182CE",
+                                            boxShadow: "0 0 0 1px #3182CE",
+                                        }}
+                                    />
 
-                            </InputGroup>
+                                </InputGroup>
 
-                         
 
-                        </Flex>
 
-</HStack>
+                            </Flex>
+
+                        </HStack>
 
                         {/* TABLE */}
 
@@ -243,7 +230,7 @@ const ViewAssignedTargets = () => {
                             overflowX="auto"
                         >
 
-                            <Table variant="simple">
+                            <Table variant="simple" className="productsTable">
 
                                 <Thead bg="#F8FAFC">
 
@@ -257,6 +244,7 @@ const ViewAssignedTargets = () => {
                                         <Th py={4}>Total Target</Th>
                                         <Th py={4}>Pending Target</Th>
                                         <Th py={4}>Assigned By</Th>
+                                        <Th py={4}>Action</Th>
 
                                     </Tr>
 
@@ -287,18 +275,11 @@ const ViewAssignedTargets = () => {
                                                 <Td>
                                                     <HStack spacing={3}>
                                                         <Box>
-
-                                                            <Text
-                                                                fontWeight="500"
-                                                                color="gray.700"
-                                                            >
+                                                            <Text fontWeight="500" color="gray.700" >
                                                                 {item?.name || "-"}
                                                             </Text>
 
-                                                            <Text
-                                                                fontSize="12px"
-                                                                color="gray.500"
-                                                            >
+                                                            <Text fontSize="12px" color="gray.500" >
                                                                 {item?.email || "-"}
                                                             </Text>
 
@@ -347,8 +328,7 @@ const ViewAssignedTargets = () => {
 
                                                     <Text
                                                         fontWeight="600"
-                                                        color="blue.600" fontSize="15px"
-                                                    >
+                                                        color="#3059b1" fontSize="14px" >
                                                         ₹ {item?.total_target || 0}
                                                     </Text>
 
@@ -388,6 +368,21 @@ const ViewAssignedTargets = () => {
                                                         {item?.parent_type || "-"}
                                                     </Badge>
 
+                                                </Td>
+
+                                                <Td textAlign="center">
+                                                    <HStack spacing={2} justify="flex-start">
+                                                        <IconButton icon={<FiEdit2 />}
+                                                            size="sm" colorScheme="blue" variant="outline"
+                                                            aria-label="Edit Godown"
+                                                            onClick={() => handleEditModal(item?.id)}
+                                                        />
+
+                                                        <IconButton icon={<FiTrash2 />} size="sm" colorScheme="red" variant="outline" aria-label="Delete Godown"
+                                                            onClick={() => handleDeleteModal(item?.id)}
+                                                        />
+
+                                                    </HStack>
                                                 </Td>
 
                                             </Tr>
@@ -441,30 +436,30 @@ const ViewAssignedTargets = () => {
                             gap={4}
                         >
                             <HStack>
-                                   <Select
-                                w={{ base: "100%", md: "120px" }}
-                                bg="gray.50"
-                                value={limit}
-                                onChange={(e) => {
-                                    setLimit(Number(e.target.value));
-                                    setPage(1);
-                                }}
-                            >
-                                <option value={10}>10</option>
-                                <option value={20}>20</option>
-                                <option value={50}>50</option>
-                                <option value={100}>100</option>
-                            </Select>
+                                <Select
+                                    w={{ base: "100%", md: "120px" }}
+                                    bg="gray.50"
+                                    value={limit}
+                                    onChange={(e) => {
+                                        setLimit(Number(e.target.value));
+                                        setPage(1);
+                                    }}
+                                >
+                                    <option value={10}>10</option>
+                                    <option value={20}>20</option>
+                                    <option value={50}>50</option>
+                                    <option value={100}>100</option>
+                                </Select>
 
-                             <Text
-                                fontSize="14px"
-                                color="gray.600"
-                                fontWeight="500"
-                            >
-                                Showing Page {page} of {totalPages}
-                            </Text>
+                                <Text
+                                    fontSize="14px"
+                                    color="gray.600"
+                                    fontWeight="500"
+                                >
+                                    Showing Page {page} of {totalPages}
+                                </Text>
                             </HStack>
-                           
+
 
                             <HStack spacing={3}>
 
@@ -486,15 +481,14 @@ const ViewAssignedTargets = () => {
                                 >
                                     Next
                                 </Button>
-
                             </HStack>
-
                         </Flex>
-
                     </Box>
-
                 </Box>
 
+                <EditAssignTargetForm isEditModalOpen={isEditModalOpen} onEditModalClose={onEditModalClose} selectedId={selectedId} getTargetList={getTargetList}/>
+                <DeleteAssignTarget isDeleteModalOpen={isDeleteModalOpen} onDeleteModalClose={onDeleteModalClose} selectedId={selectedId} getTargetList={getTargetList}/>
+         
             </Box>
         </>
     );

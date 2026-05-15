@@ -151,7 +151,6 @@ const Newsidebar = () => {
       children: [
         {label:"Create Group", path:"/accounting-master/create-group",icon:MdGroupAdd},
         {label:"View Group",path:"/accounting-master/view-group",icon:FaList},
-        {label:"Delete Group",path:"/accounting-master/delete-group",icon:FaTrash},
         {label:"Create Ledger",path:"/accounting-master/create-ledger", icon:FaFileInvoiceDollar},
         {label:"View Ledger",path:"/accounting-master/view-ledger", icon:FaFileInvoice},
         {label:"Delete Ledger",path:"/accounting-master/delete-ledger", icon:FaTrash},
@@ -208,6 +207,7 @@ const Newsidebar = () => {
           {label:"Create Stock Category",path:"/inventory/create-stock-category",icon:MdCategory},
           {label:"View Stock Category",path:"/inventory/view-stock-category",icon:MdAddCircleOutline},
           {label:"Create Stock Item",path:"/inventory/create-stock-item",icon:MdOutlineInventory2  },
+          {label:"View Stock Item",path:"/inventory/view-stock-item",icon:MdOutlineInventory2  },
           {label:"Create Godown",path:"/inventory/create-godown",icon:FaWarehouse},
           {label:"View Godown",path:"/inventory/view-godown-list",icon:FaListAlt  },
           {label:"Create Unit of Measure",path:"/inventory/create-unitOfMeasure",icon:RxComponent1  },

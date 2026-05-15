@@ -121,6 +121,17 @@ export const API_ENDPOINTS = {
   get_unit_by_id: "getUnitById",
   edit_unitOfMeasure: "editUnitOfMeasure",
   delete_unitOfMeasure: "deleteUnit",
+
   create_stock_item: "create-stock-item",
+  getStockItemsList: "get-stock-items",
+  getStockItemById: "getstockItemByID",
+  updateStockItem: "update-stock-item",
+  deleteStockItem: "delete-stock-item",
+
+  create_account_group: "create-accounting-group",
+  get_account_group_list: "account-group-list",
+  get_account_by_id: "account-group-details",
+  edit_account_group: "update-account-group",
+  delete_account_group: "delete-account-group"
 };
 // 

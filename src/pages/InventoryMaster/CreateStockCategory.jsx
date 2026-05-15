@@ -63,7 +63,7 @@ const CreateStockCategory = () => {
     }));
   };
 
-  
+
   const handleSubmit = async () => {
 
 
@@ -75,15 +75,15 @@ const CreateStockCategory = () => {
       });
     }
 
- 
+
 
     try {
       setLoading(true);
 
-     const payload = {
-  name: formData.name,
-  stock_group_id: formData.stock_group_id || null,
-};
+      const payload = {
+        name: formData.name,
+        stock_group_id: formData.stock_group_id || null,
+      };
 
       const res = await API.post(
         API_ENDPOINTS.Create_stock_category,
@@ -147,6 +147,25 @@ const CreateStockCategory = () => {
 
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
 
+            <FormControl isRequired>
+              <FormLabel>Select Stock Group</FormLabel>
+              <Select
+                name="stock_group_id"
+                value={formData.stock_group_id}
+                onChange={handleChange}
+              >
+                <option value="">Primary</option>
+
+                {stockGroups
+                  .filter((item) => item.id !== null)
+                  .map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+              </Select>
+            </FormControl>
+
             {/* NAME */}
             <FormControl isRequired>
               <FormLabel>Name</FormLabel>
@@ -157,36 +176,14 @@ const CreateStockCategory = () => {
                 placeholder="Enter category name"
               />
             </FormControl>
-
-            {/* STOCK GROUP */}
-            <FormControl isRequired>
-              <FormLabel>Select Stock Group</FormLabel>
-              <Select
-  name="stock_group_id"
-  value={formData.stock_group_id}
-  onChange={handleChange}
->
-  <option value="">Primary</option>
-
-  {stockGroups
-    .filter((item) => item.id !== null)
-    .map((item) => (
-      <option key={item.id} value={item.id}>
-        {item.name}
-      </option>
-    ))}
-</Select>
-            </FormControl>
-
+          
           </SimpleGrid>
 
           {/* BUTTON */}
           <Box textAlign="right">
-            <Button
-              colorScheme="blue"
-              px={8}
+            <Button 
               onClick={handleSubmit}
-              isLoading={loading}
+              isLoading={loading} className="submit_btn"
             >
               Create
             </Button>

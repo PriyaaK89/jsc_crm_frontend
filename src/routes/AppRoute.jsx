@@ -21,7 +21,6 @@ import CompanyListLayout from '../components/layout/CompanyMaster/CompanyListLay
 import ApproveIpUserListLayout from "../components/layout/ApproveIpUserListLayout";
 import CreateGroupLayout from '../components/layout/AccountingMasterLayout/CreateGroupLayout';
 import ViewGroupLayout from '../components/layout/AccountingMasterLayout/ViewGroupLayout';
-import DeleteGroupLayout from '../components/layout/AccountingMasterLayout/DeleteGroupLayout';
 import CreateLedgerLayout from '../components/layout/AccountingMasterLayout/CreateLedgerLayout';
 import ONBordingdistributoragreement from '../components/layout/AccountingMasterLayout/ONBordingdistributoragreement';
 import ViewLedgerLayout from "../components/layout/AccountingMasterLayout/ViewLedgerLayout";
@@ -89,6 +88,8 @@ import CreateUnitLayout from "../components/layout/InventoryMaster/CreateUnitOfM
 import UnitLayout from "../components/layout/InventoryMaster/UnitOfMeasureList";
 import ViewEmployeeTargets from "../pages/BusinessDevelopment/ViewEmployeeTargets";
 import CreateStockItemLayout from "../components/layout/InventoryMaster/CreateStockItemLayout";
+import ViewStockItemListLayout from "../components/layout/InventoryMaster/ViewStockItemListLayout";
+import EditStockItemListLayout from "../components/layout/InventoryMaster/EditStockItemListLayout";
 
 
 function App() {
@@ -133,8 +134,8 @@ function App() {
 
         <Route path='/accounting-master/create-group' element={<CreateGroupLayout/>}/>
         <Route path='/accounting-master/view-group' element={<ViewGroupLayout/>}/>
-        <Route path='/accounting-master/delete-group'   element={<DeleteGroupLayout/>}/>
-        <Route path='/accounting-master/create-ledger' element={<CreateLedgerLayout/>}/>
+        <Route path='/accounting-master/edit-group/:id' element={<CreateGroupLayout/>}/>
+                <Route path='/accounting-master/create-ledger' element={<CreateLedgerLayout/>}/>
         <Route path='/distributor/distributorlist' element={<Distributors/>}/>
         <Route path='/distributor/distributorlist/edit-distributor/:id' element={<EditDistributorLayout/>}/>
         <Route path='/distributor/distributorlist/view-distributor/:id' element={<ViewDistributorLayout/>}/>
@@ -190,6 +191,8 @@ function App() {
         <Route path="/inventory/create-unitOfMeasure" element={<CreateUnitLayout/>}/>
         <Route path="/inventory/unit-list" element={<UnitLayout/>}/>
         <Route path="/inventory/create-stock-item" element={<CreateStockItemLayout/>}/>
+        <Route path="/inventory/view-stock-item" element={<ViewStockItemListLayout/>}/>
+        <Route path="/inventory/edit-stock-item/:id" element={<EditStockItemListLayout/>}/>
         
 
 

@@ -88,7 +88,7 @@ const EmployeeImageModal = ({
     borderRadius="lg"
     overflow="hidden"
     border="1px solid"
-    borderColor="gray.200"
+    borderColor="gray.300"
     boxShadow="sm"
     aspectRatio="1"
   >

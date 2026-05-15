@@ -1,19 +1,4 @@
-import {
-  Box,
-  Text,
-  FormControl,
-  FormLabel,
-  Input,
-  Select,
-  SimpleGrid,
-  VStack,
-  Button,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  HStack,
-  useToast
-} from "@chakra-ui/react";
+import { Box, Text, FormControl, FormLabel, Input, Select, SimpleGrid, VStack, Button, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack, useToast} from "@chakra-ui/react";
 import React, { useState } from "react";
 import { GoHomeFill } from "react-icons/go";
 import { Link } from "react-router-dom";
@@ -179,9 +164,7 @@ const CreateStockGroup = () => {
           </SimpleGrid>
 
           <Box textAlign="right">
-            <Button
-              colorScheme="blue"
-              px={8}
+            <Button className="submit_btn"
               type="submit"
               isLoading={loading}
             >

@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-    Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack,
-} from "@chakra-ui/react";
+import { Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack,} from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import { Link } from "react-router-dom";
 import useUsersapi from "../../Apis/GetUsersapi";
 import { GoHomeFill } from "react-icons/go";
-
 
 const EditEmployee = () => {
     const { empId } = useParams();
@@ -19,9 +16,7 @@ const EditEmployee = () => {
     const [departments, setDepartments] = useState([]);
     const [jobRole, setJobRole] = useState([]);
     const { users = [], fetchUsers } = useUsersapi();
-    const [profilePhoto, setProfilePhoto] = useState(null); // new upload
-
-
+    const [profilePhoto, setProfilePhoto] = useState(null); 
     const [formData, setFormData] = useState({
         approver_id: "",
         reporting_id: "",
@@ -104,8 +99,6 @@ const EditEmployee = () => {
                     week_off: data.week_off || "Sunday",
 
                 });
-              
-
             }
         } catch (err) {
             toast({
@@ -564,7 +557,7 @@ const EditEmployee = () => {
                         <FormLabel {...labelStyles}>Reporting Under</FormLabel>
                         <Select
                             placeholder="Select Reporting Under"
-                            value={formData.reporting_id}
+                            value={formData.reporting_under}
                             onChange={(e) => {
                                 const selectedUser = users.find(
                                     (u) => u.id === Number(e.target.value)
@@ -572,9 +565,7 @@ const EditEmployee = () => {
 
                                 setFormData((prev) => ({
                                     ...prev,
-                                    reporting_id: e.target.value,
-                                    reporting_under: selectedUser?.name || "",
-                                }));
+                                   reporting_under: Number(e.target.value) || null                                }));
                             }}
                         >
                             {users.map((user) => (

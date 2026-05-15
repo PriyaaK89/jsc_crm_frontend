@@ -58,7 +58,8 @@ const AddEmployee = () => {
     week_off: "",
     total_leaves: "",
     headquarter: "",
-    approver_name: "",
+    working_area: "",
+    approver_id: "",
     reporting_under: "",
     aadhar_no: "",
     pan_number: "",
@@ -86,7 +87,8 @@ const AddEmployee = () => {
     "salary",
     "total_leaves",
     "headquarter",
-    "approver_name",
+    "working_area",
+    "approver_id",
     "reporting_under",
   ];
 
@@ -128,11 +130,12 @@ const AddEmployee = () => {
     total_leaves: "",
     authentication_amount: "",
     headquarter: "",
+    working_area: "",
     login_time: "",
     logout_time: "",
     pf: "",
     esi: "",
-    approver_name: "",
+    approver_id: "",
     reporting_under: "",
     profile_image: null,
   });
@@ -355,7 +358,7 @@ const AddEmployee = () => {
         //   week_off: "Sunday",
         //   two_wheeler_allowance_per_km:"",
         //   four_wheeler_allowance_per_km:"",
-        //   approver_name: "",
+        //   approver_id: "",
         //   profile_image: null,        // RESET IMAGE
         //   reporting_under: "",        // RESET REPORTING
         // });
@@ -954,11 +957,15 @@ const AddEmployee = () => {
               <Input name="headquarter" onChange={handleChange} />
               <FormErrorMessage>{error.headquarter}</FormErrorMessage>
             </FormControl>
-
-            <FormControl isRequired isInvalid={error.approver_name} >
+            <FormControl isRequired isInvalid={error.working_area}>
+              <FormLabel {...lableStyles}>Working Area</FormLabel>
+              <Input name="working_area" onChange={handleChange} />
+              <FormErrorMessage>{error.working_area}</FormErrorMessage>
+            </FormControl>
+            <FormControl isRequired isInvalid={error.approver_id} >
               <FormLabel {...lableStyles}>Approver Name</FormLabel>
               <Select
-                name="approver_name"
+                name="approver_id"
                 placeholder="Select Approver"
                 onChange={handleChange}
               >
@@ -968,7 +975,7 @@ const AddEmployee = () => {
                   </option>
                 ))}
               </Select>
-              <FormErrorMessage>{error.approver_name}</FormErrorMessage>
+              <FormErrorMessage>{error.approver_id}</FormErrorMessage>
             </FormControl>
 
             <FormControl>

@@ -119,7 +119,7 @@ const Debit = () => {
     variant="simple"
   >
 
-    <Thead bg="#f5f5f5">
+    <Thead bg="#f2f1f1">
       <Tr>
         <Th minW="150px">Name of item</Th>
         <Th minW="150px">Billed Qty</Th>

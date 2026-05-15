@@ -76,6 +76,7 @@ export const API_ENDPOINTS = {
   Get_stock_group_by_id:`get-stockGroup`,
   Update_stock_group:`update-stockGroup`,
   Delete_stock_group:`delete-stockGroup`,
+  get_categories_by_stock_group: 'get-categories-by-stock-group',
 
   // stock category
   Create_stock_category:`create-stock-category`,
@@ -84,5 +85,53 @@ export const API_ENDPOINTS = {
   Update_stock_category_by_id:`update-stock-category`,
   Delete_Stock_category_by_id:`delete-stock-category`,
 
+  //set-team-target
+  create_team: `create-team`,
+  create_sub_team: `create-subteam`,
+  get_subTeam_by_team: 'get-subteams',
+  get_team_list: `get-teams`,
+  get_team_by_id: `getTeam`,
+  get_users_by_role: `users-by-level`,
+  assign_target: 'assign-target',
+  get_assigned_targets: 'get-assigned-targets',
+  get_assigned_targets_by_id: "get-assigned-target",
+  edit_assigned_targets: "edit-assigned-target",
+  delete_assigned_targets: "delete-assigned-target",
+
+  assign_individual_targets: 'assign-employee-target',
+  get_individual_targets: 'get-employee-targets',
+  get_individual_targets_by_id: 'get-employee-targets-by-id',
+  edit_individual_target: 'update-employee-targets',
+  delete_individual_target: 'delete-employee-targets',
+
+  get_team_by_id: 'getTeam',
+  edit_team: 'update-team',
+  delete_team: "delete-team",
+  edit_suTeam: "update-subteam",
+  delete_subTeam: "delete-subteam",
+  create_godown: "create-godown",
+  godown_list: "getGodownList",
+  view_godown_by_id: "getGodownDetails",
+  update_godown: "update-godown",
+  delete_godown: "delete-godown",
+  get_unique_quantity_codes: "get-unitOfMeasure-list",
+  create_unit_of_measure: "create-unitOfMeasure",
+  getUnitList: "getAllUnits",
+  getSimpleUnitList: "get-simple-units",
+  get_unit_by_id: "getUnitById",
+  edit_unitOfMeasure: "editUnitOfMeasure",
+  delete_unitOfMeasure: "deleteUnit",
+
+  create_stock_item: "create-stock-item",
+  getStockItemsList: "get-stock-items",
+  getStockItemById: "getstockItemByID",
+  updateStockItem: "update-stock-item",
+  deleteStockItem: "delete-stock-item",
+
+  create_account_group: "create-accounting-group",
+  get_account_group_list: "account-group-list",
+  get_account_by_id: "account-group-details",
+  edit_account_group: "update-account-group",
+  delete_account_group: "delete-account-group"
 };
 // 

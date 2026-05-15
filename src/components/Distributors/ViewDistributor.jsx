@@ -46,7 +46,7 @@ const SectionCard = ({ title, children }) => (
   <Box
     bg="white"
     border="1px solid"
-    borderColor="gray.200"
+    borderColor="gray.300"
     borderRadius="xl"
     p={5}
     boxShadow="sm"
@@ -152,7 +152,7 @@ const formatDateTime = (date) => {
           borderRadius="xl"
           p={4}
           border="1px solid"
-          borderColor="gray.200"
+          borderColor="gray.300"
           boxShadow="sm"
         >
           <Heading size="lg" color="gray.800">
@@ -292,7 +292,7 @@ const formatDateTime = (date) => {
                   maxH="180px"
                   borderRadius="lg"
                   border="1px solid"
-                  borderColor="gray.200"
+                  borderColor="gray.300"
                 />
               ) : (
                 <Text>-</Text>
@@ -326,7 +326,7 @@ const formatDateTime = (date) => {
                 <Box
                   key={index}
                   border="1px solid"
-                  borderColor="gray.200"
+                  borderColor="gray.300"
                   borderRadius="lg"
                   p={4}
                 >
@@ -363,7 +363,7 @@ const formatDateTime = (date) => {
                 <Box
                   key={index}
                   border="1px solid"
-                  borderColor="gray.200"
+                  borderColor="gray.300"
                   borderRadius="lg"
                   p={4}
                 >

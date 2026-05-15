@@ -9,7 +9,7 @@ import EditStockCategary from "../../pages/InventoryMaster/EditStockCategary";
 
 const EditStockCategaryLayout = ()=>{
 return(
-  <Box bg="#F3F3F3" h="100vh" >
+  <Box bg="#f2f1f1" h="100vh" >
            <Box display={{ base: "none", md: "block" }}>
              <Sidebar />
      

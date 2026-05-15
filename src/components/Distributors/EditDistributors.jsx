@@ -53,7 +53,7 @@ const AddressForm = ({ data, onChange, index = 0, label }) => {
         bg="#e9f2ff"
         p={3}
         borderTopRadius="lg"
-        borderBottom="1px solid #f3f3f3"
+        borderBottom="1px solid #F4F4F4"
       >
         {" "}
         {label}

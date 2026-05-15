@@ -48,7 +48,7 @@ const SectionCard = ({ title, children }) => (
   <Box
     bg="white"
     border="1px solid"
-    borderColor="gray.200"
+    borderColor="gray.300"
     borderRadius="xl"
     p={5}
     boxShadow="sm"
@@ -140,7 +140,7 @@ const ViewCompany = () => {
           borderRadius="xl"
           p={4}
           border="1px solid"
-          borderColor="gray.200"
+          borderColor="gray.300"
           boxShadow="sm"
         >
           <HStack justify="space-between" align="center">
@@ -160,7 +160,7 @@ const ViewCompany = () => {
                 name={data.company_name}
                 size="xl"
                 border="1px solid"
-                borderColor="gray.200"
+                borderColor="gray.300"
               />
             ) : (
               <Avatar
@@ -252,7 +252,7 @@ const ViewCompany = () => {
                     maxH="150px"
                     borderRadius="lg"
                     border="1px solid"
-                    borderColor="gray.200"
+                    borderColor="gray.300"
                   />
                 ) : (
                   <Text>-</Text>
@@ -265,7 +265,7 @@ const ViewCompany = () => {
                     maxH="150px"
                     borderRadius="lg"
                     border="1px solid"
-                    borderColor="gray.200"
+                    borderColor="gray.300"
                   />
                 ) : (
                   <Text>-</Text>

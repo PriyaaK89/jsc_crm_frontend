@@ -16,15 +16,11 @@ import ProfileLayout from "../components/layout/ProfileLayout";
 import CreateTeamLayout from "../components/layout/CreateteamLayout";
 import CreateSubTeamLayout from "../components/layout/CreateSubTeamLayout";
 import AssignTargetRSMLayout from "../components/layout/AssignTargetRSMLayout";
-import AssignTargetTSMLayout from "../components/layout/AssignTargetTSMLayout";
-import AssignTargetSMLayout from "../components/layout/AssignTargetSMLayout";
-import AssignTargetFALayout from "../components/layout/AssignTargetFALayout";
 import CreateCompanyLayout from "../components/layout/CompanyMaster/CreateCompanyLayout";
 import CompanyListLayout from '../components/layout/CompanyMaster/CompanyListLayout'
 import ApproveIpUserListLayout from "../components/layout/ApproveIpUserListLayout";
 import CreateGroupLayout from '../components/layout/AccountingMasterLayout/CreateGroupLayout';
 import ViewGroupLayout from '../components/layout/AccountingMasterLayout/ViewGroupLayout';
-import DeleteGroupLayout from '../components/layout/AccountingMasterLayout/DeleteGroupLayout';
 import CreateLedgerLayout from '../components/layout/AccountingMasterLayout/CreateLedgerLayout';
 import ONBordingdistributoragreement from '../components/layout/AccountingMasterLayout/ONBordingdistributoragreement';
 import ViewLedgerLayout from "../components/layout/AccountingMasterLayout/ViewLedgerLayout";
@@ -82,6 +78,19 @@ import EditComapnyLayout from "../components/layout/CompanyMaster/EditComapnyLay
 import ViewComapnyLayout from "../components/layout/CompanyMaster/ViewComapnyLayout";
 import EditStockGroupLayout from '../components/layout/EditStockGroupLayout';
 import EditStockCategaryLayout from "../components/layout/EditStockCategaryLayout";
+import AssignTargetLayout from "../components/layout/BusinessDevelopment/AssignTargetLayout";
+import TeamLayout from "../components/layout/BusinessDevelopment/TeamLayout";
+import ViewSubTeamLayout from "../components/layout/BusinessDevelopment/ViewSubteamLayout";
+import ViewAssignedTargets from "../pages/BusinessDevelopment/ViewAssignedTargets";
+import CreateGodownLayout from "../components/layout/InventoryMaster/CreateGodownLayout";
+import ViewGodownLayout from "../components/layout/InventoryMaster/ViewGodownList";
+import CreateUnitLayout from "../components/layout/InventoryMaster/CreateUnitOfMeasureLayout";
+import UnitLayout from "../components/layout/InventoryMaster/UnitOfMeasureList";
+import ViewEmployeeTargets from "../pages/BusinessDevelopment/ViewEmployeeTargets";
+import CreateStockItemLayout from "../components/layout/InventoryMaster/CreateStockItemLayout";
+import ViewStockItemListLayout from "../components/layout/InventoryMaster/ViewStockItemListLayout";
+import EditStockItemListLayout from "../components/layout/InventoryMaster/EditStockItemListLayout";
+
 
 function App() {
   return (
@@ -125,8 +134,8 @@ function App() {
 
         <Route path='/accounting-master/create-group' element={<CreateGroupLayout/>}/>
         <Route path='/accounting-master/view-group' element={<ViewGroupLayout/>}/>
-        <Route path='/accounting-master/delete-group'   element={<DeleteGroupLayout/>}/>
-        <Route path='/accounting-master/create-ledger' element={<CreateLedgerLayout/>}/>
+        <Route path='/accounting-master/edit-group/:id' element={<CreateGroupLayout/>}/>
+                <Route path='/accounting-master/create-ledger' element={<CreateLedgerLayout/>}/>
         <Route path='/distributor/distributorlist' element={<Distributors/>}/>
         <Route path='/distributor/distributorlist/edit-distributor/:id' element={<EditDistributorLayout/>}/>
         <Route path='/distributor/distributorlist/view-distributor/:id' element={<ViewDistributorLayout/>}/>
@@ -142,30 +151,21 @@ function App() {
         <Route path='/print/mgmt/shipping_lable_printer' element={<PrintShippingLablePrinterLayout/>}/>
         <Route path='/print/mgmt/truthful_labelprint' element={<PrintTruthfulLablePrintLayout/>}/>
         {/*  */}
+        <Route path="/business-development/create-team" element={<CreateTeamLayout />}/>
+        <Route path="/business-development/edit-team/:id" element={<CreateTeamLayout />}/>
+
+        <Route path="/business-development/view-teams" element={<TeamLayout/>}/>
+        <Route path="/business-development/view-subteams/:id" element={<ViewSubTeamLayout/>}/>
+
         <Route
-          path="/Business-dev/create-team"
-          element={<CreateTeamLayout />}
-        />
-        <Route
-          path="/Business-devt/create-sub-team"
+          path="/business-development/create-sub-team"
           element={<CreateSubTeamLayout />}
         />
-        <Route
-          path="/Business-devt/assign-target-rsm"
-          element={<AssignTargetRSMLayout />}
-        />
-        <Route
-          path="/Business-devt/assign-target-tsm"
-          element={<AssignTargetTSMLayout />}
-        />
-        <Route
-          path="/Business-devt/assign-target-sm"
-          element={<AssignTargetSMLayout />}
-        />
-        <Route
-          path="/Business-devt/assign-target-fa"
-          element={<AssignTargetFALayout />}
-        />
+        <Route path="/business-development/assign-target" element={<AssignTargetLayout/>}/>
+        <Route path="/business-development/assign-target-rsm" element={<AssignTargetRSMLayout />} />
+        <Route path="/business-development/view-assigned-targets" element={<ViewAssignedTargets/>}/>
+        <Route path="/business-development/view-employee-targets" element={<ViewEmployeeTargets/>}/>
+        
         <Route
           path="/company-master/create-company"
           element={<CreateCompanyLayout />}
@@ -180,23 +180,22 @@ function App() {
           element={<ApproveIpUserListLayout />}
         />
    
-        <Route
-          path="/inventory/create-stock-group"
-          element={<CreateStockGroupLayout />}
-        />
-        <Route
-          path="/inventory/view-stock-group"
-          element={<ViewStockGroupLayout />}
-        />
-        <Route
-          path="/inventory/view-stock-group/edit/:id"
-          element={<EditStockGroupLayout />}
-        />
-        <Route
-          path="/inventory/create-stock-category"
-          element={<CreateStockCategoryLayout />}
-        />
+        <Route path="/inventory/create-stock-group" element={<CreateStockGroupLayout />} />
+        <Route path="/inventory/view-stock-group" element={<ViewStockGroupLayout />} />
+        <Route path="/inventory/view-stock-group/edit/:id" element={<EditStockGroupLayout />} />
+        <Route path="/inventory/create-stock-category" element={<CreateStockCategoryLayout />} />
         <Route path="/inventory/view-stock-category/edit/:id" element={<EditStockCategaryLayout/>}/>
+        <Route path="/inventory/create-godown" element={<CreateGodownLayout/>}/>
+        <Route path="/inventory/edit-godown/:id" element={<CreateGodownLayout/>}/>
+        <Route path="/inventory/view-godown-list" element={<ViewGodownLayout/>}/>
+        <Route path="/inventory/create-unitOfMeasure" element={<CreateUnitLayout/>}/>
+        <Route path="/inventory/unit-list" element={<UnitLayout/>}/>
+        <Route path="/inventory/create-stock-item" element={<CreateStockItemLayout/>}/>
+        <Route path="/inventory/view-stock-item" element={<ViewStockItemListLayout/>}/>
+        <Route path="/inventory/edit-stock-item/:id" element={<EditStockItemListLayout/>}/>
+        
+
+
         <Route
           path="/inventory/view-stock-category"
           element={<ViewStockCategoryLayout />}

@@ -66,21 +66,22 @@ const TrackEmployee = () => {
     return `${minutes} min`;
   };
 
-  const isValidPoint = (lastPoint, newPoint) => {
-    if (!lastPoint) return true;
+const isValidPoint = (lastPoint, newPoint) => {
+  if (!lastPoint) return true;
 
-    const distance = haversineMeters(lastPoint, newPoint);
+  const distance = haversineMeters(lastPoint, newPoint);
 
-    if (!lastPoint.ts || !newPoint.ts) {
-      return distance <= 1000;
-    }
+  if (!lastPoint.ts || !newPoint.ts) {
+    return distance <= 500; // reduced
+  }
 
-    const seconds = (newPoint.ts - lastPoint.ts) / 1000;
-    if (seconds <= 0) return false;
+  const seconds = (newPoint.ts - lastPoint.ts) / 1000;
 
-    const speed = distance / seconds;
-    return speed <= MAX_SPEED_MPS;
-  };
+  if (seconds <= 0) return true; // FIXED
+
+  const speed = distance / seconds;
+  return speed <= MAX_SPEED_MPS;
+};
 
  const chunkPoints = (arr, size = 100) => {
   const chunks = [];
@@ -198,14 +199,17 @@ console.log("first points:", cleanPoints.slice(0, 5));
           const lng = parseFloat(loc.longitude);
 
           const rawTime =
-            loc.timestamp ||
+            loc.recorded_at ||
             loc.created_at ||
             loc.updated_at ||
             loc.logged_at ||
             loc.track_time ||
             null;
 
-          const ts = rawTime ? new Date(rawTime).getTime() : null;
+          // const ts = rawTime ? new Date(rawTime).getTime() : null;
+          const ts = loc.recorded_at
+  ? new Date(loc.recorded_at).getTime()
+  : null;
 
           if (Number.isNaN(lat) || Number.isNaN(lng)) {
             return null;

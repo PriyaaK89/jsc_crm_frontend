@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 function ViewLedger() {
   const labelStyles = {
         fontSize: "12px",
-        color: "#686868",
+        color: "#494949",
         marginBottom: "3px",
     };
   return (

@@ -139,7 +139,7 @@ const EmpSalaryReport = () => {
 
   const labelStyles = {
     fontSize: "14px",
-    color: "#686868",
+    color: "#494949",
     fontWeight: "500",
   };
 

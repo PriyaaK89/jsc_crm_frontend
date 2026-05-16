@@ -15,7 +15,7 @@ const UploadSalarySlip = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({ employeeId: "", employeeName: "", month: "",});
   const [file, setFile] = useState(null);
-  const labelStyles = { fontSize: "12px", color: "#686868", marginBottom: "3px", };
+  const labelStyles = { fontSize: "12px", color: "#494949", marginBottom: "3px", };
 
   // 🔹 Handle File
   const handleFileChange = (e) => {

@@ -132,6 +132,8 @@ export const API_ENDPOINTS = {
   get_account_group_list: "account-group-list",
   get_account_by_id: "account-group-details",
   edit_account_group: "update-account-group",
-  delete_account_group: "delete-account-group"
+  delete_account_group: "delete-account-group",
+
+  create_ledger: "create-ledger"
 };
 // 

@@ -144,7 +144,7 @@ padding: 40px;
 }
 .chakra-form__label{
   font-size: 12px !important;
-  color: #686868;
+  color: #494949;
   margin-bottom: 3px !important;
 }
 .chakra-checkbox__label{
@@ -222,4 +222,25 @@ height: 50px !important;
 }
 .submit_btn:hover{
   background: #1B5A6B !important;
+}
+
+.chakra-input{
+  border-color: #a7acad !important;
+}
+
+.chakra-select{
+    border-color: #a7acad !important;
+}
+
+.ledger_heading{
+  color: rgb(85, 85, 85) !important;
+  background: #eaecf4 !important;
+  padding: 3px 0px 3px 10px !important;
+/* color="gray.700" bg="gray.200" padding="3px 0px 3px 10px" */
+}
+
+.ledger_box{
+  background: #fbfbfb !important;
+  border: 1px solid #d5d5d5 !important;
+  border-radius: 6px !important;
 }

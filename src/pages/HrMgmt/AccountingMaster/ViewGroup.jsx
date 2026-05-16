@@ -243,27 +243,27 @@ const ViewGroup = () => {
 
                   <Td>
                     <Flex gap="8px">
-                      <Tooltip label="Edit Stock Category" hasArrow>
+                      <Tooltip label="Edit Group" hasArrow>
                         <IconButton
                           icon={<FiEdit2 />}
                           size="md"
                           variant="ghost"
                           color="blue.600"
                           _hover={{ bg: "blue.50" }}
-                          aria-label="Edit Stock Group"
+                          aria-label="Edit Group"
                           onClick={() =>
                             navigate(`/accounting-master/edit-group/${group.id}`)
                           }/>
                       </Tooltip>
 
-                      <Tooltip label="Delete Stock Category" hasArrow>
+                      <Tooltip label="Delete Group" hasArrow>
                         <IconButton
                           icon={<FiTrash2 />}
                           size="md"
                           variant="ghost"
                           color="red.600"
                           _hover={{ bg: "red.50" }}
-                          aria-label="Delete Stock Group"
+                          aria-label="Delete Group"
                           onClick={() => handleDelete(group?.id)}
                         />
                       </Tooltip>

@@ -1,34 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Divider,
-  Flex,
-  FormControl,
-  FormLabel,
-  Grid,
-  GridItem,
-  Heading,
-  Input,
-  Select,
-  VStack,
-  Switch,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Button, Card, CardBody, Divider, Flex, FormControl, FormLabel, Grid, GridItem, Heading, Input, Select, VStack, Switch, useToast, } from "@chakra-ui/react";
 import { GROUP_CONFIG } from "../AccountingMaster/LedgerGroupConfig";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 
-// ---------------------------------------------------------------------------
-// Helper – convert "Yes" / "No" / "" to 0 or 1 (backend requires 0 or 1)
-// ---------------------------------------------------------------------------
+
 const toBool = (value) => (value === "Yes" ? 1 : 0);
 
-// ---------------------------------------------------------------------------
-// Default interest config for one slab
-// ---------------------------------------------------------------------------
 const defaultInterestConfig = {
   for_amount_added: "",      // "Yes"|"No"  → sent as amount_added: 0|1
   for_amount_deduct: "",     // "Yes"|"No"  → sent as amount_deducted: 0|1
@@ -43,10 +21,7 @@ const defaultInterestConfig = {
   security_amount: "",
 };
 
-// ---------------------------------------------------------------------------
-// Initial form state
-// Field names here are UI-friendly; buildPayload() maps them to API names.
-// ---------------------------------------------------------------------------
+
 const initialFormData = {
   // Basic
   ledger_name: "",
@@ -105,15 +80,20 @@ const initialFormData = {
   },
 
 
-
-  // 3 interest slabs  – NOTE: backend currently stores only 1 config per ledger.
-  // All 3 slabs render in the UI (matching the original JSP iterator).
-  // On submit, only the first slab is sent as interest_config.
-  interest_configs: [
-    { ...defaultInterestConfig },
-    { ...defaultInterestConfig },
-    { ...defaultInterestConfig },
-  ],
+interest_configs: [
+  {
+    ...defaultInterestConfig,
+    slab_no: 1,
+  },
+  {
+    ...defaultInterestConfig,
+    slab_no: 2,
+  },
+  {
+    ...defaultInterestConfig,
+    slab_no: 3,
+  },
+],
 
   crm_details: {
     customer_name: "",
@@ -160,9 +140,6 @@ const initialFormData = {
 
 };
 
-// ===========================================================================
-// Component
-// ===========================================================================
 const CreateLedger = () => {
   const toast = useToast();
   const [groups, setGroups] = useState([]);
@@ -173,9 +150,7 @@ const CreateLedger = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(1000);
   const [mailingAreas, setMailingAreas] = useState([]);
-  // -------------------------------------------------------------------------
-  // Data fetching
-  // -------------------------------------------------------------------------
+
   useEffect(() => {
     fetchGroups();
     fetchEmployees();
@@ -247,9 +222,6 @@ const CreateLedger = () => {
     [formData.group_under]
   );
 
-  // -------------------------------------------------------------------------
-  // Handlers
-  // -------------------------------------------------------------------------
 
   // Generic flat-field handler
   const handleChange = (e) => {
@@ -303,6 +275,8 @@ const CreateLedger = () => {
       },
     }));
   };
+
+
   // -------------------------------------------------------------------------
   // Build API payload
   // Maps every frontend field to the exact backend field name and type.
@@ -314,7 +288,7 @@ const CreateLedger = () => {
       currentConfig.showBankDetails || currentConfig.showBankConfig;
 
     // Only the first slab is sent (backend stores 1 interest_config per ledger)
-    const cfg = f.interest_configs[0];
+
 
     return {
       // Basic
@@ -378,24 +352,61 @@ const CreateLedger = () => {
         : undefined,
 
       // Interest config object (only sent when activated)
-      interest_config:
-        currentConfig.showInterest &&
-          f.activate_interest_calculation === "Yes"
-          ? {
-            calculate_transaction_by_transaction: toBool(f.txn_by_txn_interest),
-            interest_based_on: f.interest_based_on || null,
-            amount_added: toBool(cfg.for_amount_added),     // for_amount_added → amount_added
-            amount_deducted: toBool(cfg.for_amount_deduct), // for_amount_deduct → amount_deducted
-            rate: Number(cfg.rate) || 0,
-            rate_per: cfg.rate_per || null,
-            rate_on: cfg.rate_on || null,
-            applicability: cfg.applicability || null,
-            applicability_days: Number(cfg.by_days) || 0,  // by_days → applicability_days
-            grace_period: Number(cfg.grace_period) || 0,
-            security_enabled: toBool(cfg.security),         // security "Yes"/"No" → 0|1
-            security_amount: Number(cfg.security_amount) || 0,
-          }
-          : undefined,
+      interest_configs:
+  currentConfig.showInterest &&
+  f.activate_interest_calculation === "Yes"
+    ? f.interest_configs
+        .filter((cfg) => {
+          // only save slabs that contain some data
+          return (
+            cfg.rate ||
+            cfg.for_amount_added ||
+            cfg.for_amount_deduct ||
+            cfg.rate_per ||
+            cfg.rate_on ||
+            cfg.grace_period ||
+            cfg.security_amount
+          );
+        })
+        .map((cfg, index) => ({
+  slab_no: index + 1,
+          calculate_transaction_by_transaction:
+            toBool(f.txn_by_txn_interest),
+
+          interest_based_on:
+            f.interest_based_on || null,
+
+          amount_added:
+            toBool(cfg.for_amount_added),
+
+          amount_deducted:
+            toBool(cfg.for_amount_deduct),
+
+          rate:
+            Number(cfg.rate) || 0,
+
+          rate_per:
+            cfg.rate_per || null,
+
+          rate_on:
+            cfg.rate_on || null,
+
+          applicability:
+            cfg.applicability || null,
+
+          applicability_days:
+            Number(cfg.by_days) || 0,
+
+          grace_period:
+            Number(cfg.grace_period) || 0,
+
+          security_enabled:
+            toBool(cfg.security),
+
+          security_amount:
+            Number(cfg.security_amount) || 0,
+        }))
+    : [],
 
       crm_details: {
         customer_name: crm.customer_name || null,
@@ -522,549 +533,531 @@ const CreateLedger = () => {
 
 
   return (
-    <Box p={6}>
-      <Card>
-        <CardBody>
-          <Heading size="md" mb={6}>
-            Create Ledger
-          </Heading>
+    <Box bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 4 }} borderRadius="lg" boxShadow="md">
 
-          <VStack spacing={6} align="stretch">
+      <Heading size="md" mb={6}>
+        Create Ledger
+      </Heading>
+
+      <VStack spacing={6} align="stretch">
+        <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+
+          <GridItem>
+            <FormControl isRequired>
+              <FormLabel>Ledger Name</FormLabel>
+              <Input
+                maxLength={100}
+                name="ledger_name"
+                value={formData.ledger_name}
+                onChange={handleChange}
+                placeholder="Enter ledger name"
+              />
+            </FormControl>
+          </GridItem>
+
+          {/* Group Under – stores id for API + name for GROUP_CONFIG */}
+          <GridItem>
+            <FormControl isRequired>
+              <FormLabel>Under (Group)</FormLabel>
+              <Select
+                name="group_under"
+                value={formData.group_under}
+                onChange={handleGroupChange}
+                placeholder="Select Group Name"
+              >
+                {groups.map((group) => (
+                  <option key={group.id} value={group.group_name}>
+                    {group.group_name}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+          </GridItem>
+
+          <GridItem>
+            <FormControl>
+              <FormLabel>Employee Under</FormLabel>
+              <Select
+                name="employee_under"
+                value={formData.employee_under}
+                onChange={handleChange}
+                placeholder="Select Employee Name"
+              >
+                {employees.map((emp) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.name}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+          </GridItem>
+
+        </Grid>
+
+        {/* ============================================================ */}
+        {/* 2. BILL-BY-BILL  (Sundry Debtors / Sundry Creditors)         */}
+        {/* ============================================================ */}
+        {currentConfig.showBillByBill && (
+          <Box className="ledger_box">
+            <Heading size="sm" className="ledger_heading">Bill-by-Bill Settings</Heading>
+            <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
+
+              <FormControl>
+                <FormLabel>Maintain balances bill-by-bill</FormLabel>
+                <Select
+                  name="maintain_bill_by_bill"
+                  value={formData.maintain_bill_by_bill}
+                  onChange={handleChange}
+                >
+                  {yesNoOptions}
+                </Select>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>Default credit period (in days)</FormLabel>
+                <Input
+                  type="number"
+                  name="default_credit_period"
+                  value={formData.default_credit_period}
+                  onChange={handleChange}
+                />
+              </FormControl>
+
+              {/* check_credit_days (was credit_day_during_voucher) */}
+              <FormControl>
+                <FormLabel>Check for credit days during voucher entry</FormLabel>
+                <Select
+                  name="check_credit_days"
+                  value={formData.check_credit_days}
+                  onChange={handleChange}
+                >
+                  {yesNoOptions}
+                </Select>
+              </FormControl>
+
+              {/* credit_limit (was specify_credit_limit) */}
+              <FormControl>
+                <FormLabel>Specify credit limit</FormLabel>
+                <Input
+                  type="number"
+                  name="credit_limit"
+                  value={formData.credit_limit}
+                  onChange={handleChange}
+                />
+              </FormControl>
+
+            </Grid>
+          </Box>
+        )}
+
+        {/* ============================================================ */}
+        {/* 3. INVENTORY                                                  */}
+        {/* ============================================================ */}
+        {currentConfig.showInventory && (
+          <Box>
+            <Divider mb={4} />
             <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+              {/* inventory_values_affected (was inventory_values_are_affected) */}
+              <FormControl>
+                <FormLabel>Inventory values are affected</FormLabel>
+                <Select
+                  name="inventory_values_affected"
+                  value={formData.inventory_values_affected}
+                  onChange={handleChange}
+                >
+                  {yesNoOptions}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Box>
+        )}
 
-              <GridItem>
-                <FormControl isRequired>
-                  <FormLabel>Ledger Name</FormLabel>
+        {/* ============================================================ */}
+        {/* 4. PAYROLL                                                    */}
+        {/* ============================================================ */}
+        {currentConfig.showPayroll && (
+          <Box>
+            <Divider mb={4} />
+            <FormControl display="flex" alignItems="center" gap={3}>
+              <FormLabel mb="0">Use for payroll</FormLabel>
+              <Switch
+                isChecked={formData.use_for_payroll === "Yes"}
+                onChange={handlePayrollSwitch}
+              />
+            </FormControl>
+          </Box>
+        )}
+
+        {/* ============================================================ */}
+        {/* 5. INTEREST                                                   */}
+        {/* ============================================================ */}
+        {currentConfig.showInterest && (
+          <Box >
+            {/* <Divider mb={4} /> */}
+
+
+            <Grid templateColumns="repeat(2, 1fr)" gap={4} >
+
+              <FormControl>
+                <FormLabel>Activate interest calculation</FormLabel>
+                <Select
+                  name="activate_interest_calculation"
+                  value={formData.activate_interest_calculation}
+                  onChange={handleChange}
+                >
+                  {yesNoOptions}
+                </Select>
+              </FormControl>
+
+              {/* OD limit – only for Bank OCC / Bank OD accounts */}
+              {currentConfig.showOdLimit && (
+                <FormControl>
+                  <FormLabel>Set OD limit</FormLabel>
                   <Input
-                    maxLength={100}
-                    name="ledger_name"
-                    value={formData.ledger_name}
+                    type="number"
+                    name="od_limit"
+                    value={formData.od_limit}
                     onChange={handleChange}
-                    placeholder="Enter ledger name"
                   />
                 </FormControl>
-              </GridItem>
-
-              {/* Group Under – stores id for API + name for GROUP_CONFIG */}
-              <GridItem>
-                <FormControl isRequired>
-                  <FormLabel>Under (Group)</FormLabel>
-                  <Select
-                    name="group_under"
-                    value={formData.group_under}
-                    onChange={handleGroupChange}
-                    placeholder="Select Group Name"
-                  >
-                    {groups.map((group) => (
-                      <option key={group.id} value={group.group_name}>
-                        {group.group_name}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
-              </GridItem>
-
-              <GridItem>
-                <FormControl>
-                  <FormLabel>Employee Under</FormLabel>
-                  <Select
-                    name="employee_under"
-                    value={formData.employee_under}
-                    onChange={handleChange}
-                    placeholder="Select Employee Name"
-                  >
-                    {employees.map((emp) => (
-                      <option key={emp.id} value={emp.id}>
-                        {emp.name}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
-              </GridItem>
+              )}
 
             </Grid>
 
-            {/* ============================================================ */}
-            {/* 2. BILL-BY-BILL  (Sundry Debtors / Sundry Creditors)         */}
-            {/* ============================================================ */}
-            {currentConfig.showBillByBill && (
-              <Box className="ledger_box">
-                <Heading size="sm" className="ledger_heading">Bill-by-Bill Settings</Heading>
+            {/* Interest parameters – only visible when activated */}
+            {formData.activate_interest_calculation === "Yes" && (
+              <Box borderWidth="1px" borderRadius="lg" mt={4} className="ledger_box">
+                <Heading size="sm" mb={5} className="ledger_heading">Interest Parameters</Heading>
+
+                {/* txn_by_txn_interest → calculate_transaction_by_transaction */}
                 <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
 
                   <FormControl>
-                    <FormLabel>Maintain balances bill-by-bill</FormLabel>
+                    <FormLabel>Calculate Txn By Txn</FormLabel>
                     <Select
-                      name="maintain_bill_by_bill"
-                      value={formData.maintain_bill_by_bill}
+                      name="txn_by_txn_interest"
+                      value={formData.txn_by_txn_interest}
                       onChange={handleChange}
                     >
-                      {yesNoOptions}
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
                     </Select>
                   </FormControl>
 
                   <FormControl>
-                    <FormLabel>Default credit period (in days)</FormLabel>
-                    <Input
-                      type="number"
-                      name="default_credit_period"
-                      value={formData.default_credit_period}
-                      onChange={handleChange}
-                    />
-                  </FormControl>
-
-                  {/* check_credit_days (was credit_day_during_voucher) */}
-                  <FormControl>
-                    <FormLabel>Check for credit days during voucher entry</FormLabel>
+                    <FormLabel>Calculate interest based on</FormLabel>
                     <Select
-                      name="check_credit_days"
-                      value={formData.check_credit_days}
+                      name="interest_based_on"
+                      value={formData.interest_based_on}
                       onChange={handleChange}
                     >
-                      {yesNoOptions}
+                      <option value="">Select Any One</option>
+                      <option value="Bank/Reco date">Bank/Reco date</option>
+                      <option value="Voucher date">Voucher date</option>
                     </Select>
-                  </FormControl>
-
-                  {/* credit_limit (was specify_credit_limit) */}
-                  <FormControl>
-                    <FormLabel>Specify credit limit</FormLabel>
-                    <Input
-                      type="number"
-                      name="credit_limit"
-                      value={formData.credit_limit}
-                      onChange={handleChange}
-                    />
                   </FormControl>
 
                 </Grid>
-              </Box>
-            )}
 
-            {/* ============================================================ */}
-            {/* 3. INVENTORY                                                  */}
-            {/* ============================================================ */}
-            {currentConfig.showInventory && (
-              <Box>
-                <Divider mb={4} />
-                <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-                  {/* inventory_values_affected (was inventory_values_are_affected) */}
-                  <FormControl>
-                    <FormLabel>Inventory values are affected</FormLabel>
-                    <Select
-                      name="inventory_values_affected"
-                      value={formData.inventory_values_affected}
-                      onChange={handleChange}
-                    >
-                      {yesNoOptions}
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </Box>
-            )}
+                <Divider mb={6} />
 
-            {/* ============================================================ */}
-            {/* 4. PAYROLL                                                    */}
-            {/* ============================================================ */}
-            {currentConfig.showPayroll && (
-              <Box>
-                <Divider mb={4} />
-                <FormControl display="flex" alignItems="center" gap={3}>
-                  <FormLabel mb="0">Use for payroll</FormLabel>
-                  <Switch
-                    isChecked={formData.use_for_payroll === "Yes"}
-                    onChange={handlePayrollSwitch}
-                  />
-                </FormControl>
-              </Box>
-            )}
+                {/* 3 Interest Slabs (mirrors JSP iterator) */}
+                {formData.interest_configs.map((cfg, index) => (
+                  <Box
+                    key={index}
+                    borderWidth="1px"
+                    borderRadius="md"
+                    m={5}
+                    mb={5} className="ledger_box"
+                  >
+                    <Heading size="xs" mb={4} className="ledger_heading">
+                      Include transaction date for interest calculation {index + 1}
+                    </Heading>
 
-            {/* ============================================================ */}
-            {/* 5. INTEREST                                                   */}
-            {/* ============================================================ */}
-            {currentConfig.showInterest && (
-              <Box >
-                {/* <Divider mb={4} /> */}
-
-
-                <Grid templateColumns="repeat(2, 1fr)" gap={4} >
-
-                  <FormControl>
-                    <FormLabel>Activate interest calculation</FormLabel>
-                    <Select
-                      name="activate_interest_calculation"
-                      value={formData.activate_interest_calculation}
-                      onChange={handleChange}
-                    >
-                      {yesNoOptions}
-                    </Select>
-                  </FormControl>
-
-                  {/* OD limit – only for Bank OCC / Bank OD accounts */}
-                  {currentConfig.showOdLimit && (
-                    <FormControl>
-                      <FormLabel>Set OD limit</FormLabel>
-                      <Input
-                        type="number"
-                        name="od_limit"
-                        value={formData.od_limit}
-                        onChange={handleChange}
-                      />
-                    </FormControl>
-                  )}
-
-                </Grid>
-
-                {/* Interest parameters – only visible when activated */}
-                {formData.activate_interest_calculation === "Yes" && (
-                  <Box borderWidth="1px" borderRadius="lg" mt={4} className="ledger_box">
-                    <Heading size="sm" mb={5} className="ledger_heading">Interest Parameters</Heading>
-
-                    {/* txn_by_txn_interest → calculate_transaction_by_transaction */}
                     <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
 
+                      {/* for_amount_added → amount_added (0/1) */}
                       <FormControl>
-                        <FormLabel>Calculate Txn By Txn</FormLabel>
+                        <FormLabel>For amount added</FormLabel>
                         <Select
-                          name="txn_by_txn_interest"
-                          value={formData.txn_by_txn_interest}
-                          onChange={handleChange}
+                          value={cfg.for_amount_added}
+                          onChange={(e) =>
+                            handleInterestConfigChange(index, "for_amount_added", e.target.value)
+                          }
                         >
+                          <option value="">Select Any One</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                        </Select>
+                      </FormControl>
+
+                      {/* for_amount_deduct → amount_deducted (0/1) */}
+                      <FormControl>
+                        <FormLabel>For amount deducted</FormLabel>
+                        <Select
+                          value={cfg.for_amount_deduct}
+                          onChange={(e) =>
+                            handleInterestConfigChange(index, "for_amount_deduct", e.target.value)
+                          }
+                        >
+                          <option value="">Select Any One</option>
                           <option value="Yes">Yes</option>
                           <option value="No">No</option>
                         </Select>
                       </FormControl>
 
                       <FormControl>
-                        <FormLabel>Calculate interest based on</FormLabel>
+                        <FormLabel>Rate %</FormLabel>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={cfg.rate}
+                          onChange={(e) =>
+                            handleInterestConfigChange(index, "rate", e.target.value)
+                          }
+                        />
+                      </FormControl>
+
+                      {/* rate_per */}
+                      <FormControl>
+                        <FormLabel>Rate % per</FormLabel>
                         <Select
-                          name="interest_based_on"
-                          value={formData.interest_based_on}
-                          onChange={handleChange}
+                          value={cfg.rate_per}
+                          onChange={(e) =>
+                            handleInterestConfigChange(index, "rate_per", e.target.value)
+                          }
                         >
                           <option value="">Select Any One</option>
-                          <option value="Bank/Reco date">Bank/Reco date</option>
-                          <option value="Voucher date">Voucher date</option>
+                          <option value="Calendar Month">Calendar Month</option>
+                          <option value="Calendar Year">Calendar Year</option>
                         </Select>
                       </FormControl>
 
+                      {/* rate_on */}
+                      <FormControl>
+                        <FormLabel>On</FormLabel>
+                        <Select
+                          value={cfg.rate_on}
+                          onChange={(e) =>
+                            handleInterestConfigChange(index, "rate_on", e.target.value)
+                          }
+                        >
+                          <option value="">Select Any One</option>
+                          <option value="Credit Balances Only">Credit Balances Only</option>
+                          <option value="Debit Balances Only">Debit Balances Only</option>
+                        </Select>
+                      </FormControl>
+
+                      {/* applicability */}
+                      <FormControl>
+                        <FormLabel>Applicability</FormLabel>
+                        <Select
+                          value={cfg.applicability}
+                          onChange={(e) =>
+                            handleInterestConfigChange(index, "applicability", e.target.value)
+                          }
+                        >
+                          <option value="Always">Always</option>
+                          <option value="Past Due Date">Past Due Date</option>
+                        </Select>
+                      </FormControl>
+
+                      {/* by_days → applicability_days */}
+                      <FormControl>
+                        <FormLabel>By (days)</FormLabel>
+                        <Input
+                          type="number"
+                          value={cfg.by_days}
+                          onChange={(e) =>
+                            handleInterestConfigChange(index, "by_days", e.target.value)
+                          }
+                        />
+                      </FormControl>
+
+                      <FormControl>
+                        <FormLabel>Grace period (days)</FormLabel>
+                        <Input
+                          type="number"
+                          value={cfg.grace_period}
+                          onChange={(e) =>
+                            handleInterestConfigChange(index, "grace_period", e.target.value)
+                          }
+                        />
+                      </FormControl>
+
+                      <FormControl>
+                        <FormLabel>Calculate from</FormLabel>
+                        <Select
+                          value={cfg.calculate_from}
+                          onChange={(e) =>
+                            handleInterestConfigChange(index, "calculate_from", e.target.value)
+                          }
+                        >
+                          <option value="Date of Applicability">Date of Applicability</option>
+                          <option value="Due Date of invoice/Ref">Due Date of invoice/Ref</option>
+                          <option value="Eff. Date of Transaction">Eff. Date of Transaction</option>
+                        </Select>
+                      </FormControl>
+
+                      {/* security → security_enabled (0/1) */}
+                      <FormControl>
+                        <FormLabel>Security</FormLabel>
+                        <Select
+                          value={cfg.security}
+                          onChange={(e) =>
+                            handleInterestConfigChange(index, "security", e.target.value)
+                          }
+                        >
+                          <option value="No">No</option>
+                          <option value="Yes">Yes</option>
+                        </Select>
+                      </FormControl>
+
+                      <FormControl>
+                        <FormLabel>Security amount</FormLabel>
+                        <Input
+                          type="number"
+                          value={cfg.security_amount}
+                          onChange={(e) =>
+                            handleInterestConfigChange(index, "security_amount", e.target.value)
+                          }
+                        />
+                      </FormControl>
+
                     </Grid>
-
-                    <Divider mb={6} />
-
-                    {/* 3 Interest Slabs (mirrors JSP iterator) */}
-                    {formData.interest_configs.map((cfg, index) => (
-                      <Box
-                        key={index}
-                        borderWidth="1px"
-                        borderRadius="md"
-                        m={5}
-                        mb={5} className="ledger_box"
-                      >
-                        <Heading size="xs" mb={4} className="ledger_heading">
-                          Include transaction date for interest calculation {index + 1}
-                        </Heading>
-
-                        <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
-
-                          {/* for_amount_added → amount_added (0/1) */}
-                          <FormControl>
-                            <FormLabel>For amount added</FormLabel>
-                            <Select
-                              value={cfg.for_amount_added}
-                              onChange={(e) =>
-                                handleInterestConfigChange(index, "for_amount_added", e.target.value)
-                              }
-                            >
-                              <option value="">Select Any One</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </Select>
-                          </FormControl>
-
-                          {/* for_amount_deduct → amount_deducted (0/1) */}
-                          <FormControl>
-                            <FormLabel>For amount deducted</FormLabel>
-                            <Select
-                              value={cfg.for_amount_deduct}
-                              onChange={(e) =>
-                                handleInterestConfigChange(index, "for_amount_deduct", e.target.value)
-                              }
-                            >
-                              <option value="">Select Any One</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </Select>
-                          </FormControl>
-
-                          <FormControl>
-                            <FormLabel>Rate %</FormLabel>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              value={cfg.rate}
-                              onChange={(e) =>
-                                handleInterestConfigChange(index, "rate", e.target.value)
-                              }
-                            />
-                          </FormControl>
-
-                          {/* rate_per */}
-                          <FormControl>
-                            <FormLabel>Rate % per</FormLabel>
-                            <Select
-                              value={cfg.rate_per}
-                              onChange={(e) =>
-                                handleInterestConfigChange(index, "rate_per", e.target.value)
-                              }
-                            >
-                              <option value="">Select Any One</option>
-                              <option value="Calendar Month">Calendar Month</option>
-                              <option value="Calendar Year">Calendar Year</option>
-                            </Select>
-                          </FormControl>
-
-                          {/* rate_on */}
-                          <FormControl>
-                            <FormLabel>On</FormLabel>
-                            <Select
-                              value={cfg.rate_on}
-                              onChange={(e) =>
-                                handleInterestConfigChange(index, "rate_on", e.target.value)
-                              }
-                            >
-                              <option value="">Select Any One</option>
-                              <option value="Credit Balances Only">Credit Balances Only</option>
-                              <option value="Debit Balances Only">Debit Balances Only</option>
-                            </Select>
-                          </FormControl>
-
-                          {/* applicability */}
-                          <FormControl>
-                            <FormLabel>Applicability</FormLabel>
-                            <Select
-                              value={cfg.applicability}
-                              onChange={(e) =>
-                                handleInterestConfigChange(index, "applicability", e.target.value)
-                              }
-                            >
-                              <option value="Always">Always</option>
-                              <option value="Past Due Date">Past Due Date</option>
-                            </Select>
-                          </FormControl>
-
-                          {/* by_days → applicability_days */}
-                          <FormControl>
-                            <FormLabel>By (days)</FormLabel>
-                            <Input
-                              type="number"
-                              value={cfg.by_days}
-                              onChange={(e) =>
-                                handleInterestConfigChange(index, "by_days", e.target.value)
-                              }
-                            />
-                          </FormControl>
-
-                          <FormControl>
-                            <FormLabel>Grace period (days)</FormLabel>
-                            <Input
-                              type="number"
-                              value={cfg.grace_period}
-                              onChange={(e) =>
-                                handleInterestConfigChange(index, "grace_period", e.target.value)
-                              }
-                            />
-                          </FormControl>
-
-                          <FormControl>
-                            <FormLabel>Calculate from</FormLabel>
-                            <Select
-                              value={cfg.calculate_from}
-                              onChange={(e) =>
-                                handleInterestConfigChange(index, "calculate_from", e.target.value)
-                              }
-                            >
-                              <option value="Date of Applicability">Date of Applicability</option>
-                              <option value="Due Date of invoice/Ref">Due Date of invoice/Ref</option>
-                              <option value="Eff. Date of Transaction">Eff. Date of Transaction</option>
-                            </Select>
-                          </FormControl>
-
-                          {/* security → security_enabled (0/1) */}
-                          <FormControl>
-                            <FormLabel>Security</FormLabel>
-                            <Select
-                              value={cfg.security}
-                              onChange={(e) =>
-                                handleInterestConfigChange(index, "security", e.target.value)
-                              }
-                            >
-                              <option value="No">No</option>
-                              <option value="Yes">Yes</option>
-                            </Select>
-                          </FormControl>
-
-                          <FormControl>
-                            <FormLabel>Security amount</FormLabel>
-                            <Input
-                              type="number"
-                              value={cfg.security_amount}
-                              onChange={(e) =>
-                                handleInterestConfigChange(index, "security_amount", e.target.value)
-                              }
-                            />
-                          </FormControl>
-
-                        </Grid>
-                      </Box>
-                    ))}
                   </Box>
-                )}
+                ))}
               </Box>
             )}
+          </Box>
+        )}
 
-            {/* ============================================================ */}
-            {/* 6. BANK ACCOUNT DETAILS                                       */}
-            {/* ============================================================ */}
-            {currentConfig.showBankDetails && (
-              <Box className="ledger_box">
-                <Divider mb={4} />
-                <Heading size="sm" className="ledger_heading">Bank Account Details</Heading>
-                <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
+        {/* ============================================================ */}
+        {/* 6. BANK ACCOUNT DETAILS                                       */}
+        {/* ============================================================ */}
+        {currentConfig.showBankDetails && (
+          <Box className="ledger_box">
 
-                  {/* account_holder_name (was acc_holder_name) */}
-                  <FormControl>
-                    <FormLabel>A/C holder's name</FormLabel>
-                    <Input
-                      maxLength={100}
-                      name="account_holder_name"
-                      value={formData.bank_details.account_holder_name}
-                      onChange={handleBankChange}
-                    />
-                  </FormControl>
+            <Heading size="sm" className="ledger_heading">Bank Account Details</Heading>
+            <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
 
-                  {/* account_number (was acc_number) */}
-                  <FormControl>
-                    <FormLabel>A/C no</FormLabel>
-                    <Input
-                      maxLength={100}
-                      name="account_number"
-                      value={formData.bank_details.account_number}
-                      onChange={handleBankChange}
-                    />
-                  </FormControl>
+              {/* account_holder_name (was acc_holder_name) */}
+              <FormControl>
+                <FormLabel>A/C holder's name</FormLabel>
+                <Input
+                  maxLength={100}
+                  name="account_holder_name"
+                  value={formData.bank_details.account_holder_name}
+                  onChange={handleBankChange}
+                />
+              </FormControl>
 
-                  {/* ifsc_code (was ifsc) */}
-                  <FormControl>
-                    <FormLabel>IFSC code</FormLabel>
-                    <Input
-                      maxLength={100}
-                      name="ifsc_code"
-                      value={formData.bank_details.ifsc_code}
-                      onChange={handleBankChange}
-                    />
-                  </FormControl>
+              {/* account_number (was acc_number) */}
+              <FormControl>
+                <FormLabel>A/C no</FormLabel>
+                <Input
+                  maxLength={100}
+                  name="account_number"
+                  value={formData.bank_details.account_number}
+                  onChange={handleBankChange}
+                />
+              </FormControl>
 
-                  <FormControl>
-                    <FormLabel>Bank name</FormLabel>
-                    <Input
-                      maxLength={100}
-                      name="bank_name"
-                      value={formData.bank_details.bank_name}
-                      onChange={handleBankChange}
-                    />
-                  </FormControl>
+              {/* ifsc_code (was ifsc) */}
+              <FormControl>
+                <FormLabel>IFSC code</FormLabel>
+                <Input
+                  maxLength={100}
+                  name="ifsc_code"
+                  value={formData.bank_details.ifsc_code}
+                  onChange={handleBankChange}
+                />
+              </FormControl>
 
-                  {/* branch_name (was branch) */}
-                  <FormControl>
-                    <FormLabel>Branch</FormLabel>
-                    <Input
-                      maxLength={100}
-                      name="branch_name"
-                      value={formData.bank_details.branch_name}
-                      onChange={handleBankChange}
-                    />
-                  </FormControl>
+              <FormControl>
+                <FormLabel>Bank name</FormLabel>
+                <Input
+                  maxLength={100}
+                  name="bank_name"
+                  value={formData.bank_details.bank_name}
+                  onChange={handleBankChange}
+                />
+              </FormControl>
 
-                </Grid>
-              </Box>
-            )}
+              {/* branch_name (was branch) */}
+              <FormControl>
+                <FormLabel>Branch</FormLabel>
+                <Input
+                  maxLength={100}
+                  name="branch_name"
+                  value={formData.bank_details.branch_name}
+                  onChange={handleBankChange}
+                />
+              </FormControl>
 
-            {/* ============================================================ */}
-            {/* 7. BANK CONFIGURATION (cheque book / printing)               */}
-            {/* ============================================================ */}
-            {currentConfig.showBankConfig && (
-              <Box className="ledger_box">
-                <Divider mb={4} />
-                <Heading size="sm" className="ledger_heading">Bank Configuration</Heading>
-                <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
+            </Grid>
+          </Box>
+        )}
 
-                  {/* cheque_book_enabled (was cheque_book, now 0/1 via toBool) */}
-                  <FormControl>
-                    <FormLabel>Set cheque books</FormLabel>
-                    <Select
-                      name="cheque_book_enabled"
-                      value={formData.bank_details.cheque_book_enabled}
-                      onChange={handleBankChange}
-                    >
-                      <option value="">Select Any One</option>
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                    </Select>
-                  </FormControl>
+        {/* ============================================================ */}
+        {/* 7. BANK CONFIGURATION (cheque book / printing)               */}
+        {/* ============================================================ */}
+        {currentConfig.showBankConfig && (
+          <Box className="ledger_box">
 
-                  {/* cheque_printing_enabled (was cheque_printing, now 0/1 via toBool) */}
-                  <FormControl>
-                    <FormLabel>Cheque printing</FormLabel>
-                    <Select
-                      name="cheque_printing_enabled"
-                      value={formData.bank_details.cheque_printing_enabled}
-                      onChange={handleBankChange}
-                    >
-                      <option value="">Select Any One</option>
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                    </Select>
-                  </FormControl>
+            <Heading size="sm" className="ledger_heading">Bank Configuration</Heading>
+            <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
 
-                </Grid>
-              </Box>
-            )}
+              {/* cheque_book_enabled (was cheque_book, now 0/1 via toBool) */}
+              <FormControl>
+                <FormLabel>Set cheque books</FormLabel>
+                <Select
+                  name="cheque_book_enabled"
+                  value={formData.bank_details.cheque_book_enabled}
+                  onChange={handleBankChange}
+                >
+                  <option value="">Select Any One</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </Select>
+              </FormControl>
 
-            {/* ============================================================ */}
-            {/* 8. MAILING DETAILS                                            */}
-            {/* ============================================================ */}
-            <Box className="ledger_box">
-              {/* <Divider mb={4} /> */}
+              {/* cheque_printing_enabled (was cheque_printing, now 0/1 via toBool) */}
+              <FormControl>
+                <FormLabel>Cheque printing</FormLabel>
+                <Select
+                  name="cheque_printing_enabled"
+                  value={formData.bank_details.cheque_printing_enabled}
+                  onChange={handleBankChange}
+                >
+                  <option value="">Select Any One</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </Select>
+              </FormControl>
+
+            </Grid>
+          </Box>
+        )}
+
+        {/* ============================================================ */}
+        {/* 8. MAILING DETAILS                                            */}
+        {/* ============================================================ */}
+        {/* <Box className="ledger_box">
               <Heading size="sm" className="ledger_heading">Mailing Details</Heading>
               <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
-
                 <FormControl>
                   <FormLabel>Name</FormLabel>
-                  <Input
-                    maxLength={100}
-                    name="mailing_name"
-                    value={formData.mailing_name}
-                    onChange={handleChange}
-                  />
+                  <Input maxLength={100} name="mailing_name" value={formData.mailing_name} onChange={handleChange} />
                 </FormControl>
                   <FormControl>
                   <FormLabel>Pincode (Enter Pincode First)</FormLabel>
-                  <Input
-                    maxLength={40}
-                    name="pincode"
-                    value={formData.pincode}
-                    onChange={handleMailingPincodeChange}
-                  />
+                  <Input maxLength={40} name="pincode" value={formData.pincode} onChange={handleMailingPincodeChange} />
                 </FormControl>
 
                 <FormControl>
                   <FormLabel>Location</FormLabel>
-                  <Select
-                    name="location"
-                    value={formData.location}
-                    onChange={handleChange}
-                    placeholder="Please Select"
-                  >
+                  <Select name="location" value={formData.location} onChange={handleChange} placeholder="Please Select">
                     {mailingAreas.length > 0
                       ? mailingAreas.map((area, i) => (
                         <option key={i} value={area.officename}>
@@ -1082,432 +1075,324 @@ const CreateLedger = () => {
 
                 <FormControl>
                   <FormLabel>Country</FormLabel>
-                  <Input
-                    maxLength={40}
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                  />
+                  <Input maxLength={40} name="country" value={formData.country} onChange={handleChange}/>
                 </FormControl>
 
                 <FormControl>
                   <FormLabel>State</FormLabel>
+                  <Input maxLength={40} name="state" value={formData.state} onChange={handleChange}/>
+                </FormControl>
+              </Grid>
+            </Box> */}
+
+        {/* ============================================================ */}
+        {/* 9. TAX REGISTRATION DETAILS                                   */}
+        {/* ============================================================ */}
+        {currentConfig.showTax && (
+          <Box className="ledger_box">
+
+            <Heading size="sm" className="ledger_heading">Tax Registration Details</Heading>
+            <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
+
+              {/* pan_no (was pan_it_number) */}
+              {currentConfig.showPan && (
+                <FormControl>
+                  <FormLabel>PAN/IT No.</FormLabel>
                   <Input
                     maxLength={40}
-                    name="state"
-                    value={formData.state}
+                    name="pan_no"
+                    value={formData.pan_no}
                     onChange={handleChange}
                   />
                 </FormControl>
+              )}
 
-              
+              {/* gst_no – top-level field (was wrongly inside ledgerBankAccount) */}
+              <FormControl>
+                <FormLabel>GSTIN/UN</FormLabel>
+                <Input
+                  maxLength={40}
+                  name="gst_no"
+                  value={formData.gst_no}
+                  onChange={handleChange}
+                />
+              </FormControl>
 
-              </Grid>
-            </Box>
+            </Grid>
+          </Box>
+        )}
 
-            {/* ============================================================ */}
-            {/* 9. TAX REGISTRATION DETAILS                                   */}
-            {/* ============================================================ */}
-            {currentConfig.showTax && (
-              <Box className="ledger_box">
 
-                <Heading size="sm" className="ledger_heading">Tax Registration Details</Heading>
-                <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
+        <Box className="ledger_box">
 
-                  {/* pan_no (was pan_it_number) */}
-                  {currentConfig.showPan && (
-                    <FormControl>
-                      <FormLabel>PAN/IT No.</FormLabel>
-                      <Input
-                        maxLength={40}
-                        name="pan_no"
-                        value={formData.pan_no}
-                        onChange={handleChange}
-                      />
-                    </FormControl>
-                  )}
+          <Heading size="sm" className="ledger_heading">Opening Balance</Heading>
+          <Grid templateColumns="repeat(3, 1fr)" gap={4} p={6}>
 
-                  {/* gst_no – top-level field (was wrongly inside ledgerBankAccount) */}
-                  <FormControl>
-                    <FormLabel>GSTIN/UN</FormLabel>
-                    <Input
-                      maxLength={40}
-                      name="gst_no"
-                      value={formData.gst_no}
-                      onChange={handleChange}
-                    />
-                  </FormControl>
+            <FormControl>
+              <FormLabel>Date</FormLabel>
+              <Input
+                type="date"
+                name="opening_date"
+                value={formData.opening_date}
+                onChange={handleChange}
+              />
+            </FormControl>
 
-                </Grid>
-              </Box>
-            )}
+            <FormControl>
+              <FormLabel>Current balance</FormLabel>
+              <Input
+                type="number"
+                name="opening_balance"
+                value={formData.opening_balance}
+                onChange={handleChange}
+              />
+            </FormControl>
 
-            {/* ============================================================ */}
-            {/* 10. OPENING BALANCE                                           */}
-            {/* ============================================================ */}
-            <Box className="ledger_box">
-
-              <Heading size="sm" className="ledger_heading">Opening Balance</Heading>
-              <Grid templateColumns="repeat(3, 1fr)" gap={4} p={6}>
-
-                <FormControl>
-                  <FormLabel>Date</FormLabel>
-                  <Input
-                    type="date"
-                    name="opening_date"
-                    value={formData.opening_date}
-                    onChange={handleChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Current balance</FormLabel>
-                  <Input
-                    type="number"
-                    name="opening_balance"
-                    value={formData.opening_balance}
-                    onChange={handleChange}
-                  />
-                </FormControl>
-
-                {/* balance_type (was cr_dr – renamed to match backend) */}
-                <FormControl>
-                  <FormLabel>CR / DR</FormLabel>
-                  <Select
-                    name="balance_type"
-                    value={formData.balance_type}
-                    onChange={handleChange}
-                  >
-                    <option value="Cr">Cr</option>
-                    <option value="Dr">Dr</option>
-                  </Select>
-                </FormControl>
-
-              </Grid>
-            </Box>
-
-            <Box className="ledger_box">
-              <Heading size="sm" className="ledger_heading">
-                CRM Details
-              </Heading>
-
-              <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
-
-                <FormControl>
-                  <FormLabel>Customer Name</FormLabel>
-                  <Input
-                    name="customer_name"
-                    value={formData.crm_details.customer_name}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Customer DOB</FormLabel>
-                  <Input
-                    type="date"
-                    name="customer_dob"
-                    value={formData.crm_details.customer_dob}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Firm Name</FormLabel>
-                  <Input
-                    name="firm_name"
-                    value={formData.crm_details.firm_name}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Firm Type</FormLabel>
-                  <Input
-                    name="firm_type"
-                    value={formData.crm_details.firm_type}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Firm Email</FormLabel>
-                  <Input
-                    type="email"
-                    name="firm_email"
-                    value={formData.crm_details.firm_email}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Firm Since</FormLabel>
-                  <Input
-                    type="date"
-                    name="firm_since"
-                    value={formData.crm_details.firm_since}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Firm PAN</FormLabel>
-                  <Input
-                    name="firm_pan"
-                    value={formData.crm_details.firm_pan}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Firm Aadhar</FormLabel>
-                  <Input
-                    name="firm_aadhar"
-                    value={formData.crm_details.firm_aadhar}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>GSTN Type</FormLabel>
-                  <Input
-                    name="firm_gstn_type"
-                    value={formData.crm_details.firm_gstn_type}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Annual Turnover</FormLabel>
-                  <Input
-                    type="number"
-                    name="firm_annual_turnover"
-                    value={formData.crm_details.firm_annual_turnover}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Expected Sale Per Year</FormLabel>
-                  <Input
-                    type="number"
-                    name="expected_sale_per_year"
-                    value={formData.crm_details.expected_sale_per_year}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Other Company Detail</FormLabel>
-                  <Input
-                    name="other_company_detail"
-                    value={formData.crm_details.other_company_detail}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Address</FormLabel>
-                  <Input
-                    name="address"
-                    value={formData.crm_details.address}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>District</FormLabel>
-                  <Input
-                    name="district"
-                    value={formData.crm_details.district}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Pincode</FormLabel>
-                  <Input
-                    name="pincode"
-                    value={formData.crm_details.pincode}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>State</FormLabel>
-                  <Input
-                    name="state"
-                    value={formData.crm_details.state}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Tehsil</FormLabel>
-                  <Input
-                    name="tehsil"
-                    value={formData.crm_details.tehsil}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Landmark</FormLabel>
-                  <Input
-                    name="landmark"
-                    value={formData.crm_details.landmark}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Contact</FormLabel>
-                  <Input
-                    name="contact"
-                    value={formData.crm_details.contact}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Responsible Person Name</FormLabel>
-                  <Input
-                    name="responsible_person_name"
-                    value={formData.crm_details.responsible_person_name}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Responsible Person Contact</FormLabel>
-                  <Input
-                    name="responsible_person_contact"
-                    value={formData.crm_details.responsible_person_contact}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Responsible Person Address</FormLabel>
-                  <Input
-                    name="responsible_person_address"
-                    value={formData.crm_details.responsible_person_address}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Seed Licence No</FormLabel>
-                  <Input
-                    name="seed_licence_no"
-                    value={formData.crm_details.seed_licence_no}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Fertilizer Licence No</FormLabel>
-                  <Input
-                    name="fert_licence_no"
-                    value={formData.crm_details.fert_licence_no}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Pesticide Licence No</FormLabel>
-                  <Input
-                    name="pest_licence_no"
-                    value={formData.crm_details.pest_licence_no}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Transport Name</FormLabel>
-                  <Input
-                    name="transport_name"
-                    value={formData.crm_details.transport_name}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>CRM Bank Name</FormLabel>
-                  <Input
-                    name="bank_name"
-                    value={formData.crm_details.bank_name}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>CRM Account Number</FormLabel>
-                  <Input
-                    name="bank_acc_number"
-                    value={formData.crm_details.bank_acc_number}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>CRM IFSC</FormLabel>
-                  <Input
-                    name="bank_ifsc"
-                    value={formData.crm_details.bank_ifsc}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>CRM Bank Branch</FormLabel>
-                  <Input
-                    name="bank_branch"
-                    value={formData.crm_details.bank_branch}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Security Cheque No 1</FormLabel>
-                  <Input
-                    name="security_cheque_no1"
-                    value={formData.crm_details.security_cheque_no1}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Security Cheque No 2</FormLabel>
-                  <Input
-                    name="security_cheque_no2"
-                    value={formData.crm_details.security_cheque_no2}
-                    onChange={handleCrmChange}
-                  />
-                </FormControl>
-
-              </Grid>
-            </Box>
-
-            <Flex justify="end">
-              <Button
-                bg="#237086"
-                fontWeight="500"
-                fontSize="14px"
-                color="white"
-                _hover={{
-                  bg: "#1B5A6B",
-                }}
-                px={8}
-                borderRadius="12px"
-                onClick={handleSubmit}
-                isLoading={loading}
-                loadingText="Creating..."
+            {/* balance_type (was cr_dr – renamed to match backend) */}
+            <FormControl>
+              <FormLabel>CR / DR</FormLabel>
+              <Select
+                name="balance_type"
+                value={formData.balance_type}
+                onChange={handleChange}
               >
-                Create Ledger
-              </Button>
-            </Flex>
+                <option value="Cr">Cr</option>
+                <option value="Dr">Dr</option>
+              </Select>
+            </FormControl>
 
-          </VStack>
-        </CardBody>
-      </Card>
+          </Grid>
+        </Box>
+
+        <Box className="ledger_box">
+          <Heading size="sm" className="ledger_heading">
+            Party Details
+          </Heading>
+
+          <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
+
+            <FormControl>
+              <FormLabel>Customer Name</FormLabel>
+              <Input
+                name="customer_name"
+                value={formData.crm_details.customer_name}
+                onChange={handleCrmChange}
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Customer DOB</FormLabel>
+              <Input
+                type="date"
+                name="customer_dob"
+                value={formData.crm_details.customer_dob}
+                onChange={handleCrmChange}
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Firm Name</FormLabel>
+              <Input
+                name="firm_name"
+                value={formData.crm_details.firm_name}
+                onChange={handleCrmChange}
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Firm Type</FormLabel>
+
+              <Select
+                placeholder="Select Firm Type"
+                name="firm_type"
+                value={formData.crm_details.firm_type || ""}
+                onChange={handleCrmChange}
+              >
+                <option value="proprietor">Proprietor</option>
+                <option value="partner">Partner</option>
+              </Select>
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Firm Email</FormLabel>
+              <Input type="email" name="firm_email" value={formData.crm_details.firm_email} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Firm Since</FormLabel>
+              <Input type="date" name="firm_since" value={formData.crm_details.firm_since} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Firm PAN</FormLabel>
+              <Input name="firm_pan" value={formData.crm_details.firm_pan} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Firm Aadhar</FormLabel>
+              <Input
+                name="firm_aadhar"
+                value={formData.crm_details.firm_aadhar}
+                onChange={handleCrmChange}
+              />
+            </FormControl>
+
+            <FormControl >
+              <FormLabel>GSTN Type</FormLabel>
+
+              <Select
+                placeholder="Select GSTN Type"
+                name="firm_gstn_type"
+                value={formData.crm_details.firm_gstn_type || ""}
+                onChange={handleCrmChange}
+              >
+                <option value="Composition">Composition</option>
+                <option value="Consumer">Consumer</option>
+                <option value="Regular">Regular</option>
+                <option value="Unregistered">Unregistered</option>
+              </Select>
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Annual Turnover</FormLabel>
+              <Input type="number" name="firm_annual_turnover" value={formData.crm_details.firm_annual_turnover} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Expected Sale Per Year</FormLabel>
+              <Input type="number" name="expected_sale_per_year" value={formData.crm_details.expected_sale_per_year} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Other Company Detail</FormLabel>
+              <Input name="other_company_detail" value={formData.crm_details.other_company_detail} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Address</FormLabel>
+              <Input name="address" value={formData.crm_details.address} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>District</FormLabel>
+              <Input name="district" value={formData.crm_details.district} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Pincode</FormLabel>
+              <Input name="pincode" value={formData.crm_details.pincode} onChange={handleCrmChange} />
+            </FormControl>
+            <FormControl>
+              <FormLabel>State</FormLabel>
+              <Input name="state" value={formData.crm_details.state} onChange={handleCrmChange} />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Tehsil</FormLabel>
+              <Input name="tehsil" value={formData.crm_details.tehsil} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Landmark</FormLabel>
+              <Input name="landmark" value={formData.crm_details.landmark} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Contact</FormLabel>
+              <Input name="contact" value={formData.crm_details.contact} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Responsible Person Name</FormLabel>
+              <Input name="responsible_person_name" value={formData.crm_details.responsible_person_name} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Responsible Person Contact</FormLabel>
+              <Input name="responsible_person_contact" value={formData.crm_details.responsible_person_contact} onChange={handleCrmChange} />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Responsible Person Address</FormLabel>
+              <Input name="responsible_person_address" value={formData.crm_details.responsible_person_address} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Seed Licence No</FormLabel>
+              <Input name="seed_licence_no" value={formData.crm_details.seed_licence_no} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Fertilizer Licence No</FormLabel>
+              <Input name="fert_licence_no" value={formData.crm_details.fert_licence_no} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Pesticide Licence No</FormLabel>
+              <Input name="pest_licence_no" value={formData.crm_details.pest_licence_no} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Transport Name</FormLabel>
+              <Input name="transport_name" value={formData.crm_details.transport_name} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>CRM Bank Name</FormLabel>
+              <Input name="bank_name" value={formData.crm_details.bank_name} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>CRM Account Number</FormLabel>
+              <Input name="bank_acc_number" value={formData.crm_details.bank_acc_number} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>CRM IFSC</FormLabel>
+              <Input name="bank_ifsc" value={formData.crm_details.bank_ifsc} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>CRM Bank Branch</FormLabel>
+              <Input name="bank_branch" value={formData.crm_details.bank_branch} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Security Cheque No 1</FormLabel>
+              <Input name="security_cheque_no1" value={formData.crm_details.security_cheque_no1} onChange={handleCrmChange} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Security Cheque No 2</FormLabel>
+              <Input
+                name="security_cheque_no2"
+                value={formData.crm_details.security_cheque_no2}
+                onChange={handleCrmChange}
+              />
+            </FormControl>
+
+          </Grid>
+        </Box>
+
+        <Flex justify="end">
+          <Button
+            bg="#237086"
+            fontWeight="500"
+            fontSize="14px"
+            color="white"
+            _hover={{
+              bg: "#1B5A6B",
+            }}
+            px={8}
+            borderRadius="12px"
+            onClick={handleSubmit}
+            isLoading={loading}
+            loadingText="Creating..."
+          >
+            Create Ledger
+          </Button>
+        </Flex>
+
+      </VStack>
+
     </Box>
   );
 };

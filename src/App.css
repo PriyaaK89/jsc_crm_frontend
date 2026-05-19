@@ -244,3 +244,11 @@ height: 50px !important;
   border: 1px solid #d5d5d5 !important;
   border-radius: 6px !important;
 }
+
+.ledger_badge{
+      font-size: 11px !important;
+    font-weight: 500 !important;
+    text-transform: capitalize !important;
+    padding: 3px 6px !important;
+    border-radius: 20px !important;
+}

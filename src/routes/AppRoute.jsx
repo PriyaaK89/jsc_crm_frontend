@@ -24,7 +24,6 @@ import ViewGroupLayout from '../components/layout/AccountingMasterLayout/ViewGro
 import CreateLedgerLayout from '../components/layout/AccountingMasterLayout/CreateLedgerLayout';
 import ONBordingdistributoragreement from '../components/layout/AccountingMasterLayout/ONBordingdistributoragreement';
 import ViewLedgerLayout from "../components/layout/AccountingMasterLayout/ViewLedgerLayout";
-import DeleteLedgerLayout from '../components/layout/AccountingMasterLayout/DeleteLedgerLayout';
 import CreateVoucherLayout from '../components/layout/AccountingMasterLayout/CreateVoucherLayout';
 import ViewVoucherLayout from '../components/layout/AccountingMasterLayout/ViewVoucherLayout';
 import DeleteVoucherLayout from '../components/layout/AccountingMasterLayout/DeleteVoucherLayout';
@@ -141,12 +140,11 @@ function App() {
         <Route path='/distributor/distributorlist/view-distributor/:id' element={<ViewDistributorLayout/>}/>
         <Route path='/distributor/onboarding-ledger' element={<ONBordingdistributoragreement/>}/>
         <Route path='/accounting-master/view-ledger' element={<ViewLedgerLayout/>}/>
-        <Route path='/accounting-master/delete-ledger' element={<DeleteLedgerLayout/>}/>
         <Route path='/accounting-master/create-voucher' element={<CreateVoucherLayout/>}/>
         <Route path='/accounting-master/view-voucher' element={<ViewVoucherLayout/>}/>
         <Route path='/accounting-master/delete-voucher' element={<DeleteVoucherLayout/>}/>
-        <Route path='/accounting-master/edit-ledger-assignment' element={<EditLedgerAssignmentLayout/>}/>
         <Route path='/accounting-master/retail-assignment' element={<RetailerAssignmentLayout/>}/>
+        <Route path="/accounting-master/edit-ledger/:id" element={<EditLedgerAssignmentLayout/>}/>
         {/* print mgmt */}
         <Route path='/print/mgmt/shipping_lable_printer' element={<PrintShippingLablePrinterLayout/>}/>
         <Route path='/print/mgmt/truthful_labelprint' element={<PrintTruthfulLablePrintLayout/>}/>

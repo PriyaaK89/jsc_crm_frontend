@@ -77,7 +77,7 @@ const Newsidebar = () => {
     justifyContent: "flex-start",
     fontWeight: "600",
     color: "#29404a",
-    fontSize: "15px",
+    fontSize: "14px",
     transition: "all 0.3s ease", 
     paddingLeft: "21px !important",
 
@@ -153,7 +153,6 @@ const Newsidebar = () => {
         {label:"View Group",path:"/accounting-master/view-group",icon:FaList},
         {label:"Create Ledger",path:"/accounting-master/create-ledger", icon:FaFileInvoiceDollar},
         {label:"View Ledger",path:"/accounting-master/view-ledger", icon:FaFileInvoice},
-        {label:"Delete Ledger",path:"/accounting-master/delete-ledger", icon:FaTrash},
         {label:"Create Voucher",path:"/accounting-master/create-voucher", icon:FaMoneyCheckAlt},
         {label:"View Voucher", path:"/accounting-master/view-voucher", icon:FaFileInvoice },
         {label:"Delete Voucher",path:"/accounting-master/delete-voucher", icon:FaTrash},
@@ -195,8 +194,8 @@ const Newsidebar = () => {
             {label:"manufacturing Report",path:"/report/manufacturing-report",icon:MdFactory},
             {label:"Stock Transfer Report",path:"/report/stock-transfer-report",icon:MdSwapHoriz},
             {label:"Pending Collection Report",path:"/report/pending-collection-report",icon:MdPendingActions},
-            {label:"Employee Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
-            {label:"Digio KYC Report",path:"/report/emp-kyc-report",icon:MdTrendingUp},
+            {label:"Emp. Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
+            // {label:"Digio KYC Report",path:"/report/emp-kyc-report",icon:MdTrendingUp},
           ]
       },
       {

@@ -134,6 +134,10 @@ export const API_ENDPOINTS = {
   edit_account_group: "update-account-group",
   delete_account_group: "delete-account-group",
 
-  create_ledger: "create-ledger"
+  create_ledger: "create-ledger",
+  get_ledger: "get-ledgers",
+  get_ledger_by_id: "getLedgerDetailsById",
+  update_ledger: "update_ledger",
+  delete_ledger: "delete_ledger"
 };
 // 

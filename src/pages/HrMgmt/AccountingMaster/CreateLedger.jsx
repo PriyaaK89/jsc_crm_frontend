@@ -54,12 +54,7 @@ const CreateLedger = () => {
     return ( 
       <>
      <Box
-         bg="white"
-         mt={{base:2, md:5}}
-         px={{base:3, md:6}}
-         py={{base:3, md:4}}
-        borderRadius="lg"
-        boxShadow="md"
+        bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 4 }} borderRadius="lg" boxShadow="md"
      >
                 <HStack justifyContent='space-between'>
                       <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >

@@ -14,52 +14,62 @@ const CreateStockItem = () => {
     const [godowns, setGodowns] = useState([]);
     const [selectedGroup, setSelectedGroup] = useState();
 
-    const [formData, setFormData] = useState({
-        item_name: "",
-        stock_group_id: "",
-        stock_category_id: "",
-        unit_id: "",
-        gst_applicable: "",
-        set_gst_details: "",
-        type_of_supply: "Goods",
-        rate_of_duty: "",
-        description: "",
-        alternative_unit_id: "",
-        alternative_unit_value: "",
-        base_unit_value: "",
-        bulk_unit_id: "",
-        bulk_unit_value: "",
-        bulk_base_value: "",
-        maintain_in_batches: "",
-        track_mfg_date: "",
-        use_expiry_dates: "",
-        set_standard_rates: "",
-        enable_cost_tracking: "",
+    const initialFormData = {
+    item_name: "",
+    stock_group_id: "",
+    stock_category_id: "",
+    unit_id: "",
 
-        gst_details: {
-            gst_description: "",
-            hsn_sac: "",
-            is_non_gst_goods: false,
-            calculation_type: "On Value",
-            taxability: "",
-            integrated_tax: "",
-            central_tax: "",
-            state_tax: "",
-            cess: "",
-        },
+    gst_applicable: "",
+    set_gst_details: "",
 
-        opening_stock: {
-            godown_id: "",
-            batch_no: "",
-            mfg_date: "",
-            expiry_date: "",
-            quantity: "",
-            rate: "",
-            supercash_price: "",
-            per_unit_id: "",
-            amount: "",
-        },
-    });
+    type_of_supply: "Goods",
+    rate_of_duty: "",
+    description: "",
+
+    alternative_unit_id: "",
+    alternative_unit_value: "",
+    base_unit_value: "",
+
+    bulk_unit_id: "",
+    bulk_unit_value: "",
+    bulk_base_value: "",
+
+    is_returnable: "0",
+    returnable_percentage: "",
+
+    maintain_in_batches: "",
+    track_mfg_date: "",
+    use_expiry_dates: "",
+
+    set_standard_rates: "",
+    enable_cost_tracking: "",
+
+    gst_details: {
+        gst_description: "",
+        hsn_sac: "",
+        is_non_gst_goods: false,
+        calculation_type: "On Value",
+        taxability: "",
+        integrated_tax: "",
+        central_tax: "",
+        state_tax: "",
+    },
+
+    opening_stock: {
+        godown_id: "",
+        batch_no: "",
+        mfg_date: "",
+        expiry_date: "",
+        quantity: "",
+        rate: "",
+        supercash_price: "",
+        per_unit_id: "",
+        amount: "",
+    },
+};
+
+    const [formData, setFormData] = useState(initialFormData);
 
     const handleSelectGroup = (id) => {
         setSelectedGroup(id);
@@ -96,6 +106,11 @@ const CreateStockItem = () => {
                     track_mfg_date: "",
                     use_expiry_dates: "",
                 }),
+
+                ...(name === "is_returnable" &&
+    value === "0" && {
+    returnable_percentage: "",
+}),
             };
 
             // AUTO SET OPENING STOCK PER UNIT
@@ -105,6 +120,25 @@ const CreateStockItem = () => {
                     per_unit_id: value,
                 };
             }
+
+             if (name === "rate_of_duty") {
+
+            const dutyRate = parseFloat(value) || 0;
+
+            // divide equally
+            const halfTax = dutyRate / 2;
+
+            updatedData.gst_details = {
+                ...prev.gst_details,
+
+                // user can still edit/remove later manually
+                central_tax: value === "" ? "" : halfTax,
+                state_tax: value === "" ? "" : halfTax,
+
+                // optional
+                // integrated_tax: value === "" ? "" : dutyRate,
+            };
+        }
 
             return updatedData;
         });
@@ -201,7 +235,22 @@ const CreateStockItem = () => {
     // =========================
 
     const handleCreateStockItem = async () => {
+        if (
+    Number(formData.is_returnable) === 1 &&
+    !formData.returnable_percentage
+) {
+    toast({
+        title: "Error",
+        description: "Please enter returnable percentage",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+    });
+
+    return;
+}
         try {
+            
             setLoading(true);
 
             const payload = {
@@ -215,6 +264,12 @@ const CreateStockItem = () => {
                 use_expiry_dates: Number(formData.use_expiry_dates),
                 set_standard_rates: Number(formData.set_standard_rates),
                 enable_cost_tracking: Number(formData.enable_cost_tracking),
+                is_returnable: Number(formData.is_returnable),
+
+returnable_percentage:
+    formData.returnable_percentage === ""
+        ? null
+        : Number(formData.returnable_percentage),
                 gst_details: {
                     ...formData.gst_details,
                     is_non_gst_goods: formData.gst_details.is_non_gst_goods ? 1 : 0,
@@ -230,6 +285,8 @@ const CreateStockItem = () => {
                 duration: 3000,
                 isClosable: true,
             });
+            setFormData(initialFormData);
+setSelectedGroup("");
 
             console.log(response?.data);
 
@@ -772,19 +829,9 @@ const CreateStockItem = () => {
                             <FormControl>
                                 <FormLabel>GST Applicable</FormLabel>
 
-                                <Select
-                                    placeholder="Select Option"
-                                    name="gst_applicable"
-                                    value={formData.gst_applicable}
-                                    onChange={handleChange}
-                                >
-                                    <option value="1">
-                                        Applicable
-                                    </option>
-
-                                    <option value="0">
-                                        Not Applicable
-                                    </option>
+                                <Select placeholder="Select Option" name="gst_applicable" value={formData.gst_applicable} onChange={handleChange} >
+                                    <option value="1"> Applicable</option>
+                                    <option value="0"> Not Applicable</option>
                                 </Select>
                             </FormControl>
                         </GridItem>
@@ -793,30 +840,51 @@ const CreateStockItem = () => {
 
                         <GridItem>
                             <FormControl>
-                                <FormLabel>
-                                    Set / Alter GST Details
-                                </FormLabel>
-
-                                <Select
-                                    placeholder="Select Option"
-                                    name="set_gst_details"
-                                    value={formData.set_gst_details}
-                                    onChange={handleChange}
-                                >
-                                    <option value="1">
-                                        Yes
-                                    </option>
-
-                                    <option value="0">
-                                        No
-                                    </option>
+                                <FormLabel> Set / Alter GST Details </FormLabel>
+                                <Select placeholder="Select Option" name="set_gst_details" value={formData.set_gst_details} onChange={handleChange}>
+                                    <option value="1"> Yes </option>
+                                    <option value="0"> No </option>
                                 </Select>
                             </FormControl>
                         </GridItem>
 
+                        <GridItem>
+                            <FormControl>
+  <FormLabel>Item is Returnable</FormLabel>
+
+<Select
+    placeholder="Select Option"
+    name="is_returnable"
+    value={formData.is_returnable}
+    onChange={handleChange}
+>
+    <option value="1">Yes</option>
+    <option value="0">No</option>
+</Select>
+</FormControl>
+ {Number(formData.is_returnable) === 1 && (
+  <FormControl mt={4}>
+    <FormLabel>Returnable Percentage</FormLabel>
+
+    <Input
+    type="number"
+    name="returnable_percentage"
+    value={formData.returnable_percentage}
+    onChange={handleChange}
+    placeholder="Enter Number"
+    min={0}
+    max={100}
+/>
+  </FormControl>
+)}
+                        </GridItem>
+
+
                     </Grid>
 
                 </Box>
+
+               
 
                 {/* GST DETAILS */}
 
@@ -831,22 +899,12 @@ const CreateStockItem = () => {
                             GST Details
                         </Text>
 
-                        <Grid
-                            templateColumns="repeat(2, 1fr)"
-                            gap={5}
-                        >
+                        <Grid templateColumns="repeat(2, 1fr)" gap={5}>
 
                             <GridItem>
                                 <FormControl>
                                     <FormLabel>Description</FormLabel>
-
-                                    <Input
-                                        name="gst_description"
-                                        value={
-                                            formData.gst_details.gst_description
-                                        }
-                                        onChange={handleGSTChange}
-                                    />
+                                    <Input name="gst_description" value={ formData.gst_details.gst_description } onChange={handleGSTChange}/>
                                 </FormControl>
                             </GridItem>
 
@@ -909,10 +967,10 @@ const CreateStockItem = () => {
                                         />
                                     </Td>
                                 </Tr>
-                                <Tr>
+                                {/* <Tr>
                                     <Td fontSize="12px" color="gray.600">Cess</Td>
                                     <Td> <Input type="number" name="cess" value={formData.gst_details.cess} onChange={handleGSTChange} /></Td>
-                                </Tr>
+                                </Tr> */}
                             </Tbody>
                         </Table>
                     </Box>

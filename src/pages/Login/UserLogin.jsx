@@ -138,7 +138,7 @@ function UserLogin() {
       </Box>
 
       {/* --- DESKTOP VIEW --- */}
-      <Flex display={{ base: "none", md: "flex" }} flex="1" bg="#f7fbf7" align="center" justify="flex-start">
+      <Flex display={{ base: "none", md: "flex" }} flex="1" bg="white" align="center" justify="flex-start">
         <Image src={login_img} alt="CRM Illustration" maxW="94%" />
       </Flex>
 
@@ -154,7 +154,7 @@ function UserLogin() {
     }
   }}
       >
-        <Box w="100%" maxW="400px" bg="#f7fbf7">
+        <Box w="100%" maxW="400px" bg="white">
           <Image src={logoRemovebgPreview} maxW="200px" mx="auto" mb={7} />
 
           <Text fontSize="xl" fontWeight="bold" color="blue.600" > Welcome Back! </Text>

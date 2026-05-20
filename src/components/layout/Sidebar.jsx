@@ -2,9 +2,9 @@ import {Box,VStack,Text,Button,Collapse,Icon, Image, useToast } from "@chakra-ui
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
-import { MdAssignmentInd, MdOutlineInventory2, MdOutlineTrackChanges } from "react-icons/md";
+import { MdAssignmentInd, MdAttractions, MdOutlineInventory2, MdOutlineTrackChanges } from "react-icons/md";
 import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
-import { FaListAlt, FaTable, FaUserAlt, FaUserTie, FaWarehouse } from 'react-icons/fa';
+import { FaListAlt, FaMoneyBill, FaTable, FaUserAlt, FaUserTie, FaWarehouse } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
 import { MdCorporateFare, MdGroupAdd } from "react-icons/md";
 import { HiOfficeBuilding ,HiOutlineDocumentReport} from "react-icons/hi";
@@ -222,7 +222,14 @@ const Newsidebar = () => {
           {label:"Credit",path:"/order-vochor/credit",icon:BsCreditCard2Front},
           {label:"Debit",path:"/order-vochor/debit",icon:FaMoneyBillWave},
          ]
-      },{
+      },
+      {
+        label:"Misc",key:"misc",icon:MdAttractions ,
+         children:[
+          {label:"Activate/Deactivate Voucher",path:"/misc/voucher-action",icon:FaMoneyBill  },      
+         ]
+      },
+      {
         label:"Print MGMT",key:"print_mgmt",icon:HiOutlinePrinter,
         children:[
           {label:"Shipping label printer",path:"/print/mgmt/shipping_lable_printer",icon:BsUpcScan},
@@ -243,9 +250,10 @@ useEffect(() => {
     "/accounting-master": "accounting-master",
     "/company-master": "company-master",
     "/leads": "leads",
-    "/report":"Reports",
     "/inventory": "inventory",
     "/order-vochor": "order-vochor",
+    "/report":"Reports",
+    "/misc": "misc",
     "/print/mgmt": "print_mgmt",
     
   };

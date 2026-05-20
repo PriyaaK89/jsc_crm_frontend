@@ -1,16 +1,5 @@
 import React, { useState, useContext } from "react";
-import {
-  Box,
-  Flex,
-  Image,
-  Text,
-  Input,
-  Button,
-  Link,
-  useToast,
-  InputGroup,
-  InputRightElement,
-} from "@chakra-ui/react";
+import { Box, Flex, Image, Text, Input, Button, Link, useToast, InputGroup, InputRightElement,} from "@chakra-ui/react";
 import { Eye, EyeOff } from "lucide-react";
 import login_img from "../../assets/crm_login.png";
 import logoRemovebgPreview from "../../assets/images/logo-removebg-preview.png";
@@ -54,19 +43,13 @@ function UserLogin() {
   };
 
   return (
-    <Flex
-      direction={{ base: "column", md: "row" }}
-      minH="100dvh"
-      w="100%"
-      bg="white"
-      overflow="hidden"
-    >
+    <Flex direction={{ base: "column", md: "row" }} minH="100dvh" w="100%" bg="white" overflow="hidden">
       {/* --- MOBILE VIEW --- */}
       <Box
         display={{ base: "block", md: "none" }}
         position="relative"
         w="100vw"
-        h="100dvh"   //  FIXED
+        h="100dvh"   
         bg="gray.100"
         overflow="hidden"
       >
@@ -155,8 +138,8 @@ function UserLogin() {
       </Box>
 
       {/* --- DESKTOP VIEW --- */}
-      <Flex display={{ base: "none", md: "flex" }} flex="1" bg="#ffff" align="center" justify="flex-start">
-        <Image src={login_img} alt="CRM Illustration" maxW="93%" />
+      <Flex display={{ base: "none", md: "flex" }} flex="1" bg="#f7fbf7" align="center" justify="flex-start">
+        <Image src={login_img} alt="CRM Illustration" maxW="94%" />
       </Flex>
 
       <Flex
@@ -171,71 +154,40 @@ function UserLogin() {
     }
   }}
       >
-        <Box w="100%" maxW="400px">
-          <Image
-            src={logoRemovebgPreview}
-            maxW="150px"
-            mx="auto"
-            mb={10}
-          />
+        <Box w="100%" maxW="400px" bg="#f7fbf7">
+          <Image src={logoRemovebgPreview} maxW="200px" mx="auto" mb={7} />
 
-          <Text fontSize="2xl" fontWeight="bold" color="blue.600" mb={1}>
-            Welcome Back!
-          </Text>
-          <Text fontSize="md" color="gray.500" mb={8}>
-            Sign in to continue to CRM.
-          </Text>
+          <Text fontSize="xl" fontWeight="bold" color="blue.600" > Welcome Back! </Text>
+          <Text fontSize="sm" color="gray.500" mb={6}> Sign in to continue to CRM. </Text>
 
           <Box textAlign="left">
-            <Text mb={1} fontWeight="500" fontSize="sm">
-              E-mail
-            </Text>
-            <Input
-              mb={4}
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <Text mb={1} fontWeight="500" fontSize="sm" color="gray.700"> E-mail </Text>
+            <Input mb={4} placeholder="Enter email" value={email} bg="white" onChange={(e) => setEmail(e.target.value)}/>
 
             <Flex justify="space-between" mb={1}>
-              <Text fontWeight="500" fontSize="sm">
-                Password
-              </Text>
-              <Link fontSize="xs" color="blue.500">
-                Forgot password?
-              </Link>
+              <Text fontWeight="500" fontSize="sm" color="gray.700"> Password </Text>
+              <Link fontSize="xs" color="blue.500"> Forgot password? </Link>
             </Flex>
 
             <InputGroup mb={6}>
               <Input
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter password"
-                value={password}
+                value={password} bg="white"
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <InputRightElement
-                h="100%"
-                onClick={() => setShowPassword(!showPassword)}
-              >
+              <InputRightElement h="100%" onClick={() => setShowPassword(!showPassword)} >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </InputRightElement>
             </InputGroup>
 
-            <Button
-              colorScheme="blue"
-              w="100%"
-              h="48px"
-              onClick={handleLogin} onKeyDown={(e) => {
-                if (e.key === "Enter") handleLogin();
-              }}
-            >
+            <Button colorScheme="blue" w="100%" h="48px" fontWeight="500"
+              onClick={handleLogin} onKeyDown={(e) => { if (e.key === "Enter") handleLogin(); }} >
               Login
             </Button>
           </Box>
 
-          <Text mt={12} fontSize="xs" color="gray.400" textAlign="center">
-            © CRM. Crafted by Jamidara Seeds Corporation
-          </Text>
+          <Text mt={12} fontSize="xs" color="gray.400" textAlign="center"> © CRM. Crafted by Jamidara Seeds Corporation </Text>
         </Box>
       </Flex>
     </Flex>

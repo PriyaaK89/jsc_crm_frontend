@@ -522,7 +522,7 @@ const downloadExcel = async () => {
                               </Tr>
                             ))}
 
-                            {/* 🔥 TOTAL ROW */}
+                            {/*  TOTAL ROW */}
                             <Tr bg="gray.100">
                               <Text fontWeight="bold" m={2}>Total</Text>
                               <Td></Td><Td></Td><Td></Td>

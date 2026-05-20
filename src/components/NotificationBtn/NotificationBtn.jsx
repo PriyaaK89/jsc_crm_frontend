@@ -43,7 +43,7 @@ color="white" px={{base: "8px", sm: "8px", md: '16px'}}
                             position="absolute"
                             top="-6px"
                             right="-6px"
-                            bg="red.500"
+                            bg="#e53e77"
                             color="white"
                             borderRadius="full"
                             fontSize="10px"

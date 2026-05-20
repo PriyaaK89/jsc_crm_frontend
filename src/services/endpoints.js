@@ -138,6 +138,16 @@ export const API_ENDPOINTS = {
   get_ledger: "get-ledgers",
   get_ledger_by_id: "getLedgerDetailsById",
   update_ledger: "update_ledger",
-  delete_ledger: "delete_ledger"
+  delete_ledger: "delete_ledger",
+
+  CREATE_VOUCHER: "create_voucher",
+  GET_VOUCHER_LIST: "get_voucher_list",
+  GET_VOUCHER_DETAILS_BY_ID: "get_voucher_details",
+  UPDATE_VOUCHER: "update_voucher",
+  DELETE_VOUCHER: "delete_voucher",
+
+  GET_VOUCHER_TYPE_DROPDOWN: "voucher-type-dropdown",
+  GET_VOUCHER_LIST_BY_TYPE: "voucher-by-type",
+  UPDATE_VOUCHER_STATUS: "activate-voucher",
 };
 // 

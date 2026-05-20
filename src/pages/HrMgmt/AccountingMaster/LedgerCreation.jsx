@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Box, Button, Card, CardBody, Divider, Flex, FormControl, FormLabel, Grid, GridItem, Heading, Input, Select, VStack, Switch, useToast, } from "@chakra-ui/react";
+import { Box, Button, Card, CardBody, Divider, Flex, FormControl, FormLabel, Grid, GridItem, Heading, Input, Select, VStack, Switch, useToast, Breadcrumb, HStack, BreadcrumbItem, BreadcrumbLink, } from "@chakra-ui/react";
 import { GROUP_CONFIG } from "../AccountingMaster/LedgerGroupConfig";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
+import { Link } from "react-router-dom";
+import { GoHomeFill } from "react-icons/go";
 
 
 const toBool = (value) => (value === "Yes" ? 1 : 0);
@@ -534,7 +536,21 @@ const CreateLedger = () => {
 
   return (
     <Box bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 4 }} borderRadius="lg" boxShadow="md">
+<HStack justifyContent="space-between">
+        <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px" >
+          <BreadcrumbItem>
+            <BreadcrumbLink as={Link} to="/dashboard" >
+              <GoHomeFill color="#5570F1" />
+            </BreadcrumbLink>
+          </BreadcrumbItem>
 
+          <BreadcrumbItem>
+            <BreadcrumbLink isCurrentPage color="#8B8D97" fontSize="13px" >
+              Create Ledger
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </Breadcrumb>
+      </HStack>
       <Heading size="md" mb={6}>
         Create Ledger
       </Heading>
@@ -594,9 +610,7 @@ const CreateLedger = () => {
 
         </Grid>
 
-        {/* ============================================================ */}
-        {/* 2. BILL-BY-BILL  (Sundry Debtors / Sundry Creditors)         */}
-        {/* ============================================================ */}
+
         {currentConfig.showBillByBill && (
           <Box className="ledger_box">
             <Heading size="sm" className="ledger_heading">Bill-by-Bill Settings</Heading>

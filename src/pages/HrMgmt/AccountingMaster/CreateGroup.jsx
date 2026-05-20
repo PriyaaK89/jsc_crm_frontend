@@ -247,7 +247,7 @@ const CreateGroup = () => {
   }, [id]);
 
   return (
-    <Box w="100%" bg="white" p={6} borderRadius="lg" >
+    <Box bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 4 }} borderRadius="lg" boxShadow="md" >
 
 
       <HStack justifyContent="space-between">

@@ -26,7 +26,6 @@ import ONBordingdistributoragreement from '../components/layout/AccountingMaster
 import ViewLedgerLayout from "../components/layout/AccountingMasterLayout/ViewLedgerLayout";
 import CreateVoucherLayout from '../components/layout/AccountingMasterLayout/CreateVoucherLayout';
 import ViewVoucherLayout from '../components/layout/AccountingMasterLayout/ViewVoucherLayout';
-import DeleteVoucherLayout from '../components/layout/AccountingMasterLayout/DeleteVoucherLayout';
 import EditLedgerAssignmentLayout from '../components/layout/AccountingMasterLayout/EditLedgerAssignmentLayout';
 import RetailerAssignmentLayout from '../components/layout/AccountingMasterLayout/RetailerAssignmentLayout';
 import CreateStockGroupLayout from "../components/layout/CreateStockGroupLayout";
@@ -89,6 +88,8 @@ import ViewEmployeeTargets from "../pages/BusinessDevelopment/ViewEmployeeTarget
 import CreateStockItemLayout from "../components/layout/InventoryMaster/CreateStockItemLayout";
 import ViewStockItemListLayout from "../components/layout/InventoryMaster/ViewStockItemListLayout";
 import EditStockItemListLayout from "../components/layout/InventoryMaster/EditStockItemListLayout";
+import EditVoucherLayout from "../components/layout/AccountingMasterLayout/EditVoucherLayout";
+import ActivateVoucherLayout from "../components/layout/MiscActions/ActivateVoucherLayout";
 
 
 function App() {
@@ -142,9 +143,12 @@ function App() {
         <Route path='/accounting-master/view-ledger' element={<ViewLedgerLayout/>}/>
         <Route path='/accounting-master/create-voucher' element={<CreateVoucherLayout/>}/>
         <Route path='/accounting-master/view-voucher' element={<ViewVoucherLayout/>}/>
-        <Route path='/accounting-master/delete-voucher' element={<DeleteVoucherLayout/>}/>
         <Route path='/accounting-master/retail-assignment' element={<RetailerAssignmentLayout/>}/>
         <Route path="/accounting-master/edit-ledger/:id" element={<EditLedgerAssignmentLayout/>}/>
+        <Route path="/accounting-master/edit-voucher/:id" element={<EditVoucherLayout/>}/>
+
+
+
         {/* print mgmt */}
         <Route path='/print/mgmt/shipping_lable_printer' element={<PrintShippingLablePrinterLayout/>}/>
         <Route path='/print/mgmt/truthful_labelprint' element={<PrintTruthfulLablePrintLayout/>}/>
@@ -233,6 +237,8 @@ function App() {
            <Route path="/report/track-employee" element={<TrackEmpLayout />} />
            <Route path="/hr-mgmt/upload-employee-expenses" element={<UploadEmployeeExpenses/>} />
            <Route path="/report/emp-kyc-report" element={<KYCReport/>}/>
+
+           <Route path="/misc/voucher-action" element={<ActivateVoucherLayout/>}/>
 
       </Routes>
     </Router>

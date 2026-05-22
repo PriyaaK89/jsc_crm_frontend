@@ -415,14 +415,10 @@ const CreateTeam = () => {
 
               <Button
                 type="submit"
-                bg="#237086"
-                fontWeight="500" fontSize="14px"
-                color="white"
-                _hover={{
-                  bg: "#1B5A6B"
-                }}
-                 px={8}
-                borderRadius="12px"
+                bg="#237086" fontWeight="500" 
+                fontSize="14px" color="white"
+                _hover={{ bg: "#1B5A6B" }}
+                 px={8} borderRadius="12px"
                 isLoading={loading}
                 loadingText={
                   isEditMode

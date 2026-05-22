@@ -109,11 +109,13 @@ export const API_ENDPOINTS = {
   delete_team: "delete-team",
   edit_suTeam: "update-subteam",
   delete_subTeam: "delete-subteam",
+
   create_godown: "create-godown",
   godown_list: "getGodownList",
   view_godown_by_id: "getGodownDetails",
   update_godown: "update-godown",
   delete_godown: "delete-godown",
+
   get_unique_quantity_codes: "get-unitOfMeasure-list",
   create_unit_of_measure: "create-unitOfMeasure",
   getUnitList: "getAllUnits",
@@ -149,5 +151,15 @@ export const API_ENDPOINTS = {
   GET_VOUCHER_TYPE_DROPDOWN: "voucher-type-dropdown",
   GET_VOUCHER_LIST_BY_TYPE: "voucher-by-type",
   UPDATE_VOUCHER_STATUS: "activate-voucher",
+
+  GET_STOCK_ITEM_DROPDOWN: "get-stock-items/dropdown",
+  CREATE_MANUFACTURING_MATERIAL: "create-material-mfg",
+  GET_LEDGER_DROPDOWN: "ledger-dropdown",
+  GET_BATCH_BY_STOCK_ITEM_ID: "/get-stock-item/batches",
+  GET_AVAILABLE_QTY_OF_STOCK: "get-available-stock",
+  GET_MATERIAL_MFG_REPORT: "get-manufacturing-report",
+
+  CREATE_STOCK_TRANSFER: "create-stock-transfer"
+  
 };
 // 

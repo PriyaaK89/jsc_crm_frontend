@@ -274,12 +274,7 @@ function EditVoucher() {
 
       </HStack>
 
-      <Text
-        fontSize="xl"
-        fontWeight="bold"
-        mb={6}
-        textAlign="center"
-      >
+      <Text className="action_heading" mb={6} textAlign="center" >
         Edit Voucher
       </Text>
 

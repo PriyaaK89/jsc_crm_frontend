@@ -86,20 +86,20 @@ export default function MyPieChart() {
   const total = chartData.reduce((acc, item) => acc + item.value, 0);
 
   return (
-    <Box bg="white" p={5} borderRadius="2xl" boxShadow="sm" w="100%" maxW="500px">
+    <Box bg="white" borderRadius="13px" boxShadow="0px 2px 6px #c6c6c6" w="100%" maxW="500px" mt={8}>
       {/* Header */}
-      <Flex justify="space-between" align="flex-start" >
-        <Text fontWeight="bold" fontSize="14px" color="gray.700">
+      <Flex justify="space-between" align="flex-start" padding="14px 14px 8px" background="#e3eeeb" borderRadius="13px 13px 0px 0px">
+        <Text fontWeight="bold" fontSize="16px" color="#464748">
           Employee Summary
         </Text>
 
-        <FormControl maxW="160px">
+        <FormControl maxW="160px" bg="white" borderRadius="12px">
           <Input size="sm" type="date" value={date} onChange={(e) => setDate(e.target.value)} borderRadius="12px" />
         </FormControl>
       </Flex>
 
       {/* Chart */}
-      <Box position="relative" h="260px">
+      <Box position="relative" h="260px" >
         <ResponsiveContainer>
           <PieChart>
             <Pie
@@ -142,6 +142,7 @@ export default function MyPieChart() {
       <Divider my={4} />
 
       {/*  Legend (Custom Professional) */}
+      <Box p={5}>
       <VStack align="stretch" spacing={2}>
         {chartData.map((item, index) => (
           <Flex key={index} justify="space-between" align="center">
@@ -167,6 +168,7 @@ export default function MyPieChart() {
         <Text fontSize="12px" color="gray.600">
           Completed Day: {summary.completed_day || 0}
         </Text>
+      </Box>
       </Box>
     </Box>
   );

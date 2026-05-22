@@ -90,6 +90,8 @@ import ViewStockItemListLayout from "../components/layout/InventoryMaster/ViewSt
 import EditStockItemListLayout from "../components/layout/InventoryMaster/EditStockItemListLayout";
 import EditVoucherLayout from "../components/layout/AccountingMasterLayout/EditVoucherLayout";
 import ActivateVoucherLayout from "../components/layout/MiscActions/ActivateVoucherLayout";
+import MaterialManufacturingLayout from "../components/layout/InventoryMaster/MatrialManufacturingLayout";
+import StockTransferLayout from "../components/layout/InventoryMaster/StockTransferLayout";
 
 
 function App() {
@@ -195,6 +197,8 @@ function App() {
         <Route path="/inventory/create-stock-item" element={<CreateStockItemLayout/>}/>
         <Route path="/inventory/view-stock-item" element={<ViewStockItemListLayout/>}/>
         <Route path="/inventory/edit-stock-item/:id" element={<EditStockItemListLayout/>}/>
+        <Route path="/inventory/material-manufacturing" element={<MaterialManufacturingLayout/>}/>
+        <Route path="/inventory/stock-transfer" element={<StockTransferLayout/>}/>
         
 
 

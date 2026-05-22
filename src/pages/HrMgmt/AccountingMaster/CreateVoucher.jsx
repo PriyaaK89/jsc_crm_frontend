@@ -218,9 +218,7 @@ const handleChange = (e) => {
         </Breadcrumb>
       </HStack>
 
-      <Text
-        fontSize="xl"
-        fontWeight="bold"
+      <Text className="action_heading"
         mb={6}
         textAlign="center"
       >

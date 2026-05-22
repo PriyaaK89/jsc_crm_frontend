@@ -155,7 +155,6 @@ const Newsidebar = () => {
         {label:"View Ledger",path:"/accounting-master/view-ledger", icon:FaFileInvoice},
         {label:"Create Voucher",path:"/accounting-master/create-voucher", icon:FaMoneyCheckAlt},
         {label:"View Voucher", path:"/accounting-master/view-voucher", icon:FaFileInvoice },
-        {label:"Delete Voucher",path:"/accounting-master/delete-voucher", icon:FaTrash},
         {label:"Edit Ledger Assignment",path:"/accounting-master/edit-ledger-assignment",  icon:FaEdit },
         {label:"Retail Assignment" ,path:"/accounting-master/retail-assignment", icon:FaStore },
       ] },
@@ -167,6 +166,23 @@ const Newsidebar = () => {
         {label:"Create Company",path:"/company-master/create-company",icon:HiOfficeBuilding},
         {label:"Company List",path:"/company-master/comapny-list",icon:FaCity},        
       ]
+      },
+            {
+        label:"Inventory Master",key:"inventory",icon:MdInventory,
+        children:[
+          {label:"Create Stock Group",path:"/inventory/create-stock-group",icon:MdAddBox},
+          {label:"View Stock Group",path:"/inventory/view-stock-group",icon:MdViewList},
+          {label:"Create Stock Category",path:"/inventory/create-stock-category",icon:MdCategory},
+          {label:"View Stock Category",path:"/inventory/view-stock-category",icon:MdAddCircleOutline},
+          {label:"Create Stock Item",path:"/inventory/create-stock-item",icon:MdOutlineInventory2  },
+          {label:"View Stock Item",path:"/inventory/view-stock-item",icon:MdOutlineInventory2  },
+          {label:"Create Godown",path:"/inventory/create-godown",icon:FaWarehouse},
+          {label:"View Godown",path:"/inventory/view-godown-list",icon:FaListAlt  },
+          {label:"Create Unit of Measure",path:"/inventory/create-unitOfMeasure",icon:RxComponent1  },
+          {label:"View Unit of Measure ",path:"/inventory/unit-list",icon:FaTable   },
+          {label:"Material Manufacturing",path:"/inventory/material-manufacturing",icon:MdAddCircleOutline   },
+          // {label:"Stock Transfer",path:"/inventory/stock-transfer",icon:FaCity   },
+        ]
       },
       
       {
@@ -191,27 +207,12 @@ const Newsidebar = () => {
             {label:"Fright Report",path:"/report/fright-report",icon:MdLocalShipping},
             {label:"Transport Fright Report",path:"/report/transport-fright-report",icon:MdDirectionsBus},
             {label:"Item P & L Report",path:"/report/item-psl-report",icon:MdInventory},
-            {label:"manufacturing Report",path:"/report/manufacturing-report",icon:MdFactory},
+            {label:"Manufacturing Report",path:"/report/manufacturing-report",icon:MdFactory},
             {label:"Stock Transfer Report",path:"/report/stock-transfer-report",icon:MdSwapHoriz},
             {label:"Pending Collection Report",path:"/report/pending-collection-report",icon:MdPendingActions},
             {label:"Emp. Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
             // {label:"Digio KYC Report",path:"/report/emp-kyc-report",icon:MdTrendingUp},
           ]
-      },
-      {
-        label:"Inventory Master",key:"inventory",icon:MdInventory,
-        children:[
-          {label:"Create Stock Group",path:"/inventory/create-stock-group",icon:MdAddBox},
-          {label:"View Stock Group",path:"/inventory/view-stock-group",icon:MdViewList},
-          {label:"Create Stock Category",path:"/inventory/create-stock-category",icon:MdCategory},
-          {label:"View Stock Category",path:"/inventory/view-stock-category",icon:MdAddCircleOutline},
-          {label:"Create Stock Item",path:"/inventory/create-stock-item",icon:MdOutlineInventory2  },
-          {label:"View Stock Item",path:"/inventory/view-stock-item",icon:MdOutlineInventory2  },
-          {label:"Create Godown",path:"/inventory/create-godown",icon:FaWarehouse},
-          {label:"View Godown",path:"/inventory/view-godown-list",icon:FaListAlt  },
-          {label:"Create Unit of Measure",path:"/inventory/create-unitOfMeasure",icon:RxComponent1  },
-          {label:"View Unit of Measure ",path:"/inventory/unit-list",icon:FaTable   },
-        ]
       },{
         label:"Order Vochor",key:"order-vochor",icon:FaFileInvoice,
          children:[

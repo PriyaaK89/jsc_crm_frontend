@@ -32,6 +32,22 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "Poppins";
+  src: url('../public/fonts/Poppins-Medium.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+.action_heading{
+      text-align: left;
+    width: 95%;
+    margin: auto;
+    font-size: 21px;
+    color: #516b6b;
+    font-family: 'Poppins';
+}
+
 .productsTable tbody tr td{
     color: #6E7079;
     font-size: 13px;
@@ -251,4 +267,15 @@ height: 50px !important;
     text-transform: capitalize !important;
     padding: 3px 6px !important;
     border-radius: 20px !important;
+}
+
+.material_mfg thead tr th{
+  letter-spacing: 0px;
+  font-size: 11px;
+  padding: 10px 6px 5px 16px;
+}
+
+.material_mfg tbody tr td{
+  padding-top: 12px;
+  padding-bottom: 12px
 }

@@ -1,42 +1,16 @@
 import React, { useEffect, useState } from "react";
-
-import {
-    Badge,
-    Box,
-    Button,
-    Flex,
-    FormControl,
-    FormLabel,
-    Heading,
-    HStack,
-    Select,
-    Spinner,
-    Table,
-    Tbody,
-    Td,
-    Text,
-    Th,
-    Thead,
-    Tr,
-    useToast,
-} from "@chakra-ui/react";
-
+import { Badge, Box, Button, Flex, FormControl, FormLabel, Heading, HStack, Select, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, useDisclosure, useToast, } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import EmpExpenseModal from "./EmpExpensesModal";
 
 const EmpMonthlySalaryTable = () => {
 
     const toast = useToast();
-
-    /* =====================================================
-       STATES
-    ===================================================== */
-
     const [salary, setSalary] = useState([]);
     const [emp, setEmp] = useState([]);
     const [months, setMonths] = useState([]);
     const [loading, setLoading] = useState(false);
-
     const [totals, setTotals] = useState({
         salary: 0,
         ta: 0,
@@ -61,24 +35,22 @@ const EmpMonthlySalaryTable = () => {
         per_page: 10,
     });
 
-    /* =====================================================
-       GET EMPLOYEES
-    ===================================================== */
+    const {
+        isOpen,
+        onOpen,
+        onClose
+    } = useDisclosure();
+
+    const [selectedBill, setSelectedBill] = useState("");
+    const [billTitle, setBillTitle] = useState("");
+
 
     const getEmployees = async () => {
-
         try {
-
-            const response = await API.get(
-                API_ENDPOINTS.get_user_list
-            );
-
+            const response = await API.get(API_ENDPOINTS.get_user_list);
             setEmp(response?.data?.data || []);
-
         } catch (error) {
-
             console.error(error);
-
             toast({
                 title: "Failed to load employees",
                 status: "error",
@@ -89,10 +61,6 @@ const EmpMonthlySalaryTable = () => {
         }
 
     };
-
-    /* =====================================================
-       GET SALARY MONTHS
-    ===================================================== */
 
     const getSalaryMonths = async (
         employeeId
@@ -280,36 +248,16 @@ const EmpMonthlySalaryTable = () => {
 
     };
 
-    /* =====================================================
-       ATTENDANCE COLOR
-    ===================================================== */
 
-    const getAttendanceColor = (
-        type
-    ) => {
-
+    const getAttendanceColor = (type) => {
         switch (type) {
-
-            case "P":
-                return "green";
-
-            case "A":
-                return "red";
-
-            case "H":
-                return "orange";
-
-            case "W":
-                return "blue";
-
-            case "L":
-                return "purple";
-
-            default:
-                return "gray";
-
+            case "P": return "green";
+            case "A": return "red";
+            case "H": return "orange";
+            case "W": return "blue";
+            case "L": return "purple";
+            default: return "gray";
         }
-
     };
 
     const formatDate = (date) => {
@@ -318,67 +266,39 @@ const EmpMonthlySalaryTable = () => {
         );
     };
 
+    const openBillModal = (billUrl, title) => {
+        if (!billUrl) return;
+        setSelectedBill(billUrl);
+        setBillTitle(title);
+        onOpen();
+    };
+
     return (
 
-        <Box
-        >
+        <Box>
+            <EmpExpenseModal isOpen={isOpen} onClose={onClose} selectedBill={selectedBill} billTitle={billTitle} />
 
-            <Flex
-                justify="space-between"
-                align="center"
-                mb={5}
-            >
-
-                <Heading size="md">
-                    Employee Monthly Salary
-                </Heading>
-
+            <Flex justify="space-between" align="center" mb={5}>
+                <Heading size="md"> Employee Monthly Salary </Heading>
             </Flex>
 
-            <Flex
-                gap={5}
-                mb={6}
-                flexWrap="wrap"
-            >
-
-                {/* EMPLOYEE */}
-
+            <Flex gap={5} mb={6} flexWrap="wrap" >
                 <FormControl maxW="300px">
 
-                    <FormLabel>
-                        Employee Name
-                    </FormLabel>
-
-                    <Select
-                        placeholder="Select Employee"
-                        name="employee_id"
-                        value={filters.employee_id}
-                        onChange={handleFilterChange}
-                    >
-
+                    <FormLabel> Employee Name </FormLabel>
+                    <Select placeholder="Select Employee" name="employee_id" value={filters.employee_id} onChange={handleFilterChange}>
                         {emp.map((item) => (
-
-                            <option
-                                key={item.id}
-                                value={item.id}
-                            >
-                                {item.name ||
-                                    item.employee_name}
+                            <option key={item.id} value={item.id} >
+                                {item.name || item.employee_name}
                             </option>
-
                         ))}
-
                     </Select>
-
                 </FormControl>
 
                 {/* MONTH */}
 
                 <FormControl maxW="300px">
-
-                    <FormLabel>
-                        Select Month
-                    </FormLabel>
+                    <FormLabel> Select Month </FormLabel>
 
                     <Select
                         placeholder="Select Month"
@@ -389,134 +309,48 @@ const EmpMonthlySalaryTable = () => {
                                 ? `${filters.month}-${filters.year}`
                                 : ""
                         }
-                        onChange={handleFilterChange}
-                    >
+                        onChange={handleFilterChange} >
 
                         {months.map((item, index) => (
-
-                            <option
-                                key={index}
-                                value={`${item.month}-${item.year}`}
-                            >
-                                {item.label}
-                            </option>
-
+                            <option key={index} value={`${item.month}-${item.year}`}> {item.label} </option>
                         ))}
-
                     </Select>
-
                 </FormControl>
-
             </Flex>
 
-            {/* =========================================
-          TOTALS
-      ========================================= */}
+            <Flex gap={4} flexWrap="wrap" mb={6}>
 
-            <Flex
-                gap={4}
-                flexWrap="wrap"
-                mb={6}
-            >
-
-                <Box
-                    p={3}
-                    borderWidth="1px"
-                    borderRadius="md"
-                    minW="150px"
-                >
-                    <Text fontSize="sm">
-                        Total Salary
-                    </Text>
-
-                    <Text
-                        fontWeight="bold"
-                        color="green.500"
-                    >
-                        ₹ {totals.salary}
-                    </Text>
+                <Box p={3} borderWidth="1px" borderRadius="md" minW="150px">
+                    <Text fontSize="sm"> Total Salary </Text>
+                    <Text fontWeight="bold" color="green.500" > ₹ {totals.salary} </Text>
                 </Box>
 
-                <Box
-                    p={3}
-                    borderWidth="1px"
-                    borderRadius="md"
-                    minW="120px"
-                >
-                    <Text fontSize="sm">
-                        Total T.A
-                    </Text>
-
-                    <Text fontWeight="bold">
-                        ₹ {totals.ta}
-                    </Text>
+                <Box p={3} borderWidth="1px" borderRadius="md" minW="120px">
+                    <Text fontSize="sm"> Total T.A </Text>
+                    <Text fontWeight="bold"> ₹ {totals.ta} </Text>
                 </Box>
 
-                <Box
-                    p={3}
-                    borderWidth="1px"
-                    borderRadius="md"
-                    minW="120px"
-                >
-                    <Text fontSize="sm">
-                        Total D.A
-                    </Text>
-
-                    <Text fontWeight="bold">
-                        ₹ {totals.da}
-                    </Text>
+                <Box p={3} borderWidth="1px" borderRadius="md" minW="120px">
+                    <Text fontSize="sm"> Total D.A </Text>
+                    <Text fontWeight="bold"> ₹ {totals.da} </Text>
                 </Box>
 
-                <Box
-                    p={3}
-                    borderWidth="1px"
-                    borderRadius="md"
-                    minW="150px"
-                >
-                    <Text fontSize="sm">
-                        Hotel Expense
-                    </Text>
-
-                    <Text fontWeight="bold">
-                        ₹ {totals.hotel}
-                    </Text>
+                <Box p={3} borderWidth="1px" borderRadius="md" minW="150px">
+                    <Text fontSize="sm"> Hotel Expense</Text>
+                    <Text fontWeight="bold"> ₹ {totals.hotel} </Text>
                 </Box>
 
-                <Box
-                    p={3}
-                    borderWidth="1px"
-                    borderRadius="md"
-                    minW="150px"
-                >
-                    <Text fontSize="sm">
-                        Other Expense
-                    </Text>
-
-                    <Text fontWeight="bold">
-                        ₹ {totals.other}
-                    </Text>
+                <Box p={3} borderWidth="1px" borderRadius="md" minW="150px" >
+                    <Text fontSize="sm"> Other Expense </Text>
+                    <Text fontWeight="bold"> ₹ {totals.other} </Text>
                 </Box>
 
-                <Box
-                    p={3}
-                    borderWidth="1px"
-                    borderRadius="md"
-                    minW="170px"
-                >
-                    <Text fontSize="sm">
-                        Bus/Train/Toll
-                    </Text>
-
-                    <Text fontWeight="bold">
-                        ₹ {totals.toll}
-                    </Text>
+                <Box p={3} borderWidth="1px" borderRadius="md" minW="170px">
+                    <Text fontSize="sm"> Bus/Train/Toll </Text>
+                    <Text fontWeight="bold"> ₹ {totals.toll} </Text>
                 </Box>
 
             </Flex>
-
-            {/* =========================================
-          TABLE
-      ========================================= */}
 
             <Box
                 overflowX="auto"
@@ -580,98 +414,76 @@ const EmpMonthlySalaryTable = () => {
                         ) : (
 
                             salary.map((item) => (
-
                                 <Tr key={item.id}>
-
+                                    <Td> {formatDate(item.date)} </Td>
+                                    <Td> <Badge colorScheme={getAttendanceColor(item.attendance_type)}> {item.attendance_type} </Badge> </Td>
+                                    <Td> {item.working_hours || "-"} </Td>
+                                    <Td> ₹ {item.salary} </Td>
+                                    <Td> {item.total_reading} </Td>
+                                    <Td> ₹ {item.ta} </Td>
+                                    <Td> ₹ {item.da} </Td>
                                     <Td>
-                                        {formatDate(item.date)}
-                                    </Td>
 
-                                    <Td>
+                                        {Number(item.hotel_expense) > 0 &&
+                                            item.hotel_bill ? (
+                                            <Text color="blue.500" cursor="pointer" textDecoration="underline"
+                                                onClick={() =>
+                                                    openBillModal(item.hotel_bill, "Hotel Bill")}>
+                                                ₹ {item.hotel_expense}
+                                            </Text>
 
-                                        <Badge
-                                            colorScheme={getAttendanceColor(
-                                                item.attendance_type
-                                            )}
-                                        >
-                                            {
-                                                item.attendance_type
-                                            }
-                                        </Badge>
-
-                                    </Td>
-
-                                    <Td>
-                                        {item.working_hours ||
-                                            "-"}
-                                    </Td>
-
-                                    <Td>
-                                        ₹ {item.salary}
-                                    </Td>
-
-                                    <Td>
-                                        {item.total_reading}
-                                    </Td>
-
-                                    <Td>
-                                        ₹ {item.ta}
-                                    </Td>
-
-                                    <Td>
-                                        ₹ {item.da}
-                                    </Td>
-
-                                    <Td>
-                                        ₹{" "}
-                                        {item.hotel_expense}
-                                    </Td>
-
-                                    <Td>
-                                        ₹{" "}
-                                        {item.other_expense}
-                                    </Td>
-
-                                    <Td>
-                                        ₹{" "}
-                                        {
-                                            item.bus_train_toll_expense
+                                        ) : (<>₹ {item.hotel_expense}</>)
                                         }
+
                                     </Td>
+                                    <Td>
+                                        {Number(item.other_expense) > 0 &&
+                                            item.other_bill ? (
+                                            <Text color="blue.500" cursor="pointer" textDecoration="underline"
+                                                onClick={() => openBillModal(item.other_bill, "Other Expense Bill")} >
+                                                ₹ {item.other_expense}
+                                            </Text>
+                                        ) : (
+                                            <>₹ {item.other_expense}</>
+                                        )}
 
+                                    </Td>
+                                    <Td>
+                                        {Number(item.bus_train_toll_expense) > 0 &&
+                                            item.bus_train_toll_bill ? (
+                                            <Text
+                                                color="blue.500"
+                                                cursor="pointer"
+                                                textDecoration="underline"
+                                                onClick={() =>
+                                                    openBillModal(
+                                                        item.bus_train_toll_bill,
+                                                        "Bus/Train/Toll Bill"
+                                                    )
+                                                }
+                                            >
+                                                ₹ {item.bus_train_toll_expense}
+                                            </Text>
+
+                                        ) : (
+
+                                            <>₹ {item.bus_train_toll_expense}</>
+
+                                        )}
+
+                                    </Td>
                                 </Tr>
-
                             ))
-
                         )}
-
                     </Tbody>
-
                 </Table>
-
             </Box>
 
-            {/* =========================================
-          PAGINATION
-      ========================================= */}
-
-            <Flex
-                justify="space-between"
-                align="center"
-                mt={5}
-                flexWrap="wrap"
-                gap={3}
-            >
+            <Flex justify="space-between" align="center" mt={5} flexWrap="wrap" gap={3}>
 
                 <Text fontSize="sm">
-
                     Total Records :{" "}
-                    <b>
-                        {
-                            pagination.total_records
-                        }
-                    </b>
-
+                    <b> {pagination.total_records} </b>
                 </Text>
 
                 <HStack>

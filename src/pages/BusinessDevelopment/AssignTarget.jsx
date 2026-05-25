@@ -103,16 +103,8 @@ const AssignTarget = () => {
             fontWeight="500"
             color="gray.600"
             transition="0.2s"
-
-            _selected={{
-              bg: "#EDF2F7",
-              color: "#1A202C",
-              borderColor: "#CBD5E0"
-            }}
-
-            _hover={{
-              bg: "#F7FAFC"
-            }}
+            _selected={{ bg: "#EDF2F7", color: "#1A202C", borderColor: "#CBD5E0" }}
+            _hover={{ bg: "#F7FAFC" }}
           >
             <HStack spacing={2} justifyContent="center">
               <FiUsers size={16} />

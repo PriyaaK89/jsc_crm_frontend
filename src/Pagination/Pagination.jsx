@@ -3,18 +3,13 @@ import { Button, Flex, Select, Text } from "@chakra-ui/react";
 
 const Pagination = ({
   page,
-  setPage,
   limit,
-  setLimit,
   totalItems,
   totalPages,
+  onPageChange,
+  onLimitChange,
 }) => {
-    console.log( "pg data",  page,
-  setPage,
-  limit,
-  setLimit,
-  totalItems,
-  totalPages);
+    
   return (
     <Flex justify="space-between" align="center" mt={3}>
 
@@ -29,10 +24,9 @@ const Pagination = ({
           bg="#5e63661a"
           color="#8B8D97"
           borderRadius="10px"
-          onChange={(e) => {
-            setLimit(Number(e.target.value));
-            setPage(1);
-          }}
+         onChange={(e) => {
+  onLimitChange(Number(e.target.value));
+}}
         >
           <option value="10">10</option>
           <option value="20">20</option>
@@ -55,7 +49,7 @@ const Pagination = ({
         {/* Prev */}
         <Button
           size="sm"
-          onClick={() => setPage((p) => Math.max(p - 1, 1))}
+          onClick={() => onPageChange(Math.max(page - 1, 1))}
           isDisabled={page === 1}
         >
           ‹
@@ -70,7 +64,7 @@ const Pagination = ({
               size="sm"
               variant={page === pageNumber ? "solid" : "outline"}
               colorScheme={page === pageNumber ? "blue" : "gray"}
-              onClick={() => setPage(pageNumber)}
+              onClick={() => onPageChange(pageNumber)}
             >
               {pageNumber}
             </Button>
@@ -80,7 +74,7 @@ const Pagination = ({
         {/* Next */}
         <Button
           size="sm"
-          onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+          onClick={() => onPageChange(Math.min(page + 1, totalPages))}
           isDisabled={page === totalPages}
         >
           ›

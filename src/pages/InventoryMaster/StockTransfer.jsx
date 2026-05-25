@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from "react";
-import { Box, Button, Flex, Grid, GridItem, Heading, Input, Select, Table, Tbody, Td, Text, Th, Thead, Tr, useToast, Textarea, IconButton, Badge, Spinner, HStack, Accordion, AccordionButton, AccordionItem, AccordionPanel, AccordionIcon,} from "@chakra-ui/react";
-
+import {
+  Box, Button, Flex, Grid, GridItem, Heading, Input, Select, Table, Tbody, Td, Text, Th, Thead, Tr, useToast,
+  Textarea, IconButton, Badge, Spinner, HStack, Accordion, AccordionButton, AccordionItem, AccordionPanel, AccordionIcon,
+} from "@chakra-ui/react";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
-
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 
@@ -13,6 +14,7 @@ const createSourceRow = () => ({
   available_qty: 0,
   qty: "",
   unit_id: "",
+  unit_name: "",   // <-- display name
   rate: "",
   amount: "",
   remarks: "",
@@ -27,9 +29,12 @@ const createDestinationRow = () => ({
   available_qty: 0,
   qty: "",
   unit_id: "",
+  unit_name: "",   // <-- display name
   rate: "",
   amount: "",
   remarks: "",
+  batches: [],          // <-- destination also needs batches
+  loadingBatch: false,  // <-- and loading flag
 });
 
 const createCostRow = () => ({
@@ -37,25 +42,19 @@ const createCostRow = () => ({
   amount: "",
 });
 
+// ==========================================
+// COMPONENT
+// ==========================================
+
 const StockTransfer = ({ stockItem, godown, ledger }) => {
-
   const toast = useToast();
-
-  // ==========================================
-  // MAIN FORM
-  // ==========================================
 
   const [formData, setFormData] = useState({
     transfer_date: "",
-    voucher_no: "",
     narration: "",
-
     source_items: [createSourceRow()],
-
     destination_items: [createDestinationRow()],
-
     additional_costs: [createCostRow()],
-
     transportation: {
       dispatch_doc_no: "",
       transport_name: "",
@@ -71,367 +70,424 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
   const [loading, setLoading] = useState(false);
 
   // ==========================================
-  // FETCH BATCHES
+  // FETCH STOCK ITEM DETAILS (unit + rate)
+  // Returns { unit_id, unit_name, rate, gst_applicable, rate_of_duty }
   // ==========================================
 
-  const fetchBatches = async (itemId, godownId) => {
-
-    if (!itemId || !godownId) return [];
-
+  const fetchStockItemDetails = async (itemId) => {
+    if (!itemId) return null;
     try {
+      const res = await API.get(
+        `${API_ENDPOINTS.getStockItemById}/${itemId}`
+      );
+      if (res?.status === 200) {
+        const d = res?.data?.data;
+        return {
+          unit_name: d?.base_unit_name || "",
+          unit_id: d?.unit_id || "",
+          rate: Number(d?.opening_stock?.rate || 0),
+          gst_applicable: Number(d?.gst_applicable || 0),
+          rate_of_duty: Number(d?.rate_of_duty || 0),
+        };
+      }
+    } catch (err) {
+      console.error("Stock item details fetch error", err);
+    }
+    return null;
+  };
 
+  const fetchBatches = async (itemId, godownId) => {
+    if (!itemId || !godownId) return [];
+    try {
       const res = await API.get(
         `${API_ENDPOINTS.GET_BATCH_BY_STOCK_ITEM_ID}?item_id=${itemId}&godown_id=${godownId}`
       );
-
       if (res?.status === 200) {
         return res?.data?.data || [];
       }
-
     } catch (err) {
       console.error(err);
     }
-
     return [];
   };
 
-  // ==========================================
-  // FETCH AVAILABLE STOCK
-  // ==========================================
-
-  const fetchAvailableStock = async ({
-    itemId,
-    godownId,
-    batchNo = "",
-  }) => {
-
+  const fetchAvailableStock = async ({ itemId, godownId, batchNo = "" }) => {
     if (!itemId || !godownId) return 0;
-
     try {
-
-      let url =
-        `${API_ENDPOINTS.GET_AVAILABLE_QTY_OF_STOCK}?item_id=${itemId}&godown_id=${godownId}`;
-
-      if (batchNo) {
-        url += `&batch_no=${batchNo}`;
-      }
-
+      let url = `${API_ENDPOINTS.GET_AVAILABLE_QTY_OF_STOCK}?item_id=${itemId}&godown_id=${godownId}`;
+      if (batchNo) url += `&batch_no=${batchNo}`;
       const res = await API.get(url);
-
       if (res?.status === 200) {
         return Number(res?.data?.data?.available_stock || 0);
       }
-
     } catch (error) {
       console.log(error);
     }
-
     return 0;
   };
 
-  // ==========================================
-  // SOURCE CHANGE
-  // ==========================================
 
   const handleSourceChange = async (index, field, value) => {
-
-    const updated = [...formData.source_items];
-
-    updated[index][field] = value;
-
-    // ITEM SELECTED
-
-    if (field === "item_id") {
-
-      const item = stockItem.find(
-        (x) => String(x.id) === String(value)
+    // Work on a fresh copy each time to avoid stale closure issues
+    setFormData((prev) => {
+      const updated = prev.source_items.map((row, i) =>
+        i === index ? { ...row, [field]: value } : row
       );
+      return { ...prev, source_items: updated };
+    });
 
-      updated[index].unit_id = item?.unit_id || "";
-    }
-
-    // FETCH BATCH
-
-    if (
-      field === "item_id" ||
-      field === "godown_id"
-    ) {
-
-      const itemId =
-        field === "item_id"
-          ? value
-          : updated[index].item_id;
-
-      const godownId =
-        field === "godown_id"
-          ? value
-          : updated[index].godown_id;
-
-      if (itemId && godownId) {
-
-        updated[index].loadingBatch = true;
-
-        setFormData((prev) => ({
-          ...prev,
-          source_items: updated,
-        }));
-
-        const batches = await fetchBatches(
-          itemId,
-          godownId
+    // ── ITEM SELECTED ──────────────────────────────────────────────────────
+    if (field === "item_id") {
+      // Optimistically mark loading while we fetch details
+      setFormData((prev) => {
+        const updated = prev.source_items.map((row, i) =>
+          i === index ? { ...row, loadingBatch: true } : row
         );
-
-        const stock = await fetchAvailableStock({
-          itemId,
-          godownId,
-        });
-
-        updated[index].batches = batches;
-        updated[index].available_qty = stock;
-        updated[index].loadingBatch = false;
-      }
-    }
-
-    // BATCH SELECTED
-
-    if (field === "batch_no") {
-
-      const stock = await fetchAvailableStock({
-        itemId: updated[index].item_id,
-        godownId: updated[index].godown_id,
-        batchNo: value,
+        return { ...prev, source_items: updated };
       });
 
-      updated[index].available_qty = stock;
+      const details = await fetchStockItemDetails(value);
+
+      setFormData((prev) => {
+        const updated = prev.source_items.map((row, i) => {
+          if (i !== index) return row;
+          return {
+            ...row,
+            unit_id: details?.unit_id || "",
+            unit_name: details?.unit_name || "",
+            // Keep existing rate if already set, otherwise prefill from item
+            rate: row.rate || "",
+            loadingBatch: false,
+          };
+        });
+        return { ...prev, source_items: updated };
+      });
+
+      // If godown already selected, also fetch batches now
+      setFormData((prev) => {
+        const row = prev.source_items[index];
+        if (row.godown_id) {
+          // Kick off async batch fetch without blocking
+          (async () => {
+            const batches = await fetchBatches(value, row.godown_id);
+            const stock = await fetchAvailableStock({
+              itemId: value,
+              godownId: row.godown_id,
+            });
+            setFormData((p) => {
+              const u = p.source_items.map((r, i) =>
+                i === index
+                  ? { ...r, batches, available_qty: stock, batch_no: "", loadingBatch: false }
+                  : r
+              );
+              return { ...p, source_items: u };
+            });
+          })();
+          return {
+            ...prev,
+            source_items: prev.source_items.map((r, i) =>
+              i === index ? { ...r, loadingBatch: true } : r
+            ),
+          };
+        }
+        return prev;
+      });
     }
 
-    // AUTO AMOUNT
-
-    if (field === "qty" || field === "rate") {
-
-      const qty =
-        field === "qty"
-          ? Number(value || 0)
-          : Number(updated[index].qty || 0);
-
-      const rate =
-        field === "rate"
-          ? Number(value || 0)
-          : Number(updated[index].rate || 0);
-
-      updated[index].amount = qty * rate;
+    // ── GODOWN SELECTED ────────────────────────────────────────────────────
+    if (field === "godown_id") {
+      setFormData((prev) => {
+        const row = prev.source_items[index];
+        if (row.item_id && value) {
+          (async () => {
+            const batches = await fetchBatches(row.item_id, value);
+            const stock = await fetchAvailableStock({
+              itemId: row.item_id,
+              godownId: value,
+            });
+            setFormData((p) => {
+              const u = p.source_items.map((r, i) =>
+                i === index
+                  ? { ...r, batches, available_qty: stock, batch_no: "", loadingBatch: false }
+                  : r
+              );
+              return { ...p, source_items: u };
+            });
+          })();
+          return {
+            ...prev,
+            source_items: prev.source_items.map((r, i) =>
+              i === index
+                ? { ...r, godown_id: value, loadingBatch: true }
+                : r
+            ),
+          };
+        }
+        return prev;
+      });
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      source_items: updated,
-    }));
+    // ── BATCH SELECTED ─────────────────────────────────────────────────────
+    if (field === "batch_no") {
+      const row = formData.source_items[index];
+      const stock = await fetchAvailableStock({
+        itemId: row.item_id,
+        godownId: row.godown_id,
+        batchNo: value,
+      });
+      setFormData((prev) => {
+        const updated = prev.source_items.map((r, i) =>
+          i === index ? { ...r, available_qty: stock } : r
+        );
+        return { ...prev, source_items: updated };
+      });
+    }
+
+
   };
 
-  // ==========================================
-  // DESTINATION CHANGE
-  // ==========================================
-
-  const handleDestinationChange = (index, field, value) => {
-
-    const updated = [...formData.destination_items];
-
-    updated[index][field] = value;
-
-    if (field === "item_id") {
-
-      const item = stockItem.find(
-        (x) => String(x.id) === String(value)
+  const handleDestinationChange = async (index, field, value) => {
+    // Update the changed field first
+    setFormData((prev) => {
+      const updated = prev.destination_items.map((row, i) =>
+        i === index ? { ...row, [field]: value } : row
       );
+      return { ...prev, destination_items: updated };
+    });
 
-      updated[index].unit_id = item?.unit_id || "";
+    // ── ITEM SELECTED ──────────────────────────────────────────────────────
+    if (field === "item_id") {
+      setFormData((prev) => {
+        const updated = prev.destination_items.map((row, i) =>
+          i === index ? { ...row, loadingBatch: true } : row
+        );
+        return { ...prev, destination_items: updated };
+      });
+
+      const details = await fetchStockItemDetails(value);
+
+      setFormData((prev) => {
+        const updated = prev.destination_items.map((r, i) => {
+          if (i !== index) return r;
+          return {
+            ...r,
+            unit_id: details?.unit_id || "",
+            unit_name: details?.unit_name || "",
+            rate: r.rate || "",
+            loadingBatch: false,
+          };
+        });
+        return { ...prev, destination_items: updated };
+      });
+
+      // If godown already selected, fetch batches now
+      setFormData((prev) => {
+        const row = prev.destination_items[index];
+        if (row.godown_id) {
+          (async () => {
+            const batches = await fetchBatches(value, row.godown_id);
+            const stock = await fetchAvailableStock({
+              itemId: value,
+              godownId: row.godown_id,
+            });
+            setFormData((p) => {
+              const u = p.destination_items.map((r, i) =>
+                i === index
+                  ? { ...r, batches, available_qty: stock, batch_no: "", loadingBatch: false }
+                  : r
+              );
+              return { ...p, destination_items: u };
+            });
+          })();
+          return {
+            ...prev,
+            destination_items: prev.destination_items.map((r, i) =>
+              i === index ? { ...r, loadingBatch: true } : r
+            ),
+          };
+        }
+        return prev;
+      });
     }
 
-    if (field === "qty" || field === "rate") {
-
-      const qty =
-        field === "qty"
-          ? Number(value || 0)
-          : Number(updated[index].qty || 0);
-
-      const rate =
-        field === "rate"
-          ? Number(value || 0)
-          : Number(updated[index].rate || 0);
-
-      updated[index].amount = qty * rate;
+    // ── GODOWN SELECTED ────────────────────────────────────────────────────
+    if (field === "godown_id") {
+      setFormData((prev) => {
+        const row = prev.destination_items[index];
+        if (row.item_id && value) {
+          (async () => {
+            const batches = await fetchBatches(row.item_id, value);
+            const stock = await fetchAvailableStock({
+              itemId: row.item_id,
+              godownId: value,
+            });
+            setFormData((p) => {
+              const u = p.destination_items.map((r, i) =>
+                i === index
+                  ? { ...r, batches, available_qty: stock, batch_no: "", loadingBatch: false }
+                  : r
+              );
+              return { ...p, destination_items: u };
+            });
+          })();
+          return {
+            ...prev,
+            destination_items: prev.destination_items.map((r, i) =>
+              i === index
+                ? { ...r, godown_id: value, loadingBatch: true }
+                : r
+            ),
+          };
+        }
+        return prev;
+      });
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      destination_items: updated,
-    }));
+    // ── BATCH SELECTED ─────────────────────────────────────────────────────
+    if (field === "batch_no") {
+      const row = formData.destination_items[index];
+      const stock = await fetchAvailableStock({
+        itemId: row.item_id,
+        godownId: row.godown_id,
+        batchNo: value,
+      });
+      setFormData((prev) => {
+        const updated = prev.destination_items.map((r, i) =>
+          i === index ? { ...r, available_qty: stock } : r
+        );
+        return { ...prev, destination_items: updated };
+      });
+    }
+
+
   };
-
-  // ==========================================
-  // COST CHANGE
-  // ==========================================
 
   const handleCostChange = (index, field, value) => {
-
-    const updated = [...formData.additional_costs];
-
-    updated[index][field] = value;
-
-    setFormData((prev) => ({
-      ...prev,
-      additional_costs: updated,
-    }));
+    setFormData((prev) => {
+      const updated = prev.additional_costs.map((row, i) =>
+        i === index ? { ...row, [field]: value } : row
+      );
+      return { ...prev, additional_costs: updated };
+    });
   };
 
-  // ==========================================
-  // ADD ROWS
-  // ==========================================
 
-  const addSourceRow = () => {
+  const addSourceRow = () =>
     setFormData((prev) => ({
       ...prev,
-      source_items: [
-        ...prev.source_items,
-        createSourceRow(),
-      ],
+      source_items: [...prev.source_items, createSourceRow()],
     }));
-  };
 
-  const addDestinationRow = () => {
+  const addDestinationRow = () =>
     setFormData((prev) => ({
       ...prev,
-      destination_items: [
-        ...prev.destination_items,
-        createDestinationRow(),
-      ],
+      destination_items: [...prev.destination_items, createDestinationRow()],
     }));
-  };
 
-  const addCostRow = () => {
+  const addCostRow = () =>
     setFormData((prev) => ({
       ...prev,
-      additional_costs: [
-        ...prev.additional_costs,
-        createCostRow(),
-      ],
+      additional_costs: [...prev.additional_costs, createCostRow()],
     }));
-  };
-
-  // ==========================================
-  // DELETE ROWS
-  // ==========================================
 
   const deleteSourceRow = (index) => {
-
     if (formData.source_items.length === 1) return;
-
-    const updated = formData.source_items.filter(
-      (_, i) => i !== index
-    );
-
     setFormData((prev) => ({
       ...prev,
-      source_items: updated,
+      source_items: prev.source_items.filter((_, i) => i !== index),
     }));
   };
 
   const deleteDestinationRow = (index) => {
-
     if (formData.destination_items.length === 1) return;
-
-    const updated = formData.destination_items.filter(
-      (_, i) => i !== index
-    );
-
     setFormData((prev) => ({
       ...prev,
-      destination_items: updated,
+      destination_items: prev.destination_items.filter((_, i) => i !== index),
     }));
   };
 
   const deleteCostRow = (index) => {
-
     if (formData.additional_costs.length === 1) return;
-
-    const updated = formData.additional_costs.filter(
-      (_, i) => i !== index
-    );
-
     setFormData((prev) => ({
       ...prev,
-      additional_costs: updated,
+      additional_costs: prev.additional_costs.filter((_, i) => i !== index),
     }));
   };
 
-  // ==========================================
-  // TOTALS
-  // ==========================================
+  // ── ADD THIS: sync handler for qty/rate (no async needed) ──
+  const handleSourceNumericChange = (index, field, value) => {
+    setFormData((prev) => {
+      const updated = prev.source_items.map((r, i) => {
+        if (i !== index) return r;
+        const updatedRow = { ...r, [field]: value };
+        updatedRow.amount = Number(updatedRow.qty || 0) * Number(updatedRow.rate || 0);
+        return updatedRow;
+      });
+      return { ...prev, source_items: updated };
+    });
+  };
 
-  const totalSourceAmount = useMemo(() => {
+  const handleDestinationNumericChange = (index, field, value) => {
+    setFormData((prev) => {
+      const updated = prev.destination_items.map((r, i) => {
+        if (i !== index) return r;
+        const updatedRow = { ...r, [field]: value };
+        updatedRow.amount = Number(updatedRow.qty || 0) * Number(updatedRow.rate || 0);
+        return updatedRow;
+      });
+      return { ...prev, destination_items: updated };
+    });
+  };
 
-    return formData.source_items.reduce(
-      (sum, item) => sum + Number(item.amount || 0),
-      0
-    );
+  const totalSourceAmount = useMemo(
+    () =>
+      formData.source_items.reduce(
+        (sum, item) => sum + Number(item.amount || 0),
+        0
+      ),
+    [formData.source_items]
+  );
 
-  }, [formData.source_items]);
+  const totalDestinationAmount = useMemo(
+    () =>
+      formData.destination_items.reduce(
+        (sum, item) => sum + Number(item.amount || 0),
+        0
+      ),
+    [formData.destination_items]
+  );
 
-  const totalDestinationAmount = useMemo(() => {
+  const totalAdditionalCost = useMemo(
+    () =>
+      formData.additional_costs.reduce(
+        (sum, item) => sum + Number(item.amount || 0),
+        0
+      ),
+    [formData.additional_costs]
+  );
 
-    return formData.destination_items.reduce(
-      (sum, item) => sum + Number(item.amount || 0),
-      0
-    );
-
-  }, [formData.destination_items]);
-
-  const totalAdditionalCost = useMemo(() => {
-
-    return formData.additional_costs.reduce(
-      (sum, item) => sum + Number(item.amount || 0),
-      0
-    );
-
-  }, [formData.additional_costs]);
-
-  const totalTransportCost = useMemo(() => {
-
-    return (
+  const totalTransportCost = useMemo(
+    () =>
       Number(formData.transportation.transport_freight || 0) +
       Number(formData.transportation.local_freight || 0) +
-      Number(formData.transportation.load_unload_freight || 0)
-    );
-
-  }, [formData.transportation]);
+      Number(formData.transportation.load_unload_freight || 0),
+    [formData.transportation]
+  );
 
   const grandTotal =
-    totalDestinationAmount +
-    totalAdditionalCost +
-    totalTransportCost;
+    totalDestinationAmount + totalAdditionalCost + totalTransportCost;
 
-  // ==========================================
-  // SUBMIT
-  // ==========================================
 
   const handleSubmit = async () => {
-
     try {
-
       setLoading(true);
 
       const payload = {
-
         ...formData,
-
         total_source_amount: totalSourceAmount,
-
         total_destination_amount: totalDestinationAmount,
-
         total_additional_cost: totalAdditionalCost,
-
         total_transport_cost: totalTransportCost,
-
         grand_total: grandTotal,
       };
 
@@ -441,7 +497,6 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
       );
 
       if (response?.status === 201) {
-
         toast({
           title: "Success",
           description: "Stock transfer created successfully",
@@ -452,15 +507,10 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
 
         setFormData({
           transfer_date: "",
-          voucher_no: "",
           narration: "",
-
           source_items: [createSourceRow()],
-
           destination_items: [createDestinationRow()],
-
           additional_costs: [createCostRow()],
-
           transportation: {
             dispatch_doc_no: "",
             transport_name: "",
@@ -473,64 +523,38 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
           },
         });
       }
-
     } catch (error) {
-
       console.log(error);
-
       toast({
         title: "Error",
         description:
-          error?.response?.data?.message ||
-          "Something went wrong",
+          error?.response?.data?.message || "Something went wrong",
         status: "error",
         duration: 3000,
         isClosable: true,
       });
-
     } finally {
       setLoading(false);
     }
   };
 
+
   return (
-    <Box>
+    <Box mt={4} padding={0}>
 
       {/* HEADER */}
-
-      <Flex
-        justify="space-between"
-        align="center"
-        mb={5}
-      >
-        <Heading size="md">
-          Stock Transfer
-        </Heading>
-
-        <Badge
-          colorScheme="blue"
-          p={2}
-          borderRadius="md"
-        >
-          ERP Inventory
-        </Badge>
+      <Flex justify="space-between" align="end" mb={5}>
+        <Heading size="md" fontFamily="Poppins">Stock Transfer</Heading>
       </Flex>
 
       {/* TOP FORM */}
-
       <Grid
-        templateColumns={{
-          base: "1fr",
-          md: "repeat(3,1fr)",
-        }}
+        templateColumns={{ base: "1fr", md: "repeat(3,1fr)" }}
         gap={4}
         mb={6}
       >
         <GridItem>
-          <Text mb={1}>
-            Transfer Date
-          </Text>
-
+          <Text mb={1} fontSize="12px">Transfer Date</Text>
           <Input
             type="date"
             value={formData.transfer_date}
@@ -542,73 +566,33 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
             }
           />
         </GridItem>
-
-        <GridItem>
-          <Text mb={1}>
-            Voucher No
-          </Text>
-
-          <Input
-            placeholder="Voucher No"
-            value={formData.voucher_no}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                voucher_no: e.target.value,
-              }))
-            }
-          />
-        </GridItem>
-
-        <GridItem>
-          <Text mb={1}>
-            Narration
-          </Text>
-
-          <Textarea
-            placeholder="Narration"
-            value={formData.narration}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                narration: e.target.value,
-              }))
-            }
-          />
-        </GridItem>
       </Grid>
 
-      {/* SOURCE */}
-
-      <Accordion allowToggle defaultIndex={[0]} mb={5}>
-        <AccordionItem bg="white" border="1px solid #E2E8F0">
-
-          <AccordionButton>
-            <Box flex="1" textAlign="left" fontWeight="bold">
+      {/* ── SOURCE ─────────────────────────────────────────────────────── */}
+      <Accordion allowToggle defaultIndex={[0]} mb={8} >
+        <AccordionItem bg="white" border="1px solid #E2E8F0" borderRadius="12px">
+          <AccordionButton bg="#4f9190" borderRadius="12px 12px 0px 0px" _hover={{ bg: "#699b99" }}>
+            <Box flex="1" textAlign="left" fontWeight="500" color="white">
               Source (Consumption)
             </Box>
-            <AccordionIcon />
+            <AccordionIcon color="white" />
           </AccordionButton>
 
-          <AccordionPanel>
-
-            <HStack justify="flex-end" mb={3}>
+          <AccordionPanel padding={0}>
+            <HStack justify="flex-end" m={4}>
               <Button
                 leftIcon={<AddIcon />}
-                size="sm"
-                colorScheme="blue"
+                size="sm" fontWeight="500"
+                background="#cf6b16" color="white"
                 onClick={addSourceRow}
               >
                 Add Row
               </Button>
             </HStack>
 
-            <Box overflowX="auto">
-
-              <Table size="sm">
-
-                <Thead bg="gray.100">
-
+            <Box overflowX="auto" >
+              <Table size="sm" className="stock_transfer_table">
+                <Thead bg="#e7e8e8">
                   <Tr>
                     <Th>Item</Th>
                     <Th>Godown</Th>
@@ -620,45 +604,31 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
                     <Th>Amount</Th>
                     <Th>Action</Th>
                   </Tr>
-
                 </Thead>
 
                 <Tbody>
-
                   {formData.source_items.map((row, index) => (
-
                     <Tr key={index}>
 
+                      {/* Item */}
                       <Td minW="220px">
-
                         <Select
                           value={row.item_id}
                           onChange={(e) =>
-                            handleSourceChange(
-                              index,
-                              "item_id",
-                              e.target.value
-                            )
+                            handleSourceChange(index, "item_id", e.target.value)
                           }
                         >
-                          <option value="">
-                            Select
-                          </option>
-
+                          <option value="">Select</option>
                           {stockItem.map((item) => (
-                            <option
-                              key={item.id}
-                              value={item.id}
-                            >
+                            <option key={item.id} value={item.id}>
                               {item.item_name}
                             </option>
                           ))}
                         </Select>
-
                       </Td>
 
+                      {/* Godown */}
                       <Td minW="180px">
-
                         <Select
                           value={row.godown_id}
                           onChange={(e) =>
@@ -669,28 +639,20 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
                             )
                           }
                         >
-                          <option value="">
-                            Select
-                          </option>
-
+                          <option value="">Select</option>
                           {godown.map((g) => (
-                            <option
-                              key={g.id}
-                              value={g.id}
-                            >
+                            <option key={g.id} value={g.id}>
                               {g.godown_name}
                             </option>
                           ))}
                         </Select>
-
                       </Td>
 
+                      {/* Batch — dropdown from fetched list */}
                       <Td minW="180px">
-
                         {row.loadingBatch ? (
                           <Spinner size="sm" />
                         ) : (
-
                           <Select
                             value={row.batch_no}
                             onChange={(e) =>
@@ -701,127 +663,85 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
                               )
                             }
                           >
-                            <option value="">
-                              Select
-                            </option>
-
+                            <option value="">Select</option>
                             {row.batches.map((b, i) => (
-                              <option
-                                key={i}
-                                value={b.batch_no}
-                              >
+                              <option key={i} value={b.batch_no}>
                                 {b.batch_no}
                               </option>
                             ))}
                           </Select>
-
                         )}
-
                       </Td>
 
+                      {/* Available Qty */}
                       <Td>
-                        <Input
-                          value={row.available_qty}
-                          readOnly
-                        />
+                        <Input value={row.available_qty} readOnly />
                       </Td>
 
+                      {/* Qty */}
                       <Td>
-
                         <Input
                           type="number"
                           value={row.qty}
-                          onChange={(e) =>
-                            handleSourceChange(
-                              index,
-                              "qty",
-                              e.target.value
-                            )
-                          }
+                          onChange={(e) => handleSourceNumericChange(index, "qty", e.target.value)}
                         />
-
                       </Td>
 
-                      <Td>
-
-                        <Input
-                          value={row.unit_id}
-                          readOnly
-                        />
-
+                      {/* Unit — now shows unit_name */}
+                      <Td minW="80px">
+                        <Input value={row.unit_name} readOnly />
                       </Td>
 
+                      {/* Rate */}
                       <Td>
-
                         <Input
                           type="number"
                           value={row.rate}
-                          onChange={(e) =>
-                            handleSourceChange(
-                              index,
-                              "rate",
-                              e.target.value
-                            )
-                          }
+                          onChange={(e) => handleSourceNumericChange(index, "rate", e.target.value)}
                         />
-
                       </Td>
 
+                      {/* Amount */}
                       <Td>
-
-                        <Input
-                          value={row.amount}
-                          readOnly
-                        />
-
+                        <Input value={row.amount} readOnly />
                       </Td>
 
+                      {/* Delete */}
                       <Td>
-
                         <IconButton
                           icon={<DeleteIcon />}
-                          colorScheme="red"
+                          color="white"
+                          bg="grey" _hover={{ bg: "#4d4d4d" }}
                           size="sm"
-                          onClick={() =>
-                            deleteSourceRow(index)
-                          }
+                          onClick={() => deleteSourceRow(index)}
                         />
-
                       </Td>
 
                     </Tr>
                   ))}
-
                 </Tbody>
-
               </Table>
-
             </Box>
-
           </AccordionPanel>
-
         </AccordionItem>
       </Accordion>
 
-      {/* DESTINATION */}
-
-      <Accordion allowToggle defaultIndex={[0]} mb={5}>
-        <AccordionItem bg="white" border="1px solid #E2E8F0">
-
-          <AccordionButton>
-            <Box flex="1" textAlign="left" fontWeight="bold">
+      {/* ── DESTINATION ────────────────────────────────────────────────── */}
+      <Accordion allowToggle defaultIndex={[0]} mb={8}>
+        <AccordionItem bg="white" border="1px solid #E2E8F0" borderRadius="12px">
+          <AccordionButton bg="#4f9190" borderRadius="12px 12px 0px 0px" _hover={{ bg: "#699b99" }}>
+            <Box flex="1" textAlign="left" fontWeight="500" color="white">
               Destination (Production)
             </Box>
-            <AccordionIcon />
+            <AccordionIcon color="white" />
           </AccordionButton>
 
-          <AccordionPanel>
-
-            <HStack justify="flex-end" mb={3}>
+          <AccordionPanel padding={0}>
+            <HStack justify="flex-end" m={4}>
               <Button
                 leftIcon={<AddIcon />}
-                size="sm"
-                colorScheme="green"
+                size="sm" fontWeight="500"
+                background="#cf6b16" color="white"
                 onClick={addDestinationRow}
               >
                 Add Row
@@ -829,14 +749,13 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
             </HStack>
 
             <Box overflowX="auto">
-
-              <Table size="sm">
-
-                <Thead bg="gray.100">
+              <Table size="sm" className="stock_transfer_table">
+                <Thead bg="#e7e8e8">
                   <Tr>
                     <Th>Item</Th>
                     <Th>Godown</Th>
                     <Th>Batch</Th>
+                    <Th>Available</Th>
                     <Th>Qty</Th>
                     <Th>Unit</Th>
                     <Th>Rate</Th>
@@ -846,13 +765,11 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
                 </Thead>
 
                 <Tbody>
-
                   {formData.destination_items.map((row, index) => (
-
                     <Tr key={index}>
 
-                      <Td>
-
+                      {/* Item */}
+                      <Td minW="220px">
                         <Select
                           value={row.item_id}
                           onChange={(e) =>
@@ -863,24 +780,17 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
                             )
                           }
                         >
-                          <option value="">
-                            Select
-                          </option>
-
+                          <option value="">Select</option>
                           {stockItem.map((item) => (
-                            <option
-                              key={item.id}
-                              value={item.id}
-                            >
+                            <option key={item.id} value={item.id}>
                               {item.item_name}
                             </option>
                           ))}
                         </Select>
-
                       </Td>
 
-                      <Td>
-
+                      {/* Godown */}
+                      <Td minW="180px">
                         <Select
                           value={row.godown_id}
                           onChange={(e) =>
@@ -891,142 +801,122 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
                             )
                           }
                         >
-                          <option value="">
-                            Select
-                          </option>
-
+                          <option value="">Select</option>
                           {godown.map((g) => (
-                            <option
-                              key={g.id}
-                              value={g.id}
-                            >
+                            <option key={g.id} value={g.id}>
                               {g.godown_name}
                             </option>
                           ))}
                         </Select>
-
                       </Td>
 
-                      <Td>
-
-                        <Input
-                          value={row.batch_no}
-                          onChange={(e) =>
-                            handleDestinationChange(
-                              index,
-                              "batch_no",
-                              e.target.value
-                            )
-                          }
-                        />
-
+                      {/* Batch — dropdown (same pattern as source) */}
+                      <Td minW="180px">
+                        {row.loadingBatch ? (
+                          <Spinner size="sm" />
+                        ) : (
+                          <Select
+                            value={row.batch_no}
+                            onChange={(e) =>
+                              handleDestinationChange(
+                                index,
+                                "batch_no",
+                                e.target.value
+                              )
+                            }
+                          >
+                            <option value="">Select</option>
+                            {row.batches.map((b, i) => (
+                              <option key={i} value={b.batch_no}>
+                                {b.batch_no}
+                              </option>
+                            ))}
+                          </Select>
+                        )}
                       </Td>
 
+                      {/* Available Qty */}
                       <Td>
+                        <Input value={row.available_qty} readOnly />
+                      </Td>
 
+                      {/* Qty */}
+                      <Td>
                         <Input
                           type="number"
                           value={row.qty}
                           onChange={(e) =>
-                            handleDestinationChange(
-                              index,
-                              "qty",
-                              e.target.value
-                            )
+                            handleDestinationNumericChange(index, "qty", e.target.value)
                           }
                         />
-
                       </Td>
 
-                      <Td>
-
-                        <Input
-                          value={row.unit_id}
-                          readOnly
-                        />
-
+                      {/* Unit — shows unit_name */}
+                      <Td minW="80px">
+                        <Input value={row.unit_name} readOnly />
                       </Td>
 
+                      {/* Rate */}
                       <Td>
-
                         <Input
                           type="number"
                           value={row.rate}
-                          onChange={(e) =>
-                            handleDestinationChange(
-                              index,
-                              "rate",
-                              e.target.value
-                            )
-                          }
+                          onChange={(e) => handleDestinationNumericChange(index, "rate", e.target.value)}
+                        //   onChange={(e) =>
+                        //     handleDestinationChange(
+                        //       index,
+                        //       "rate",
+                        //       e.target.value
+                        //     )
+                        //   }
                         />
-
                       </Td>
 
+                      {/* Amount */}
                       <Td>
-
-                        <Input
-                          value={row.amount}
-                          readOnly
-                        />
-
+                        <Input value={row.amount} readOnly />
                       </Td>
 
+                      {/* Delete */}
                       <Td>
-
                         <IconButton
                           icon={<DeleteIcon />}
-                          colorScheme="red"
+                          color="white"
+                          bg="grey" _hover={{ bg: "#4d4d4d" }}
                           size="sm"
-                          onClick={() =>
-                            deleteDestinationRow(index)
-                          }
+                          onClick={() => deleteDestinationRow(index)}
                         />
-
                       </Td>
 
                     </Tr>
-
                   ))}
-
                 </Tbody>
-
               </Table>
-
             </Box>
-
           </AccordionPanel>
-
         </AccordionItem>
       </Accordion>
 
-      {/* COST */}
-
-      <Accordion allowToggle defaultIndex={[0]} mb={5}>
-        <AccordionItem bg="white" border="1px solid #E2E8F0">
-
-          <AccordionButton>
-            <Box flex="1" textAlign="left" fontWeight="bold">
+      {/* ── ADDITIONAL COSTS ───────────────────────────────────────────── */}
+      <Accordion allowToggle defaultIndex={[0]} mb={8}>
+        <AccordionItem bg="white" border="1px solid #E2E8F0" borderRadius="12px">
+          <AccordionButton bg="#4f9190" borderRadius="12px 12px 0px 0px" _hover={{ bg: "#699b99" }}>
+            <Box flex="1" textAlign="left" fontWeight="500" color="white">
               Additional Costs
             </Box>
-            <AccordionIcon />
+            <AccordionIcon color="white" />
           </AccordionButton>
 
-          <AccordionPanel>
-
-            <HStack justify="flex-end" mb={3}>
-              <Button
-                size="sm"
-                leftIcon={<AddIcon />}
-                onClick={addCostRow}
-              >
+          <AccordionPanel padding={0}>
+            <HStack justify="flex-end" m={4}>
+              <Button size="sm" leftIcon={<AddIcon />} onClick={addCostRow}
+                fontWeight="500" background="#cf6b16" color="white">
                 Add Row
               </Button>
             </HStack>
 
-            <Table size="sm">
-
-              <Thead bg="gray.100">
+            <Table size="sm" className="stock_transfer_table">
+              <Thead bg="#e7e8e8">
                 <Tr>
                   <Th>Ledger</Th>
                   <Th>Amount</Th>
@@ -1035,348 +925,299 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
               </Thead>
 
               <Tbody>
-
                 {formData.additional_costs.map((row, index) => (
-
                   <Tr key={index}>
-
                     <Td>
-
                       <Select
                         value={row.ledger_id}
                         onChange={(e) =>
-                          handleCostChange(
-                            index,
-                            "ledger_id",
-                            e.target.value
-                          )
+                          handleCostChange(index, "ledger_id", e.target.value)
                         }
                       >
-                        <option value="">
-                          Select
-                        </option>
-
+                        <option value="">Select</option>
                         {ledger.map((l) => (
-                          <option
-                            key={l.id}
-                            value={l.id}
-                          >
+                          <option key={l.id} value={l.id}>
                             {l.ledger_name}
                           </option>
                         ))}
-
                       </Select>
-
                     </Td>
 
                     <Td>
-
                       <Input
                         type="number"
                         value={row.amount}
                         onChange={(e) =>
-                          handleCostChange(
-                            index,
-                            "amount",
-                            e.target.value
-                          )
+                          handleCostChange(index, "amount", e.target.value)
                         }
                       />
-
                     </Td>
 
                     <Td>
-
                       <IconButton
                         icon={<DeleteIcon />}
+                        color="white"
+                        bg="grey" _hover={{ bg: "#4d4d4d" }}
                         size="sm"
-                        colorScheme="red"
-                        onClick={() =>
-                          deleteCostRow(index)
-                        }
+                        onClick={() => deleteCostRow(index)}
                       />
-
                     </Td>
-
                   </Tr>
-
                 ))}
-
               </Tbody>
-
             </Table>
-
           </AccordionPanel>
-
         </AccordionItem>
       </Accordion>
 
-      {/* TRANSPORT */}
-
+      {/* ── TRANSPORTATION ─────────────────────────────────────────────── */}
       <Box
-        border="1px solid #E2E8F0"
-        p={5}
-        borderRadius="md"
+        border="1px solid"
+        borderColor="gray.200"
+        p={6}
+        borderRadius="2xl"
         bg="white"
-        mb={5}
+        mb={6}
+        boxShadow="sm"
       >
+        <Flex
+          justify="space-between"
+          align="center"
+          mb={6}
+          flexWrap="wrap"
+          gap={3}
+        >
+          <Heading size="md" color="blue.600">
+            Transportation Details
+          </Heading>
 
-        <Heading size="sm" mb={5}>
-          Transportation
-        </Heading>
+          <Badge
+            colorScheme="blue"
+            px={3}
+            py={1}
+            borderRadius="full"
+            fontSize="0.8rem"
+          >
+            Freight Information
+          </Badge>
+        </Flex>
 
         <Grid
           templateColumns={{
             base: "1fr",
-            md: "repeat(3,1fr)",
+            md: "repeat(2,1fr)",
+            lg: "repeat(3,1fr)",
           }}
-          gap={4}
+          gap={5}
         >
+          {[
+            {
+              label: "Dispatch Doc No",
+              key: "dispatch_doc_no",
+              type: "text",
+              placeholder: "Enter dispatch document no",
+            },
+            {
+              label: "Transport Name",
+              key: "transport_name",
+              type: "text",
+              placeholder: "Enter transport name",
+            },
+            {
+              label: "Destination",
+              key: "destination",
+              type: "text",
+              placeholder: "Enter destination",
+            },
+            {
+              label: "Bill No",
+              key: "bill_no",
+              type: "text",
+              placeholder: "Enter bill number",
+            },
+            {
+              label: "Vehicle No",
+              key: "vehicle_no",
+              type: "text",
+              placeholder: "Enter vehicle number",
+            },
+            {
+              label: "Transport Freight",
+              key: "transport_freight",
+              type: "number",
+              placeholder: "0.00",
+            },
+            {
+              label: "Local Freight",
+              key: "local_freight",
+              type: "number",
+              placeholder: "0.00",
+            },
+            {
+              label: "Load/Unload Freight",
+              key: "load_unload_freight",
+              type: "number",
+              placeholder: "0.00",
+            },
+          ].map(({ label, key, type, placeholder }) => (
+            <GridItem key={key}>
+              <Box>
+                <Text
+                  mb="2px"
+                  fontSize="13px"
+                  fontWeight="500"
+                  color="gray.600"
+                >
+                  {label}
+                </Text>
 
-          <GridItem>
-
-            <Text mb={1}>
-              Dispatch Doc No
-            </Text>
-
-            <Input
-              value={formData.transportation.dispatch_doc_no}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  transportation: {
-                    ...prev.transportation,
-                    dispatch_doc_no:
-                      e.target.value,
-                  },
-                }))
-              }
-            />
-
-          </GridItem>
-
-          <GridItem>
-
-            <Text mb={1}>
-              Transport Name
-            </Text>
-
-            <Input
-              value={formData.transportation.transport_name}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  transportation: {
-                    ...prev.transportation,
-                    transport_name:
-                      e.target.value,
-                  },
-                }))
-              }
-            />
-
-          </GridItem>
-
-          <GridItem>
-
-            <Text mb={1}>
-              Destination
-            </Text>
-
-            <Input
-              value={formData.transportation.destination}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  transportation: {
-                    ...prev.transportation,
-                    destination:
-                      e.target.value,
-                  },
-                }))
-              }
-            />
-
-          </GridItem>
-
-          <GridItem>
-
-            <Text mb={1}>
-              Bill No
-            </Text>
-
-            <Input
-              value={formData.transportation.bill_no}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  transportation: {
-                    ...prev.transportation,
-                    bill_no:
-                      e.target.value,
-                  },
-                }))
-              }
-            />
-
-          </GridItem>
-
-          <GridItem>
-
-            <Text mb={1}>
-              Vehicle No
-            </Text>
-
-            <Input
-              value={formData.transportation.vehicle_no}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  transportation: {
-                    ...prev.transportation,
-                    vehicle_no:
-                      e.target.value,
-                  },
-                }))
-              }
-            />
-
-          </GridItem>
-
-          <GridItem>
-
-            <Text mb={1}>
-              Transport Freight
-            </Text>
-
-            <Input
-              type="number"
-              value={formData.transportation.transport_freight}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  transportation: {
-                    ...prev.transportation,
-                    transport_freight:
-                      e.target.value,
-                  },
-                }))
-              }
-            />
-
-          </GridItem>
-
-          <GridItem>
-
-            <Text mb={1}>
-              Local Freight
-            </Text>
-
-            <Input
-              type="number"
-              value={formData.transportation.local_freight}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  transportation: {
-                    ...prev.transportation,
-                    local_freight:
-                      e.target.value,
-                  },
-                }))
-              }
-            />
-
-          </GridItem>
-
-          <GridItem>
-
-            <Text mb={1}>
-              Load/Unload Freight
-            </Text>
-
-            <Input
-              type="number"
-              value={formData.transportation.load_unload_freight}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  transportation: {
-                    ...prev.transportation,
-                    load_unload_freight:
-                      e.target.value,
-                  },
-                }))
-              }
-            />
-
-          </GridItem>
-
+                <Input
+                  type={type}
+                  placeholder={placeholder}
+                  value={formData.transportation[key]}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      transportation: {
+                        ...prev.transportation,
+                        [key]: e.target.value,
+                      },
+                    }))
+                  }
+                  bg="gray.50"
+                  border="1px solid"
+                  borderColor="gray.200"
+                  _hover={{
+                    borderColor: "blue.300",
+                  }}
+                  _focus={{
+                    borderColor: "blue.400",
+                    boxShadow: "0 0 0 1px #3182CE",
+                    bg: "white",
+                  }}
+                  borderRadius="lg"
+                  size="md"
+                />
+              </Box>
+            </GridItem>
+          ))}
         </Grid>
       </Box>
 
-      {/* TOTAL */}
+      <HStack flexDirection="column" alignItems="flex-start" gap={0}>
+        <Text ml={1} fontSize="12px">Narration</Text>
+        <Textarea
+          placeholder="Narration"
+          value={formData.narration}
+          onChange={(e) =>
+            setFormData((prev) => ({
+              ...prev,
+              narration: e.target.value,
+            }))
+          }
+        />
+      </HStack>
 
-      <Flex
-        justify="flex-end"
-        mb={5}
-      >
+      {/* ── TOTALS ─────────────────────────────────────────────────────── */}
+      <Flex justify="flex-end" mb={6} mt={4}>
         <Box
           bg="white"
-          p={5}
-          borderRadius="md"
-          border="1px solid #E2E8F0"
-          minW="320px"
+          p={3}
+          borderRadius="2xl"
+          border="1px solid"
+          borderColor="gray.200"
+          minW={{ base: "100%", md: "380px" }}
+          boxShadow="sm"
         >
-
-          <Flex justify="space-between" mb={2}>
-            <Text>Source Total</Text>
-            <Text fontWeight="bold">
-              {totalSourceAmount}
-            </Text>
+          <Flex justify="space-between" align="center" mb={3}>
+            <Heading size="sm" color="blue.600">
+              Transfer Summary
+            </Heading>
           </Flex>
 
-          <Flex justify="space-between" mb={2}>
-            <Text>Destination Total</Text>
-            <Text fontWeight="bold">
-              {totalDestinationAmount}
-            </Text>
-          </Flex>
+          {[
+            {
+              label: "Source Total",
+              value: totalSourceAmount,
+            },
+            {
+              label: "Destination Total",
+              value: totalDestinationAmount,
+            },
+            {
+              label: "Additional Cost",
+              value: totalAdditionalCost,
+            },
+            {
+              label: "Transport Cost",
+              value: totalTransportCost,
+            },
+          ].map(({ label, value }) => (
+            <Flex key={label} justify="space-between" align="center" >
+              <Text
+                fontSize="sm"
+                fontWeight="500"
+                color="gray.600" mb="2px"
+              >
+                {label}
+              </Text>
 
-          <Flex justify="space-between" mb={2}>
-            <Text>Additional Cost</Text>
-            <Text fontWeight="bold">
-              {totalAdditionalCost}
-            </Text>
-          </Flex>
+              <Text
+                fontWeight="700"
+                color="gray.800"
+                fontSize="md"
+              >
+                ₹ {Number(value || 0).toFixed(2)}
+              </Text>
+            </Flex>
+          ))}
 
-          <Flex justify="space-between" mb={2}>
-            <Text>Transport Cost</Text>
-            <Text fontWeight="bold">
-              {totalTransportCost}
-            </Text>
-          </Flex>
-
-          <Flex justify="space-between" mt={4} borderTop="1px solid #E2E8F0" pt={3} >
-            <Text fontWeight="bold">
+          <Flex
+            justify="space-between"
+            align="center"
+            mt={3}
+            pt={3}
+            borderTop="2px dashed"
+            borderColor="gray.300"
+          >
+            <Text
+              fontWeight="700"
+              fontSize="18px"
+              color="gray.800"
+            >
               Grand Total
             </Text>
 
-            <Text fontWeight="bold">
-              {grandTotal}
+            <Text
+              fontWeight="800"
+              fontSize="xl"
+              color="blue.600"
+            >
+              ₹ {Number(grandTotal || 0).toFixed(2)}
             </Text>
           </Flex>
-
         </Box>
       </Flex>
 
-      {/* SUBMIT */}
-
+      {/* ── SUBMIT ─────────────────────────────────────────────────────── */}
       <Flex justify="flex-end">
-        <Button colorScheme="blue" onClick={handleSubmit} isLoading={loading} >
+        <Button
+          bg="#237086" fontWeight="500"
+          fontSize="14px" color="white"
+          _hover={{ bg: "#1B5A6B" }}
+          px={8} borderRadius="12px"
+          onClick={handleSubmit}
+          isLoading={loading}
+
+          boxShadow="md"
+          _hover={{
+            transform: "translateY(-2px)",
+            boxShadow: "lg",
+          }}
+          transition="0.2s"
+        >
           Create Stock Transfer
         </Button>
-
       </Flex>
 
     </Box>

@@ -1,33 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Select,
-  Text,
-  SimpleGrid,
-  FormControl,
-  FormLabel,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Card,
-  CardHeader,
-  CardBody,
-  Heading,
-  Spinner,
-  Input,
-  Flex,
-  Img,
-  useDisclosure,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  HStack,
-  TableContainer,
-} from "@chakra-ui/react";
+import { Box, Button, Select, Text, SimpleGrid, FormControl, FormLabel, Table, Thead, Tbody, Tr, Th, Td, Card, CardHeader, CardBody, Heading, Spinner, Input, Flex, Img, useDisclosure, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack, TableContainer, } from "@chakra-ui/react";
 import { Badge } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { InputGroup, InputRightElement } from "@chakra-ui/react";
@@ -69,33 +41,14 @@ const EmpAttendance = () => {
   const [selectedDate, setSelectedDate] = useState(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const headers = [
-    "S.No",
-    "Employee Id",
-    "Name",
-    "Date",
-    "Login",
-    "Logout",
-    "Hours",
-    "Status",
-    "Attendance Unit",
-    "Odometer Reading",
-    "Day Over Odometer",
-    "Travel Mode",
-    "Total KM",
-    "Visit location",
-    "Work Type",
-    "Leave Reason",
-    "Vehicle  Type",
-    "Action",
-  ]
+  const headers = ["S.No", "Employee Id", "Name", "Date", "Login", "Logout", "Hours", "Status", "Attendance Unit", "Odometer Reading", "Day Over Odometer", "Travel Mode", "Total KM", "Visit location", "Work Type", "Leave Reason", "Vehicle  Type", "Action",]
   const widthMap = {
 
   }
 
 
   //  Fetch API
-  const fetchAttendance = async (page = 1) => {
+  const fetchAttendance = async () => {
     setLoading(true);
 
     try {
@@ -116,13 +69,11 @@ const EmpAttendance = () => {
 
       if (res.status === 200) {
         setAttendance(res.data.attendance || []);
-
-        setPagination({
-          page: page,
-          limit: res.data.pagination.limit,
+        setPagination((prev) => ({
+          ...prev,
           total_pages: res.data.pagination.total_pages,
-          total_Items: res.data.pagination.total_records
-        });
+          total_Items: res.data.pagination.total_records,
+        }));
       }
     } catch (err) {
       console.error(err);
@@ -139,20 +90,7 @@ const EmpAttendance = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
-  useEffect(() => {
-    fetchAttendance(1);
-  }, []);
 
-  useEffect(() => {
-    if (
-      filters.userId ||
-      filters.startDate ||
-      filters.endDate ||
-      debouncedSearch
-    ) {
-      fetchAttendance(1);
-    }
-  }, [debouncedSearch, filters.userId, filters.startDate, filters.endDate]);
 
   //    after user clear seacrh bar date and employee name  end dta every filter ----------
   const query = useMemo(() => {
@@ -165,11 +103,15 @@ const EmpAttendance = () => {
   }, [debouncedSearch, filters]);
 
   useEffect(() => {
-    fetchAttendance(1);
-  }, [query]);
-
-
-
+    fetchAttendance();
+  }, [
+    pagination.page,
+    pagination.limit,
+    debouncedSearch,
+    filters.userId,
+    filters.startDate,
+    filters.endDate,
+  ]);
 
   const handleImage = (id, date) => {
     setSelectedUserId(id);
@@ -237,11 +179,9 @@ const EmpAttendance = () => {
       startDate: "",
       endDate: "",
     };
-
     setSearch("");
     setDebouncedSearch("");
     setFilters(resetFilters);
-
     setPagination((prev) => ({
       ...prev,
       page: 1,
@@ -428,7 +368,7 @@ const EmpAttendance = () => {
                         <Td>{item.employee_name}</Td>
                         <Td>{formatDate(item.attendance_date)}</Td>
                         <Td>
-                          {formatTime( item.attendance_date, item.check_in_time, )}
+                          {formatTime(item.attendance_date, item.check_in_time,)}
                         </Td>
                         <Td>
                           {formatTime(
@@ -449,71 +389,71 @@ const EmpAttendance = () => {
                           </Badge>
                         </Td>
                         <Td>
-  {item.attendance_unit === "full" && (
-    <Badge
-      colorScheme="green"
-      px={3}
-      py={1}
-      borderRadius="full"
-    >
-      <HStack spacing={1}>
-        <CheckCircleIcon boxSize={3} />
-        <Text fontSize="11px">Full Day</Text>
-      </HStack>
-    </Badge>
-  )}
-   {item.attendance_unit === "absent" && (
-    <Badge
-      colorScheme="green"
-      px={3}
-      py={1}
-      borderRadius="full"
-    >
-      <HStack spacing={1}>
-        <Text fontSize="11px">Absent</Text>
-      </HStack>
-    </Badge>
-  )}
+                          {item.attendance_unit === "full" && (
+                            <Badge
+                              colorScheme="green"
+                              px={3}
+                              py={1}
+                              borderRadius="full"
+                            >
+                              <HStack spacing={1}>
+                                <CheckCircleIcon boxSize={3} />
+                                <Text fontSize="11px">Full Day</Text>
+                              </HStack>
+                            </Badge>
+                          )}
+                          {item.attendance_unit === "absent" && (
+                            <Badge
+                              colorScheme="green"
+                              px={3}
+                              py={1}
+                              borderRadius="full"
+                            >
+                              <HStack spacing={1}>
+                                <Text fontSize="11px">Absent</Text>
+                              </HStack>
+                            </Badge>
+                          )}
 
-  {item.attendance_unit === "half" && (
-    <Badge
-      colorScheme="yellow"
-      px={3}
-      py={1}
-      borderRadius="full"
-    >
-      <HStack spacing={1}>
-        <TimeIcon boxSize={3} />
-        <Text fontSize="11px">Half Day</Text>
-      </HStack>
-    </Badge>
-  )}
+                          {item.attendance_unit === "half" && (
+                            <Badge
+                              colorScheme="yellow"
+                              px={3}
+                              py={1}
+                              borderRadius="full"
+                            >
+                              <HStack spacing={1}>
+                                <TimeIcon boxSize={3} />
+                                <Text fontSize="11px">Half Day</Text>
+                              </HStack>
+                            </Badge>
+                          )}
 
-  {item.attendance_unit === "leave" && (
-    <Badge
-      colorScheme="red"
-      px={3}
-      py={1}
-      borderRadius="full"
-    >
-      <HStack spacing={1}>
-        <SmallCloseIcon boxSize={3} />
-        <Text fontSize="11px">Leave</Text>
-      </HStack>
-    </Badge>
-  )}
+                          {item.attendance_unit === "leave" && (
+                            <Badge
+                              colorScheme="red"
+                              px={3}
+                              py={1}
+                              borderRadius="full"
+                            >
+                              <HStack spacing={1}>
+                                <SmallCloseIcon boxSize={3} />
+                                <Text fontSize="11px">Leave</Text>
+                              </HStack>
+                            </Badge>
+                          )}
 
-  {item.attendance_unit === "WEEK_OFF" && (
-    <Badge
-      colorScheme="purple"
-      px={3}
-      py={1}
-      borderRadius="full"
-    >
-      <Text fontSize="11px">Week Off</Text>
-    </Badge>
-  )}
-</Td>
+                          {item.attendance_unit === "WEEK_OFF" && (
+                            <Badge
+                              colorScheme="purple"
+                              px={3}
+                              py={1}
+                              borderRadius="full"
+                            >
+                              <Text fontSize="11px">Week Off</Text>
+                            </Badge>
+                          )}
+                        </Td>
                         <Td>{item.odometer_reading || 0}</Td>
                         <Td>{item.day_over_odometer_reading || 0}</Td>
                         <Td>{item?.travel_mode}</Td>
@@ -543,18 +483,17 @@ const EmpAttendance = () => {
           )}
         </Box>
 
-        {/*  Pagination */}
         <Pagination
           page={pagination.page}
-          setPage={(newPage) =>
-            setPagination((prev) => ({ ...prev, page: newPage }))
-          }
           limit={pagination.limit}
-          setLimit={(newLimit) =>
-            setPagination((prev) => ({ ...prev, limit: newLimit }))
-          }
           totalItems={pagination.total_Items}
           totalPages={pagination.total_pages}
+          onPageChange={(newPage) => {
+            setPagination((prev) => ({ ...prev, page: newPage, }));
+          }}
+          onLimitChange={(newLimit) => {
+            setPagination((prev) => ({ ...prev, limit: newLimit, page: 1, }));
+          }}
         />
       </Box>
     </>

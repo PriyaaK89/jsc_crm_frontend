@@ -1,27 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Button,
-  Select,
-  Text,
-  SimpleGrid,
-  FormControl,
-  FormLabel,
-  VStack, Heading,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Flex,
-  Spinner,
-  Input,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  HStack, Img, useToast,
-  TableContainer
+  Box, Button, Select, Text, SimpleGrid, FormControl, FormLabel, VStack, Heading, Table, Thead, Tbody, Tr, Th, Td, Flex, Spinner, Input, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack, Img, useToast, TableContainer
 } from "@chakra-ui/react";
 import { FiUpload } from "react-icons/fi";
 import { GoHomeFill } from "react-icons/go";
@@ -104,16 +83,11 @@ const EmpSalaryReport = () => {
 
       if (res.status === 200) {
         setdailySalry(res.data.data || []);
-
         const responseData = res.data;
-
         setdailySalry(responseData.data || []);
-
         setTotalItems(responseData.total || 0);
         setPage(responseData.currentPage || 1);
         setTotalPages(responseData.totalPages || 1);
-
-        // limit tum already state me manage kar rahe ho
 
       }
     } catch (error) {
@@ -124,87 +98,22 @@ const EmpSalaryReport = () => {
     }
   };
 
- useEffect(() => {
-  if (hasDatafind) {
-    handleViewDailySalary();
-  }
-}, [page, limit]);
+  useEffect(() => {
+    if (hasDatafind) {
+      handleViewDailySalary();
+    }
+  }, [page, limit]);
 
   const handleSearchClick = () => {
     setPage(1); //  reset page
     handleViewDailySalary();
   };
 
-
-
   const labelStyles = {
     fontSize: "14px",
     color: "#494949",
     fontWeight: "500",
   };
-
-
-
-  // const downloadCSV = () => {
-  //   if (!dailySalry.length) {
-  //     toast({
-  //       title: "No Data",
-  //       description: "No data available to download",
-  //       status: "warning",
-  //       duration: 2000,
-  //       isClosable: true,
-  //     });
-  //     return;
-  //   }
-
-  //   // CSV Headers
-  //   const headers = [
-  //     "Employee Id",
-  //     "Salary Date",
-  //     "Attendance Type",
-  //     "Working Hours",
-  //     "Per Day Salary",
-  //     "Basic Salary",
-  //     "Travelling Allowance",
-  //     "Daily Allowance",
-  //     "Gross Salary",
-  //     "Net Salary",
-  //     "Created At",
-  //   ];
-
-  //   // Convert data to rows
-  //   const rows = dailySalry.map((emp, index) => [
-  //     index + 1,
-  //     new Date(emp.salary_date).toLocaleDateString(),
-  //     emp.attendance_type,
-  //     emp.working_hours,
-  //     emp.per_day_salary,
-  //     emp.basic_salary,
-  //     emp.travelling_allowance,
-  //     emp.daily_allowance,
-  //     emp.gross_salary,
-  //     emp.net_salary,
-  //     new Date(emp.created_at).toLocaleDateString(),
-  //   ]);
-
-  //   // Combine headers + rows
-  //   const csvContent =
-  //     [headers, ...rows]
-  //       .map((row) => row.join(","))
-  //       .join("\n");
-
-  //   // Create Blob
-  //   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-
-  //   // Create download link
-  //   const url = URL.createObjectURL(blob);
-  //   const link = document.createElement("a");
-  //   link.href = url;
-  //   link.setAttribute("download", "salary_report.csv");
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // };
 
   // -------------------------------perday salary-------------------------------
   const totalPerDaySalary = dailySalry.reduce((total, emp) => {
@@ -241,122 +150,115 @@ const EmpSalaryReport = () => {
       year: "numeric",
     });
   };
-//  downolad cvc file 
+  //  downolad cvc file 
 
-const downloadExcel = async () => {
-  if (!dailySalry.length) {
-    toast({
-      title: "No Data",
-      status: "warning",
+  const downloadExcel = async () => {
+    if (!dailySalry.length) {
+      toast({
+        title: "No Data",
+        status: "warning",
+      });
+      return;
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Salary Report");
+
+    //  TITLE
+    worksheet.mergeCells("A1:K1");
+    worksheet.getCell("A1").value = "Employee Salary Report";
+    worksheet.getCell("A1").font = { size: 16, bold: true };
+    worksheet.getCell("A1").alignment = { horizontal: "center" };
+
+    //  Filters info
+    worksheet.mergeCells("A2:K2");
+    worksheet.getCell("A2").value = `Date: ${filters.startDate || "-"} to ${filters.endDate || "-"}`;
+    worksheet.getCell("A2").alignment = { horizontal: "center" };
+
+    //  Headers
+    const headers = [
+      "S No",
+      "Salary Date",
+      "Attendance",
+      "Working Hours",
+      "Per Day Salary",
+      "Basic Salary",
+      "Travelling Allowance",
+      "Daily Allowance",
+      "Gross Salary",
+      "Net Salary",
+      "Created At",
+    ];
+
+    const headerRow = worksheet.addRow(headers);
+
+    headerRow.eachCell((cell) => {
+      cell.font = { bold: true };
+      cell.alignment = { horizontal: "center" };
+      cell.border = {
+        top: { style: "thin" },
+        left: { style: "thin" },
+        bottom: { style: "thin" },
+        right: { style: "thin" },
+      };
     });
-    return;
-  }
 
-  const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet("Salary Report");
+    //  Data rows
+    dailySalry.forEach((emp, index) => {
+      worksheet.addRow([
+        index + 1,
+        formatDate(emp.salary_date),
+        emp.attendance_type,
+        emp.working_hours,
+        Number(emp.per_day_salary),
+        Number(emp.basic_salary),
+        Number(emp.travelling_allowance),
+        Number(emp.daily_allowance),
+        Number(emp.gross_salary),
+        Number(emp.net_salary),
+        formatDate(emp.created_at),
+      ]);
+    });
 
-  // 🧾 TITLE
-  worksheet.mergeCells("A1:K1");
-  worksheet.getCell("A1").value = "Employee Salary Report";
-  worksheet.getCell("A1").font = { size: 16, bold: true };
-  worksheet.getCell("A1").alignment = { horizontal: "center" };
-
-  // 📅 Filters info
-  worksheet.mergeCells("A2:K2");
-  worksheet.getCell("A2").value = `Date: ${filters.startDate || "-"} to ${filters.endDate || "-"}`;
-  worksheet.getCell("A2").alignment = { horizontal: "center" };
-
-  // 🧱 Headers
-  const headers = [
-    "S No",
-    "Salary Date",
-    "Attendance",
-    "Working Hours",
-    "Per Day Salary",
-    "Basic Salary",
-    "Travelling Allowance",
-    "Daily Allowance",
-    "Gross Salary",
-    "Net Salary",
-    "Created At",
-  ];
-
-  const headerRow = worksheet.addRow(headers);
-
-  headerRow.eachCell((cell) => {
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "center" };
-    cell.border = {
-      top: { style: "thin" },
-      left: { style: "thin" },
-      bottom: { style: "thin" },
-      right: { style: "thin" },
-    };
-  });
-
-  // 📊 Data rows
-  dailySalry.forEach((emp, index) => {
-    worksheet.addRow([
-      index + 1,
-      formatDate(emp.salary_date),
-      emp.attendance_type,
-      emp.working_hours,
-      Number(emp.per_day_salary),
-      Number(emp.basic_salary),
-      Number(emp.travelling_allowance),
-      Number(emp.daily_allowance),
-      Number(emp.gross_salary),
-      Number(emp.net_salary),
-      formatDate(emp.created_at),
+    //  TOTAL ROW
+    const totalRow = worksheet.addRow([
+      "",
+      "",
+      "",
+      "TOTAL",
+      Number(totalPerDaySalary),
+      Number(totalBasicSalary),
+      Number(totalTravellingAllowance),
+      Number(totalDailyAllowance),
+      Number(totalGrossSalary),
+      Number(totalNetSalary),
+      "",
     ]);
-  });
 
-  //  TOTAL ROW
-  const totalRow = worksheet.addRow([
-    "",
-    "",
-    "",
-    "TOTAL",
-    Number(totalPerDaySalary),
-    Number(totalBasicSalary),
-    Number(totalTravellingAllowance),
-    Number(totalDailyAllowance),
-    Number(totalGrossSalary),
-    Number(totalNetSalary),
-    "",
-  ]);
+    totalRow.eachCell((cell) => {
+      cell.font = { bold: true };
+    });
 
-  totalRow.eachCell((cell) => {
-    cell.font = { bold: true };
-  });
+    //  Currency format
+    ["E", "F", "G", "H", "I", "J"].forEach((col) => {
+      worksheet.getColumn(col).numFmt = "₹#,##0.00";
+    });
 
-  //  Currency format
-  ["E","F","G","H","I","J"].forEach((col) => {
-    worksheet.getColumn(col).numFmt = "₹#,##0.00";
-  });
+    //  Column Width
+    worksheet.columns.forEach((col) => {
+      col.width = 18;
+    });
 
-  //  Column Width
-  worksheet.columns.forEach((col) => {
-    col.width = 18;
-  });
+    // Freeze header
+    worksheet.views = [{ state: "frozen", ySplit: 3 }];
 
-  // Freeze header
-  worksheet.views = [{ state: "frozen", ySplit: 3 }];
-
-  //  Download
-  const buffer = await workbook.xlsx.writeBuffer();
-  saveAs(new Blob([buffer]), "Employee_Salary_Report.xlsx");
-};
+    //  Download
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buffer]), "Employee_Salary_Report.xlsx");
+  };
 
   return (
-    <Box
-      bg="white"
-      mt={{ base: 2, md: 5 }}
-      px={{ base: 3, md: 6 }}
-      py={{ base: 3, md: 4 }}
-      borderRadius="lg"
-      boxShadow="md"
-    >
+    <Box bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 4 }} borderRadius="lg" boxShadow="md">
       <HStack justifyContent="space-between" flexWrap="wrap">
         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
           <BreadcrumbItem>
@@ -475,11 +377,11 @@ const downloadExcel = async () => {
                       minW="1000px"
                       variant="simple"
                       whiteSpace="nowrap"
-                      overflowX="auto"
+                      overflowX="auto" className="productsTable"
 
                     >
 
-                      <Thead bg="gray.50" p={5}>
+                      <Thead bg="gray.50" >
                         <Tr >
                           {[
                             "Employee Id",
@@ -494,9 +396,9 @@ const downloadExcel = async () => {
                             "Net Salary",
                             "Created At"
                           ].map((header, index) => (
-                            <Th key={index} p={5} color='#2C2D33' textTransform='capitalize' >
+                            <Th key={index} p={5} color='#2C2D33'  >
                               <Flex align="center" gap="4px">
-                                <Text fontSize={{ base: "14px", md: "16px" }} fontWeight='500'>{header}</Text>
+                                <Text fontSize={{ base: "14px", md: "14px" }} fontWeight='500'>{header}</Text>
                                 <Img src={sort_icon} alt="sort" />
                               </Flex>
                             </Th>
@@ -537,30 +439,28 @@ const downloadExcel = async () => {
                           </>
                         ) : (
                           <Tr>
-                            <Td colSpan={11} textAlign="center" py={10}>
-                              No data found for the selected criteria.
-                            </Td>
+                            <Td colSpan={11} textAlign="center" py={10}> No data found for the selected criteria. </Td>
                           </Tr>
                         )}
                       </Tbody>
-
                     </Table>
-
                   </TableContainer>
-
-
-
                 </Box>
               </Box>
             )}
 
             <Pagination
               page={page}
-              setPage={setPage}
               limit={limit}
-              setLimit={setLimit}
               totalItems={totalItems}
               totalPages={totalPages}
+              onPageChange={(newPage) => {
+                setPage(newPage);
+              }}
+              onLimitChange={(newLimit) => {
+                setPage(1);
+                setLimit(newLimit);
+              }}
             />
           </>
         )}

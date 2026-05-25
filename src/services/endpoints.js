@@ -159,7 +159,12 @@ export const API_ENDPOINTS = {
   GET_AVAILABLE_QTY_OF_STOCK: "get-available-stock",
   GET_MATERIAL_MFG_REPORT: "get-manufacturing-report",
 
-  CREATE_STOCK_TRANSFER: "create-stock-transfer"
+  CREATE_STOCK_TRANSFER: "create-stock-transfer",
+  GET_STOCK_TRANSFER_REPORT: "get-stock-transfer-report",
+  GET_EMPLOYEE_VISIT_REPORT_SUMMARY: "get-visit-report-summary",
+
+  GET_MONTHLY_SALARY_REPORT: "get-monthly-salary",
+  GET_SALARY_MONTHS: "salary-months",
   
 };
 // 

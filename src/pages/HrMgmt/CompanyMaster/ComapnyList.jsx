@@ -1,42 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {
-    Avatar,
-  Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Button,
-  Flex,
-  HStack,
-  IconButton,
-  Image,
-  Img,
-  Input,
-  InputGroup,InputLeftElement,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalOverlay,
-  Spinner,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tooltip,
-  Tr,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Avatar, Box, Button, Flex, HStack, IconButton, Image, Img, Input, InputGroup, InputLeftElement, Modal, ModalBody, ModalContent, ModalOverlay, Spinner, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useDisclosure, } from "@chakra-ui/react";
 import sort_icon from "../../../assets/sort.svg";
-import { GoHomeFill } from "react-icons/go";
 import { Link } from "react-router-dom";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import Pagination from "../../../Pagination/Pagination";
 import { FiSearch } from "react-icons/fi";
-import { ViewIcon,CloseIcon  } from "@chakra-ui/icons";
-
+import { ViewIcon, CloseIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import { FiEdit2 } from "react-icons/fi";
 import { FiTrash2 } from "react-icons/fi";
@@ -52,20 +22,20 @@ const ComapnyList = () => {
     const [limit, setLimit] = useState(10);
     const [search, setSearch] = useState("");
     const [selectedId, setSelectedId] = useState("");
-  const [selectedImage, setSelectedImage] = useState("");
+    const [selectedImage, setSelectedImage] = useState("");
     const navigate = useNavigate();
 
-  const {
-    isOpen: isImageOpen,
-    onOpen: onImageOpen,
-    onClose: onImageClose,
-  } = useDisclosure();
+    const {
+        isOpen: isImageOpen,
+        onOpen: onImageOpen,
+        onClose: onImageClose,
+    } = useDisclosure();
 
- const {
-  isOpen: isDeleteOpen,
-  onOpen: onDeleteOpen,
-  onClose: onDeleteClose,   
-} = useDisclosure();
+    const {
+        isOpen: isDeleteOpen,
+        onOpen: onDeleteOpen,
+        onClose: onDeleteClose,
+    } = useDisclosure();
 
     const headers = [
         "S No",
@@ -83,17 +53,17 @@ const ComapnyList = () => {
     ];
 
     const widthMap = {
-       "S No":"120px",
-        "Company Logo":"120px",
-        "Company Name":"120px",
-        "Email":"120px",
-        "Phone":"120px",
-        "State":"120px",
-        "GSTIN":"120px",
-        "Bank Name":"120px",
-        "Account No":"120px",
-        "Created At":"120px",
-        "Actions":'120px',
+        "S No": "120px",
+        "Company Logo": "120px",
+        "Company Name": "120px",
+        "Email": "120px",
+        "Phone": "120px",
+        "State": "120px",
+        "GSTIN": "120px",
+        "Bank Name": "120px",
+        "Account No": "120px",
+        "Created At": "120px",
+        "Actions": '120px',
     };
 
     const fetchDistributors = async () => {
@@ -109,7 +79,6 @@ const ComapnyList = () => {
 
             if (response.status === 200) {
                 setComapnies(response?.data?.data || []);
-                setPage(response?.data?.pagination?.page || 1);
                 setTotalItems(response?.data?.pagination?.total || 0);
                 setSelectedId(response?.data?.data.id);
                 // console.log("selecetes id",selectedId)
@@ -119,7 +88,7 @@ const ComapnyList = () => {
                         response?.data?.pagination?.limit
                     ) || 1
                 );
-                setLimit(response?.data?.pagination?.limit || 10);
+                
             }
         } catch (error) {
             console.error("Error fetching company:", error);
@@ -139,30 +108,29 @@ const ComapnyList = () => {
 
     // handle delete 
     const handleDelete = (id) => {
-    setSelectedId(id);
-    onDeleteOpen();
-  };
+        setSelectedId(id);
+        onDeleteOpen();
+    };
 
     const getImageUrl = (url) => {
-    const BASE_URL = "https://your-api-domain.com";
+        const BASE_URL = "https://your-api-domain.com";
 
-    if (!url) return "";
-    if (url.startsWith("http")) return url;
+        if (!url) return "";
+        if (url.startsWith("http")) return url;
 
-    return `${BASE_URL}${url}`;
-  };
+        return `${BASE_URL}${url}`;
+    };
 
-   
+
 
     return (
         <>
-        <DeleteCompanyModel
-         isDeleteOpen={isDeleteOpen}
-       onDeleteClose={onDeleteClose}
-        selectedId={selectedId}
-        fetchDistributors={fetchDistributors}
-        
-        />
+            <DeleteCompanyModel
+                isDeleteOpen={isDeleteOpen}
+                onDeleteClose={onDeleteClose}
+                selectedId={selectedId}
+                fetchDistributors={fetchDistributors}
+            />
 
             <Box
                 bg="white"
@@ -170,34 +138,13 @@ const ComapnyList = () => {
                 px={{ base: 3, md: 6 }}
                 py={{ base: 3, md: 4 }}
                 borderRadius="lg"
-                boxShadow="md"
-            >
-                {/* Breadcrumb */}
-                <HStack justifyContent="space-between">
-                    <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
-                        <BreadcrumbItem>
-                            <BreadcrumbLink as={Link} to="/dashboard">
-                                <GoHomeFill color="#5570F1" />
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-
-                        <BreadcrumbItem isCurrentPage>
-                            <BreadcrumbLink fontSize="13px">Company List</BreadcrumbLink>
-                        </BreadcrumbItem>
-                    </Breadcrumb>
-                </HStack>
+                boxShadow="md" >
 
                 <Flex justifyContent="space-between" mb={4} alignItems="center" gap={4}>
                     {/* TITLE */}
                     <Text color="#45464E" fontSize="15px" fontWeight="500">
                         Company List Management
                     </Text>
-
-                    {/* LEFT SIDE (Country + State) */}
-
-                    {/* State Dropdown */}
-
-                    {/* SEARCH */}
                     <Box w="20%">
                         <InputGroup>
                             <InputLeftElement pointerEvents="none">
@@ -280,20 +227,20 @@ const ComapnyList = () => {
                                     <Tr key={item.id}>
                                         <Td>{(page - 1) * limit + index + 1}</Td>
                                         <Td width="140px" fontWeight="medium">
-                          <Avatar
-                            h="40px"
-                            w="40px"
-                            name={item?.name}
-                            src={getImageUrl(item?.company_logo_url)}
-                            cursor={item?.company_logo_url ? "pointer" : "default"}
-                            onClick={() => {
-                              if (item?.company_logo_url) {
-                                setSelectedImage(getImageUrl(item.company_logo_url));
-                                onImageOpen();
-                              }
-                            }}
-                          />
-                        </Td>
+                                            <Avatar
+                                                h="40px"
+                                                w="40px"
+                                                name={item?.name}
+                                                src={getImageUrl(item?.company_logo_url)}
+                                                cursor={item?.company_logo_url ? "pointer" : "default"}
+                                                onClick={() => {
+                                                    if (item?.company_logo_url) {
+                                                        setSelectedImage(getImageUrl(item.company_logo_url));
+                                                        onImageOpen();
+                                                    }
+                                                }}
+                                            />
+                                        </Td>
                                         <Td>{item?.company_name || "-"}</Td>
                                         <Td>{item?.email || "-"}</Td>
                                         <Td>{item?.phone || "-"}</Td>
@@ -307,43 +254,43 @@ const ComapnyList = () => {
                                         {/* ACTIONS */}
                                         <Td>
                                             <Flex gap="8px">
-                                                  <Tooltip label="View Company Details" hasArrow>
-                                                 <IconButton
-                                                    icon={<FaEye />}
-                                                    size="md"
-                                                    variant="ghost"
-                                                    color="blue.600"
-                                                    _hover={{ bg: "blue.50" }}
-                                                    aria-label="view Company"   
-                                                    onClick={()=>
-                                                        navigate(`/company-master/comapny-list/view_comapny/${item?.id}`)
+                                                <Tooltip label="View Company Details" hasArrow>
+                                                    <IconButton
+                                                        icon={<FaEye />}
+                                                        size="md"
+                                                        variant="ghost"
+                                                        color="blue.600"
+                                                        _hover={{ bg: "blue.50" }}
+                                                        aria-label="view Company"
+                                                        onClick={() =>
+                                                            navigate(`/company-master/comapny-list/view_comapny/${item?.id}`)
 
-                                                    }     
-                                                />
+                                                        }
+                                                    />
                                                 </Tooltip>
                                                 <Tooltip label="Edit comapny" hasArrow>
-                                                <IconButton
-                                                    icon={<FiEdit2 />}
-                                                    size="sm"
-                                                    variant="ghost"
-                                                    color="blue.600"
-                                                    _hover={{ bg: "blue.50" }}
-                                                    aria-label="Edit"
-                                                    onClick={() =>
-                                                        navigate(`/company-master/comapny-list/edit/${item?.id}`)
-                                                    }
-                                                />
-                                             </Tooltip>
-                                         <Tooltip label="Delete Comapny" hasArrow>
-                                                <IconButton
-                                                    icon={<FiTrash2 />}
-                                                    size="sm"
-                                                    variant="ghost"
-                                                    color="red.600"
-                                                    _hover={{ bg: "red.50" }}
-                                                    aria-label="Delete"
-                                                    onClick={() => handleDelete(item?.id)}
-                                                />
+                                                    <IconButton
+                                                        icon={<FiEdit2 />}
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        color="blue.600"
+                                                        _hover={{ bg: "blue.50" }}
+                                                        aria-label="Edit"
+                                                        onClick={() =>
+                                                            navigate(`/company-master/comapny-list/edit/${item?.id}`)
+                                                        }
+                                                    />
+                                                </Tooltip>
+                                                <Tooltip label="Delete Comapny" hasArrow>
+                                                    <IconButton
+                                                        icon={<FiTrash2 />}
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        color="red.600"
+                                                        _hover={{ bg: "red.50" }}
+                                                        aria-label="Delete"
+                                                        onClick={() => handleDelete(item?.id)}
+                                                    />
                                                 </Tooltip>
                                             </Flex>
                                         </Td>
@@ -355,55 +302,60 @@ const ComapnyList = () => {
                 </Box>
                 <Pagination
                     page={page}
-                    setPage={setPage}
                     limit={limit}
-                    setLimit={setLimit}
                     totalItems={totalItems}
                     totalPages={totalPages}
+                    onPageChange={(newPage) => {
+                        setPage(newPage);
+                    }}
+                    onLimitChange={(newLimit) => {
+                        setPage(1);
+                        setLimit(newLimit);
+                    }}
                 />
             </Box>
 
 
-             <Modal isOpen={isImageOpen} onClose={onImageClose} size="xl" isCentered>
-        <ModalOverlay />
-        <ModalContent bg="transparent" boxShadow="none">
-          <ModalBody p={0}>
-            <Box
-              position="relative"
-              borderRadius="xl"
-              overflow="hidden"
-              maxH="80vh"
-              maxW="500px"
-              mx="auto"
-            >
-              <IconButton
-                icon={<CloseIcon />}
-                position="absolute"
-                top="10px"
-                right="10px"
-                zIndex="2"
-                size="sm"
-                borderRadius="full"
-                bg="blackAlpha.600"
-                color="white"
-                _hover={{ bg: "blackAlpha.800" }}
-                onClick={onImageClose}
-                aria-label="Close"
-              />
+            <Modal isOpen={isImageOpen} onClose={onImageClose} size="xl" isCentered>
+                <ModalOverlay />
+                <ModalContent bg="transparent" boxShadow="none">
+                    <ModalBody p={0}>
+                        <Box
+                            position="relative"
+                            borderRadius="xl"
+                            overflow="hidden"
+                            maxH="80vh"
+                            maxW="500px"
+                            mx="auto"
+                        >
+                            <IconButton
+                                icon={<CloseIcon />}
+                                position="absolute"
+                                top="10px"
+                                right="10px"
+                                zIndex="2"
+                                size="sm"
+                                borderRadius="full"
+                                bg="blackAlpha.600"
+                                color="white"
+                                _hover={{ bg: "blackAlpha.800" }}
+                                onClick={onImageClose}
+                                aria-label="Close"
+                            />
 
-              <Image
-                src={selectedImage}
-                alt="Profile"
-                w="100%"
-                h="100%"
-                maxH="80vh"
-                objectFit="contain"
-                borderRadius="xl"
-              />
-            </Box>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+                            <Image
+                                src={selectedImage}
+                                alt="Profile"
+                                w="100%"
+                                h="100%"
+                                maxH="80vh"
+                                objectFit="contain"
+                                borderRadius="xl"
+                            />
+                        </Box>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </>
     );
 };

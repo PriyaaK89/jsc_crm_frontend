@@ -104,9 +104,7 @@ const EmpCard = () => {
   }, [summaryFilter]);
 
   return (
-    <Box
-      bg="white"
-    >
+    <Box bg="white" >
       <Heading size="md" mb={2}>
         Employee Attendance Summary Report
       </Heading>

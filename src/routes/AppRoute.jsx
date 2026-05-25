@@ -92,6 +92,7 @@ import EditVoucherLayout from "../components/layout/AccountingMasterLayout/EditV
 import ActivateVoucherLayout from "../components/layout/MiscActions/ActivateVoucherLayout";
 import MaterialManufacturingLayout from "../components/layout/InventoryMaster/MatrialManufacturingLayout";
 import StockTransferLayout from "../components/layout/InventoryMaster/StockTransferLayout";
+import EmpMonthlySalaryLayout from "../components/layout/Reports/EmpMonthlySalaryLayout";
 
 
 function App() {
@@ -115,6 +116,7 @@ function App() {
         />
         <Route path="/upload-documents" element={<UploadEmpDocumentsLayout />} />
          <Route path='/hr-mgmt/emp-salary-report' element={<EmployeeSalaryReportLayout/>}/>
+        
         <Route
           path="/edit-employee-details/:empId"
           element={<EditEmployeePage />}
@@ -225,6 +227,7 @@ function App() {
          <Route path="/report/emp-balance-sheet" element={<EmployeeBalanceSheetLayout/>}/>
          <Route path="/report/interest-report" element={<InterestReportLayout/>}/>
          <Route path='/report/emp-salary-report' element={<EmployeeSalaryReportLayout/>}/>
+          <Route path="/report/emp-monthly-salary-report" element={<EmpMonthlySalaryLayout/>}/>
          <Route path="/report/product-report" element={<ProductReportLayout/>}/>
          <Route path="/report/item-stock-report" element={<ItemStockReportLayout/>}/>
          <Route path="/report/emp-visit-report" element={<EmployeeVisitReportLayout/>}/>

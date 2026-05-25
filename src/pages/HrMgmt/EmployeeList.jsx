@@ -523,14 +523,19 @@ const EmployeeList = () => {
           )}
         </Box>
 
-        <Pagination
-          page={page}
-          setPage={setPage}
-          limit={limit}
-          setLimit={setLimit}
-          totalItems={totalItems}
-          totalPages={totalPages}
-        />
+          <Pagination
+              page={page}
+              limit={limit}
+              totalItems={totalItems}
+              totalPages={totalPages}
+              onPageChange={(newPage) => {
+                setPage(newPage);
+              }}
+              onLimitChange={(newLimit) => {
+                setPage(1);
+                setLimit(newLimit);
+              }}
+            />
       </Box>
 
       <Modal isOpen={isImageOpen} onClose={onImageClose} size="xl" isCentered>

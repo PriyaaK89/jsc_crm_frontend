@@ -137,11 +137,9 @@ const navigate = useNavigate();
             >
               <GoHomeFill color="#5570F1" />
             </BreadcrumbLink>
-
           </BreadcrumbItem>
 
           <BreadcrumbItem>
-
             <BreadcrumbLink
               isCurrentPage
               color="#8B8D97"
@@ -149,11 +147,8 @@ const navigate = useNavigate();
             >
               View Godown
             </BreadcrumbLink>
-
           </BreadcrumbItem>
-
         </Breadcrumb>
-
       </HStack>
 
 

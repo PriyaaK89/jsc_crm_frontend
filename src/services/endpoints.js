@@ -165,6 +165,14 @@ export const API_ENDPOINTS = {
 
   GET_MONTHLY_SALARY_REPORT: "get-monthly-salary",
   GET_SALARY_MONTHS: "salary-months",
+  REASSIGN_LEDGER: "reassign-ledger",
+
+  GET_ASSIGNED_RETAILER_LIST: "getRetailerlist",
+  CREATE_RETAILER: "create-retailer",
+  GET_RETAILER_LIST: "get-retailer-list",
+  GET_RETAILER_BY_ID: "getRetailerdetails",
+  UPDATE_RETAILER: "update-retailer",
+  ASSIGN_RETAILER_TO_EMPLOYEE: "assign-retailer",
   
 };
 // 

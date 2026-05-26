@@ -1204,7 +1204,7 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
         <Button
           bg="#237086" fontWeight="500"
           fontSize="14px" color="white"
-          _hover={{ bg: "#1B5A6B" }}
+         
           px={8} borderRadius="12px"
           onClick={handleSubmit}
           isLoading={loading}
@@ -1212,7 +1212,7 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
           boxShadow="md"
           _hover={{
             transform: "translateY(-2px)",
-            boxShadow: "lg",
+            boxShadow: "lg",bg: "#1B5A6B"
           }}
           transition="0.2s"
         >

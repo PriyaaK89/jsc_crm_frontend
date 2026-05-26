@@ -39,6 +39,8 @@ import { MdUploadFile } from "react-icons/md";
 import { FaKey } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa";
 import { RxComponent1 } from "react-icons/rx";
+import { IoCreate } from "react-icons/io5";
+import { IoMdPersonAdd } from "react-icons/io";
 
 const Newsidebar = () => {
   const location = useLocation();
@@ -229,6 +231,8 @@ const Newsidebar = () => {
         label:"Misc",key:"misc",icon:MdAttractions ,
          children:[
           {label:"Activate/Deactivate Voucher",path:"/misc/voucher-action",icon:FaMoneyBill  },      
+          {label:"Define Retailer",path:"/misc/create-retailer",icon:IoMdPersonAdd   },      
+          {label:"View Retailer",path:"/misc/view-retailers",icon:IoCreate  },      
          ]
       },
       {

@@ -151,7 +151,7 @@ const EditSubteamModel = ({ isEditModelOpen, onEditModelClose, getSubteamsList, 
           <ModalHeader p={0}>
             <VStack spacing={2} align="start" >
               <Box>
-                <Text fontSize="18px" fontWeight="500" color="gray.700" > Edit Sub Team </Text>
+                <Text fontSize="15px" fontWeight="600" color="gray.700" > Edit Sub Team </Text>
               </Box>
             </VStack>
           </ModalHeader>

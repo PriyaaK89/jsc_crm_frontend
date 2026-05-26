@@ -4,7 +4,7 @@ import Topbar from "../Topbar";
 import MobileTopbar from "../MobileTopbar";
 import { Flex,Box } from '@chakra-ui/react';
 import NotificationBtn from '../../NotificationBtn/NotificationBtn';
-import EditLedger from '../../../pages/HrMgmt/AccountingMaster/EditLedger';
+import EditLedgerAssignment from '../../../pages/HrMgmt/AccountingMaster/EditLedgerAssignment';
 
 function EditLedgerAssignmentLayout() {
   return (
@@ -26,7 +26,7 @@ function EditLedgerAssignmentLayout() {
           pb={6}
         >
           <NotificationBtn/>
-          <EditLedger/>
+          <EditLedgerAssignment/>
         </Box>
       </Box>
   )

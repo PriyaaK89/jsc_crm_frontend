@@ -93,6 +93,8 @@ import ActivateVoucherLayout from "../components/layout/MiscActions/ActivateVouc
 import MaterialManufacturingLayout from "../components/layout/InventoryMaster/MatrialManufacturingLayout";
 import StockTransferLayout from "../components/layout/InventoryMaster/StockTransferLayout";
 import EmpMonthlySalaryLayout from "../components/layout/Reports/EmpMonthlySalaryLayout";
+import CreateRetailerLayout from "../components/layout/MiscActions/CreateRetailerLayout";
+import ViewRetailerLayout from "../components/layout/MiscActions/ViewRetailersLayout";
 
 
 function App() {
@@ -148,7 +150,7 @@ function App() {
         <Route path='/accounting-master/create-voucher' element={<CreateVoucherLayout/>}/>
         <Route path='/accounting-master/view-voucher' element={<ViewVoucherLayout/>}/>
         <Route path='/accounting-master/retail-assignment' element={<RetailerAssignmentLayout/>}/>
-        <Route path="/accounting-master/edit-ledger/:id" element={<EditLedgerAssignmentLayout/>}/>
+        <Route path="/accounting-master/edit-ledger-assignment" element={<EditLedgerAssignmentLayout/>}/>
         <Route path="/accounting-master/edit-voucher/:id" element={<EditVoucherLayout/>}/>
 
 
@@ -246,6 +248,8 @@ function App() {
            <Route path="/report/emp-kyc-report" element={<KYCReport/>}/>
 
            <Route path="/misc/voucher-action" element={<ActivateVoucherLayout/>}/>
+           <Route path="/misc/create-retailer" element={<CreateRetailerLayout/>}/>
+           <Route path="/misc/view-retailers" element={<ViewRetailerLayout/>}/>
 
       </Routes>
     </Router>

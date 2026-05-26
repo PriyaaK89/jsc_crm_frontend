@@ -413,67 +413,105 @@ const EmpMonthlySalaryTable = () => {
 
                         ) : (
 
-                            salary.map((item) => (
-                                <Tr key={item.id}>
-                                    <Td> {formatDate(item.date)} </Td>
-                                    <Td> <Badge colorScheme={getAttendanceColor(item.attendance_type)}> {item.attendance_type} </Badge> </Td>
-                                    <Td> {item.working_hours || "-"} </Td>
-                                    <Td> ₹ {item.salary} </Td>
-                                    <Td> {item.total_reading} </Td>
-                                    <Td> ₹ {item.ta} </Td>
-                                    <Td> ₹ {item.da} </Td>
-                                    <Td>
+                            <>
+                                {salary.map((item) => (
+                                    <Tr key={item.id}>
+                                        <Td>{formatDate(item.date)}</Td>
 
-                                        {Number(item.hotel_expense) > 0 &&
-                                            item.hotel_bill ? (
-                                            <Text color="blue.500" cursor="pointer" textDecoration="underline"
-                                                onClick={() =>
-                                                    openBillModal(item.hotel_bill, "Hotel Bill")}>
-                                                ₹ {item.hotel_expense}
-                                            </Text>
+                                        <Td>
+                                            <Badge colorScheme={getAttendanceColor(item.attendance_type)}>
+                                                {item.attendance_type}
+                                            </Badge>
+                                        </Td>
 
-                                        ) : (<>₹ {item.hotel_expense}</>)
-                                        }
+                                        <Td>{item.working_hours || "-"}</Td>
 
-                                    </Td>
-                                    <Td>
-                                        {Number(item.other_expense) > 0 &&
-                                            item.other_bill ? (
-                                            <Text color="blue.500" cursor="pointer" textDecoration="underline"
-                                                onClick={() => openBillModal(item.other_bill, "Other Expense Bill")} >
-                                                ₹ {item.other_expense}
-                                            </Text>
-                                        ) : (
-                                            <>₹ {item.other_expense}</>
-                                        )}
+                                        <Td>₹ {item.salary}</Td>
 
-                                    </Td>
-                                    <Td>
-                                        {Number(item.bus_train_toll_expense) > 0 &&
-                                            item.bus_train_toll_bill ? (
-                                            <Text
-                                                color="blue.500"
-                                                cursor="pointer"
-                                                textDecoration="underline"
-                                                onClick={() =>
-                                                    openBillModal(
-                                                        item.bus_train_toll_bill,
-                                                        "Bus/Train/Toll Bill"
-                                                    )
-                                                }
-                                            >
-                                                ₹ {item.bus_train_toll_expense}
-                                            </Text>
+                                        <Td>{item.total_reading}</Td>
 
-                                        ) : (
+                                        <Td>₹ {item.ta}</Td>
 
-                                            <>₹ {item.bus_train_toll_expense}</>
+                                        <Td>₹ {item.da}</Td>
 
-                                        )}
+                                        <Td>
+                                            {Number(item.hotel_expense) > 0 &&
+                                                item.hotel_bill ? (
+                                                <Text
+                                                    color="blue.500"
+                                                    cursor="pointer"
+                                                    textDecoration="underline"
+                                                    onClick={() =>
+                                                        openBillModal(
+                                                            item.hotel_bill,
+                                                            "Hotel Bill"
+                                                        )
+                                                    }
+                                                >
+                                                    ₹ {item.hotel_expense}
+                                                </Text>
+                                            ) : (
+                                                <>₹ {item.hotel_expense}</>
+                                            )}
+                                        </Td>
 
-                                    </Td>
+                                        <Td>
+                                            {Number(item.other_expense) > 0 &&
+                                                item.other_bill ? (
+                                                <Text
+                                                    color="blue.500"
+                                                    cursor="pointer"
+                                                    textDecoration="underline"
+                                                    onClick={() =>
+                                                        openBillModal(
+                                                            item.other_bill,
+                                                            "Other Expense Bill"
+                                                        )
+                                                    }
+                                                >
+                                                    ₹ {item.other_expense}
+                                                </Text>
+                                            ) : (
+                                                <>₹ {item.other_expense}</>
+                                            )}
+                                        </Td>
+
+                                        <Td>
+                                            {Number(item.bus_train_toll_expense) > 0 &&
+                                                item.bus_train_toll_bill ? (
+                                                <Text
+                                                    color="blue.500"
+                                                    cursor="pointer"
+                                                    textDecoration="underline"
+                                                    onClick={() =>
+                                                        openBillModal(
+                                                            item.bus_train_toll_bill,
+                                                            "Bus/Train/Toll Bill"
+                                                        )
+                                                    }
+                                                >
+                                                    ₹ {item.bus_train_toll_expense}
+                                                </Text>
+                                            ) : (
+                                                <>₹ {item.bus_train_toll_expense}</>
+                                            )}
+                                        </Td>
+                                    </Tr>
+                                ))}
+
+                                {/* TOTAL ROW */}
+
+                                <Tr bg="gray.100" fontWeight="bold">
+                                    <Td colSpan={3} textAlign="center"> TOTAL </Td>
+                                    <Td>₹ {totals.salary || 0}</Td>
+                                    <Td>-</Td>
+                                    <Td>₹ {totals.ta || 0}</Td>
+                                    <Td>₹ {totals.da || 0}</Td>
+                                    <Td>₹ {totals.hotel || 0}</Td>
+                                    <Td>₹ {totals.other || 0}</Td>
+                                    <Td>₹ {totals.toll || 0}</Td>
                                 </Tr>
-                            ))
+                            </>
                         )}
                     </Tbody>
                 </Table>
@@ -509,15 +547,11 @@ const EmpMonthlySalaryTable = () => {
 
                         Page{" "}
                         <b>
-                            {
-                                pagination.current_page
-                            }
+                            { pagination.current_page }
                         </b>{" "}
                         of{" "}
                         <b>
-                            {
-                                pagination.total_pages
-                            }
+                            { pagination.total_pages }
                         </b>
 
                     </Text>

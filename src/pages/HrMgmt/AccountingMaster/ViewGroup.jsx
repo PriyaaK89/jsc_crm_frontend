@@ -99,10 +99,7 @@ const ViewGroup = () => {
 
   return (
     <Box
-      w="100%"
-      bg="white"
-      p={6}
-      borderRadius="lg"
+     bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 4 }} borderRadius="lg" boxShadow="md"
     >
 
       {/* BREADCRUMB */}
@@ -243,27 +240,27 @@ const ViewGroup = () => {
 
                   <Td>
                     <Flex gap="8px">
-                      <Tooltip label="Edit Stock Category" hasArrow>
+                      <Tooltip label="Edit Group" hasArrow>
                         <IconButton
                           icon={<FiEdit2 />}
                           size="md"
                           variant="ghost"
                           color="blue.600"
                           _hover={{ bg: "blue.50" }}
-                          aria-label="Edit Stock Group"
+                          aria-label="Edit Group"
                           onClick={() =>
                             navigate(`/accounting-master/edit-group/${group.id}`)
                           }/>
                       </Tooltip>
 
-                      <Tooltip label="Delete Stock Category" hasArrow>
+                      <Tooltip label="Delete Group" hasArrow>
                         <IconButton
                           icon={<FiTrash2 />}
                           size="md"
                           variant="ghost"
                           color="red.600"
                           _hover={{ bg: "red.50" }}
-                          aria-label="Delete Stock Group"
+                          aria-label="Delete Group"
                           onClick={() => handleDelete(group?.id)}
                         />
                       </Tooltip>

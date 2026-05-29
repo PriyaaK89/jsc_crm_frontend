@@ -137,9 +137,7 @@ const Topbar = ({ profileImage }) => {
                 overflow="hidden"
                 boxShadow="xl"
               >
-                <PopoverArrow />
-
-                {/*  Yaha component use karo */}
+                <PopoverArrow />        
                 <NotofictionBarModel setUnreadCount={setUnreadCount} />
 
               </PopoverContent>
@@ -205,9 +203,6 @@ const Topbar = ({ profileImage }) => {
           </Portal>
         </Popover>
       </Flex>
-
-      {/* ✅ Notification Modal Call */}
-      {/* <NotofictionBarModel isOpen={isOpen} onClose={onClose} /> */}
     </>
   );
 };

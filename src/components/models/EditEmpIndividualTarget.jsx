@@ -226,7 +226,7 @@ const EditEmpIndividualTargetModal = ({
                                 </FormControl>
 
                                 <FormControl>
-                                    <FormLabel fontSize="14px" fontWeight="600" color="gray.700" fontSize="14px" color="gray.600" > Duration Type </FormLabel>
+                                    <FormLabel fontSize="14px" fontWeight="600" color="gray.700"> Duration Type </FormLabel>
                                     <Select name="duration_type" value={empTargetInfo?.duration_type} onChange={handleChange} bg="gray.50"  fontSize="14px" color="gray.600" >
                                         <option value=""> Select Duration </option>
                                         <option value="MONTHLY"> MONTHLY </option>

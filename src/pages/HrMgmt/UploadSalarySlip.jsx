@@ -15,14 +15,14 @@ const UploadSalarySlip = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({ employeeId: "", employeeName: "", month: "",});
   const [file, setFile] = useState(null);
-  const labelStyles = { fontSize: "12px", color: "#686868", marginBottom: "3px", };
+  const labelStyles = { fontSize: "12px", color: "#494949", marginBottom: "3px", };
 
-  // 🔹 Handle File
+  //  Handle File
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
 
-  // 🔹 Handle Change
+  //  Handle Change
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -46,7 +46,7 @@ const UploadSalarySlip = () => {
   const handleSubmit = async () => {
   try {
 
-    // 🔹 Validation
+    //  Validation
     if (!formData.employeeId || !formData.month || !file) {
       toast({
         title: "All fields are required",
@@ -59,14 +59,14 @@ const UploadSalarySlip = () => {
 
     setIsSubmitting(true);
 
-    // 🔹 FormData
+    //  FormData
     const data = new FormData();
     data.append("emp_id", formData.employeeId);
     data.append("emp_name", formData.employeeName);
     data.append("month", formData.month);
     data.append("salary_slip", file);
 
-    // 🔹 API Call
+    //  API Call
     const response = await API.post(
       API_ENDPOINTS.upload_salary_slip,
       data,
@@ -77,7 +77,7 @@ const UploadSalarySlip = () => {
       }
     );
 
-    // 🔹 Success Toast
+    //  Success Toast
     if (response?.status === 201) {
       toast({
         title: "Salary slip uploaded successfully",
@@ -86,7 +86,7 @@ const UploadSalarySlip = () => {
         isClosable: true,
       });
 
-      // 🔹 Reset Form
+      //  Reset Form
       setFormData({
         employeeId: "",
         employeeName: "",
@@ -98,7 +98,7 @@ const UploadSalarySlip = () => {
 
   } catch (error) {
 
-    // 🔹 Duplicate Month Error
+    //  Duplicate Month Error
     if (error.response?.status === 409) {
       toast({
         title: "Salary slip already uploaded for this month",

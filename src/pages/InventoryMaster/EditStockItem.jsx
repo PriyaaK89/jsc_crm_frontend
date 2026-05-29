@@ -82,7 +82,7 @@ const EditStockItem = () => {
       integrated_tax: "",
       central_tax: "",
       state_tax: "",
-      cess: "",
+      // cess: "",
     },
 
     opening_stock: {
@@ -175,8 +175,8 @@ const EditStockItem = () => {
             state_tax:
               data?.gst_details?.state_tax || "",
 
-            cess:
-              data?.gst_details?.cess || "",
+            // cess:
+            //   data?.gst_details?.cess || "",
           },
 
           opening_stock: {
@@ -289,18 +289,57 @@ const EditStockItem = () => {
     }));
   };
 
+  // const handleNestedChange = (section, e) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [section]: {
+  //       ...prev[section],
+  //       [name]: value,
+  //     },
+  //   }));
+  // };
+
   const handleNestedChange = (section, e) => {
 
-    const { name, value } = e.target;
+  const { name, value } = e.target;
 
-    setFormData((prev) => ({
+  setFormData((prev) => {
+
+    const updatedSection = {
+      ...prev[section],
+      [name]: value,
+    };
+
+    // Auto calculate amount
+    if (
+      section === "opening_stock" &&
+      (name === "quantity" || name === "rate")
+    ) {
+
+      const quantity =
+        Number(
+          name === "quantity"
+            ? value
+            : updatedSection.quantity
+        ) || 0;
+
+      const rate =
+        Number(
+          name === "rate"
+            ? value
+            : updatedSection.rate
+        ) || 0;
+
+      updatedSection.amount = quantity * rate;
+    }
+
+    return {
       ...prev,
-      [section]: {
-        ...prev[section],
-        [name]: value,
-      },
-    }));
-  };
+      [section]: updatedSection,
+    };
+  });
+};
 
   // ========================= UPDATE STOCK ITEM =========================
 
@@ -1073,23 +1112,11 @@ const EditStockItem = () => {
 
               </FormControl>
 
-              <FormControl>
-
-                <FormLabel>
-                  Cess
-                </FormLabel>
-
-                <Input
-                  type="number"
-                  placeholder="Enter cess"
-                  name="cess"
-                  value={formData.gst_details.cess}
-                  onChange={(e) =>
-                    handleNestedChange("gst_details", e)
-                  }
-                />
-
-              </FormControl>
+              {/* <FormControl>
+                <FormLabel> Cess </FormLabel>
+                <Input type="number" placeholder="Enter cess" name="cess"
+                  value={formData.gst_details.cess} onChange={(e) => handleNestedChange("gst_details", e) } />
+              </FormControl> */}
 
             </Grid>
 
@@ -1242,6 +1269,16 @@ const EditStockItem = () => {
                 onChange={(e) =>
                   handleNestedChange("opening_stock", e)
                 }
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Amount</FormLabel>
+              <Input 
+              type="number"
+              name="amount"
+              value={formData.opening_stock.amount}
+              readOnly
               />
             </FormControl>
 

@@ -24,10 +24,8 @@ import ViewGroupLayout from '../components/layout/AccountingMasterLayout/ViewGro
 import CreateLedgerLayout from '../components/layout/AccountingMasterLayout/CreateLedgerLayout';
 import ONBordingdistributoragreement from '../components/layout/AccountingMasterLayout/ONBordingdistributoragreement';
 import ViewLedgerLayout from "../components/layout/AccountingMasterLayout/ViewLedgerLayout";
-import DeleteLedgerLayout from '../components/layout/AccountingMasterLayout/DeleteLedgerLayout';
 import CreateVoucherLayout from '../components/layout/AccountingMasterLayout/CreateVoucherLayout';
 import ViewVoucherLayout from '../components/layout/AccountingMasterLayout/ViewVoucherLayout';
-import DeleteVoucherLayout from '../components/layout/AccountingMasterLayout/DeleteVoucherLayout';
 import EditLedgerAssignmentLayout from '../components/layout/AccountingMasterLayout/EditLedgerAssignmentLayout';
 import RetailerAssignmentLayout from '../components/layout/AccountingMasterLayout/RetailerAssignmentLayout';
 import CreateStockGroupLayout from "../components/layout/CreateStockGroupLayout";
@@ -90,6 +88,13 @@ import ViewEmployeeTargets from "../pages/BusinessDevelopment/ViewEmployeeTarget
 import CreateStockItemLayout from "../components/layout/InventoryMaster/CreateStockItemLayout";
 import ViewStockItemListLayout from "../components/layout/InventoryMaster/ViewStockItemListLayout";
 import EditStockItemListLayout from "../components/layout/InventoryMaster/EditStockItemListLayout";
+import EditVoucherLayout from "../components/layout/AccountingMasterLayout/EditVoucherLayout";
+import ActivateVoucherLayout from "../components/layout/MiscActions/ActivateVoucherLayout";
+import MaterialManufacturingLayout from "../components/layout/InventoryMaster/MatrialManufacturingLayout";
+import StockTransferLayout from "../components/layout/InventoryMaster/StockTransferLayout";
+import EmpMonthlySalaryLayout from "../components/layout/Reports/EmpMonthlySalaryLayout";
+import CreateRetailerLayout from "../components/layout/MiscActions/CreateRetailerLayout";
+import ViewRetailerLayout from "../components/layout/MiscActions/ViewRetailersLayout";
 
 
 function App() {
@@ -113,6 +118,7 @@ function App() {
         />
         <Route path="/upload-documents" element={<UploadEmpDocumentsLayout />} />
          <Route path='/hr-mgmt/emp-salary-report' element={<EmployeeSalaryReportLayout/>}/>
+        
         <Route
           path="/edit-employee-details/:empId"
           element={<EditEmployeePage />}
@@ -141,12 +147,14 @@ function App() {
         <Route path='/distributor/distributorlist/view-distributor/:id' element={<ViewDistributorLayout/>}/>
         <Route path='/distributor/onboarding-ledger' element={<ONBordingdistributoragreement/>}/>
         <Route path='/accounting-master/view-ledger' element={<ViewLedgerLayout/>}/>
-        <Route path='/accounting-master/delete-ledger' element={<DeleteLedgerLayout/>}/>
         <Route path='/accounting-master/create-voucher' element={<CreateVoucherLayout/>}/>
         <Route path='/accounting-master/view-voucher' element={<ViewVoucherLayout/>}/>
-        <Route path='/accounting-master/delete-voucher' element={<DeleteVoucherLayout/>}/>
-        <Route path='/accounting-master/edit-ledger-assignment' element={<EditLedgerAssignmentLayout/>}/>
         <Route path='/accounting-master/retail-assignment' element={<RetailerAssignmentLayout/>}/>
+        <Route path="/accounting-master/edit-ledger-assignment" element={<EditLedgerAssignmentLayout/>}/>
+        <Route path="/accounting-master/edit-voucher/:id" element={<EditVoucherLayout/>}/>
+
+
+
         {/* print mgmt */}
         <Route path='/print/mgmt/shipping_lable_printer' element={<PrintShippingLablePrinterLayout/>}/>
         <Route path='/print/mgmt/truthful_labelprint' element={<PrintTruthfulLablePrintLayout/>}/>
@@ -193,6 +201,8 @@ function App() {
         <Route path="/inventory/create-stock-item" element={<CreateStockItemLayout/>}/>
         <Route path="/inventory/view-stock-item" element={<ViewStockItemListLayout/>}/>
         <Route path="/inventory/edit-stock-item/:id" element={<EditStockItemListLayout/>}/>
+        <Route path="/inventory/material-manufacturing" element={<MaterialManufacturingLayout/>}/>
+        <Route path="/inventory/stock-transfer" element={<StockTransferLayout/>}/>
         
 
 
@@ -219,6 +229,7 @@ function App() {
          <Route path="/report/emp-balance-sheet" element={<EmployeeBalanceSheetLayout/>}/>
          <Route path="/report/interest-report" element={<InterestReportLayout/>}/>
          <Route path='/report/emp-salary-report' element={<EmployeeSalaryReportLayout/>}/>
+          <Route path="/report/emp-monthly-salary-report" element={<EmpMonthlySalaryLayout/>}/>
          <Route path="/report/product-report" element={<ProductReportLayout/>}/>
          <Route path="/report/item-stock-report" element={<ItemStockReportLayout/>}/>
          <Route path="/report/emp-visit-report" element={<EmployeeVisitReportLayout/>}/>
@@ -235,6 +246,10 @@ function App() {
            <Route path="/report/track-employee" element={<TrackEmpLayout />} />
            <Route path="/hr-mgmt/upload-employee-expenses" element={<UploadEmployeeExpenses/>} />
            <Route path="/report/emp-kyc-report" element={<KYCReport/>}/>
+
+           <Route path="/misc/voucher-action" element={<ActivateVoucherLayout/>}/>
+           <Route path="/misc/create-retailer" element={<CreateRetailerLayout/>}/>
+           <Route path="/misc/view-retailers" element={<ViewRetailerLayout/>}/>
 
       </Routes>
     </Router>

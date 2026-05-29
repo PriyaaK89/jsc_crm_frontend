@@ -109,11 +109,13 @@ export const API_ENDPOINTS = {
   delete_team: "delete-team",
   edit_suTeam: "update-subteam",
   delete_subTeam: "delete-subteam",
+
   create_godown: "create-godown",
   godown_list: "getGodownList",
   view_godown_by_id: "getGodownDetails",
   update_godown: "update-godown",
   delete_godown: "delete-godown",
+
   get_unique_quantity_codes: "get-unitOfMeasure-list",
   create_unit_of_measure: "create-unitOfMeasure",
   getUnitList: "getAllUnits",
@@ -132,6 +134,45 @@ export const API_ENDPOINTS = {
   get_account_group_list: "account-group-list",
   get_account_by_id: "account-group-details",
   edit_account_group: "update-account-group",
-  delete_account_group: "delete-account-group"
+  delete_account_group: "delete-account-group",
+
+  create_ledger: "create-ledger",
+  get_ledger: "get-ledgers",
+  get_ledger_by_id: "getLedgerDetailsById",
+  update_ledger: "update_ledger",
+  delete_ledger: "delete_ledger",
+
+  CREATE_VOUCHER: "create_voucher",
+  GET_VOUCHER_LIST: "get_voucher_list",
+  GET_VOUCHER_DETAILS_BY_ID: "get_voucher_details",
+  UPDATE_VOUCHER: "update_voucher",
+  DELETE_VOUCHER: "delete_voucher",
+
+  GET_VOUCHER_TYPE_DROPDOWN: "voucher-type-dropdown",
+  GET_VOUCHER_LIST_BY_TYPE: "voucher-by-type",
+  UPDATE_VOUCHER_STATUS: "activate-voucher",
+
+  GET_STOCK_ITEM_DROPDOWN: "get-stock-items/dropdown",
+  CREATE_MANUFACTURING_MATERIAL: "create-material-mfg",
+  GET_LEDGER_DROPDOWN: "ledger-dropdown",
+  GET_BATCH_BY_STOCK_ITEM_ID: "/get-stock-item/batches",
+  GET_AVAILABLE_QTY_OF_STOCK: "get-available-stock",
+  GET_MATERIAL_MFG_REPORT: "get-manufacturing-report",
+
+  CREATE_STOCK_TRANSFER: "create-stock-transfer",
+  GET_STOCK_TRANSFER_REPORT: "get-stock-transfer-report",
+  GET_EMPLOYEE_VISIT_REPORT_SUMMARY: "get-visit-report-summary",
+
+  GET_MONTHLY_SALARY_REPORT: "get-monthly-salary",
+  GET_SALARY_MONTHS: "salary-months",
+  REASSIGN_LEDGER: "reassign-ledger",
+
+  GET_ASSIGNED_RETAILER_LIST: "getRetailerlist",
+  CREATE_RETAILER: "create-retailer",
+  GET_RETAILER_LIST: "get-retailer-list",
+  GET_RETAILER_BY_ID: "getRetailerdetails",
+  UPDATE_RETAILER: "update-retailer",
+  ASSIGN_RETAILER_TO_EMPLOYEE: "assign-retailer",
+  
 };
 // 

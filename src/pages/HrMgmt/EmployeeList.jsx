@@ -4,6 +4,7 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Avatar,
+  Badge,
   Box,
   Breadcrumb,
   BreadcrumbItem,
@@ -34,7 +35,7 @@ import {
 import { GoHomeFill } from "react-icons/go";
 import { FiEdit2, FiTrash2, FiSearch, FiFileText } from "react-icons/fi";
 import { FaEye } from "react-icons/fa";
-import { CloseIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon, CloseIcon, WarningIcon } from "@chakra-ui/icons";
 import sort_icon from "../../assets/sort.svg";
 
 import ViewUploadedDocument from "./DocUpload/ViewDocuments";
@@ -85,6 +86,7 @@ const EmployeeList = () => {
     "Profile Image",
     "Name",
     "Email",
+    "Password",
     "Department",
     "Role",
     "Contact",
@@ -236,8 +238,7 @@ const EmployeeList = () => {
         pt={{ base: 2, md: 3 }}
         px={{ base: 1, md: 4 }}
         borderRadius="15px 15px 0px 0px"
-        width="100%"
-      >
+        width="100%">
         <HStack justifyContent="space-between">
           <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
             <BreadcrumbItem>
@@ -264,14 +265,7 @@ const EmployeeList = () => {
             <InputGroup justifyContent="end">
               <Box
                 display={{ base: "none", md: "none", lg: "block" }}
-                style={{
-                  color: "#8C8C91",
-                  position: "absolute",
-                  top: "10px",
-                  right: "16px",
-                  zIndex: 1,
-                }}
-              >
+                style={{ color: "#8C8C91", position: "absolute", top: "10px", right: "16px", zIndex: 1,}}>
                 <FiSearch fontSize="20px" />
               </Box>
 
@@ -287,15 +281,9 @@ const EmployeeList = () => {
             </InputGroup>
           </Box>
         </Flex>
-       
 
-        <Box
-          bg="white"
-          borderRadius="md"
-          boxShadow="sm"
-          border="1px solid #e5e5e5"
-          width="100%"
-        >
+
+        <Box bg="white" borderRadius="md" boxShadow="sm" border="1px solid #e5e5e5" width="100%" >
           {loading ? (
             <Flex justify="center" align="center" py={10}>
               <Spinner size="lg" />
@@ -320,7 +308,7 @@ const EmployeeList = () => {
                 variant="striped"
                 colorScheme="gray"
                 size="sm"
-                minW="2950px"
+                minW="2850px"
                 className="productsTable"
                 tableLayout="fixed"
               >
@@ -336,14 +324,7 @@ const EmployeeList = () => {
                         width={getColumnWidth(header)}
                       >
                         <Flex alignItems="center" gap="7px">
-                          <Text
-                            fontSize="14px"
-                            color="#2C2D33"
-                            fontWeight="400"
-                            textTransform="capitalize"
-                            fontFamily="InterRegular"
-                            overflow="hidden"
-                          >
+                          <Text fontSize="14px" color="#2C2D33" fontWeight="400" textTransform="capitalize" fontFamily="InterRegular" overflow="hidden" >
                             {header}
                           </Text>
                           <Img src={sort_icon} alt="sort_icon" />
@@ -375,6 +356,23 @@ const EmployeeList = () => {
 
                         <Td fontWeight="medium">{emp?.name || "-"}</Td>
                         <Td>{emp?.email || "-"}</Td>
+                        <Td>
+                          {emp.password_set ? (
+                            <Badge colorScheme="green" px={3} py={1} borderRadius="full" >
+                              <HStack spacing={1}>
+                                <CheckCircleIcon />
+                                <Text fontSize="10px">Password Created</Text>
+                              </HStack>
+                            </Badge>
+                          ) : (
+                            <Badge colorScheme="orange" px={3} py={1} borderRadius="full">
+                              <HStack spacing={1}>
+                                <WarningIcon />
+                                <Text fontSize="10px">Pending Setup</Text>
+                              </HStack>
+                            </Badge>
+                          )}
+                        </Td>
                         <Td>{emp?.department_name || "-"}</Td>
                         <Td>{emp?.job_role_name || "-"}</Td>
                         <Td>{emp?.contact_no || "-"}</Td>
@@ -390,7 +388,7 @@ const EmployeeList = () => {
                         <Td>{emp?.total_leaves ?? "-"}</Td>
                         <Td>{formatTime(emp?.login_time)}</Td>
                         <Td>{formatTime(emp?.logout_time)}</Td>
-                       {/* <Td>
+                        {/* <Td>
                           {emp?.last_seen
                             ? new Date(emp.last_seen).toLocaleString()
                             : "-"}
@@ -525,14 +523,19 @@ const EmployeeList = () => {
           )}
         </Box>
 
-        <Pagination
-          page={page}
-          setPage={setPage}
-          limit={limit}
-          setLimit={setLimit}
-          totalItems={totalItems}
-          totalPages={totalPages}
-        />
+          <Pagination
+              page={page}
+              limit={limit}
+              totalItems={totalItems}
+              totalPages={totalPages}
+              onPageChange={(newPage) => {
+                setPage(newPage);
+              }}
+              onLimitChange={(newLimit) => {
+                setPage(1);
+                setLimit(newLimit);
+              }}
+            />
       </Box>
 
       <Modal isOpen={isImageOpen} onClose={onImageClose} size="xl" isCentered>

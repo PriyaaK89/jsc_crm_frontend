@@ -6,7 +6,7 @@ import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack,VStack,Heading,
 function CreateLedgerbankconfi() {
      const labelStyles = {
         fontSize: "12px",
-        color: "#686868",
+        color: "#494949",
         marginBottom: "3px",
     };
   return (

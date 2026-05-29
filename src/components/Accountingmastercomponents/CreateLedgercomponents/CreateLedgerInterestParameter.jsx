@@ -87,7 +87,7 @@ const CreateLedgerInterestParameter = () => {
           </FormControl>
         </SimpleGrid>
 
-        {/* 🔥 Dynamic Boxes */}
+        {/*  Dynamic Boxes */}
         {boxes.map((box, index) => (
           <Box key={index} border="1px solid #ccc" mt={5} borderRadius="lg">
             

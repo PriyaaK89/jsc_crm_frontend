@@ -66,75 +66,54 @@ const UploadEmployeeExpensives = () => {
     fetchUsers();
   }, []);
 
-  // const fetchAdminExpense = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await API.get(`${API_ENDPOINTS?.get_uploaded_exp}?page=${page}&limit=${limit}&search=${search}&expense_type=${expenseType}&start_date=${startDate}&end_date=${endDate}`);
-  //     if (response.status === 200) {
-  //       setAdminExpense(response.data.data);
-  //       const pg = response.data;
-  //       setPage(pg.page);
-  //       setLimit(pg.limit);
-  //       setTotalItems(pg.totalItems);
-  //       setTotalPages(pg.total_pages);
-  //     }
-  //   }
-  //   catch (error) {
-  //     console.error(error);
-  //   }
-  //   finally {
-  //     setLoading(false);
-  //   }
-
-  // }
 
   const fetchAdminExpense = async () => {
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    const params = new URLSearchParams();
-    params.append("page", page);
-    params.append("limit", limit);
+    try {
+      const params = new URLSearchParams();
+      params.append("page", page);
+      params.append("limit", limit);
 
-    if (search && search.trim() !== "") {
-      params.append("search", search.trim());
+      if (search && search.trim() !== "") {
+        params.append("search", search.trim());
+      }
+
+      if (expenseType && expenseType !== "") {
+        params.append("expense_type", expenseType);
+      }
+
+      if (startDate && endDate) {
+        params.append("start_date", startDate);
+        params.append("end_date", endDate);
+      }
+
+      const url = `${API_ENDPOINTS?.get_uploaded_exp}?${params.toString()}`;
+
+      const response = await API.get(url);
+
+      if (response.status === 200) {
+        const data = response.data;
+
+        setAdminExpense(data.data);
+        setPage(data.page);
+        setLimit(data.limit);
+        setTotalItems(data.totalItems);
+        setTotalPages(data.total_pages);
+      }
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-
-    if (expenseType && expenseType !== "") {
-      params.append("expense_type", expenseType);
-    }
-
-    if (startDate && endDate) {
-      params.append("start_date", startDate);
-      params.append("end_date", endDate);
-    }
-
-    const url = `${API_ENDPOINTS?.get_uploaded_exp}?${params.toString()}`;
-
-    const response = await API.get(url);
-
-    if (response.status === 200) {
-      const data = response.data;
-
-      setAdminExpense(data.data);
-      setPage(data.page);
-      setLimit(data.limit);
-      setTotalItems(data.totalItems);
-      setTotalPages(data.total_pages);
-    }
-
-  } catch (error) {
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
-useEffect(() => {
-  setPage(1);
-}, [search, expenseType, startDate, endDate]);
-useEffect(() => {
-  fetchAdminExpense();
-}, [page, limit, expenseType, startDate, endDate]);
+  };
+  useEffect(() => {
+    setPage(1);
+  }, [search, expenseType, startDate, endDate]);
+  useEffect(() => {
+    fetchAdminExpense();
+  }, [page, limit, expenseType, startDate, endDate]);
 
   // Handle input change
   const handleChange = (e) => {
@@ -146,14 +125,14 @@ useEffect(() => {
   };
   const tableHeader = ["S.No", "Name", "Hotel", "Bus Train Toll", "Petrol Diesel", "Other", "Action"];
   const tableWidth = {
-  "S.No": "80px",
-  Name: "150px",
-  Hotel: "120px",
-  "Bus Train Toll": "150px",
-  "Petrol Diesel": "150px",
-  Other: "120px",
-  Action: "100px",
-};
+    "S.No": "80px",
+    Name: "150px",
+    Hotel: "120px",
+    "Bus Train Toll": "150px",
+    "Petrol Diesel": "150px",
+    Other: "120px",
+    Action: "100px",
+  };
 
   // Handle submit
   const handleSubmit = async () => {
@@ -262,11 +241,11 @@ useEffect(() => {
               <FormLabel>Hotel Amount</FormLabel>
               <Input
                 type="number"
-                  size="md" borderRadius="md"
+                size="md" borderRadius="md"
                 name="hotel_amount"
                 value={formData.hotel_amount}
                 onChange={handleChange}
-             
+
               />
             </FormControl>
 
@@ -299,7 +278,7 @@ useEffect(() => {
                 name="other_amount"
                 value={formData.other_amount}
                 onChange={handleChange}
-                 size="md" borderRadius="md"
+                size="md" borderRadius="md"
               />
             </FormControl>
 
@@ -317,27 +296,27 @@ useEffect(() => {
 
         {/* heading and  buttons*/}
         <Flex
-          flexDirection={{base: "column", md:"column", lg:"row"}}
-            align={{base:"stretch",md:"stretch",lg:"center"}}
+          flexDirection={{ base: "column", md: "column", lg: "row" }}
+          align={{ base: "stretch", md: "stretch", lg: "center" }}
           mt={10}
           px={6}
           py={4}
           gap={4}
         >
 
-          <Text flexShrink={0} mr={{base: 0, md: 0, lg: 3}} mt={{base: 2, md: 4}} fontWeight="600" bg="#F3F4F6" px={2} borderRadius="md" p={2}>
+          <Text flexShrink={0} mr={{ base: 0, md: 0, lg: 3 }} mt={{ base: 2, md: 4 }} fontWeight="600" bg="#F3F4F6" px={2} borderRadius="md" p={2}>
             Allocate Expense Table
           </Text>
           {/* <Flex> */}
-          <Flex flexDirection={{base:"column", md: "column", lg: "row"}} ml={{base: "0", md: "0", lg:"auto"}} gap={3} alignItems="center">
+          <Flex flexDirection={{ base: "column", md: "column", lg: "row" }} ml={{ base: "0", md: "0", lg: "auto" }} gap={3} alignItems="center">
 
 
             <FormControl>
               <FormLabel>Expense Type</FormLabel>
-              <Select width="100%" size="md"  borderRadius="md" value={expenseType} onChange={(e) => {
+              <Select width="100%" size="md" borderRadius="md" value={expenseType} onChange={(e) => {
                 setExpenseType(e.target.value);
                 setPage(1);
-                
+
               }}  >
                 <option value="HOTEL">Hotel</option>
                 <option value="BUS_TRAIN_TOLL">Bus Train Toll</option>
@@ -346,7 +325,7 @@ useEffect(() => {
 
               </Select>
             </FormControl>
-        
+
             <CustomDatePicker
               label="Start Date"
               name="start"
@@ -358,7 +337,7 @@ useEffect(() => {
             />
             <CustomDatePicker
               label="End Date"
-              name="end"          
+              name="end"
               value={endDate}
               onChange={(date) => {
                 setEndDate(date);
@@ -366,8 +345,8 @@ useEffect(() => {
               }}
             />
 
-            <Box mt={{base:2, md:2}}>
-              <InputGroup justifyContent={{base:"start",md:"start",lg:"end"}}  width={{base:"100%", md:"100%", lg:"200px"}} mt="10px" position="relative">
+            <Box mt={{ base: 2, md: 2 }}>
+              <InputGroup justifyContent={{ base: "start", md: "start", lg: "end" }} width={{ base: "100%", md: "100%", lg: "200px" }} mt="10px" position="relative">
                 <Box display={{ base: "none", md: "none", lg: "block" }} style={{ color: '#8C8C91', position: 'absolute', top: '10px', right: '7px' }}
                 >
                   <FiSearch fontSize='20px' />
@@ -377,7 +356,7 @@ useEffect(() => {
                   value={search} onChange={(e) => setSearch(e.target.value)} />
               </InputGroup>
             </Box>
-                     </Flex>
+          </Flex>
 
         </Flex>
 
@@ -393,20 +372,20 @@ useEffect(() => {
               </Flex>
             ) : (
               <Box overflowX="auto"
-              whiteSpace="nowrap"
-              sx={{
-                "&::-webkit-scrollbar": { width: "8px", height: "8px" },
-                "&::-webkit-scrollbar-thumb": {
-                  width: "8px",
-                  backgroundColor: "#7A7A7A",
-                  borderRadius: "4px",
-                },
-                "&::-webkit-scrollbar-track": {
-                  background: "#E8E8E8",
-                  borderRadius: "4px",
-                },
-              }}
-               >
+                whiteSpace="nowrap"
+                sx={{
+                  "&::-webkit-scrollbar": { width: "8px", height: "8px" },
+                  "&::-webkit-scrollbar-thumb": {
+                    width: "8px",
+                    backgroundColor: "#7A7A7A",
+                    borderRadius: "4px",
+                  },
+                  "&::-webkit-scrollbar-track": {
+                    background: "#E8E8E8",
+                    borderRadius: "4px",
+                  },
+                }}
+              >
                 <Table variant="striped" colorScheme="gray" size="sm" className="productsTable" minW="1200px" >
                   <Thead>
                     <Tr>
@@ -414,7 +393,7 @@ useEffect(() => {
                         tableHeader.map((header, index) => (
                           <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize' whiteSpace="nowrap" width={header[tableWidth]}>
 
-                              <Flex alignItems="center" gap='7px'>
+                            <Flex alignItems="center" gap='7px'>
                               <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' >
                                 {header}
                               </Text>
@@ -452,11 +431,16 @@ useEffect(() => {
         </Box>
         <Pagination
           page={page}
-          setPage={setPage}
           limit={limit}
-          setLimit={setLimit}
           totalItems={totalItems}
           totalPages={totalPages}
+          onPageChange={(newPage) => {
+            setPage(newPage);
+          }}
+          onLimitChange={(newLimit) => {
+            setPage(1);
+            setLimit(newLimit);
+          }}
         />
       </Box>
     </>

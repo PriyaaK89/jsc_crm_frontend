@@ -38,6 +38,8 @@ const CreateGroup = () => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(1000);
 
   const [pageLoading, setPageLoading] =
     useState(false);
@@ -57,7 +59,7 @@ const CreateGroup = () => {
 
   const labelStyles = {
     fontSize: "12px",
-    color: "#686868",
+    color: "#494949",
     marginBottom: "3px",
   };
 
@@ -89,7 +91,7 @@ const CreateGroup = () => {
     try {
 
       const response = await API.get(
-        `${API_ENDPOINTS?.get_account_group_list}`
+        `${API_ENDPOINTS?.get_account_group_list}?page=${page}&limit=${limit}`
       );
 
       if (response?.status === 200) {
@@ -245,10 +247,18 @@ const CreateGroup = () => {
   }, [id]);
 
   return (
-    <Box w="100%" bg="white" p={6} borderRadius="lg" >
+    <Box bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 4 }} borderRadius="lg" boxShadow="md" >
+
+
       <HStack justifyContent="space-between">
-        <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+
+        <Breadcrumb
+          color="#8B8D97"
+          padding="10px 0px 1rem 0px"
+        >
+
           <BreadcrumbItem>
+
             <BreadcrumbLink
               as={Link}
               to="/dashboard"

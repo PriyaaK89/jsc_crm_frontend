@@ -2,9 +2,9 @@ import {Box,VStack,Text,Button,Collapse,Icon, Image, useToast } from "@chakra-ui
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
-import { MdAssignmentInd, MdOutlineInventory2, MdOutlineTrackChanges } from "react-icons/md";
+import { MdAssignmentInd, MdAttractions, MdOutlineInventory2, MdOutlineTrackChanges } from "react-icons/md";
 import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
-import { FaListAlt, FaTable, FaUserAlt, FaUserTie, FaWarehouse } from 'react-icons/fa';
+import { FaListAlt, FaMoneyBill, FaTable, FaUserAlt, FaUserTie, FaWarehouse } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
 import { MdCorporateFare, MdGroupAdd } from "react-icons/md";
 import { HiOfficeBuilding ,HiOutlineDocumentReport} from "react-icons/hi";
@@ -39,6 +39,8 @@ import { MdUploadFile } from "react-icons/md";
 import { FaKey } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa";
 import { RxComponent1 } from "react-icons/rx";
+import { IoCreate } from "react-icons/io5";
+import { IoMdPersonAdd } from "react-icons/io";
 
 const Newsidebar = () => {
   const location = useLocation();
@@ -77,7 +79,7 @@ const Newsidebar = () => {
     justifyContent: "flex-start",
     fontWeight: "600",
     color: "#29404a",
-    fontSize: "15px",
+    fontSize: "14px",
     transition: "all 0.3s ease", 
     paddingLeft: "21px !important",
 
@@ -153,10 +155,8 @@ const Newsidebar = () => {
         {label:"View Group",path:"/accounting-master/view-group",icon:FaList},
         {label:"Create Ledger",path:"/accounting-master/create-ledger", icon:FaFileInvoiceDollar},
         {label:"View Ledger",path:"/accounting-master/view-ledger", icon:FaFileInvoice},
-        {label:"Delete Ledger",path:"/accounting-master/delete-ledger", icon:FaTrash},
         {label:"Create Voucher",path:"/accounting-master/create-voucher", icon:FaMoneyCheckAlt},
         {label:"View Voucher", path:"/accounting-master/view-voucher", icon:FaFileInvoice },
-        {label:"Delete Voucher",path:"/accounting-master/delete-voucher", icon:FaTrash},
         {label:"Edit Ledger Assignment",path:"/accounting-master/edit-ledger-assignment",  icon:FaEdit },
         {label:"Retail Assignment" ,path:"/accounting-master/retail-assignment", icon:FaStore },
       ] },
@@ -169,37 +169,7 @@ const Newsidebar = () => {
         {label:"Company List",path:"/company-master/comapny-list",icon:FaCity},        
       ]
       },
-      
-      {
-          label:"Reports",key:"Reports",icon:RiBarChartLine,path:"/report",
-          children:[
-            {label:"Attendance Report",path:"/report/emp-attendance-report",icon:CalendarCheck},
-            {label:"Scheduling & Alert Report",path:"/report/scheduling-alert-report",icon:BellRing },
-            {label:"Party Transaction Report",path:"/report/party-transaction-report",icon:Handshake},
-            {label:" Employee Expense Report",path:"/report/get-emp-expense-report",icon:Receipt},
-            {label:"Party Ledger Report",path:"/report/party-ledger-report",icon:BookText},
-            {label:"Credit Days Reminder Report",path:"/report/credit-days-reminder-report",icon:Clock},
-            {label:"Employee Balance Sheet",path:"/report/emp-balance-sheet",icon:FileSpreadsheet},
-            {label:"Interest Report",path:"/report/interest-report",icon:BarChart3},
-            {label:"Salary Report",path:"/report/emp-salary-report",icon:DollarSign},
-            {label:"Product Report",path:"/report/product-report",icon:Package},
-            {label:"Item Stock Report",path:"/report/item-stock-report",icon:Package},
-            {label:"Track Employee",path:"/report/track-employee",icon:FiMapPin},
-            {label:"Employee Visit Report",path:"/report/emp-visit-report",icon:HiOutlineDocumentReport},
-            {label:"Employee Distributor Details",path:"/report/emp-distributor-details",icon:MdPeople},
-            {label:"Super Cash Bill Report",path:"/report/supercash-bill-report",icon:MdReceiptLong},
-            {label:"P & L Report",path:"/report/psl-report",icon:MdAssessment},
-            {label:"Fright Report",path:"/report/fright-report",icon:MdLocalShipping},
-            {label:"Transport Fright Report",path:"/report/transport-fright-report",icon:MdDirectionsBus},
-            {label:"Item P & L Report",path:"/report/item-psl-report",icon:MdInventory},
-            {label:"manufacturing Report",path:"/report/manufacturing-report",icon:MdFactory},
-            {label:"Stock Transfer Report",path:"/report/stock-transfer-report",icon:MdSwapHoriz},
-            {label:"Pending Collection Report",path:"/report/pending-collection-report",icon:MdPendingActions},
-            {label:"Employee Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
-            {label:"Digio KYC Report",path:"/report/emp-kyc-report",icon:MdTrendingUp},
-          ]
-      },
-      {
+            {
         label:"Inventory Master",key:"inventory",icon:MdInventory,
         children:[
           {label:"Create Stock Group",path:"/inventory/create-stock-group",icon:MdAddBox},
@@ -212,7 +182,40 @@ const Newsidebar = () => {
           {label:"View Godown",path:"/inventory/view-godown-list",icon:FaListAlt  },
           {label:"Create Unit of Measure",path:"/inventory/create-unitOfMeasure",icon:RxComponent1  },
           {label:"View Unit of Measure ",path:"/inventory/unit-list",icon:FaTable   },
+          {label:"Material Manufacturing",path:"/inventory/material-manufacturing",icon:MdAddCircleOutline   },
+          {label:"Stock Transfer",path:"/inventory/stock-transfer",icon:FaCity   },
         ]
+      },
+      
+      {
+          label:"Reports",key:"Reports",icon:RiBarChartLine,path:"/report",
+          children:[
+            {label:"Attendance Report",path:"/report/emp-attendance-report",icon:CalendarCheck},
+            {label:"Employee Visit Report",path:"/report/emp-visit-report",icon:HiOutlineDocumentReport},
+            {label:" Employee Expense Report",path:"/report/get-emp-expense-report",icon:Receipt},
+            {label:"Daily Salary Report",path:"/report/emp-salary-report",icon:DollarSign},
+            {label:"Monthly Salary Report",path:"/report/emp-monthly-salary-report",icon:DollarSign},
+            {label:"Track Employee",path:"/report/track-employee",icon:FiMapPin},
+            {label:"Scheduling & Alert Report",path:"/report/scheduling-alert-report",icon:BellRing },
+            {label:"Party Transaction Report",path:"/report/party-transaction-report",icon:Handshake},
+            {label:"Party Ledger Report",path:"/report/party-ledger-report",icon:BookText},
+            {label:"Credit Days Reminder Report",path:"/report/credit-days-reminder-report",icon:Clock},
+            {label:"Employee Balance Sheet",path:"/report/emp-balance-sheet",icon:FileSpreadsheet},
+            {label:"Interest Report",path:"/report/interest-report",icon:BarChart3},
+            {label:"Product Report",path:"/report/product-report",icon:Package},
+            {label:"Item Stock Report",path:"/report/item-stock-report",icon:Package},
+            {label:"Employee Distributor Details",path:"/report/emp-distributor-details",icon:MdPeople},
+            {label:"Super Cash Bill Report",path:"/report/supercash-bill-report",icon:MdReceiptLong},
+            {label:"P & L Report",path:"/report/psl-report",icon:MdAssessment},
+            {label:"Fright Report",path:"/report/fright-report",icon:MdLocalShipping},
+            {label:"Transport Fright Report",path:"/report/transport-fright-report",icon:MdDirectionsBus},
+            {label:"Item P & L Report",path:"/report/item-psl-report",icon:MdInventory},
+            {label:"Manufacturing Report",path:"/report/manufacturing-report",icon:MdFactory},
+            {label:"Stock Transfer Report",path:"/report/stock-transfer-report",icon:MdSwapHoriz},
+            {label:"Pending Collection Report",path:"/report/pending-collection-report",icon:MdPendingActions},
+            {label:"Emp. Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
+            // {label:"Digio KYC Report",path:"/report/emp-kyc-report",icon:MdTrendingUp},
+          ]
       },{
         label:"Order Vochor",key:"order-vochor",icon:FaFileInvoice,
          children:[
@@ -223,7 +226,16 @@ const Newsidebar = () => {
           {label:"Credit",path:"/order-vochor/credit",icon:BsCreditCard2Front},
           {label:"Debit",path:"/order-vochor/debit",icon:FaMoneyBillWave},
          ]
-      },{
+      },
+      {
+        label:"Misc",key:"misc",icon:MdAttractions ,
+         children:[
+          {label:"Activate/Deactivate Voucher",path:"/misc/voucher-action",icon:FaMoneyBill  },      
+          {label:"Define Retailer",path:"/misc/create-retailer",icon:IoMdPersonAdd   },      
+          {label:"View Retailer",path:"/misc/view-retailers",icon:IoCreate  },      
+         ]
+      },
+      {
         label:"Print MGMT",key:"print_mgmt",icon:HiOutlinePrinter,
         children:[
           {label:"Shipping label printer",path:"/print/mgmt/shipping_lable_printer",icon:BsUpcScan},
@@ -244,9 +256,10 @@ useEffect(() => {
     "/accounting-master": "accounting-master",
     "/company-master": "company-master",
     "/leads": "leads",
-    "/report":"Reports",
     "/inventory": "inventory",
     "/order-vochor": "order-vochor",
+    "/report":"Reports",
+    "/misc": "misc",
     "/print/mgmt": "print_mgmt",
     
   };

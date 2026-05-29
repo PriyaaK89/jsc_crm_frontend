@@ -1,37 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Select,
-  Text,
-  SimpleGrid,
-  FormControl,
-  FormLabel,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Card,
-  CardHeader,
-  CardBody,
-  Heading,
-  Spinner,
-  Input,
-  Flex,
-  Img,
-  useDisclosure,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  HStack,
-  TableContainer,
-} from "@chakra-ui/react";
+import { Box, Button, Select, Text, SimpleGrid, FormControl, FormLabel, Table, Thead, Tbody, Tr, Th, Td, Card, CardHeader, CardBody, Heading, Spinner, Input, Flex, Img, useDisclosure, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack, TableContainer, } from "@chakra-ui/react";
 import { Badge } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { InputGroup, InputRightElement } from "@chakra-ui/react";
-import { RepeatIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon, RepeatIcon, SmallCloseIcon, TimeIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
 import { SearchIcon } from "@chakra-ui/icons";
 import API from "../../services/api";
@@ -69,32 +41,14 @@ const EmpAttendance = () => {
   const [selectedDate, setSelectedDate] = useState(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const headers = [ 
-                        "S.No",
-                        "Employee Id",
-                        "Name",
-                        "Date",
-                        "Login",
-                        "Logout",
-                        "Hours",
-                        "Status",
-                        "Attendance Unit",
-                        "Odometer Reading",
-                        "Day Over Odometer",
-                        "Total KM",
-                        "Visit location",
-                        "Work Type",
-                        "Leave Reason",
-                        "Vehicle  Type",
-                        "Action",
-                      ]
+  const headers = ["S.No", "Employee Id", "Name", "Date", "Login", "Logout", "Hours", "Status", "Attendance Unit", "Odometer Reading", "Day Over Odometer", "Travel Mode", "Total KM", "Visit location", "Work Type", "Leave Reason", "Vehicle  Type", "Action",]
   const widthMap = {
 
   }
-   
+
 
   //  Fetch API
-  const fetchAttendance = async (page = 1) => {
+  const fetchAttendance = async () => {
     setLoading(true);
 
     try {
@@ -115,13 +69,11 @@ const EmpAttendance = () => {
 
       if (res.status === 200) {
         setAttendance(res.data.attendance || []);
-
-        setPagination({
-           page: page,
-          limit: res.data.pagination.limit,
+        setPagination((prev) => ({
+          ...prev,
           total_pages: res.data.pagination.total_pages,
-          total_Items: res.data.pagination.total_records
-        });
+          total_Items: res.data.pagination.total_records,
+        }));
       }
     } catch (err) {
       console.error(err);
@@ -138,37 +90,28 @@ const EmpAttendance = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
-  useEffect(() => {
-    fetchAttendance(1);
-  }, []);
 
-  useEffect(() => {
-    if (
-      filters.userId ||
-      filters.startDate ||
-      filters.endDate || 
-      debouncedSearch
-    ) {
-      fetchAttendance(1);
-    }
-  }, [debouncedSearch, filters.userId, filters.startDate, filters.endDate]);
 
-//    after user clear seacrh bar date and employee name  end dta every filter ----------
+  //    after user clear seacrh bar date and employee name  end dta every filter ----------
   const query = useMemo(() => {
-  return {
-    search: debouncedSearch?.trim() || null,
-    userId: filters.userId || null,
-    startDate: filters.startDate || null,
-    endDate: filters.endDate || null,
-  };
-}, [debouncedSearch, filters]);
+    return {
+      search: debouncedSearch?.trim() || null,
+      userId: filters.userId || null,
+      startDate: filters.startDate || null,
+      endDate: filters.endDate || null,
+    };
+  }, [debouncedSearch, filters]);
 
-useEffect(() => {
-  fetchAttendance(1);
-}, [query]);
-
-
-
+  useEffect(() => {
+    fetchAttendance();
+  }, [
+    pagination.page,
+    pagination.limit,
+    debouncedSearch,
+    filters.userId,
+    filters.startDate,
+    filters.endDate,
+  ]);
 
   const handleImage = (id, date) => {
     setSelectedUserId(id);
@@ -230,29 +173,27 @@ useEffect(() => {
     }
   };
   // ---------------------------handle refresh toggle-----------------
- const handleRefresh = () => {
-  const resetFilters = {
-    userId: "",
-    startDate: "",
-    endDate: "",
+  const handleRefresh = () => {
+    const resetFilters = {
+      userId: "",
+      startDate: "",
+      endDate: "",
+    };
+    setSearch("");
+    setDebouncedSearch("");
+    setFilters(resetFilters);
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+    }));
+
+    //  call with fresh values
+    fetchAttendance(1, resetFilters, "");
   };
-
-  setSearch("");
-  setDebouncedSearch("");
-  setFilters(resetFilters);
-
-  setPagination((prev) => ({
-    ...prev,
-    page: 1,
-  }));
-
-  //  call with fresh values
-  fetchAttendance(1, resetFilters, "");
-};
-// ---------------------pafter pagination=----------------------
+  // ---------------------pafter pagination=----------------------
   useEffect(() => {
-  fetchAttendance(pagination.page);
-}, [pagination.page, pagination.limit]);
+    fetchAttendance(pagination.page);
+  }, [pagination.page, pagination.limit]);
 
   return (
     <>
@@ -362,33 +303,32 @@ useEffect(() => {
               <Spinner />
             </Flex>
           ) : (
-              <Box
-                overflowX="auto"
-                whiteSpace="nowrap"
-                sx={{
-                  "&::-webkit-scrollbar": { width: "8px", height: "8px" },
-                  "&::-webkit-scrollbar-thumb": {
-                    width: "8px",
-                    backgroundColor: "#7A7A7A",
-                    borderRadius: "4px",
-                  },
-                  "&::-webkit-scrollbar-track": {
-                    background: "#E8E8E8",
-                    borderRadius: "4px",
-                  },
-                }}
-              >
-                <Table
-                  variant="striped"
-                  colorScheme="gray"
-                  size="sm"
-                  minW="2000px"
-                  className="productsTable"
-                >
-                  <Thead>
-                    <Tr>
-                        {
-                     headers.map((header, index) => (
+            <Box
+              overflowX="auto"
+              whiteSpace="nowrap"
+              sx={{
+                "&::-webkit-scrollbar": { width: "8px", height: "8px" },
+                "&::-webkit-scrollbar-thumb": {
+                  width: "8px",
+                  backgroundColor: "#7A7A7A",
+                  borderRadius: "4px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  background: "#E8E8E8",
+                  borderRadius: "4px",
+                },
+              }}
+            >
+              <Table
+                variant="striped"
+                colorScheme="gray"
+                size="sm"
+                minW="2000px"
+                className="productsTable">
+                <Thead>
+                  <Tr>
+                    {
+                      headers.map((header, index) => (
                         <Th key={index}
                           fontSize="14px"
                           fontWeight="500"
@@ -398,7 +338,7 @@ useEffect(() => {
                         >
                           <Flex align="center" gap="7px">
                             <Text
-                            fontSize="14px"
+                              fontSize="14px"
                             >
                               {header}
                             </Text>
@@ -406,102 +346,155 @@ useEffect(() => {
                             <Img src={sort_icon} />
                           </Flex>
                         </Th>
-     ))}
-                    </Tr>
-                     
-                  </Thead>
+                      ))}
+                  </Tr>
 
-                  <Tbody>
-                    {attendance.length === 0 ? (
-                      <Tr>
-                        <Td colSpan={10} textAlign="center" py={6}>
-                          <Text fontSize="md" color="gray.500">
-                            No Data Found
-                          </Text>
+                </Thead>
+
+                <Tbody>
+                  {attendance.length === 0 ? (
+                    <Tr>
+                      <Td colSpan={10} textAlign="center" py={6}>
+                        <Text fontSize="md" color="gray.500">
+                          No Data Found
+                        </Text>
+                      </Td>
+                    </Tr>
+                  ) : (
+                    memoizedData.map((item, index) => (
+                      <Tr key={index}>
+                        <Td>{(pagination.page - 1) * pagination.limit + index + 1}</Td>
+                        <Td>CRM-{item.employee_id}</Td>
+                        <Td>{item.employee_name}</Td>
+                        <Td>{formatDate(item.attendance_date)}</Td>
+                        <Td>
+                          {formatTime(item.attendance_date, item.check_in_time,)}
+                        </Td>
+                        <Td>
+                          {formatTime(
+                            item.attendance_date,
+                            item.check_out_time,
+                          )}
+                        </Td>
+                        <Td>{formatMinutes(item.working_minutes)}</Td>
+                        <Td>
+                          <Badge
+                            colorScheme={getStatusColor(item.status)}
+                            variant="subtle"
+                            px={2}
+                            py={1}
+                            borderRadius="full" fontSize="11px"
+                          >
+                            {formatStatus(item.status)}
+                          </Badge>
+                        </Td>
+                        <Td>
+                          {item.attendance_unit === "full" && (
+                            <Badge
+                              colorScheme="green"
+                              px={3}
+                              py={1}
+                              borderRadius="full"
+                            >
+                              <HStack spacing={1}>
+                                <CheckCircleIcon boxSize={3} />
+                                <Text fontSize="11px">Full Day</Text>
+                              </HStack>
+                            </Badge>
+                          )}
+                          {item.attendance_unit === "absent" && (
+                            <Badge
+                              colorScheme="green"
+                              px={3}
+                              py={1}
+                              borderRadius="full"
+                            >
+                              <HStack spacing={1}>
+                                <Text fontSize="11px">Absent</Text>
+                              </HStack>
+                            </Badge>
+                          )}
+
+                          {item.attendance_unit === "half" && (
+                            <Badge
+                              colorScheme="yellow"
+                              px={3}
+                              py={1}
+                              borderRadius="full"
+                            >
+                              <HStack spacing={1}>
+                                <TimeIcon boxSize={3} />
+                                <Text fontSize="11px">Half Day</Text>
+                              </HStack>
+                            </Badge>
+                          )}
+
+                          {item.attendance_unit === "leave" && (
+                            <Badge
+                              colorScheme="red"
+                              px={3}
+                              py={1}
+                              borderRadius="full"
+                            >
+                              <HStack spacing={1}>
+                                <SmallCloseIcon boxSize={3} />
+                                <Text fontSize="11px">Leave</Text>
+                              </HStack>
+                            </Badge>
+                          )}
+
+                          {item.attendance_unit === "WEEK_OFF" && (
+                            <Badge
+                              colorScheme="purple"
+                              px={3}
+                              py={1}
+                              borderRadius="full"
+                            >
+                              <Text fontSize="11px">Week Off</Text>
+                            </Badge>
+                          )}
+                        </Td>
+                        <Td>{item.odometer_reading || 0}</Td>
+                        <Td>{item.day_over_odometer_reading || 0}</Td>
+                        <Td>{item?.travel_mode}</Td>
+                        <Td>
+                          {item?.day_over_odometer_reading != null && item?.odometer_reading != null
+                            ? item.day_over_odometer_reading - item.odometer_reading
+                            : "-"}
+                        </Td>
+                        <Td>{item.visit_location || "-"}</Td>
+                        <Td>{item.work_type || "-"}</Td>
+                        <Td>{item.leave_reason || "-"}</Td>
+                        <Td>{item.vehicle_type || "-"}</Td>
+
+                        <Td>
+                          <Button size="md" color="purple.600" bg="white" border="1px solid blue"
+                            onClick={() =>
+                              handleImage(item.employee_id, item.attendance_date,)}>
+                            <FaRegEye />
+                          </Button>
                         </Td>
                       </Tr>
-                    ) : (
-                      memoizedData.map((item, index) => (
-                        <Tr key={index}>
-                    <Td>{(pagination.page - 1) * pagination.limit + index + 1}</Td>
-                          <Td>CRM-{item.employee_id}</Td>
-                          <Td>{item.employee_name}</Td>
-                          <Td>{formatDate(item.attendance_date)}</Td>
-                          <Td>
-                            {formatTime(
-                              item.attendance_date,
-                              item.check_in_time,
-                            )}
-                          </Td>
-                          <Td>
-                            {formatTime(
-                              item.attendance_date,
-                              item.check_out_time,
-                            )}
-                          </Td>
-                          <Td>{formatMinutes(item.working_minutes)}</Td>
-                          <Td>
-                            <Badge
-                              colorScheme={getStatusColor(item.status)}
-                              variant="subtle"
-                              px={2}
-                              py={1}
-                              borderRadius="md"
-                            >
-                              {formatStatus(item.status)}
-                            </Badge>
-                          </Td>
-                          <Td>{item.attendance_unit}</Td>
-                          <Td>{item.odometer_reading || 0}</Td>
-                          <Td>{item.day_over_odometer_reading || 0}</Td>
-<Td>
-  {item?.day_over_odometer_reading != null && item?.odometer_reading != null
-    ? item.day_over_odometer_reading - item.odometer_reading
-    : "-"}
-</Td>
-                          <Td>{item.visit_location || "-"}</Td>
-                          <Td>{item.work_type || "-"}</Td>
-                          <Td>{item.leave_reason || "-"}</Td>
-                          <Td>{item.vehicle_type || "-"}</Td>
-
-                          <Td>
-                            <Button
-                              size="md"
-                              color="purple.600"
-                              bg="white"
-                              border="1px solid blue"
-                              onClick={() =>
-                                handleImage(
-                                  item.employee_id,
-                                  item.attendance_date,
-                                )
-                              }
-                            >
-                              <FaRegEye />
-                            </Button>
-                          </Td>
-                        </Tr>
-                      ))
-                    )}
-                  </Tbody>
-                </Table>
-              </Box>
+                    ))
+                  )}
+                </Tbody>
+              </Table>
+            </Box>
           )}
         </Box>
 
-        {/*  Pagination */}
-         <Pagination
-  page={pagination.page}
-  setPage={(newPage) =>
-    setPagination((prev) => ({ ...prev, page: newPage }))
-  }
-  limit={pagination.limit}
-  setLimit={(newLimit) =>
-    setPagination((prev) => ({ ...prev, limit: newLimit }))
-  }
-  totalItems={pagination.total_Items}
-  totalPages={pagination.total_pages}
-/>
+        <Pagination
+          page={pagination.page}
+          limit={pagination.limit}
+          totalItems={pagination.total_Items}
+          totalPages={pagination.total_pages}
+          onPageChange={(newPage) => {
+            setPagination((prev) => ({ ...prev, page: newPage, }));
+          }}
+          onLimitChange={(newLimit) => {
+            setPagination((prev) => ({ ...prev, limit: newLimit, page: 1, }));
+          }}
+        />
       </Box>
     </>
   );

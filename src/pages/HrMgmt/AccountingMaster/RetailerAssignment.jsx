@@ -13,6 +13,7 @@ import {
   SimpleGrid,
   Heading,
   useToast,
+  Text,
 } from "@chakra-ui/react";
 
 import { GoHomeFill } from "react-icons/go";
@@ -242,21 +243,22 @@ function RetailerAssignment() {
 
         <Box
           mt={6}
-          p={4}
+          px={4}
+          py={3}
           border="1px solid #E2E8F0"
           borderRadius="lg"
           bg="blue.50">
 
-          <Heading
-            size="sm"
+          <Text
+            fontSize="17px"
             color="blue.700"
             mb={2}>
             Currently Assigned Employee
-          </Heading>
+          </Text>
 
           <Box
-            fontSize="14px"
-            fontWeight="600"
+            fontSize="13px"
+            fontWeight="500"
             color="gray.700"
           >
             {assignedEmployeeName}

@@ -173,6 +173,11 @@ export const API_ENDPOINTS = {
   GET_RETAILER_BY_ID: "getRetailerdetails",
   UPDATE_RETAILER: "update-retailer",
   ASSIGN_RETAILER_TO_EMPLOYEE: "assign-retailer",
+
+  GET_NEXTVOUCHER_NO: "next-voucher-no",
+  CREATE_PURCHASE: "create-purchase-order",
+  GET_PURCHASE_LEDGER_DROPDOWN: "purchase-ledger-dropdown",
+  
   
 };
 // 

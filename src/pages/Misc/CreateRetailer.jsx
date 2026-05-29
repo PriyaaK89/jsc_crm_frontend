@@ -483,7 +483,6 @@ const CreateRetailer = () => {
             boxShadow: "md", bg: "#1B5A6B"
           }}
           transition="all 0.2s ease"
-          borderRadius="xl"
         >
           Create Retailer
         </Button>

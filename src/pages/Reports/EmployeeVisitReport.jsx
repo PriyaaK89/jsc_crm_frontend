@@ -21,17 +21,14 @@ import CustomDatePicker from "../../components/common/CustomDatepicker";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import Pagination from "../../Pagination/Pagination";
+import useUsersapi from "../../Apis/GetUsersapi";
+import { Link } from "react-router-dom";
 
 function EmployeeVisitReport() {
 
-  // const { users } = useUsersapi();
-
+  const { users } = useUsersapi();
   const [visits, setVisits] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  //   const [city, setCity] = useState([]);
-  // const [cityLoading, setCityLoading] = useState(false);
-  // const [cityFetched, setCityFetched] = useState(false);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [loading, setLoading] = useState(false);
@@ -44,7 +41,7 @@ function EmployeeVisitReport() {
     district: "",
     from_date: "",
     to_date: "",
-    visit_type:"",
+    visit_type: "",
   });
   const [pagination, setPagination] = useState({
     page: 1,
@@ -55,7 +52,7 @@ function EmployeeVisitReport() {
 
   //  Fetch API
   // const fetchVisits = async (targetPage = pagination.page) => {
-      const fetchVisits = async () => {
+  const fetchVisits = async () => {
 
     setLoading(true);
     try {
@@ -66,32 +63,22 @@ function EmployeeVisitReport() {
           from_date: filters.from_date || null,
           to_date: filters.to_date || null,
           limit: pagination?.limit,
+          user_id: filters.user_id || null,
         },
       });
 
-//       //  Validate response
-      if (res.status === 200 ) {
-          setVisits(res.data.data);
-          setPagination({
-            page: res.data.page,
-            limit: res.data.limit,
-            total_pages: res.data.totalPages,
-            total: res.data.total
-          })
-  //     const data = Array.isArray(res.data) ? res.data : res.data.data || [];
-  //       setVisits(data);
-  //       // console.log("API Response Data:", data);
-
-  //      setPagination((prev) => ({ 
-  // ...prev,
-  // page: res.data.page || targetPage,
-  //  total_pages: res.data.totalPages || 1,
-  //  }));
-
-
+      //       //  Validate response
+      if (res.status === 200) {
+        setVisits(res.data.data);
+        setPagination({
+          page: res.data.page,
+          limit: res.data.limit,
+          total_pages: res.data.totalPages,
+          total: res.data.total
+        })
 
       }
-       else {
+      else {
         console.warn("Unexpected API response:", res);
         setVisits([]);
       }
@@ -110,12 +97,12 @@ function EmployeeVisitReport() {
   // On Load
   useEffect(() => {
     setPagination(prev => ({ ...prev, page: 1 }));
-  }, [debouncedSearch, filters.from_date, filters.to_date]);
+  }, [debouncedSearch, filters.from_date, filters.to_date,]);
 
 
- useEffect(() => {
-  fetchVisits();
-}, [pagination.page, pagination.limit, debouncedSearch, filters.from_date, filters.to_date, filters.visit_type]);
+  useEffect(() => {
+    fetchVisits();
+  }, [pagination.page, pagination.limit, debouncedSearch, filters.user_id, filters.from_date, filters.to_date, filters.visit_type]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -124,32 +111,6 @@ function EmployeeVisitReport() {
 
     return () => clearTimeout(timer);
   }, [search]);
-
-  // featch city 
-  //  const Getcity = async () => {
-  //   if (cityFetched) return; //  already fetched → skip API
-
-  //   setCityLoading(true);
-  //   try {
-  //     const res = await API.get(API_ENDPOINTS.get_city);
-
-  //     if (res.data.success) {
-  //       setCity(res.data.districts || []);
-  //       setCityFetched(true); // mark as fetched
-  //     }
-  //   } catch (err) {
-  //     console.error(err);
-  //   } finally {
-  //     setCityLoading(false);
-  //   }
-  // };
-  //  memoize the city 
-  // const memoCity = React.useMemo(() => {
-  //   return [...city].sort((a, b) =>
-  //     a.district.localeCompare(b.district)
-  //   );
-  // }, [city]);
-
 
   //  Format Date
   const formatDate = (date) => {
@@ -182,7 +143,7 @@ function EmployeeVisitReport() {
       district: "",
       from_date: "",
       to_date: "",
-      visit_type:"",
+      visit_type: "",
     });
 
     setPagination((prev) => ({
@@ -214,56 +175,18 @@ function EmployeeVisitReport() {
     onOpen();
   };
 
-//   const handlePageChange = (newPage) => {
-//    if (loading) return; // block if already loading
-
-//    if (newPage >= 1 && newPage <= pagination.total_pages) {
-//     setPagination(prev => ({ ...prev, page: newPage }));   }
-// };
-
-
-
   return (
-    <Box
-      bg="white"
-      mt={{ base: 2, md: 5 }}
-      px={{ base: 3, md: 6 }}
-      py={{ base: 3, md: 4 }}
-      borderRadius="lg"
-      boxShadow="md"
-    >
-      {/*  Header */}
-
-      <Breadcrumb mb={6}>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/dashboard">
-            <GoHomeFill color="#5570F1" size={20} />
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-
-        <BreadcrumbItem isCurrentPage>
-          <BreadcrumbLink>View Visit Report</BreadcrumbLink>
-        </BreadcrumbItem>
-      </Breadcrumb>
-
-
-      <Heading size="md" mb={6}>
-        View Visit Report
-      </Heading>
-
-
-
+    <Box >
 
       {/*  Filters */}
-      <SimpleGrid columns={{ base: 1, md: 4 }} spacing={5}>
-
-        {/* <FormControl>
+      <SimpleGrid columns={{ base: 1, md: 5 }} spacing={5} alignItems="end">
+        <FormControl>
           <FormLabel>Select Employee</FormLabel>
           <Select
             placeholder=" Select Employee"
-            value={filters.userId}
+            value={filters.user_id}
             onChange={(e) =>
-              setFilters({ ...filters, userId: e.target.value })
+              setFilters({ ...filters, user_id: e.target.value })
             }
           >
             {users?.map((emp) => (
@@ -272,33 +195,11 @@ function EmployeeVisitReport() {
               </option>
             ))}
           </Select>
-        </FormControl> */}
+        </FormControl>
 
-        {/* <FormControl>
-  <FormLabel>Select District</FormLabel>
 
-  <Select
-    placeholder=" Select District"
-    value={filters.city}
-    onFocus={Getcity} //  call only once
-    onChange={(e) =>
-      setFilters({ ...filters, city: e.target.value })
-    }
-  >
-    {cityLoading ? (
-      <option>Loading districts...</option>
-    ) : (
-      memoCity.map((item, index) => (
-        <option key={index} value={item.district}>
-          {item.district}
-        </option>
-      ))
-    )}
-  </Select>
-</FormControl> */}
-
-        <FormControl mt={5}>
-          {/* <FormLabel>Search Employee / District / Mobile</FormLabel> */}
+        <FormControl >
+          <FormLabel>Search Employee/Contact No.</FormLabel>
 
           <InputGroup>
             <Input
@@ -339,14 +240,9 @@ function EmployeeVisitReport() {
             placeholder="Select To Date"
           />
         </FormControl>
-
-        <FormControl mt={{ base: "", md: 5 }}>
-
-          <Button onClick={handleRefresh} leftIcon={<RepeatIcon />} >Reset</Button>
-        </FormControl>
+        <HStack mt={2} justifyContent="end"> <Button onClick={handleRefresh} leftIcon={<RepeatIcon />} fontSize="14px">Reset</Button> </HStack>
 
       </SimpleGrid>
-
 
       {/*  Table */}
       <Box mt={8} border="1px solid #e5e5e5" borderRadius="md" w="100%">
@@ -370,25 +266,9 @@ function EmployeeVisitReport() {
 
                 <Thead>
                   <Tr>
-                    {["Ser.No.",
-                      "Employee",
-                      "Visit type",
-                      "Visit Purpose",
-                      "comment",
-                      "Reminder Date",
-                      "Visit Date",
-                      "Customer Name",
-                      "Firm Name",
-                      "Firm Address",
-                      "Contact No.",
-                      "Address",
-                      "Area.",
-                      "District",
-                      "pincode.",
-                      "Image",
-                    ].map((h) => (
+                    {["Ser.No.", "Employee", "Visit type", "Visit Purpose", "comment", "Reminder Date", "Visit Date", "Customer Name", "Firm Name", "Firm Address", "Contact No.", "Address", "Area.", "District", "pincode.", "Image",].map((h) => (
                       <Th key={h} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize'
-                        width={tablehead[h ] || "100px"} >
+                        width={tablehead[h] || "100px"} >
 
                         <Flex gap={2} pt={3} pb={3} spacing="300px">
                           <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' overflow="hidden" >{h}</Text>
@@ -410,7 +290,7 @@ function EmployeeVisitReport() {
                   ) : (
                     visits.map((item, index) => (
                       <Tr key={item.id}>
-                        <Td>{(pagination.page - 1)*pagination.limit + index+1}</Td>
+                        <Td>{(pagination.page - 1) * pagination.limit + index + 1}</Td>
                         <Td>{item.emp_name}</Td>
                         <Td>{item.visit_type}</Td>
                         {/* <Td>{item.visit_purpose}</Td> */}
@@ -458,10 +338,8 @@ function EmployeeVisitReport() {
                           </Flex>
                         </Td>
                         <Td>{formatDate(item.reminder_date)}</Td>
-
                         <Td> {formatDate(item.created_at)}</Td>
                         <Td>{item.customer_name}</Td>
-
                         <Td>{item.firm_name}</Td>
                         <Td>{item.firm_address}</Td>
                         <Td>{item.contact_number || "-"}</Td>
@@ -469,18 +347,14 @@ function EmployeeVisitReport() {
                         <Td>{item.area}</Td>
                         <Td>{item.district}</Td>
                         <Td>{item.pincode}</Td>
-
-
                         <Td>
                           {item.image_url ? (
                             <Button
                               colorScheme="blue"
                               size="sm"
-                              onClick={() => modelviewimg(item.image_url)}
-                            >
+                              onClick={() => modelviewimg(item.image_url)}>
                               View
                             </Button>
-
                           ) : (
                             "-"
                           )}
@@ -489,24 +363,30 @@ function EmployeeVisitReport() {
                     ))
                   )}
                 </Tbody>
-
               </Table>
             </TableContainer>
           </Box>
         )}
       </Box>
-         <Pagination
-          page={pagination.page}
-          setPage={(newPage) =>
-            setPagination((prev) => ({ ...prev, page: newPage }))
-          }
-          limit={pagination.limit}
-          setLimit={(newLimit) =>
-            setPagination((prev) => ({ ...prev, limit: newLimit }))
-          }
-          totalItems={pagination.total}
-          totalPages={pagination.total_pages}
-        />
+      <Pagination
+        page={pagination.page}
+        limit={pagination.limit}
+        totalItems={pagination.total}
+        totalPages={pagination.total_pages}
+        onPageChange={(newPage) => {
+          setPagination((prev) => ({
+            ...prev,
+            page: newPage,
+          }));
+        }}
+        onLimitChange={(newLimit) => {
+          setPagination((prev) => ({
+            ...prev,
+            limit: newLimit,
+            page: 1,
+          }));
+        }}
+      />
 
       {/* model for comment  */}
       <Modal isOpen={issOpen} onClose={() => setIssOpen(false)} isCentered size="lg">
@@ -555,12 +435,7 @@ function EmployeeVisitReport() {
           </ModalBody>
 
           {/* Footer */}
-          <Flex
-            justify="space-between"
-            align="center"
-            px={5}
-            pb={4}
-          >
+          <Flex justify="space-between" align="center" px={5} pb={4} >
             <Text fontSize="12px" color="gray.500">
               {selectedComment?.length || 0} characters
             </Text>
@@ -585,30 +460,15 @@ function EmployeeVisitReport() {
 
         <ModalContent borderRadius="12px" mx="12px" overflow="hidden">
           {/* Header */}
-          <Flex
-            bg="blue.500"
-            color="white"
-            px={4}
-            py={3}
-            justifyContent="space-between"
-            alignItems="center"
-          >
+          <Flex bg="blue.500" color="white" px={4} py={3} justifyContent="space-between" alignItems="center" >
             <Text fontWeight="bold">Image Preview</Text>
-
             <ModalCloseButton position="static" color="white" />
           </Flex>
 
           {/* Body */}
           <ModalBody p={4}>
             {selectedImage ? (
-              <Img
-                src={selectedImage}
-                alt="Preview"
-                w="100%"
-                maxH="80vh"
-                objectFit="contain"
-                borderRadius="lg"
-              />
+              <Img src={selectedImage} alt="Preview" w="100%" maxH="80vh" objectFit="contain" borderRadius="lg" />
             ) : (
               <Flex justify="center" align="center" h="200px">
                 <Text color="gray.400">No Image Available</Text>
@@ -618,11 +478,7 @@ function EmployeeVisitReport() {
         </ModalContent>
       </Modal>
 
-      {/* main box  */}
     </Box>
-
-
-
   );
 }
 

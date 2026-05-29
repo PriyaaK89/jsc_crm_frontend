@@ -12,7 +12,7 @@ const ProfileLayout = ()=>{
     localStorage.getItem("profileImage") || ""
   );
 
-  // 🔥 whenever image changes → save to localStorage
+  //  whenever image changes → save to localStorage
   useEffect(() => {
     if (profileImage) {
       localStorage.setItem("profileImage", profileImage);
@@ -20,7 +20,7 @@ const ProfileLayout = ()=>{
   }, [profileImage]);
 
     return(
-      <Box bg="#F3F3F3" minH="100vh" >
+      <Box bg="#f2f1f1" minH="100vh" >
                <Box display={{ base: "none", md: "block" }}>
                  <Sidebar />
          

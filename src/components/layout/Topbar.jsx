@@ -13,7 +13,8 @@ import {
   PopoverBody,
   Divider,
   useToast,
-  useDisclosure
+  useDisclosure,
+  Image
 } from "@chakra-ui/react";
 import React, { useState, useContext } from "react";
 import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
@@ -84,9 +85,7 @@ const Topbar = ({ profileImage }) => {
         border="1px solid #e5e7eb"
         boxShadow="sm"
       >
-        <Text fontWeight="bold" fontSize="lg">
-          Dashboard
-        </Text>
+   
 
         <Spacer />
 
@@ -138,9 +137,7 @@ const Topbar = ({ profileImage }) => {
                 overflow="hidden"
                 boxShadow="xl"
               >
-                <PopoverArrow />
-
-                {/*  Yaha component use karo */}
+                <PopoverArrow />        
                 <NotofictionBarModel setUnreadCount={setUnreadCount} />
 
               </PopoverContent>
@@ -206,9 +203,6 @@ const Topbar = ({ profileImage }) => {
           </Portal>
         </Popover>
       </Flex>
-
-      {/* ✅ Notification Modal Call */}
-      {/* <NotofictionBarModel isOpen={isOpen} onClose={onClose} /> */}
     </>
   );
 };

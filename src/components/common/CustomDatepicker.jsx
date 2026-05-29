@@ -31,7 +31,7 @@ const CustomDatePicker = ({
   return (
     <FormControl>
       {label && (
-        <FormLabel fontSize="12px" color="#686868">
+        <FormLabel fontSize="12px" color="#494949">
           {label}
         </FormLabel>
       )}

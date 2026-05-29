@@ -17,7 +17,7 @@ const NotificationBtn = () => {
     ];
 
     return (
-        <Box display="flex" justifyContent="end" gap="10px"  flexWrap="wrap" mt={5} margin={5}>
+        <Box display="flex" justifyContent="end" gap={{base: "4px",sm: "4px",md:"7.5px"}}  flexWrap="wrap" mt={5} margin={{base: 1, sm: 1, md: 5}}>
 
             {buttons.map((btn, i) => (
                 <Box key={i} position="relative">
@@ -25,12 +25,12 @@ const NotificationBtn = () => {
                     {/* Button */}
                     <Button
                       bgGradient="linear(45deg, #325180, #8993b3)"
-color="white"
+color="white" px={{base: "8px", sm: "8px", md: '16px'}}
                         transition="all 0.3s ease"
-                        _hover={{ bg: "#2e48a0", transform: "scale(1.05)", color:"white" }}
+                        _hover={{ bg: "#505572", transform: "scale(1.01)", color:"white" }}
                         variant="outline"
                         borderRadius="lg"
-                        fontSize="12px"
+                        fontSize={{sm:"11px",base: "11px", md:"12px"}}
                         fontWeight="500"
 
                     >
@@ -43,7 +43,7 @@ color="white"
                             position="absolute"
                             top="-6px"
                             right="-6px"
-                            bg="red.500"
+                            bg="#e53e77"
                             color="white"
                             borderRadius="full"
                             fontSize="10px"

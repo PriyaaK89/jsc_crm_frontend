@@ -6,11 +6,12 @@ import MobileTopbar from "../MobileTopbar";
 import { Flex,Box } from '@chakra-ui/react';
 import CreateLedger from '../../../pages/HrMgmt/AccountingMaster/CreateLedger';
 import NotificationBtn from '../../NotificationBtn/NotificationBtn';
+import LedgerCreation from '../../../pages/HrMgmt/AccountingMaster/LedgerCreation';
 
 function CreateLedgerLayout() {
 
   return(
-    <Box bg="#F3F3F3" minH="100%" >
+    <Box bg="#f2f1f1" minH="100%" >
       <Box display={{ base: "none", md: "block" }}>
         <Sidebar />
 
@@ -28,7 +29,8 @@ function CreateLedgerLayout() {
         pb={6}
       >
         <NotificationBtn/>
-        <CreateLedger />
+        {/* <CreateLedger /> */}
+        <LedgerCreation/>
       
       </Box>
     </Box>

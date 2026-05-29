@@ -2,9 +2,9 @@ import {Box,VStack,Text,Button,Collapse,Icon, Image, useToast } from "@chakra-ui
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
-import { MdAssignmentInd, MdOutlineTrackChanges } from "react-icons/md";
+import { MdAssignmentInd, MdAttractions, MdOutlineInventory2, MdOutlineTrackChanges, MdPayment } from "react-icons/md";
 import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
-import { FaUserTie } from 'react-icons/fa';
+import { FaExchangeAlt, FaListAlt, FaMoneyBill, FaTable, FaUserAlt, FaUserTie, FaWarehouse } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
 import { MdCorporateFare, MdGroupAdd } from "react-icons/md";
 import { HiOfficeBuilding ,HiOutlineDocumentReport} from "react-icons/hi";
@@ -14,19 +14,19 @@ import { MdInventory, MdAddBox, MdViewList, MdDelete } from "react-icons/md";
 import { MdCategory } from "react-icons/md";
 import { MdAddCircleOutline,MdAccountTree   } from "react-icons/md";
 import { FaFileInvoice } from "react-icons/fa";
-import { FiMapPin } from "react-icons/fi";
+import { FiMapPin, FiTarget } from "react-icons/fi";
 import { FaProjectDiagram } from "react-icons/fa";
 import { FaClipboardList,FaCalculator,FaWallet,FaList,FaTrash,FaFileInvoiceDollar,FaBookOpen,FaMoneyCheckAlt} from "react-icons/fa";
   import { FaEdit,FaStore } from "react-icons/fa";
   import { Receipt,CalendarCheck,BellRing,Handshake,BookText,Clock,FileSpreadsheet,BarChart3, User2 } from "lucide-react";
   import { HiOutlinePrinter } from "react-icons/hi";
   import { Printer, Barcode } from "lucide-react";
-import {RiDashboardLine,RiUserAddLine,RiUser3Line,RiFileList3Line,RiBarChartLine,RiSettings3Line,} from "react-icons/ri";
+import {RiDashboardLine,RiUserAddLine,RiUser3Line,RiFileList3Line,RiBarChartLine,RiSettings3Line, RiTeamFill,} from "react-icons/ri";
 import { UserCheck,DollarSign,Package } from "lucide-react";
 import { BsUpcScan } from "react-icons/bs";
 import { Ticket } from "lucide-react";
 import { BsCreditCard2Front } from "react-icons/bs";
-import { BiPurchaseTagAlt } from "react-icons/bi";
+import { BiPurchaseTagAlt, BiSolidPurchaseTag } from "react-icons/bi";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { FaShoppingCart } from "react-icons/fa";
 import { FaReceipt } from "react-icons/fa";
@@ -38,6 +38,10 @@ import { FiLogOut } from "react-icons/fi";
 import { MdUploadFile } from "react-icons/md";
 import { FaKey } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa";
+import { RxComponent1 } from "react-icons/rx";
+import { IoBarChart, IoCreate, IoReceipt } from "react-icons/io5";
+import { IoMdPersonAdd } from "react-icons/io";
+
 
 const Newsidebar = () => {
   const location = useLocation();
@@ -74,9 +78,11 @@ const Newsidebar = () => {
   const sidebarButtonStyle = {
     variant: "ghost",
     justifyContent: "flex-start",
-    fontWeight: "700",
-    color: "#333333",
+    fontWeight: "600",
+    color: "#29404a",
+    fontSize: "14px",
     transition: "all 0.3s ease", 
+    paddingLeft: "21px !important",
 
     _hover: {
       bg: "gray.100",
@@ -123,15 +129,16 @@ const Newsidebar = () => {
       key: "business",
       icon: FaChartLine,
       children: [
-        {label: "Create Team",path: "/Business-dev/create-team",icon: FaUserPlus, },
-        {label: "Create Sub Team",path: "/Business-devt/create-sub-team",icon: HiUserGroup,},
-        { label: "Assign Target RSM", path: "/Business-devt/assign-target-rsm",  icon: MdAssignmentInd,},
-        {label:"Assign Target TSM", path:"/Business-devt/assign-target-tsm",icon:FaUserTie,},
-        {label:"Assign Target SM",path:"/Business-devt/assign-target-sm",icon:FaBullseye,},
-        {label:"Assign Target FA", path:"/Business-devt/assign-target-fa",icon:UserCheck ,}
+        {label: "Create Team",path: "/business-development/create-team",icon: FaUserPlus, },
+        {label: "Create Sub Team",path: "/business-development/create-sub-team",icon: HiUserGroup,},
+        { label: "Assign Target", path: "/business-development/assign-target",  icon: MdAssignmentInd,},
+        { label: "View Teams", path: "/business-development/view-teams",  icon: RiTeamFill ,},
+        { label: "View Assigned Targets", path: "/business-development/view-assigned-targets",  icon: FiTarget  ,},
+        { label: "View Employee Targets", path: "/business-development/view-employee-targets",  icon: FaUserAlt   ,},
+
       ],
     },
-    {   label: "Distributor",
+    {   label: "Distributor Argeement",
       key: "distributor",
       icon: FaProjectDiagram,
        children: [
@@ -147,13 +154,10 @@ const Newsidebar = () => {
       children: [
         {label:"Create Group", path:"/accounting-master/create-group",icon:MdGroupAdd},
         {label:"View Group",path:"/accounting-master/view-group",icon:FaList},
-        {label:"Delete Group",path:"/accounting-master/delete-group",icon:FaTrash},
         {label:"Create Ledger",path:"/accounting-master/create-ledger", icon:FaFileInvoiceDollar},
         {label:"View Ledger",path:"/accounting-master/view-ledger", icon:FaFileInvoice},
-        {label:"Delete Ledger",path:"/accounting-master/delete-ledger", icon:FaTrash},
         {label:"Create Voucher",path:"/accounting-master/create-voucher", icon:FaMoneyCheckAlt},
         {label:"View Voucher", path:"/accounting-master/view-voucher", icon:FaFileInvoice },
-        {label:"Delete Voucher",path:"/accounting-master/delete-voucher", icon:FaTrash},
         {label:"Edit Ledger Assignment",path:"/accounting-master/edit-ledger-assignment",  icon:FaEdit },
         {label:"Retail Assignment" ,path:"/accounting-master/retail-assignment", icon:FaStore },
       ] },
@@ -163,51 +167,67 @@ const Newsidebar = () => {
       icon: MdCorporateFare,
       children: [
         {label:"Create Company",path:"/company-master/create-company",icon:HiOfficeBuilding},
-        {label:"Company List",path:"/company-master/comapny-list",icon:FaCity},
-         
-
+        {label:"Company List",path:"/company-master/comapny-list",icon:FaCity},        
       ]
       },
-      
-      {
-          label:"Reports",key:"Reports",icon:RiBarChartLine,path:"/report",
-          children:[
-            {label:"Attendance Report",path:"/report/emp-attendance-report",icon:CalendarCheck},
-            {label:"Scheduling & Alert Report",path:"/report/scheduling-alert-report",icon:BellRing },
-            {label:"Party Transaction Report",path:"/report/party-transaction-report",icon:Handshake},
-            {label:" Employee Expense Report",path:"/report/get-emp-expense-report",icon:Receipt},
-            {label:"Party Ledger Report",path:"/report/party-ledger-report",icon:BookText},
-            {label:"Credit Days Reminder Report",path:"/report/credit-days-reminder-report",icon:Clock},
-            {label:"Employee Balance Sheet",path:"/report/emp-balance-sheet",icon:FileSpreadsheet},
-            {label:"Interest Report",path:"/report/interest-report",icon:BarChart3},
-            {label:"Salary Report",path:"/report/emp-salary-report",icon:DollarSign},
-            {label:"Product Report",path:"/report/product-report",icon:Package},
-            {label:"Item Stock Report",path:"/report/item-stock-report",icon:Package},
-            {label:"Track Employee",path:"/report/track-employee",icon:FiMapPin},
-            {label:"Employee Visit Report",path:"/report/emp-visit-report",icon:HiOutlineDocumentReport},
-            {label:"Employee Distributor Details",path:"/report/emp-distributor-details",icon:MdPeople},
-            {label:"Super Cash Bill Report",path:"/report/supercash-bill-report",icon:MdReceiptLong},
-            {label:"P & L Report",path:"/report/psl-report",icon:MdAssessment},
-            {label:"Fright Report",path:"/report/fright-report",icon:MdLocalShipping},
-            {label:"Transport Fright Report",path:"/report/transport-fright-report",icon:MdDirectionsBus},
-            {label:"Item P & L Report",path:"/report/item-psl-report",icon:MdInventory},
-            {label:"manufacturing Report",path:"/report/manufacturing-report",icon:MdFactory},
-            {label:"Stock Transfer Report",path:"/report/stock-transfer-report",icon:MdSwapHoriz},
-            {label:"Pending Collection Report",path:"/report/pending-collection-report",icon:MdPendingActions},
-            {label:"Employee Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
-            {label:"Digio KYC Report",path:"/report/emp-kyc-report",icon:MdTrendingUp},
-          ]
-      },
-      {
+            {
         label:"Inventory Master",key:"inventory",icon:MdInventory,
         children:[
           {label:"Create Stock Group",path:"/inventory/create-stock-group",icon:MdAddBox},
           {label:"View Stock Group",path:"/inventory/view-stock-group",icon:MdViewList},
           {label:"Create Stock Category",path:"/inventory/create-stock-category",icon:MdCategory},
           {label:"View Stock Category",path:"/inventory/view-stock-category",icon:MdAddCircleOutline},
-         
+          {label:"Create Stock Item",path:"/inventory/create-stock-item",icon:MdOutlineInventory2  },
+          {label:"View Stock Item",path:"/inventory/view-stock-item",icon:MdOutlineInventory2  },
+          {label:"Create Godown",path:"/inventory/create-godown",icon:FaWarehouse},
+          {label:"View Godown",path:"/inventory/view-godown-list",icon:FaListAlt  },
+          {label:"Create Unit of Measure",path:"/inventory/create-unitOfMeasure",icon:RxComponent1  },
+          {label:"View Unit of Measure ",path:"/inventory/unit-list",icon:FaTable   },
+          {label:"Material Manufacturing",path:"/inventory/material-manufacturing",icon:MdAddCircleOutline   },
+          {label:"Stock Transfer",path:"/inventory/stock-transfer",icon:FaCity   },
         ]
-      },{
+      },
+      
+      {
+          label:"Reports",key:"Reports",icon:RiBarChartLine,path:"/report",
+          children:[
+            {label:"Attendance Report",path:"/report/emp-attendance-report",icon:CalendarCheck},
+            {label:"Employee Visit Report",path:"/report/emp-visit-report",icon:HiOutlineDocumentReport},
+            {label:" Employee Expense Report",path:"/report/get-emp-expense-report",icon:Receipt},
+            {label:"Daily Salary Report",path:"/report/emp-salary-report",icon:DollarSign},
+            {label:"Monthly Salary Report",path:"/report/emp-monthly-salary-report",icon:DollarSign},
+            {label:"Track Employee",path:"/report/track-employee",icon:FiMapPin},
+            {label:"Scheduling & Alert Report",path:"/report/scheduling-alert-report",icon:BellRing },
+            {label:"Party Transaction Report",path:"/report/party-transaction-report",icon:Handshake},
+            {label:"Party Ledger Report",path:"/report/party-ledger-report",icon:BookText},
+            {label:"Credit Days Reminder Report",path:"/report/credit-days-reminder-report",icon:Clock},
+            {label:"Employee Balance Sheet",path:"/report/emp-balance-sheet",icon:FileSpreadsheet},
+            {label:"Interest Report",path:"/report/interest-report",icon:BarChart3},
+            {label:"Product Report",path:"/report/product-report",icon:Package},
+            {label:"Item Stock Report",path:"/report/item-stock-report",icon:Package},
+            {label:"Employee Distributor Details",path:"/report/emp-distributor-details",icon:MdPeople},
+            {label:"Super Cash Bill Report",path:"/report/supercash-bill-report",icon:MdReceiptLong},
+            {label:"P & L Report",path:"/report/psl-report",icon:MdAssessment},
+            {label:"Fright Report",path:"/report/fright-report",icon:MdLocalShipping},
+            {label:"Transport Fright Report",path:"/report/transport-fright-report",icon:MdDirectionsBus},
+            {label:"Item P & L Report",path:"/report/item-psl-report",icon:MdInventory},
+            {label:"Manufacturing Report",path:"/report/manufacturing-report",icon:MdFactory},
+            {label:"Stock Transfer Report",path:"/report/stock-transfer-report",icon:MdSwapHoriz},
+            {label:"Pending Collection Report",path:"/report/pending-collection-report",icon:MdPendingActions},
+            {label:"Emp. Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
+            // {label:"Digio KYC Report",path:"/report/emp-kyc-report",icon:MdTrendingUp},
+          ]
+      },
+      {
+        label: "Transaction Master", key: "transaction-master", icon: FaExchangeAlt,
+        children: [
+          {label: "Purchase", path: "/transaction-master/purchase" , icon: BiSolidPurchaseTag},
+          {label: "Payment", path: "/transaction-master/payment" , icon: MdPayment},
+          {label: "Sale", path: "/transaction-master/sale" , icon: IoBarChart },
+          {label: "Receipt", path: "/transaction-master/receipt" , icon: IoReceipt },
+        ]
+      },
+      {
         label:"Order Vochor",key:"order-vochor",icon:FaFileInvoice,
          children:[
           {label:"Payment",path:"/order-vochor/payment",icon:FiMapPin},
@@ -217,7 +237,16 @@ const Newsidebar = () => {
           {label:"Credit",path:"/order-vochor/credit",icon:BsCreditCard2Front},
           {label:"Debit",path:"/order-vochor/debit",icon:FaMoneyBillWave},
          ]
-      },{
+      },
+      {
+        label:"Misc",key:"misc",icon:MdAttractions ,
+         children:[
+          {label:"Activate/Deactivate Voucher",path:"/misc/voucher-action",icon:FaMoneyBill  },      
+          {label:"Define Retailer",path:"/misc/create-retailer",icon:IoMdPersonAdd   },      
+          {label:"View Retailer",path:"/misc/view-retailers",icon:IoCreate  },      
+         ]
+      },
+      {
         label:"Print MGMT",key:"print_mgmt",icon:HiOutlinePrinter,
         children:[
           {label:"Shipping label printer",path:"/print/mgmt/shipping_lable_printer",icon:BsUpcScan},
@@ -232,15 +261,16 @@ useEffect(() => {
 
   const menuMap = {
     "/hr-mgmt": "users",
-    "/Business-dev": "business",
-    "/Business-devt": "business",
+    "/business-development": "business",
+    "/business-developmentelopment": "business",
     "/distributor":"distributor",
     "/accounting-master": "accounting-master",
     "/company-master": "company-master",
     "/leads": "leads",
-    "/report":"Reports",
     "/inventory": "inventory",
     "/order-vochor": "order-vochor",
+    "/report":"Reports",
+    "/misc": "misc",
     "/print/mgmt": "print_mgmt",
     
   };
@@ -268,7 +298,7 @@ useEffect(() => {
      
 
   borderRight="1px solid #e5e7eb"
-    borderColor="gray.200"
+    borderColor="gray.300"
       overflowY="auto"
       h="100vh"
      sx={{
@@ -314,7 +344,7 @@ useEffect(() => {
             <Box key={index}>
               <Button
               w="92%"
-                leftIcon={<IconComponent />}
+                leftIcon={<IconComponent color="#526869" />}
                 rightIcon={
                   <Icon
                     as={
@@ -326,7 +356,7 @@ useEffect(() => {
                 }
                 {...sidebarButtonStyle}
                 onClick={() => toggleMenu(menu.key)}
-                style={parentActive ? activeStyle : undefined} // ⭐ APPLY STYLE
+                style={parentActive ? activeStyle : undefined} //  APPLY STYLE
               >
                 {menu.label}
               </Button>
@@ -339,7 +369,8 @@ useEffect(() => {
                       <Button
                       w="92%"
                         key={i}
-                        leftIcon={<ChildIcon size={17}/>}
+                       
+                        leftIcon={<ChildIcon size={17} color="#526869"/>}
                         size="sm"
                         as={NavLink}
                         to={item.path}
@@ -347,12 +378,12 @@ useEffect(() => {
                         style={activeLinkStyle}
                         overflowX="auto"
                          sx={{
-    scrollbarWidth: "none",      
-    msOverflowStyle: "none",       
-    "&::-webkit-scrollbar": {
-      display: "none",             
-    },
-  }}
+                      scrollbarWidth: "none",      
+                         msOverflowStyle: "none",       
+                         "&::-webkit-scrollbar": {
+                           display: "none",             
+                         },
+                       }}
                       >
                         {item.label}
                       </Button>
@@ -381,10 +412,9 @@ useEffect(() => {
       <Button
          rightIcon={<FiLogOut/>}
          variant="ghost"
-         size="md"  
+         size="md"   className="logout_btn"
          onClick={logout}
-         border="1px solid gray"
-         w="100%"
+        
          _hover={{bgColor:"#f4bfbf", border:"1px solid #e48f8f", color:"#971345"}}
       >
         Logout

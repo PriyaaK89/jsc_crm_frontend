@@ -1564,7 +1564,6 @@ function DistributorAgreement() {
             <Input
               name="security_cheque_no"
               value={formData.security_cheque_no}
-              value={formData.security_cheque_no}
               onChange={handleChange}
             />         {errors.security_cheque_no && (
               <Text color="red.500" fontSize="sm">
@@ -1789,7 +1788,6 @@ function DistributorAgreement() {
         <Button ml={5}
           colorScheme="teal"
           mt={6}
-          type="button"
           type="button"
           onClick={handleformSubmit}
         //  isDisabled={!formData.customer_name || !formData.gst_number}

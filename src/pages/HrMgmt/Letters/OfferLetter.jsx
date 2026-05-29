@@ -33,7 +33,7 @@ const OfferLetterPage = () => {
 
 
   const [formData, setFormData] = useState({
-    area: "",
+    working_area: "",
     headquarter: "",
     salary_norms: "",
     salary_norms1: "",
@@ -63,7 +63,7 @@ const OfferLetterPage = () => {
       // Prefill formData
       setFormData((prev) => ({
         ...prev,
-        area: emp.area || "",
+        working_area: emp.working_area || "",
         headquarter: emp.headquarter || "",
         emp_state: emp.state || "",
       }));
@@ -114,7 +114,7 @@ const OfferLetterPage = () => {
         bg="gray.50"
         borderRadius="lg"
         border="1px solid"
-        borderColor="gray.200"
+        borderColor="gray.300"
         mb={8}
       >
         <Heading size="sm" mb={4} color="gray.600">
@@ -174,9 +174,9 @@ const OfferLetterPage = () => {
           </FormControl>
 
           <FormControl>
-            <FormLabel>Area</FormLabel>
-            <Input placeholder="Enter Area" value={formData.area}
-              onChange={(e) => setFormData({ ...formData, area: e.target.value })} />
+            <FormLabel>Working Area</FormLabel>
+            <Input placeholder="Enter Working Area" value={formData.working_area}
+              onChange={(e) => setFormData({ ...formData, working_area: e.target.value })} />
           </FormControl>
 
           <FormControl>

@@ -107,7 +107,6 @@ const DistributorsList = () => {
   const headers = [
     "S.No",
     "Customer Name",
-    // "Cutomer Date of Birth",
     "Firm Name",
     "view Dist.",
     "GST No",
@@ -116,46 +115,14 @@ const DistributorsList = () => {
     "Business Address",
     "State",
     "District",
-    // "Tehsil",
-    // "Landmark",
-    // "Pincode",
     "Contact Number",
-    // "Alternate Contact Number",
-    // "Renponsible Person Name",
-    // "Renponsible Person Contact No",
     "Firm Email",
-    // "Firm Pan",
-    // "Firm Aadhar",
-    // "Jurisdiction Area",
-    // "Branch",
     "Seed License No",
-    // "Fertilizer License No",
-    // "Pesticide License No",
-    // "Source of Funds",
-    // "Own Funds Details",
-    // "Bank Name",
-    // "Bank Account No",
-    // "IFSC Code",
-    // "Bank Branch",
-    // "Security Cheque No",
     "Security Amount",
     "Credit Duration",
-    // "Annual Turnover",
-    // "Expected Sale",
-    // "Approver Name",
-    // "Approvering Date",
     "Created At",
-    // "Approver Image",
-    // "Firm Landmark",
-    // "Business Territory",
-    // "Firm Landmark",
-    // "Responsible Person Address",
-    // "Responsible Person Alt Contact No",
-    // "Firm Since",
     "Seed License Expiry",
     "Transport Name A",
-    // "Transport Name B",
-    // "Security Cheque No 2",
     "Created By Name",
     "Partners",
     "Companies",
@@ -457,53 +424,14 @@ const DistributorsList = () => {
                     <Td>{item?.business_address || "-"}</Td>
                     <Td>{item?.state || "-"}</Td>
                     <Td>{item?.district || "-"}</Td>
-                    {/* <Td>{item?.tehsil || "-"}</Td> */}
-                    {/* <Td>{item?.landmark || "-"}</Td> */}
-                    {/* <Td>{item?.pincode || "-"}</Td> */}
                     <Td>{item?.contact_number || "-"}</Td>
-                    {/* <Td>{item?.alt_contact_number || "-"}</Td> */}
-                    {/* <Td>{item?.responsible_person_name || "-"}</Td> */}
-                    {/* <Td>{item?.responsible_person_contact || "-"}</Td> */}
                     <Td>{item?.firm_email || "-"}</Td>
-                    {/* <Td>{item?.firm_pan || "-"}</Td> */}
-                    {/* <Td>{item?.firm_aadhar || "-"}</Td> */}
-                    {/* <Td>{item?.jurisdiction_area || "-"}</Td> */}
-                    {/* <Td>{item?.branch || "-"}</Td> */}
                     <Td>{item?.seed_license_no || "-"}</Td>
-                    {/* <Td>{item?.fertilizer_license_no || "-"}</Td> */}
-                    {/* <Td>{item?.pesticide_license_no || "-"}</Td> */}
-                    {/* <Td>{item?.source_of_funds || "-"}</Td> */}
-                    {/* <Td>{item?.own_funds_details || "-"}</Td> */}
-                    {/* <Td>{item?.bank_name || "-"}</Td> */}
-                    {/* <Td>{item?.bank_account_no || "-"}</Td> */}
-                    {/* <Td>{item?.ifsc_code || "-"}</Td> */}
-                    {/* <Td>{item?.bank_branch || "-"}</Td> */}
-                    {/* <Td>{item?.security_cheque_no || "-"}</Td> */}
                     <Td>{item?.security_amount || "-"}</Td>
                     <Td>{item?.credit_duration || "-"}</Td>
-                    {/* <Td>{item?.annual_turnover || "-"}</Td> */}
-                    {/* <Td>{item?.expected_sale || "-"}</Td> */}
-                    {/* <Td>{item?.approver_name || "-"}</Td> */}
-                    {/* <Td> {formatDate(item?.approving_date || "-")} </Td> */}
-
                     <Td> {formatDateTime(item?.created_at || "-")} </Td>
-                    {/* <Td>
-                      <Img
-                        src={item?.approver_image}
-                        alt="approver image"
-                        boxSize="16px"
-                        cursor="pointer"
-                      />
-                    </Td> */}
-                    {/* <Td>{item?.business_territory || "-"}</Td> */}
-                    {/* <Td>{item?.firm_landmark || "-"}</Td> */}
-                    {/* <Td>{item?.responsible_person_address || "-"}</Td> */}
-                    {/* <Td>{item?.responsible_person_alt_contact || "-"}</Td> */}
-                    {/* <Td> {formatDate(item?.firm_since || "-")}</Td> */}
                     <Td> {formatDate(item?.seed_license_expiry || "-")}</Td>
                     <Td>{item?.transport_name_a || "-"}</Td>
-                    {/* <Td>{item?.transport_name_b || "-"}</Td> */}
-                    {/* <Td>{item?.security_cheque_no_2 || "-"}</Td> */}
                     <Td>{item?.created_by_name || "-"}</Td>
                     <Td>
                       <Button
@@ -590,11 +518,16 @@ const DistributorsList = () => {
         </Box>
         <Pagination
           page={page}
-          setPage={setPage}
           limit={limit}
-          setLimit={setLimit}
           totalItems={totalItems}
           totalPages={totalPages}
+          onPageChange={(newPage) => {
+            setPage(newPage);
+          }}
+          onLimitChange={(newLimit) => {
+            setPage(1);
+            setLimit(newLimit);
+          }}
         />
       </Box>
     </>

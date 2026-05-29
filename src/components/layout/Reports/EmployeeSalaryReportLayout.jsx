@@ -10,7 +10,7 @@ import NotificationBtn from "../../NotificationBtn/NotificationBtn";
 
 const EmployeeSalaryReportLayout = () => {
   return (
-    <Box bg="#F3F3F3" minH="100vh" >
+    <Box bg="#f2f1f1" minH="100vh" >
              <Box display={{ base: "none", md: "block" }}>
                <Sidebar />
        

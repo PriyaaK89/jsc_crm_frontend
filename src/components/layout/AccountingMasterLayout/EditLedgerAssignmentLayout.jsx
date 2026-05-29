@@ -3,12 +3,12 @@ import Sidebar from "../Sidebar";
 import Topbar from "../Topbar";
 import MobileTopbar from "../MobileTopbar";
 import { Flex,Box } from '@chakra-ui/react';
-import EditLedgerAssignment from '../../../pages/HrMgmt/AccountingMaster/EditLedgerAssignment';
 import NotificationBtn from '../../NotificationBtn/NotificationBtn';
+import EditLedgerAssignment from '../../../pages/HrMgmt/AccountingMaster/EditLedgerAssignment';
 
 function EditLedgerAssignmentLayout() {
   return (
-  <Box bg="#F3F3F3" minH="100vh" >
+  <Box bg="#f2f1f1" minH="100vh" >
         <Box display={{ base: "none", md: "block" }}>
           <Sidebar />
   
@@ -26,7 +26,7 @@ function EditLedgerAssignmentLayout() {
           pb={6}
         >
           <NotificationBtn/>
-          <EditLedgerAssignment />
+          <EditLedgerAssignment/>
         </Box>
       </Box>
   )

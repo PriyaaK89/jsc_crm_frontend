@@ -189,7 +189,7 @@ const ViewUploadedDocument = ({ isOpen, onClose, selectedId }) => {
                             objectFit="cover"
                             borderRadius="8px"
                             border="1px solid"
-                            borderColor="gray.200"
+                            borderColor="gray.300"
                           />
 
                           <Box

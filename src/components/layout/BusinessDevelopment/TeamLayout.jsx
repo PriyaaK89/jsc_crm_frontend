@@ -1,13 +1,14 @@
 import React from 'react'
-import Sidebar from "../Sidebar";
-import Topbar from "../Topbar";
-import MobileTopbar from "../MobileTopbar";
-import { Flex,Box,Text } from '@chakra-ui/react';
-import DeleteGroup from '../../../pages/HrMgmt/AccountingMaster/DeleteGroup';
+import { Flex,Box } from '@chakra-ui/react';   
+import Sidebar from '../Sidebar';
+import Topbar from '../Topbar';
+import MobileTopbar from '../MobileTopbar';
 import NotificationBtn from '../../NotificationBtn/NotificationBtn';
-function DeleteGroupLayout() {
+import ViewTeams from '../../../pages/BusinessDevelopment/ViewTeams';
+
+function TeamLayout() {
   return (
-   <Box bg="#F3F3F3" minH="100vh" >
+     <Box bg="#f2f1f1" minH="100vh" >
          <Box display={{ base: "none", md: "block" }}>
            <Sidebar />
    
@@ -25,10 +26,10 @@ function DeleteGroupLayout() {
            pb={6}
          >
            <NotificationBtn/>
-           <DeleteGroup />
+           <ViewTeams/>
          </Box>
        </Box>
   )
 }
 
-export default DeleteGroupLayout
+export default TeamLayout

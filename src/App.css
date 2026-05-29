@@ -32,25 +32,43 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "Poppins";
+  src: url('../public/fonts/Poppins-Medium.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+.action_heading{
+      text-align: left;
+    width: 95%;
+    margin: auto;
+    font-size: 21px;
+    color: #516b6b;
+    font-family: 'Poppins';
+}
+
 .productsTable tbody tr td{
     color: #6E7079;
     font-size: 13px;
     font-family: 'InterRegular';
-    border-bottom: 2px solid #f3f3f3;
-    border-top: 2px solid #f3f3f3;
+    border-bottom: 2px solid #F4F4F4;
+    border-top: 2px solid #F4F4F4;
     padding: 4px 20px;
     height: 50px;
 
 }
 .productsTable tbody{
-  border-left: 1px solid #f3f3f3;
-  border-right: 1px solid #f3f3f3;
+  border-left: 1px solid #F4F4F4;
+  border-right: 1px solid #F4F4F4;
+
 }
 
 .productsTable Thead Tr Th{
   padding: 4px 20px;
   /* border-top: 1px solid #E1E2E9; */
   border-bottom: 1px solid #E1E2E9;
+  text-transform: capitalize;
 
 }
 .productsTable Thead{
@@ -142,7 +160,7 @@ padding: 40px;
 }
 .chakra-form__label{
   font-size: 12px !important;
-  color: #686868;
+  color: #494949;
   margin-bottom: 3px !important;
 }
 .chakra-checkbox__label{
@@ -174,11 +192,9 @@ padding: 40px;
 }
 
 @media (min-width: 766px) and (max-width:900px) {
-
   .empsalaryreporttableres{
     width: 60% !important;
   }
-
 }
 
 
@@ -186,4 +202,90 @@ padding: 40px;
 height: 50px !important;
 }
 
+.logout_btn{
+    color: #4e4e4e;
+    background: #ffffff;
+    margin-bottom: 30px !important;
+    width: 90%;
+    margin: auto;
+    border-radius: 10px;
+    border: 1px solid #aaaaaa;
+}
 
+.css-1w1pjt7{
+  font-size: 14px !important;
+    color: #464646;
+}
+
+.chakra-input{
+    font-size: 14px !important;
+    color: #464646;
+}
+
+.badge{
+      font-size: 10px !important;
+    padding: 4px 8px !important;
+    border-radius: 18px !important;
+}
+
+.submit_btn{
+  background: #237086 !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  color: white !important;
+  padding: 0px 54px !important;
+  border-radius: 12px !important;
+}
+.submit_btn:hover{
+  background: #1B5A6B !important;
+}
+
+.chakra-input{
+  border-color: #a7acad !important;
+}
+
+.chakra-select{
+    border-color: #a7acad !important;
+}
+
+.ledger_heading{
+  color: rgb(85, 85, 85) !important;
+  background: #eaecf4 !important;
+  padding: 3px 0px 3px 10px !important;
+/* color="gray.700" bg="gray.200" padding="3px 0px 3px 10px" */
+}
+
+.ledger_box{
+  background: #fbfbfb !important;
+  border: 1px solid #d5d5d5 !important;
+  border-radius: 6px !important;
+}
+
+.ledger_badge{
+      font-size: 11px !important;
+    font-weight: 500 !important;
+    text-transform: capitalize !important;
+    padding: 3px 6px !important;
+    border-radius: 20px !important;
+}
+
+.material_mfg thead tr th{
+  letter-spacing: 0px;
+  font-size: 11px;
+  padding: 10px 6px 5px 16px;
+}
+
+.material_mfg tbody tr td{
+  padding-top: 12px;
+  padding-bottom: 12px
+}
+
+.stock_transfer_table tbody tr td{
+  border-bottom: none;
+  padding: 9px 5px;
+}
+
+.stock_transfer_table thead tr th{
+  padding: 13px 10px !important;
+  font-size: 12px;
+}

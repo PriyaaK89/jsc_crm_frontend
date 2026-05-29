@@ -8,7 +8,7 @@ import NotificationBtn from "../NotificationBtn/NotificationBtn";
 
 const CreateTeamLayout = ()=>{
     return(
-        <Box bg="#F3F3F3" minH="100vh" >
+        <Box bg="#f2f1f1" minH="100vh" >
                  <Box display={{ base: "none", md: "block" }}>
                    <Sidebar />
            
@@ -20,8 +20,8 @@ const CreateTeamLayout = ()=>{
                    <MobileTopbar />
                  </Box>
                  <Box
-                   ml={{ base: 5, md: "295px" }}
-                   mr={{base:5, md:5}}
+                   ml={{sm: 2,  base: 2, md: "295px" }}
+                   mr={{sm: 2,base:2, md:5}}
                    pt="5rem"
                    pb={6}
                  >

@@ -21,14 +21,14 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 
 const COLORS = [
-  "#4F46E5", // Indigo
-  "#22C55E", // Green
+  "#3c6586", // Indigo
+  "#2ba056", // Green
   "#F59E0B", // Yellow
   "#EF4444", // Red
-  "#0EA5E9", // Blue
+  "#47a1ca", // Blue
 ];
 
-// 🔥 Modern Tooltip
+//  Modern Tooltip
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
@@ -82,36 +82,24 @@ export default function MyPieChart() {
     if (date) fetchChartData();
   }, [date]);
 
-  // 🔥 total for center
+  //  total for center
   const total = chartData.reduce((acc, item) => acc + item.value, 0);
 
   return (
-    <Box
-      bg="white"
-      p={5}
-      borderRadius="2xl"
-      boxShadow="sm"
-      w="100%"
-      maxW="500px"
-    >
+    <Box bg="white" borderRadius="13px" boxShadow="0px 2px 6px #c6c6c6" w="100%" maxW="500px" mt={8}>
       {/* Header */}
-      <Flex justify="space-between" align="center" mb={4}>
-        <Text fontWeight="bold" fontSize="lg">
+      <Flex justify="space-between" align="flex-start" padding="14px 14px 8px" background="#e3eeeb" borderRadius="13px 13px 0px 0px">
+        <Text fontWeight="bold" fontSize="16px" color="#464748">
           Employee Summary
         </Text>
 
-        <FormControl maxW="160px">
-          <Input
-            size="sm"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
+        <FormControl maxW="160px" bg="white" borderRadius="12px">
+          <Input size="sm" type="date" value={date} onChange={(e) => setDate(e.target.value)} borderRadius="12px" />
         </FormControl>
       </Flex>
 
       {/* Chart */}
-      <Box position="relative" h="260px">
+      <Box position="relative" h="260px" >
         <ResponsiveContainer>
           <PieChart>
             <Pie
@@ -133,7 +121,7 @@ export default function MyPieChart() {
           </PieChart>
         </ResponsiveContainer>
 
-        {/* 🔥 Center Content */}
+        {/*  Center Content */}
         <Flex
           position="absolute"
           top="50%"
@@ -153,7 +141,8 @@ export default function MyPieChart() {
 
       <Divider my={4} />
 
-      {/* 🔥 Legend (Custom Professional) */}
+      {/*  Legend (Custom Professional) */}
+      <Box p={5}>
       <VStack align="stretch" spacing={2}>
         {chartData.map((item, index) => (
           <Flex key={index} justify="space-between" align="center">
@@ -164,10 +153,10 @@ export default function MyPieChart() {
                 borderRadius="full"
                 bg={COLORS[index % COLORS.length]}
               />
-              <Text fontSize="13px">{item.name}</Text>
+              <Text fontSize="11px">{item.name}</Text>
             </HStack>
 
-            <Text fontSize="13px" fontWeight="medium">
+            <Text fontSize="11px" fontWeight="medium">
               {item.value}
             </Text>
           </Flex>
@@ -179,6 +168,7 @@ export default function MyPieChart() {
         <Text fontSize="12px" color="gray.600">
           Completed Day: {summary.completed_day || 0}
         </Text>
+      </Box>
       </Box>
     </Box>
   );

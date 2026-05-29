@@ -170,7 +170,7 @@ const CreateLedger = () => {
 
   const fetchEmployees = async () => {
     try {
-      const res = await API.get(API_ENDPOINTS.GET_USERS);
+      const res = await API.get(API_ENDPOINTS?.get_user_list);
       setEmployees(res.data.data || []);
     } catch (err) {
       console.error("fetchEmployees:", err);
@@ -506,6 +506,7 @@ const CreateLedger = () => {
         status: "success",
         duration: 3000,
         isClosable: true,
+        
       });
 
       // Reset form to initial state after successful submission

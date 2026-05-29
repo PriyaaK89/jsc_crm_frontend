@@ -2,9 +2,9 @@ import {Box,VStack,Text,Button,Collapse,Icon, Image, useToast } from "@chakra-ui
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
-import { MdAssignmentInd, MdAttractions, MdOutlineInventory2, MdOutlineTrackChanges } from "react-icons/md";
+import { MdAssignmentInd, MdAttractions, MdOutlineInventory2, MdOutlineTrackChanges, MdPayment } from "react-icons/md";
 import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
-import { FaListAlt, FaMoneyBill, FaTable, FaUserAlt, FaUserTie, FaWarehouse } from 'react-icons/fa';
+import { FaExchangeAlt, FaListAlt, FaMoneyBill, FaTable, FaUserAlt, FaUserTie, FaWarehouse } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
 import { MdCorporateFare, MdGroupAdd } from "react-icons/md";
 import { HiOfficeBuilding ,HiOutlineDocumentReport} from "react-icons/hi";
@@ -26,7 +26,7 @@ import { UserCheck,DollarSign,Package } from "lucide-react";
 import { BsUpcScan } from "react-icons/bs";
 import { Ticket } from "lucide-react";
 import { BsCreditCard2Front } from "react-icons/bs";
-import { BiPurchaseTagAlt } from "react-icons/bi";
+import { BiPurchaseTagAlt, BiSolidPurchaseTag } from "react-icons/bi";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { FaShoppingCart } from "react-icons/fa";
 import { FaReceipt } from "react-icons/fa";
@@ -39,8 +39,9 @@ import { MdUploadFile } from "react-icons/md";
 import { FaKey } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa";
 import { RxComponent1 } from "react-icons/rx";
-import { IoCreate } from "react-icons/io5";
+import { IoBarChart, IoCreate, IoReceipt } from "react-icons/io5";
 import { IoMdPersonAdd } from "react-icons/io";
+
 
 const Newsidebar = () => {
   const location = useLocation();
@@ -216,7 +217,17 @@ const Newsidebar = () => {
             {label:"Emp. Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
             // {label:"Digio KYC Report",path:"/report/emp-kyc-report",icon:MdTrendingUp},
           ]
-      },{
+      },
+      {
+        label: "Transaction Master", key: "transaction-master", icon: FaExchangeAlt,
+        children: [
+          {label: "Purchase", path: "/transaction-master/purchase" , icon: BiSolidPurchaseTag},
+          {label: "Payment", path: "/transaction-master/payment" , icon: MdPayment},
+          {label: "Sale", path: "/transaction-master/sale" , icon: IoBarChart },
+          {label: "Receipt", path: "/transaction-master/receipt" , icon: IoReceipt },
+        ]
+      },
+      {
         label:"Order Vochor",key:"order-vochor",icon:FaFileInvoice,
          children:[
           {label:"Payment",path:"/order-vochor/payment",icon:FiMapPin},

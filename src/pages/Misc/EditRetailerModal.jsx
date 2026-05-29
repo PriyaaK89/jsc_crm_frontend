@@ -29,6 +29,7 @@ const EditRetailerModal = ({ isOpen, onClose, selectedId, getRetailerList,}) => 
           name: retailer?.name || "",
           firm_name: retailer?.firm_name || "",
           contact_number: retailer?.contact_number || "",
+          district: retailer?.district || "",
           address: retailer?.address || "",
           firm_address: retailer?.firm_address || "",
           area: retailer?.area || "",
@@ -271,6 +272,7 @@ const EditRetailerModal = ({ isOpen, onClose, selectedId, getRetailerList,}) => 
               </FormLabel>
 
               <Input
+              name="district"
                 value={data.district}
                 isReadOnly
               />

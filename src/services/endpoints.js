@@ -177,7 +177,15 @@ export const API_ENDPOINTS = {
   GET_NEXTVOUCHER_NO: "next-voucher-no",
   CREATE_PURCHASE: "create-purchase-order",
   GET_PURCHASE_LEDGER_DROPDOWN: "purchase-ledger-dropdown",
-  
+  GET_PARTY_LEDGER_REPORT: "get-party-ledger-report",
+
+  GET_BANK_ACCOUNT_LEDGER_DROPDOWN: "bank-ledger-dropdown",
+  GET_BILL_REFERENCE: "bill-references",
+  CREATE_PAYMENT: "create-payment",
+
+  GENERATE_PURCHASE_INVOICE: "purchase-invoice/print",
+  GENERATE_PAYMENT_INVOICE: "payment-invoice/print",
+  PURCHASE_INVOIVE: "purchase/pdf",
   
 };
 // 

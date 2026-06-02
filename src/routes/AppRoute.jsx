@@ -97,6 +97,9 @@ import CreateRetailerLayout from "../components/layout/MiscActions/CreateRetaile
 import ViewRetailerLayout from "../components/layout/MiscActions/ViewRetailersLayout";
 import PurchaseTxnMasterLayout from "../components/layout/TransactionMasterLayout/PurchaseLayout";
 import EditLedgerLayout from "../components/layout/AccountingMasterLayout/EditLedgerLayout";
+import PaymentTxnMasterLayout from "../components/layout/TransactionMasterLayout/PaymentLayout";
+import PurchaseInvoice from "../pages/Reports/Invoice/PurchaseInvoice";
+import PaymentInvoice from "../pages/Reports/Invoice/PaymentInvoice";
 
 
 function App() {
@@ -253,6 +256,10 @@ function App() {
            <Route path="/misc/view-retailers" element={<ViewRetailerLayout/>}/>
 
            <Route path="/transaction-master/purchase" element={<PurchaseTxnMasterLayout/>}/>
+           <Route path="/transaction-master/payment" element={<PaymentTxnMasterLayout/>}/>
+
+           <Route path="/print/purchase/:id" element={<PurchaseInvoice />}/>
+           <Route path="/print/payment/:id" element={<PaymentInvoice />}/>
 
       </Routes>
     </Router>

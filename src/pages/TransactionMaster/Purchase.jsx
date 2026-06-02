@@ -6,6 +6,7 @@ import {
     ModalBody, useDisclosure, Badge, Divider,
     GridItem,
     ModalCloseButton,
+    useToast,
 } from "@chakra-ui/react";
 import useUsersapi from "../../Apis/GetUsersapi";
 import {
@@ -85,6 +86,9 @@ const initialForm = {
     tax_total: 0,
     total_amount: 0,
     narration: "",
+     reference_type: "NEW REF",
+    reference_no: "",
+    due_date: "",
     items: [emptyItem()],
 
 };
@@ -206,6 +210,7 @@ const Purchase = () => {
     const [supplierList, setSupplierList] = useState([]);
     const [allLedgers, setAllLedgers] = useState([]);
     const [ledgerDetails, setLedgerDetails] = useState({});
+    const toast = useToast();
 
     const [formData, setFormData] = useState(initialForm);
     const { isOpen: isGodownOpen, onOpen: openGodown, onClose: closeGodown } = useDisclosure();
@@ -562,15 +567,29 @@ const Purchase = () => {
     // ─── Submit ────────────────────────────────────────────────────────────────
     const handleSave = async () => {
         if (!formData.supplier_invoice_no) {
-            alert("Supplier Invoice No cannot be blank");
+           
+            toast({
+                description: 'Supplier Invoice No cannot be blank!',
+                status: 'error',
+                duration: 1500
+            })
             return;
         }
         if (!formData.purchase_date) {
-            alert("Date is required");
+            toast({
+                description: "Date is Required!",
+                status: "error",
+                duration: 1500
+            })
             return;
         }
         if (!formData.supplier_ledger_id) {
-            alert("Please select Party A/c Name");
+          
+            toast({
+                description: "Please select Party A/c Name!",
+                status: 'error',
+                duration: 1500,
+            })
             return;
         }
         setSaving(true);
@@ -599,14 +618,23 @@ const Purchase = () => {
             };
             const response = await createPurchase(payload);
             if (response.success) {
-                alert(`Purchase Created Successfully\nVoucher No: ${response.voucher_no}`);
+                toast({
+                    description: `Purchase Created Successfully \nVoucher No: ${response.voucher_no}`,
+                    status: "success",
+                    duration: 1500
+                })
                 setFormData({ ...initialForm });
                 setExtraLedgers(Array.from({ length: 5 }, emptyLedger));
                 loadVoucherNo();
             }
         } catch (error) {
             console.error(error);
-            alert("Error creating purchase: " + (error.message || "Unknown error"));
+            toast({
+                description: `Error creating purchase: ${error.message} || "Unknown error`,
+                status: "error",
+                duration: 1500
+            })
+      
         } finally {
             setSaving(false);
         }
@@ -617,23 +645,15 @@ const Purchase = () => {
         <>
             {/* Main card */}
             <Box>
-                {/* ── Section 1: Voucher Info ── */}
                 <Box {...sectionStyle}>
                     <Box justify="space-between" align="center" bg="#4f9190" color="white" px={4} py={2} borderTopRadius="md">
-                        <Text fontWeight="500" fontSize="sm" textAlign="left">
-                            Voucher Details
-                        </Text>
+                        <Text fontWeight="500" fontSize="sm" textAlign="left"> Voucher Details </Text>
                     </Box>
                     <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)", lg: "repeat(2,1fr)" }}
                         gap={4} p={4}>
                         <GridItem>
                             <Text {...labelStyle} color="#c0392b">Purchase No.</Text>
-                            <Input
-                                {...readonlyInputStyle}
-                                name="voucher_no"
-                                value={formData.voucher_no}
-                                readOnly
-                            />
+                            <Input {...readonlyInputStyle} name="voucher_no" value={formData.voucher_no} readOnly />
                         </GridItem>
                         <GridItem>
 
@@ -979,7 +999,6 @@ const Purchase = () => {
                                     {/* Rate */}
                                     <Td {...tdStyle}>
                                         <Input
-
                                             type="number"
                                             value={item.rate}
                                             onChange={(e) => handleItemChange(index, "rate", e.target.value)}
@@ -992,7 +1011,6 @@ const Purchase = () => {
                                     {/* Unit */}
                                     <Td {...tdStyle}>
                                         <Input
-
                                             value={item.unit_name}
                                             readOnly
                                             bg="#f0f4f0"
@@ -1004,7 +1022,6 @@ const Purchase = () => {
                                     {/* Alt. Unit */}
                                     <Td {...tdStyle}>
                                         <Input
-
                                             value={item.alt_unit_qty && item.alt_unit_name
                                                 ? `${item.alt_unit_qty} ${item.alt_unit_name}` : ""}
                                             readOnly

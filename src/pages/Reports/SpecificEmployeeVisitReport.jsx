@@ -3,6 +3,7 @@ import { Badge, Box, Button, Flex, FormControl, FormLabel, HStack, Input, Select
 import { SearchIcon } from "@chakra-ui/icons";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import Pagination from "../../Pagination/Pagination";
 
 // ─── Visit type badge color map ───────────────────────────────────────────────
 const visitTypeBadge = {
@@ -65,9 +66,15 @@ const SpecificEmployeeVisitReport = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  // const [pagination, setPagination] = useState({
+  //   total: 0,
+  //   page: 1,
+  //   totalPages: 1,
+  // });
   const [pagination, setPagination] = useState({
     total: 0,
     page: 1,
+    limit: 10,
     totalPages: 1,
   });
 
@@ -119,7 +126,11 @@ const SpecificEmployeeVisitReport = () => {
   };
 
   // ── Fetch visit report (only on Search click) ────────────────────────────
-  const getEmpVisitReport = async (page = 1) => {
+  const getEmpVisitReport = async (
+    page = pagination.page,
+    limit = pagination.limit
+  ) => {
+
     if (!validateFilters()) return;
 
     try {
@@ -128,14 +139,20 @@ const SpecificEmployeeVisitReport = () => {
 
       const response = await API.get(
         API_ENDPOINTS.GET_EMPLOYEE_VISIT_REPORT_SUMMARY,
-        { params: { ...filters, page, limit: 10 } }
+        { params: { ...filters, page, limit } }
       );
 
       const res = response?.data;
       setVisitReport(res?.data || []);
+      // setPagination({
+      //   total: res?.total || 0,
+      //   page: res?.page || 1,
+      //   totalPages: res?.totalPages || 1,
+      // });
       setPagination({
         total: res?.total || 0,
         page: res?.page || 1,
+        limit,
         totalPages: res?.totalPages || 1,
       });
     } catch (error) {
@@ -173,7 +190,7 @@ const SpecificEmployeeVisitReport = () => {
   return (
     <Box fontFamily="'DM Sans', sans-serif" minH="100vh" bg="white">
       {/* ── Filter Card ── */}
-      <Box bg="white" p={0}  mb={5} boxShadow="sm">
+      <Box bg="white" p={0} mb={5} boxShadow="sm">
         <Flex gap={4} flexWrap="wrap" alignItems="flex-end">
 
           <FormControl maxW="240px">
@@ -259,7 +276,7 @@ const SpecificEmployeeVisitReport = () => {
                 setFilters({ user_id: "", from_date: "", to_date: "" });
                 setVisitReport([]);
                 setHasSearched(false);
-                setPagination({ total: 0, page: 1, totalPages: 1 });
+                setPagination({ total: 0, page: 1, limit: 10, totalPages: 1, });
               }}
             >
               Clear
@@ -273,7 +290,7 @@ const SpecificEmployeeVisitReport = () => {
       {hasSearched && !loading && visitReport.length > 0 && (
         <SimpleGrid columns={{ base: 2, md: 3 }} gap={4} mb={5}>
           <StatCard label="Total Visits" value={pagination.total} accent="#5570F1" />
-         
+
           <StatCard label="Unique Customers" value={uniqueCustomers} accent="#ED8936" />
           <StatCard label="Areas Covered" value={uniqueAreas} accent="#9F7AEA" />
         </SimpleGrid>
@@ -324,7 +341,7 @@ const SpecificEmployeeVisitReport = () => {
                   <Th py={4} color="gray.500" fontSize="11px" letterSpacing="wider">NO OF VISIT</Th>
                   <Th py={4} color="gray.500" fontSize="11px" letterSpacing="wider">LOCATION</Th>
                   <Th py={4} color="gray.500" fontSize="11px" letterSpacing="wider">CONTACT</Th>
-           
+
                 </Tr>
               </Thead>
               <Tbody>
@@ -332,7 +349,9 @@ const SpecificEmployeeVisitReport = () => {
                   const vtBadge = getBadge(visitTypeBadge, item?.visit_type);
                   const ppBadge = getBadge(purposeBadge, item?.visit_purpose);
                   const ctBadge = getBadge(customerTypeBadge, item?.customer_type);
-                  const rowNum = (pagination.page - 1) * 10 + index + 1;
+                  // const rowNum = (pagination.page - 1) * 10 + index + 1;
+                  const rowNum =
+                    (pagination.page - 1) * pagination.limit + index + 1;
 
                   return (
                     <Tr
@@ -361,36 +380,18 @@ const SpecificEmployeeVisitReport = () => {
 
                       {/* Visit Type */}
                       <Td py={4}>
-                        <Tag
-                          bg={vtBadge.bg}
-                          color={vtBadge.color}
-                          fontWeight="600"
-                          fontSize="12px"
-                          borderRadius="full"
-                          px={3}
-                          py={1}
-                        >
+                        <Tag bg={vtBadge.bg} color={vtBadge.color} fontWeight="600" fontSize="12px" borderRadius="full" px={3} py={1}>
                           {vtBadge.label}
                         </Tag>
                       </Td>
 
                       {/* Purpose */}
                       <Td py={4}>
-                        <Tag
-                          bg={ppBadge.bg}
-                          color={ppBadge.color}
-                          fontWeight="600"
-                          fontSize="12px"
-                          borderRadius="full"
-                          px={3}
-                          py={1}
-                        >
+                        <Tag bg={ppBadge.bg} color={ppBadge.color} fontWeight="600" fontSize="12px" borderRadius="full" px={3} py={1}>
                           {ppBadge.label}
                         </Tag>
                       </Td>
 
-                      {/* Customer Type */}
-                    
                       <Td>{item?.number_of_visits}</Td>
 
                       {/* Location */}
@@ -405,15 +406,11 @@ const SpecificEmployeeVisitReport = () => {
                         </VStack>
                       </Td>
 
-                      {/* Contact */}
                       <Td py={4}>
                         <Text fontSize="13px" color="gray.700" fontFamily="mono">
                           {item?.contact_number || "—"}
                         </Text>
                       </Td>
-
-                     
-                      
                     </Tr>
                   );
                 })}
@@ -421,40 +418,21 @@ const SpecificEmployeeVisitReport = () => {
             </Table>
 
             {/* ── Pagination ── */}
-            {pagination.totalPages > 1 && (
-              <Flex
-                align="center"
-                justify="space-between"
-                px={5}
-                py={4}
-                borderTop="1px solid #E2E8F0"
-              >
-                <Text fontSize="13px" color="gray.500">
-                  Page {pagination.page} of {pagination.totalPages} · {pagination.total} records
-                </Text>
-                <HStack spacing={2}>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    borderRadius="lg"
-                    isDisabled={pagination.page <= 1}
-                    onClick={() => getEmpVisitReport(pagination.page - 1)}
-                    fontSize="13px"
-                  >
-                    ← Prev
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    borderRadius="lg"
-                    isDisabled={pagination.page >= pagination.totalPages}
-                    onClick={() => getEmpVisitReport(pagination.page + 1)}
-                    fontSize="13px"
-                  >
-                    Next →
-                  </Button>
-                </HStack>
-              </Flex>
+            {pagination.total > 0 && (
+              <Box px={5} py={4} borderTop="1px solid #E2E8F0">
+                <Pagination
+                  page={pagination.page}
+                  limit={pagination.limit}
+                  totalItems={pagination.total}
+                  totalPages={pagination.totalPages}
+                  onPageChange={(newPage) => {
+                    getEmpVisitReport(newPage, pagination.limit);
+                  }}
+                  onLimitChange={(newLimit) => {
+                    getEmpVisitReport(1, newLimit);
+                  }}
+                />
+              </Box>
             )}
           </>
         )}

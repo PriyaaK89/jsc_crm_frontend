@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Flex, FormControl, FormLabel, Heading, Input, Select, SimpleGrid, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, VStack, } from "@chakra-ui/react";
+import { Box, Button, Flex, FormControl, FormLabel, Heading, Input, Select, SimpleGrid, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, useDisclosure, VStack, } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { Link } from "react-router-dom";
+import PurchaseInvoice from "./Invoice/PurchaseInvoice";
+import PaymentInvoice from "./Invoice/PaymentInvoice";
 
 function PartyLedgerReport() {
   const [ledgerList, setLedgerList] = useState([]);
@@ -22,6 +24,11 @@ function PartyLedgerReport() {
     page: 1,
     limit: 20,
   });
+
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState(null);
+  const [selectedPaymentId, setSelectedPaymentId] = useState(null);
+const { isOpen: isPurchaseModalOpen, onOpen: onPurchaseModalOpen, onClose: onPurchaseModalClose } = useDisclosure();
+const {isOpen : isPaymentModalOpen , onOpen: onPaymentModalOpen, onClose: onPaymentModalClose} = useDisclosure();
 
   const fetchLedgerDropdown = async () => {
     try {
@@ -84,23 +91,28 @@ function PartyLedgerReport() {
     }
   }, [filters.page]);
 
-  const openVoucher = (transactionType, referenceId) => {
-    if (transactionType === "PURCHASE") {
-      const url = `${import.meta.env.VITE_BASE_URL}purchase/pdf/${referenceId}`;
-      console.log("Opening URL:", url);
-      window.open(url, "_blank");
-    }
-    if (transactionType === "PAYMENT") {
-      const url = `${import.meta.env.VITE_BASE_URL}payment/pdf/${referenceId}`;
-      console.log("Opening URL:", url);
-      window.open(url, "_blank");
-      // window.open(`/print/payment/${referenceId}`, "_blank");
-    }
-
-  };
-
+ const openVoucher = (transactionType, referenceId) => {
+  if (transactionType === "PURCHASE") {
+    setSelectedInvoiceId(referenceId);
+    onPurchaseModalOpen();
+  } 
+  //  else if (transactionType === "PAYMENT") {
+  //   window.open(`${window.location.origin}/print/payment/${referenceId}`, "_blank");
+  // }
+  else if (transactionType === "PAYMENT") {
+   setSelectedPaymentId(referenceId);
+   onPaymentModalOpen();
+  }
+};
   return (
-    <Box >
+    <Box>
+
+     <PurchaseInvoice
+  isOpen={isPurchaseModalOpen}
+  onClose={onPurchaseModalClose}
+  invoiceId={selectedInvoiceId}
+/>
+      <PaymentInvoice isOpen={isPaymentModalOpen} onClose={onPaymentModalClose} paymentId={selectedPaymentId}/>
 
       <Heading size="md" mb={5} color="#4d4d4d">
         Party Ledger Report{" "}
@@ -231,7 +243,7 @@ function PartyLedgerReport() {
                       </Td>
                       <Td>{item.purchase_ledger_name || "-"}</Td>
                       <Td>{item.transaction_type || "-"}</Td>
-                      <Td>
+                      <Td color="blue.500">
                         <Link
                           color="blue.500"
                           onClick={() =>

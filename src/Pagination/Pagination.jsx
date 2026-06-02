@@ -1,15 +1,8 @@
 import React from "react";
 import { Button, Flex, Select, Text } from "@chakra-ui/react";
 
-const Pagination = ({
-  page,
-  limit,
-  totalItems,
-  totalPages,
-  onPageChange,
-  onLimitChange,
-}) => {
-    
+const Pagination = ({ page, limit, totalItems, totalPages, onPageChange, onLimitChange, }) => {
+
   return (
     <Flex justify="space-between" align="center" mt={3}>
 
@@ -24,9 +17,9 @@ const Pagination = ({
           bg="#5e63661a"
           color="#8B8D97"
           borderRadius="10px"
-         onChange={(e) => {
-  onLimitChange(Number(e.target.value));
-}}
+          onChange={(e) => {
+            onLimitChange(Number(e.target.value));
+          }}
         >
           <option value="10">10</option>
           <option value="20">20</option>
@@ -47,11 +40,9 @@ const Pagination = ({
       <Flex align="center" gap={2}>
 
         {/* Prev */}
-        <Button
-          size="sm"
+        <Button size="sm"
           onClick={() => onPageChange(Math.max(page - 1, 1))}
-          isDisabled={page === 1}
-        >
+          isDisabled={page === 1}>
           ‹
         </Button>
 
@@ -61,7 +52,7 @@ const Pagination = ({
           return (
             <Button
               key={pageNumber}
-              size="sm"
+              fontSize="11px" height="29px" minW="29px" padding="4px"
               variant={page === pageNumber ? "solid" : "outline"}
               colorScheme={page === pageNumber ? "blue" : "gray"}
               onClick={() => onPageChange(pageNumber)}

@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink,
-  Button, FormControl, FormLabel, Heading,
-  Input, Select, HStack, SimpleGrid, InputGroup,
-  InputRightElement, Modal, ModalOverlay, ModalContent,
+  Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, FormControl, FormLabel, Heading,
+  Input, Select, HStack, SimpleGrid, InputGroup, InputRightElement, Modal, ModalOverlay, ModalContent,
   ModalHeader, ModalBody, ModalCloseButton, useDisclosure,
-  Table, Thead, Tbody, Tr, Th, Td, Img,
-  Flex, Spinner, Text,
-  TableContainer, Image,
-  VStack
-} from "@chakra-ui/react";
+  Table, Thead, Tbody, Tr, Th, Td, Img, Flex, Spinner, Text, TableContainer, Image, VStack } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
 import { ViewIcon } from "@chakra-ui/icons";
 import { RepeatIcon } from "@chakra-ui/icons";
@@ -45,7 +39,7 @@ function EmployeeVisitReport() {
   });
   const [pagination, setPagination] = useState({
     page: 1,
-    limit: 10,
+    limit: 20,
     total_pages: 1,
     total: 0,
   });
@@ -53,7 +47,6 @@ function EmployeeVisitReport() {
   //  Fetch API
   // const fetchVisits = async (targetPage = pagination.page) => {
   const fetchVisits = async () => {
-
     setLoading(true);
     try {
       const res = await API.get(API_ENDPOINTS.get_emp_visit_report, {
@@ -66,8 +59,6 @@ function EmployeeVisitReport() {
           user_id: filters.user_id || null,
         },
       });
-
-      //       //  Validate response
       if (res.status === 200) {
         setVisits(res.data.data);
         setPagination({
@@ -76,19 +67,14 @@ function EmployeeVisitReport() {
           total_pages: res.data.totalPages,
           total: res.data.total
         })
-
       }
       else {
         console.warn("Unexpected API response:", res);
         setVisits([]);
       }
-
     } catch (error) {
       console.error("Fetch Visits Error:", error);
-
-      //  Optional: show user-friendly error
       setVisits([]);
-
     } finally {
       setLoading(false);
     }

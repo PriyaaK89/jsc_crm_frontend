@@ -281,7 +281,6 @@ function RetailerAssignment() {
             boxShadow: "md", bg: "#1B5A6B"
           }}
           transition="all 0.2s ease"
-          borderRadius="xl"
         >
           Assign Retailer
         </Button>

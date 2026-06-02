@@ -195,7 +195,7 @@ export const fetchLedgerDetailsByID = async (ledgerId) => {
     if (res?.status === 200) {
       const d = res?.data?.data;
       return {
-        current_balance: d?.opening_balance || "0.00",
+        current_balance: d?.current_balance || "0.00",
         balance_type: d?.balance_type || "Dr",
         security_amount: d?.interest_configs?.[0]?.security_amount || "0.00",
         credit_limit: d?.credit_limit || "0.00",

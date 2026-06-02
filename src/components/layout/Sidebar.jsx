@@ -188,7 +188,28 @@ const Newsidebar = () => {
         ]
       },
       
+    {
+        label:"Order Vochor",key:"order-vochor",icon:FaFileInvoice,
+         children:[
+          {label:"Payment",path:"/order-vochor/payment",icon:FiMapPin},
+          {label:"Purchase",path:"/order-vochor/purchase",icon:BiPurchaseTagAlt},
+          {label:"Sales",path:"/order-vochor/sales",icon:FaShoppingCart},
+          {label:"Receipt",path:"/order-vochor/receipt",icon:FaReceipt},
+          {label:"Credit",path:"/order-vochor/credit",icon:BsCreditCard2Front},
+          {label:"Debit",path:"/order-vochor/debit",icon:FaMoneyBillWave},
+         ]
+      },
       {
+        label: "Transaction Master", key: "transaction-master", icon: FaExchangeAlt,
+        children: [
+          {label: "Purchase", path: "/transaction-master/purchase" , icon: BiSolidPurchaseTag},
+          {label: "Payment", path: "/transaction-master/payment" , icon: MdPayment},
+          {label: "Sale", path: "/transaction-master/sale" , icon: IoBarChart },
+          {label: "Receipt", path: "/transaction-master/receipt" , icon: IoReceipt },
+        ]
+      },
+     
+         {
           label:"Reports",key:"Reports",icon:RiBarChartLine,path:"/report",
           children:[
             {label:"Attendance Report",path:"/report/emp-attendance-report",icon:CalendarCheck},
@@ -217,26 +238,6 @@ const Newsidebar = () => {
             {label:"Emp. Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
             // {label:"Digio KYC Report",path:"/report/emp-kyc-report",icon:MdTrendingUp},
           ]
-      },
-      {
-        label: "Transaction Master", key: "transaction-master", icon: FaExchangeAlt,
-        children: [
-          {label: "Purchase", path: "/transaction-master/purchase" , icon: BiSolidPurchaseTag},
-          {label: "Payment", path: "/transaction-master/payment" , icon: MdPayment},
-          {label: "Sale", path: "/transaction-master/sale" , icon: IoBarChart },
-          {label: "Receipt", path: "/transaction-master/receipt" , icon: IoReceipt },
-        ]
-      },
-      {
-        label:"Order Vochor",key:"order-vochor",icon:FaFileInvoice,
-         children:[
-          {label:"Payment",path:"/order-vochor/payment",icon:FiMapPin},
-          {label:"Purchase",path:"/order-vochor/purchase",icon:BiPurchaseTagAlt},
-          {label:"Sales",path:"/order-vochor/sales",icon:FaShoppingCart},
-          {label:"Receipt",path:"/order-vochor/receipt",icon:FaReceipt},
-          {label:"Credit",path:"/order-vochor/credit",icon:BsCreditCard2Front},
-          {label:"Debit",path:"/order-vochor/debit",icon:FaMoneyBillWave},
-         ]
       },
       {
         label:"Misc",key:"misc",icon:MdAttractions ,

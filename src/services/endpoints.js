@@ -187,5 +187,11 @@ export const API_ENDPOINTS = {
   GENERATE_PAYMENT_INVOICE: "payment-invoice/print",
   PURCHASE_INVOIVE: "purchase/pdf",
   
+  GET_SALES_LEDGER_DROPDOWN: "sales-ledger-dropdown",
+  CREATE_SALE: "create-sales-order",
+
+  CREATE_RECEIPT: "createReceipt",
+  GET_PENDING_BILLS: "getPendingBills"
+
 };
 // 

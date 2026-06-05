@@ -58,7 +58,7 @@ const emptyLedger = () => ({ ledger_id: "", amount: "", comments: "" });
 
 // ─── Initial form state ───────────────────────────────────────────────────────
 const initialForm = {
-    voucher_type_id: 1,
+    voucher_type_id: "",
     voucher_no: "",
     purchase_date: new Date().toISOString().slice(0, 10),
     supplier_invoice_no: "",
@@ -86,7 +86,7 @@ const initialForm = {
     tax_total: 0,
     total_amount: 0,
     narration: "",
-     reference_type: "NEW REF",
+    reference_type: "NEW REF",
     reference_no: "",
     due_date: "",
     items: [emptyItem()],
@@ -247,8 +247,6 @@ const Purchase = () => {
         loadVoucherNo();
     }, []);
 
-
-
     const loadData = async () => {
         try {
             const [godownData, stockData, purchaseLedgerData, ledgerData] =
@@ -268,21 +266,19 @@ const Purchase = () => {
         }
     };
 
-    const loadVoucherNo = async () => {
+const loadVoucherNo = async () => {
+    try {
+        const voucherData = await fetchNextVoucherNo("PURCHASE");
 
-        try {
-
-            const voucherNo = await fetchNextVoucherNo("PURCHASE");
-
-            setFormData((prev) => ({
-                ...prev,
-                voucher_no: voucherNo
-            }));
-
-        } catch (err) {
-            console.error("loadVoucherNo error:", err);
-        }
-    };
+        setFormData((prev) => ({
+            ...prev,
+            voucher_no: voucherData?.voucher_no || "",
+            voucher_type_id: voucherData?.voucher_type_id || "",
+        }));
+    } catch (err) {
+        console.error("loadVoucherNo error:", err);
+    }
+};
 
     // ─── Recalculate grand totals ──────────────────────────────────────────────
     const recalcTotals = useCallback((items, freight, ledgers) => {
@@ -567,7 +563,6 @@ const Purchase = () => {
     // ─── Submit ────────────────────────────────────────────────────────────────
     const handleSave = async () => {
         if (!formData.supplier_invoice_no) {
-           
             toast({
                 description: 'Supplier Invoice No cannot be blank!',
                 status: 'error',
@@ -584,7 +579,6 @@ const Purchase = () => {
             return;
         }
         if (!formData.supplier_ledger_id) {
-          
             toast({
                 description: "Please select Party A/c Name!",
                 status: 'error',
@@ -634,7 +628,6 @@ const Purchase = () => {
                 status: "error",
                 duration: 1500
             })
-      
         } finally {
             setSaving(false);
         }

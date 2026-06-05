@@ -516,15 +516,21 @@ const Receipt = () => {
                 await loadVoucherNo();
             }
         } catch (err) {
-            console.error(err);
-            toast({
-                title: "Error",
-                description: err.response?.data?.message || "Something went wrong",
-                status: "error",
-                duration: 4000,
-                isClosable: true,
-            });
-        } finally {
+    console.log("FULL ERROR =>", err);
+    console.log("RESPONSE =>", err.response);
+    console.log("DATA =>", err.response?.data);
+
+    toast({
+        title: "Error",
+        description:
+            err.response?.data?.message ||
+            err.message ||
+            "Something went wrong",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+    });
+} finally {
             setSubmitting(false);
         }
     };

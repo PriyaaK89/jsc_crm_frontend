@@ -272,21 +272,13 @@ const VoucherListByType = () => {
               <Thead bg="#F9FAFB">
                 <Tr>
                   <Th>Voucher Name</Th>
-
                   <Th>Voucher Type</Th>
-
                   <Th>Prefix</Th>
-
                   <Th>Suffix</Th>
-
                   <Th>Starting Number</Th>
-
                   <Th>Status</Th>
-
                   <Th>Start Date</Th>
-
                   <Th>End Date</Th>
-
                   <Th textAlign="center">Action</Th>
                 </Tr>
               </Thead>

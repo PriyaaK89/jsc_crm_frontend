@@ -102,6 +102,8 @@ import PurchaseInvoice from "../pages/Reports/Invoice/PurchaseInvoice";
 import PaymentInvoice from "../pages/Reports/Invoice/PaymentInvoice";
 import SalesTxnMasterLayout from "../components/layout/TransactionMasterLayout/SalesLayout";
 import ReceiptTxnMasterLayout from "../components/layout/TransactionMasterLayout/ReceiptLayout";
+import CreditNoteTxnMasterLayout from "../components/layout/TransactionMasterLayout/CreditNoteLayout";
+import DebitNoteTxnMasterLayout from "../components/layout/TransactionMasterLayout/DebitNoteLayout";
 
 
 function App() {
@@ -231,6 +233,8 @@ function App() {
         <Route path="/transaction-master/payment" element={<PaymentTxnMasterLayout />} />
         <Route path="/transaction-master/sale" element={<SalesTxnMasterLayout />} />
         <Route path="/transaction-master/receipt" element={<ReceiptTxnMasterLayout/>}/>
+        <Route path="/transaction-master/credit-note" element={<CreditNoteTxnMasterLayout/>}/>
+        <Route path="/transaction-master/debit-note" element={<DebitNoteTxnMasterLayout/>}/>
 
         <Route path="/print/purchase/:id" element={<PurchaseInvoice />} />
         <Route path="/print/payment/:id" element={<PaymentInvoice />} />

@@ -2,7 +2,7 @@ import {Box,VStack,Text,Button,Collapse,Icon, Image, useToast } from "@chakra-ui
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
-import { MdAssignmentInd, MdAttractions, MdOutlineInventory2, MdOutlineTrackChanges, MdPayment } from "react-icons/md";
+import { MdAssignmentInd, MdAttractions, MdOutlineAssignmentReturn, MdOutlineInventory2, MdOutlineTrackChanges, MdPayment } from "react-icons/md";
 import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
 import { FaExchangeAlt, FaListAlt, FaMoneyBill, FaTable, FaUserAlt, FaUserTie, FaWarehouse } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
@@ -26,7 +26,7 @@ import { UserCheck,DollarSign,Package } from "lucide-react";
 import { BsUpcScan } from "react-icons/bs";
 import { Ticket } from "lucide-react";
 import { BsCreditCard2Front } from "react-icons/bs";
-import { BiPurchaseTagAlt, BiSolidPurchaseTag } from "react-icons/bi";
+import { BiPurchaseTagAlt, BiSolidPurchaseTag, BiSolidReport } from "react-icons/bi";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { FaShoppingCart } from "react-icons/fa";
 import { FaReceipt } from "react-icons/fa";
@@ -41,6 +41,7 @@ import { FaUsers } from "react-icons/fa";
 import { RxComponent1 } from "react-icons/rx";
 import { IoBarChart, IoCreate, IoReceipt } from "react-icons/io5";
 import { IoMdPersonAdd } from "react-icons/io";
+import { LuPanelRightClose, LuPanelRightOpen } from "react-icons/lu";
 
 
 const Newsidebar = () => {
@@ -206,11 +207,13 @@ const Newsidebar = () => {
           {label: "Payment", path: "/transaction-master/payment" , icon: MdPayment},
           {label: "Sale", path: "/transaction-master/sale" , icon: IoBarChart },
           {label: "Receipt", path: "/transaction-master/receipt" , icon: IoReceipt },
+          {label: "Credit Note", path: "/transaction-master/credit-note" , icon: LuPanelRightOpen   },
+          {label: "Debit Note", path: "/transaction-master/debit-note" , icon: LuPanelRightClose   },
         ]
       },
      
          {
-          label:"Reports",key:"Reports",icon:RiBarChartLine,path:"/report",
+          label:"Reports",key:"Reports",icon:BiSolidReport ,path:"/report",
           children:[
             {label:"Attendance Report",path:"/report/emp-attendance-report",icon:CalendarCheck},
             {label:"Employee Visit Report",path:"/report/emp-visit-report",icon:HiOutlineDocumentReport},

@@ -4,10 +4,7 @@ import {
     Table, Thead, Tbody, Tr, Th, Td, Textarea,
     Flex, Modal, ModalOverlay, ModalContent, ModalHeader,
     ModalBody, useDisclosure, Badge, Divider,
-    GridItem,
-    ModalCloseButton,
-    useToast,
-} from "@chakra-ui/react";
+    GridItem, ModalCloseButton, useToast, } from "@chakra-ui/react";
 import useUsersapi from "../../Apis/GetUsersapi";
 import {
     fetchGodownList,
@@ -276,8 +273,17 @@ const loadVoucherNo = async () => {
             voucher_type_id: voucherData?.voucher_type_id || "",
         }));
     } catch (err) {
-        console.error("loadVoucherNo error:", err);
-    }
+  console.log(err);
+  console.log(err.response);
+
+  toast({
+    title: "Error",
+    description: err.response?.data?.message || err.message,
+    status: "error",
+    duration: 3000,
+    isClosable: true,
+  });
+}
 };
 
     // ─── Recalculate grand totals ──────────────────────────────────────────────
@@ -483,30 +489,38 @@ const loadVoucherNo = async () => {
     };
 
     // ─── Save godown modal → write back to item ────────────────────────────────
-    const handleGodownSave = () => {
-        if (activeItemIndex === null) return;
-        const finalBatchNo = godownModal.isNewBatch
-            ? godownModal.newBatchNo
-            : godownModal.batch_no === "NOT_APPLICABLE"
-                ? ""
-                : godownModal.batch_no;
+   const handleGodownSave = () => {
+    if (activeItemIndex === null) return;
+    const finalBatchNo = godownModal.isNewBatch
+        ? godownModal.newBatchNo
+        : godownModal.batch_no === "NOT_APPLICABLE"
+            ? "NOT_APPLICABLE"
+            : godownModal.batch_no;
 
-        setFormData((prev) => {
-            const items = [...prev.items];
-            const prevAvailableQty = items[activeItemIndex].available_qty;
-            items[activeItemIndex] = {
-                ...items[activeItemIndex],
-                batch_no: finalBatchNo,
-                mfg_date: godownModal.mfg_date,
-                expiry_date: godownModal.expiry_date,
-                remind_expiry: godownModal.remind_expiry,
-                remind_date: godownModal.remind_date,
-                available_qty: prevAvailableQty,
-            };
-            return { ...prev, items };
-        });
-        closeGodown();
-    };
+    // If a specific existing batch was selected, use that batch's available_qty
+    const selectedBatch = batchList.find((b) => b.batch_no === finalBatchNo);
+
+    setFormData((prev) => {
+        const items = [...prev.items];
+        // Use batch-level available_qty if a known batch was picked,
+        // otherwise keep the godown-level qty already on the item
+        const resolvedAvailableQty = selectedBatch
+            ? (selectedBatch.available_qty ?? selectedBatch.qty ?? 0)
+            : items[activeItemIndex].available_qty;
+
+        items[activeItemIndex] = {
+            ...items[activeItemIndex],
+            batch_no: finalBatchNo,
+            mfg_date: godownModal.mfg_date,
+            expiry_date: godownModal.expiry_date,
+            remind_expiry: godownModal.remind_expiry,
+            remind_date: godownModal.remind_date,
+            available_qty: resolvedAvailableQty,  // ← key fix
+        };
+        return { ...prev, items };
+    });
+    closeGodown();
+};
 
     // ─── Add / Remove item rows ────────────────────────────────────────────────
     const addItemRow = () => {
@@ -618,7 +632,7 @@ const loadVoucherNo = async () => {
                     duration: 1500
                 })
                 setFormData({ ...initialForm });
-                setExtraLedgers(Array.from({ length: 5 }, emptyLedger));
+                setExtraLedgers(Array.from({ length: 1 }, emptyLedger));
                 loadVoucherNo();
             }
         } catch (error) {
@@ -882,7 +896,6 @@ const loadVoucherNo = async () => {
                         <Box>
                             <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>Transport Freight</Text>
                             <Input
-
                                 type="number"
                                 name="transport_freight"
                                 value={formData.transport_freight}
@@ -967,7 +980,6 @@ const loadVoucherNo = async () => {
                                     {/* Available Qty */}
                                     <Td {...tdStyle}>
                                         <Input
-
                                             value={item.available_qty ?? 0}
                                             readOnly
                                             bg="#f0f4f0"
@@ -1484,9 +1496,7 @@ const loadVoucherNo = async () => {
                                 fontWeight="500"
                                 fontSize="14px"
                                 color="white"
-                                _hover={{
-                                    bg: "#1B5A6B",
-                                }}
+                                _hover={{ bg: "#1B5A6B", }}
                                 px={8} size="sm"
                                 borderRadius="12px"
                                 onClick={handleGodownSave}

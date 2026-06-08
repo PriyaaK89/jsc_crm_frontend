@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import { Box, Grid, GridItem, Input, Select, Text, Button, Table, Thead, Tbody, Tr, Th, Td, Textarea, Flex, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure, Badge, Divider, useToast, } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
@@ -136,6 +135,7 @@ const Sales = () => {
     const [ewayNumber, setEwayNumber] = useState("");
     const [transporterGst, setTransporterGst] = useState("");
     const [deliveryPlace, setDeliveryPlace] = useState("");
+    const [taxMode, setTaxMode] = useState("CGST_SGST");
 
     // ── Customer info
     const [customerInfo, setCustomerInfo] = useState({
@@ -205,7 +205,16 @@ const Sales = () => {
                 setVoucherTypeId(voucherData.voucher_type_id);
             }
         } catch (err) {
-            console.error(err);
+            console.log(err);
+            console.log(err.response);
+
+            toast({
+                title: "Error",
+                description: err.response?.data?.message || err.message,
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
         }
     };
 
@@ -314,7 +323,20 @@ const Sales = () => {
                 position: "top-right",
             });
 
+
             const gstDuty = details.rate_of_duty || 0;
+
+            let igstPercent = 0;
+            let cgstPercent = 0;
+            let sgstPercent = 0;
+
+            if (taxMode === "IGST") {
+                igstPercent = gstDuty;
+            } else {
+                cgstPercent = gstDuty / 2;
+                sgstPercent = gstDuty / 2;
+            }
+
             const newItem = {
                 ...emptyItem(),
                 stock_item_id: stockItemId,
@@ -328,9 +350,10 @@ const Sales = () => {
                 alt_unit_qty: details.alt_unit_qty || "",
                 gst_applicable: details.gst_applicable || 0,
                 rate_of_duty: gstDuty,
-                igst_percent: gstDuty,
-                cgst_percent: gstDuty / 2,
-                sgst_percent: gstDuty / 2,
+
+                igst_percent: igstPercent,
+                cgst_percent: cgstPercent,
+                sgst_percent: sgstPercent,
             };
 
             const computed = computeItemAmounts(newItem);
@@ -482,6 +505,7 @@ const Sales = () => {
                 transporter_gst: transporterGst,
                 delivery_place: deliveryPlace,
                 is_supercash_sale: isSuperCashSale ? 1 : 0,
+                tax_mode: taxMode,
                 ...totals,
                 narration,
                 items: validItems.map((it) => ({
@@ -675,6 +699,15 @@ const Sales = () => {
                                 ))}
                             </Select>
                         </GridItem>
+                        <GridItem>
+                            <Text {...labelStyle}>Select Tax Mode</Text>
+                            <Select
+                                value={taxMode}
+                                onChange={(e) => setTaxMode(e.target.value)} >
+                                <option value="CGST_SGST"> CGST + SGST </option>
+                                <option value="IGST"> IGST </option>
+                            </Select>
+                        </GridItem>
                     </Grid>
                 </Box>
 
@@ -720,7 +753,7 @@ const Sales = () => {
                         ].map(({ label, val, set }) => (
                             <Box key={label}>
                                 <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>{label}</Text>
-                                <Input size="sm" value={val} onChange={(e) => set(e.target.value)} />
+                                <Input value={val} onChange={(e) => set(e.target.value)} />
                             </Box>
                         ))}
                     </Grid>
@@ -738,7 +771,7 @@ const Sales = () => {
                         ].map(({ label, val, set, type }) => (
                             <Box key={label}>
                                 <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>{label}</Text>
-                                <Input size="sm" type={type || "text"} value={val} onChange={(e) => set(e.target.value)} />
+                                <Input type={type || "text"} value={val} onChange={(e) => set(e.target.value)} />
                             </Box>
                         ))}
                     </Grid>

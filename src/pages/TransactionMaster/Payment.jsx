@@ -3,6 +3,7 @@ import { Box, Text, Grid, GridItem, FormControl, FormLabel, Input, Select, Texta
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import useUsersapi from "../../Apis/GetUsersapi";
+import { AddIcon } from "@chakra-ui/icons";
 
 const emptyEntry = () => ({
     ledger_id: "",
@@ -43,6 +44,61 @@ const PaymentTransaction = () => {
     const [billReferenceData, setBillReferenceData] = useState([]);
     const [submitting, setSubmitting] = useState(false);
 
+    // ─── Styles ───────────────────────────────────────────────────────────────────
+const sectionStyle = {
+    bg: "white",
+    border: "1px solid #d0d7de",
+    borderRadius: "6px",
+    p: 0,
+    mb: 3,
+    boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+};
+
+
+
+const labelStyle = {
+    fontSize: "12px",
+    color: "#494949",
+    marginBottom: "3px",
+};
+
+const inputStyle = {
+    size: "sm",
+    borderRadius: "6px",
+    borderColor: "#c8d0d8",
+    bg: "white",
+    fontSize: "12px",
+    height: "40px",
+
+    _focus: { borderColor: "#3d7a52", boxShadow: "0 0 0 1px #3d7a52" },
+};
+
+const readonlyInputStyle = {
+    ...inputStyle,
+    bg: "#f0f4f0",
+    color: "#555",
+};
+
+const thStyle = {
+    // fontSize: "11px",
+    // bg: "#e4ede6",
+    // color: "#2d5a3d",
+    borderColor: "#c8d8cc",
+    p: "6px 4px",
+    // textAlign: "center",
+    fontWeight: "700",
+    letterSpacing: "0.3px",
+    whiteSpace: "nowrap",
+};
+
+const tdStyle = {
+    p: "2px 3px",
+    borderColor: "#e0e8e2",
+    verticalAlign: "middle",
+
+};
+
+
     const fetchBankGroupLedger = async () => {
         try {
             const res = await API.get(API_ENDPOINTS?.GET_BANK_ACCOUNT_LEDGER_DROPDOWN);
@@ -69,7 +125,16 @@ const PaymentTransaction = () => {
                 voucher_no: res.data.voucher_no,  // ← was setting `voucherNo` (the whole axios response)
             }));
         } catch (err) {
-            console.error("loadVoucherNo error:", err);
+            console.log(err);
+            console.log(err.response);
+
+            toast({
+                title: "Error",
+                description: err.response?.data?.message || err.message,
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
         }
     };
 
@@ -390,14 +455,11 @@ const PaymentTransaction = () => {
 
     // ── render ────────────────────────────────────────────────────────────────
 
+    
 
 
     return (
         <Box p={5}>
-            {/* ── HEADER ── */}
-        <Text fontSize="2xl" fontWeight="bold" mb={5}>
-            Payment Voucher
-        </Text>
 
             {/* ── TOP FORM ── */}
             <Grid templateColumns="repeat(2, 1fr)" gap={5} mb={6}>
@@ -474,17 +536,23 @@ const PaymentTransaction = () => {
             </Grid>
 
             {/* ── ENTRIES TABLE ── */}
-            <Box borderWidth="1px" borderRadius="md" overflowX="auto" mb={5}>
+         <Box {...sectionStyle} overflowX="auto">
+                          <Flex justify="space-between" align="center" bg="#4f9190" color="white" px={4} py={2} borderTopRadius="md">
+                              <Text fontWeight="500" fontSize="sm" >
+                                  Stock Items
+                              </Text>
+                            
+                          </Flex>
                 <Table variant="simple" size="sm" style={{ borderCollapse: "separate", borderSpacing: 0 }} className="material_mfg">
                     <Thead bg="gray.100">
                         <Tr>
                             <Th>Particulars (Ledger)</Th>
-                            <Th isNumeric>Current Balance</Th>
+                            <Th isNumeric padding={0}>Current Balance</Th>
                             <Th isNumeric>Amount</Th>
                             <Th>Transaction Type</Th>
                             <Th>Txn/Cheque No.</Th>
                             <Th>Bank Name</Th>
-                            <Th>Bill Refs</Th>
+                            {/* <Th>Bill Refs</Th> */}
                             <Th>Action</Th>
                         </Tr>
                     </Thead>
@@ -492,9 +560,9 @@ const PaymentTransaction = () => {
                         {formData.entries.map((entry, index) => (
                             <Tr key={index}>
                                 {/* LEDGER */}
-                                <Td minW="180px">
+                                <Td minW="170px">
                                     <Select
-                                        size="sm"
+                                        
                                         value={entry.ledger_id}
                                         onChange={(e) => handleLedgerSelect(index, e.target.value)}
                                         placeholder="End Of List"
@@ -510,7 +578,7 @@ const PaymentTransaction = () => {
                                 {/* CURRENT BALANCE */}
                                 <Td isNumeric>
                                     <Input
-                                        size="sm"
+                                      
                                         value={Number(entry.current_balance).toFixed(2)}
                                         readOnly
                                         bg="gray.50"
@@ -522,7 +590,7 @@ const PaymentTransaction = () => {
                                 {/* AMOUNT */}
                                 <Td>
                                     <Input
-                                        size="sm"
+                                       
                                         type="number"
                                         min={0}
                                         value={entry.amount}
@@ -536,7 +604,7 @@ const PaymentTransaction = () => {
                                 {/* TRANSACTION TYPE — opening bill modal on change */}
                                 <Td minW="160px">
                                     <Select
-                                        size="sm"
+                                       
                                         value={entry.transaction_type}
                                         // onChange={(e) => handleTransactionTypeChange(index, e.target.value)}
                                         onChange={(e) => handleTransactionTypeChange(index, e.target.value)}
@@ -554,7 +622,7 @@ const PaymentTransaction = () => {
                                 {/* TRANSACTION NO */}
                                 <Td>
                                     <Input
-                                        size="sm"
+                                       
                                         value={entry.transaction_no}
                                         onChange={(e) =>
                                             handleEntryChange(index, "transaction_no", e.target.value)
@@ -564,29 +632,29 @@ const PaymentTransaction = () => {
                                 </Td>
 
                                 {/* BANK NAME */}
-                               <Td>
-  <Select
-    size="sm"
-    value={entry.bank_name}
-    onChange={(e) =>
-      handleEntryChange(index, "bank_name", e.target.value)
-    }
-    placeholder="Select Bank"
-    w="180px"
-  >
-    {account.map((item) => (
-      <option
-        key={item.id}
-        value={item.ledger_name}
-      >
-        {item.ledger_name}
-      </option>
-    ))}
-  </Select>
-</Td>
+                                <Td>
+                                    <Select
+                                    
+                                        value={entry.bank_name}
+                                        onChange={(e) =>
+                                            handleEntryChange(index, "bank_name", e.target.value)
+                                        }
+                                        placeholder="Select Bank"
+                                        w="180px"
+                                    >
+                                        {account.map((item) => (
+                                            <option
+                                                key={item.id}
+                                                value={item.ledger_name}
+                                            >
+                                                {item.ledger_name}
+                                            </option>
+                                        ))}
+                                    </Select>
+                                </Td>
 
                                 {/* BILL REFS INDICATOR */}
-                                <Td textAlign="center">
+                                {/* <Td textAlign="center">
                                     {entry.bill_references.length > 0 ? (
                                         <Badge
                                             colorScheme="green"
@@ -612,7 +680,7 @@ const PaymentTransaction = () => {
                                             Bill
                                         </Button>
                                     )}
-                                </Td>
+                                </Td> */}
 
                                 {/* ADD / REMOVE */}
                                 <Td>
@@ -668,10 +736,10 @@ const PaymentTransaction = () => {
             {/* ── SAVE ── */}
             <Flex justify="flex-end" mt={6}>
                 <Button
-                    bg="#237086" fontWeight="500" 
-                fontSize="14px" color="white"
-                _hover={{ bg: "#1B5A6B" }}
-                 px={8} borderRadius="12px"
+                    bg="#237086" fontWeight="500"
+                    fontSize="14px" color="white"
+                    _hover={{ bg: "#1B5A6B" }}
+                    px={8} borderRadius="12px"
                     onClick={handlePayment}
                     isLoading={submitting}
                     loadingText="Saving…"
@@ -685,29 +753,29 @@ const PaymentTransaction = () => {
                 isOpen={billModal}
                 onClose={() => setBillModal(false)}
                 size="5xl"
-                scrollBehavior="inside" 
+                scrollBehavior="inside"
             >
                 <ModalOverlay />
                 <ModalContent borderRadius='12px'>
                     <ModalHeader bg='#b0d1cf' borderRadius='12px 12px 0px 0px' padding='21px'>
                         <HStack gap={0}>
-                        <Text fontSize="16px">
-                        Bill Wise Details</Text>
-                        {selectedEntryIndex !== null && formData.entries[selectedEntryIndex]?.ledger_id && (
-                            <Text as="span" fontWeight="normal" fontSize="13px" ml={2} color="gray.500">
-                                —{" "}
-                                {
-                                    ledger.find(
-                                        (l) =>
-                                            String(l.id) ===
-                                            String(formData.entries[selectedEntryIndex].ledger_id),
-                                    )?.ledger_name
-                                }
-                            </Text>
-                        )}</HStack>
-                          <ModalCloseButton />
+                            <Text fontSize="16px">
+                                Bill Wise Details</Text>
+                            {selectedEntryIndex !== null && formData.entries[selectedEntryIndex]?.ledger_id && (
+                                <Text as="span" fontWeight="normal" fontSize="13px" ml={2} color="gray.500">
+                                    —{" "}
+                                    {
+                                        ledger.find(
+                                            (l) =>
+                                                String(l.id) ===
+                                                String(formData.entries[selectedEntryIndex].ledger_id),
+                                        )?.ledger_name
+                                    }
+                                </Text>
+                            )}</HStack>
+                        <ModalCloseButton />
                     </ModalHeader>
-                  
+
 
                     <ModalBody>
                         {billLoading ? (

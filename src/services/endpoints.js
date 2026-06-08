@@ -191,7 +191,14 @@ export const API_ENDPOINTS = {
   CREATE_SALE: "create-sales-order",
 
   CREATE_RECEIPT: "createReceipt",
-  GET_PENDING_BILLS: "getPendingBills"
+  GET_PENDING_BILLS: "getPendingBills",
 
+  CREATE_CREDIT_NOTE: "create-credit-note",
+  GET_SALES_BY_CUSTOMER: "get-sales-by-customer",
+  GET_SALE_ITEMS_BY_ID: "get-sales-item",
+
+  CREATE_DEBIT_NOTE: "create-debit-note",
+  GET_PURCHASE_BY_SUPPLIER: "get-purchase-by-supplier",
+  GET_PURCHASE_ITEMS_BY_ID: "get-purchase-items",
 };
 // 

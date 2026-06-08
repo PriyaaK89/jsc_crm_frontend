@@ -2,9 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import {
     Box, Text, Grid, GridItem, FormControl, FormLabel, Input, Select,
     Textarea, Table, Thead, Tbody, Tr, Th, Td, Button, Flex,
-    Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton,
-    ModalBody, ModalFooter, Badge, Spinner, useToast, HStack,
-} from "@chakra-ui/react";
+    Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Badge, Spinner, useToast, HStack,} from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import useUsersapi from "../../Apis/GetUsersapi";
@@ -84,9 +82,18 @@ const Receipt = () => {
             );
             setVoucherTypeId(res.data.voucher_type_id);
             setFormData((prev) => ({ ...prev, voucher_no: res.data.voucher_no }));
-        } catch (err) {
-            console.error("loadVoucherNo error:", err);
-        }
+        }catch (err) {
+  console.log(err);
+  console.log(err.response);
+
+  toast({
+    title: "Error",
+    description: err.response?.data?.message || err.message,
+    status: "error",
+    duration: 3000,
+    isClosable: true,
+  });
+}
     };
 
     const fetchBankGroupLedger = async () => {
@@ -987,7 +994,7 @@ const thStyle = {
                                                         >
                                                             <option value="AGST REF">Agst Ref</option>
                                                             <option value="ADVANCE">Advance</option>
-                                                            <option value="NEW REF">New Ref</option>
+                                                            {/* <option value="NEW REF">New Ref</option> */}
                                                             <option value="ON ACCOUNT">On Account</option>
                                                         </Select>
                                                     </Td>

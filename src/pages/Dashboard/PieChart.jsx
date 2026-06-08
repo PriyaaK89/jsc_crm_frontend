@@ -54,6 +54,7 @@ export default function MyPieChart() {
 
   const [chartData, setChartData] = useState([]);
   const [summary, setSummary] = useState({});
+  const [totalEmp, setTotalEmp] = useState([]);
 
   const fetchChartData = async () => {
     try {
@@ -63,6 +64,9 @@ export default function MyPieChart() {
 
       const s = res.data.summary;
       setSummary(s);
+      console.log('summary', res.data.summary)
+      setTotalEmp(res?.data?.summary?.total_employees)
+      console.log("total",  res?.data?.summary?.total_employees)
 
       const data = [
         { name: "Active", value: s.active_employees },
@@ -131,7 +135,7 @@ export default function MyPieChart() {
           align="center"
         >
           <Text fontSize="20px" fontWeight="bold">
-            {total}
+           {totalEmp}
           </Text>
           <Text fontSize="12px" color="gray.500">
             Total

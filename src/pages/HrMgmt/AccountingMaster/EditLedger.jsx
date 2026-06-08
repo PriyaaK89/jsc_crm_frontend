@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Box, Flex, SimpleGrid, Text, Input, Select, Textarea, Button, Switch, FormControl, FormLabel, FormErrorMessage, Tabs, TabList, Tab, TabPanels, TabPanel, Badge, Spinner, Center, Divider, HStack, VStack, useToast, IconButton, Heading, Breadcrumb, BreadcrumbItem, BreadcrumbLink,} from "@chakra-ui/react";
+import { Box, Flex, SimpleGrid, Text, Input, Select, Textarea, Button, Switch, FormControl, FormLabel, FormErrorMessage, Tabs, TabList, Tab, TabPanels, TabPanel, Badge, Spinner, Center, Divider, HStack, VStack, useToast, IconButton, Heading, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import { GROUP_CONFIG, DEFAULT_GROUP_CONFIG } from "../../HrMgmt/AccountingMaster/LedgerGroupConfig";
 
 const TABS = [
-  { id: "basic",    label: "Basic Info",   icon: "📋" },
-  { id: "bank",     label: "Bank Details", icon: "🏦" },
-  { id: "interest", label: "Interest",     icon: "📊" },
-  { id: "crm",      label: "Party Details",  icon: "👤" },
+    { id: "basic", label: "Basic Info", icon: "📋" },
+    { id: "bank", label: "Bank Details", icon: "🏦" },
+    { id: "interest", label: "Interest", icon: "📊" },
+    { id: "crm", label: "Party Details", icon: "👤" },
 ];
 
 const EMPTY_INTEREST_SLAB = {
@@ -277,27 +277,27 @@ function BasicInfoTab({ ledger, onChange, errors, config }) {
                     <SectionCard icon="⚙️" title="Features">
                         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                             {config.showInventory && (
-                            <Toggle
-                                id="inventory_values_affected"
-                                checked={ledger.inventory_values_affected}
-                                onChange={(v) => onChange("inventory_values_affected", v)}
-                                label="Inventory Values Affected"
-                            />)}
+                                <Toggle
+                                    id="inventory_values_affected"
+                                    checked={ledger.inventory_values_affected}
+                                    onChange={(v) => onChange("inventory_values_affected", v)}
+                                    label="Inventory Values Affected"
+                                />)}
                             {config.showPayroll && (
-                            <Toggle
-                                id="use_for_payroll"
-                                checked={ledger.use_for_payroll}
-                                onChange={(v) => onChange("use_for_payroll", v)}
-                                label="Use for Payroll"
-                            />)}
+                                <Toggle
+                                    id="use_for_payroll"
+                                    checked={ledger.use_for_payroll}
+                                    onChange={(v) => onChange("use_for_payroll", v)}
+                                    label="Use for Payroll"
+                                />)}
                             {config.showInterest && (
-                            <Toggle
-                                id="activate_interest_calculation"
-                                checked={ledger.activate_interest_calculation}
-                                onChange={(v) => onChange("activate_interest_calculation", v)}
-                                label="Activate Interest Calculation"
-                                desc="Enable interest slabs in the Interest tab"
-                            />)}
+                                <Toggle
+                                    id="activate_interest_calculation"
+                                    checked={ledger.activate_interest_calculation}
+                                    onChange={(v) => onChange("activate_interest_calculation", v)}
+                                    label="Activate Interest Calculation"
+                                    desc="Enable interest slabs in the Interest tab"
+                                />)}
                         </SimpleGrid>
                     </SectionCard>)}
         </>
@@ -815,12 +815,12 @@ const EditLedger = () => {
     const activeConfig =
         GROUP_CONFIG[groupName] || DEFAULT_GROUP_CONFIG;
 
-        const TABS = [
-  { id: "basic",    label: "Basic Info",   icon: "📋" },
-  { id: "bank",     label: "Bank Details", icon: "🏦" },
-  { id: "interest", label: "Interest",     icon: "📊" },
-  { id: "crm",      label: "Party Details",  icon: "👤" },
-];
+    const TABS = [
+        { id: "basic", label: "Basic Info", icon: "📋" },
+        { id: "bank", label: "Bank Details", icon: "🏦" },
+        { id: "interest", label: "Interest", icon: "📊" },
+        { id: "crm", label: "Party Details", icon: "👤" },
+    ];
 
     // ── Fetch ledger ────────────────────────────────────────────────────────────
     const fetchLedger = useCallback(async () => {
@@ -1070,30 +1070,28 @@ const EditLedger = () => {
                         </TabList>
 
                         <TabPanels>
-                            {/* Basic Info */}
+                            {/* Basic Info - always shown */}
                             <TabPanel p={0}>
                                 <BasicInfoTab ledger={ledger} onChange={handleLedgerChange} errors={errors} config={activeConfig} />
                             </TabPanel>
 
-                            {/* Bank Details */}
-                            {activeConfig.showBankDetails && (
+                            {/* Bank Details - always a panel, conditionally show content */}
                             <TabPanel p={0}>
-                                <BankTab bank={bank} onChange={handleBankChange} />
-                            </TabPanel>)}
+                                {activeConfig.showBankDetails
+                                    ? <BankTab bank={bank} onChange={handleBankChange} />
+                                    : <Center py={16}><Text color="gray.400">Not applicable for this ledger group.</Text></Center>
+                                }
+                            </TabPanel>
 
-                            {/* Interest */}
-                            {activeConfig.showInterest && (
+                            {/* Interest - always a panel */}
                             <TabPanel p={0}>
-                                <InterestTab
-                                    slabs={interestSlabs}
-                                    onChange={handleSlabChange}
-                                    onAdd={handleAddSlab}
-                                    onRemove={handleRemoveSlab}
-                                    interestEnabled={!!ledger.activate_interest_calculation}
-                                />
-                            </TabPanel>)}
+                                {activeConfig.showInterest
+                                    ? <InterestTab slabs={interestSlabs} onChange={handleSlabChange} onAdd={handleAddSlab} onRemove={handleRemoveSlab} interestEnabled={!!ledger.activate_interest_calculation} />
+                                    : <Center py={16}><Text color="gray.400">Not applicable for this ledger group.</Text></Center>
+                                }
+                            </TabPanel>
 
-                            {/* CRM */}
+                            {/* CRM - always shown */}
                             <TabPanel p={0}>
                                 <CrmTab crm={crm} onChange={handleCrmChange} />
                             </TabPanel>

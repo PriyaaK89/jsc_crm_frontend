@@ -288,7 +288,7 @@ if (sameLedgerSelected) {
                     .map((e) => ({
                         ledger_id: e.ledger_id,
                         amount: Number(e.amount),
-                        transaction_type: e.transaction_type || "BANK_TRANSFER",
+                        transaction_type: e.transaction_type || "E_FUND_TRANSFER",
                         bank_name: e.bank_name || null,
                     })),
             };

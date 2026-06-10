@@ -303,10 +303,11 @@ if (sameLedgerSelected) {
                     duration: 4000,
                     isClosable: true,
                 });
-
+ loadVoucherNo();
                 // Reset form and reload voucher no
                 setFormData(emptyForm());
                 await fetchInitialData();
+                
             }
         } catch (error) {
             console.error("Contra save error:", error);
@@ -318,6 +319,7 @@ if (sameLedgerSelected) {
                 duration: 4000,
                 isClosable: true,
             });
+           
         } finally {
             setSubmitting(false);
         }

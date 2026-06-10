@@ -536,9 +536,9 @@ if (sameLedgerSelected) {
                                             placeholder="Please select"
                                             isDisabled={!entry.ledger_id}
                                         >
-                                            <option value="BANK_TRANSFER">e-Fund Transfer</option>
+                                            <option value="E_FUND_TRANSFER">e-Fund Transfer</option>
                                             <option value="CASH">Cash</option>
-                                            <option value="CHEQUE">Cheque/DD</option>
+                                            <option value="CHEQUE_DD">Cheque/DD</option>
                                             <option value="OTHERS">Others</option>
                                         </Select>
                                     </Td>

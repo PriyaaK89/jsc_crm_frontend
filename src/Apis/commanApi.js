@@ -141,11 +141,9 @@ export const fetchNextVoucherNo = async (voucherType) => {
       voucher_type_id: response?.data?.voucher_type_id,
       nextSequence: response?.data?.nextSequence,
     };
-  } catch (error) {
-    console.log("Error fetching voucher no", error);
-
-    return null;
-  }
+  } catch (err) {
+   throw err;
+}
 };
 
 export const fetchLedgerDetailsByID = async (ledgerId) => {

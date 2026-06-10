@@ -104,6 +104,7 @@ import SalesTxnMasterLayout from "../components/layout/TransactionMasterLayout/S
 import ReceiptTxnMasterLayout from "../components/layout/TransactionMasterLayout/ReceiptLayout";
 import CreditNoteTxnMasterLayout from "../components/layout/TransactionMasterLayout/CreditNoteLayout";
 import DebitNoteTxnMasterLayout from "../components/layout/TransactionMasterLayout/DebitNoteLayout";
+import ContraTxnMasterLayout from "../components/layout/TransactionMasterLayout/ContraLayout";
 
 
 function App() {
@@ -235,6 +236,7 @@ function App() {
         <Route path="/transaction-master/receipt" element={<ReceiptTxnMasterLayout/>}/>
         <Route path="/transaction-master/credit-note" element={<CreditNoteTxnMasterLayout/>}/>
         <Route path="/transaction-master/debit-note" element={<DebitNoteTxnMasterLayout/>}/>
+        <Route path="/transaction-master/contra" element={<ContraTxnMasterLayout/>}/>
 
         <Route path="/print/purchase/:id" element={<PurchaseInvoice />} />
         <Route path="/print/payment/:id" element={<PaymentInvoice />} />

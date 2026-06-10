@@ -123,7 +123,7 @@ const emptyBillRef = () => ({
 });
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-const GenerateCreditNote = ({salesLedger}) => {
+const GenerateCreditNote = ({ salesLedger }) => {
   const { users } = useUsersapi();
   const toast = useToast();
 
@@ -157,6 +157,7 @@ const GenerateCreditNote = ({salesLedger}) => {
   const [ewayNumber, setEwayNumber] = useState("");
   const [transporterGst, setTransporterGst] = useState("");
   const [deliveryPlace, setDeliveryPlace] = useState("");
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
 
   // ── Customer info
   const [customerInfo, setCustomerInfo] = useState({
@@ -213,8 +214,6 @@ const GenerateCreditNote = ({salesLedger}) => {
       ]);
       setStockItemList(stockData || []);
       setGodownList(godownData || []);
-
-      // Customer ledger (Sundry Debtors)
       try {
         const r = await API.get(API_ENDPOINTS.GET_LEDGER_DROPDOWN);
         setCustomerList(r?.data?.data || []);
@@ -222,8 +221,6 @@ const GenerateCreditNote = ({salesLedger}) => {
         console.error(e);
       }
 
-      // Sales Return ledger (Sales Account group)
-    
     } catch (err) {
       console.error("loadDropdowns error:", err);
     }
@@ -237,17 +234,17 @@ const GenerateCreditNote = ({salesLedger}) => {
       setVoucherNo(res.data.voucher_no);
       setVoucherTypeId(res.data.voucher_type_id);
     } catch (err) {
-  console.log(err);
-  console.log(err.response);
+      console.log(err);
+      console.log(err.response);
 
-  toast({
-    title: "Error",
-    description: err.response?.data?.message || err.message,
-    status: "error",
-    duration: 3000,
-    isClosable: true,
-  });
-}
+      toast({
+        title: "Error",
+        description: err.response?.data?.message || err.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   // ─── Recalculate totals ───────────────────────────────────────────────────
@@ -321,10 +318,15 @@ const GenerateCreditNote = ({salesLedger}) => {
 
   // ─── Invoice (original sale) select ──────────────────────────────────────
   const handleInvoiceSelect = async (sale) => {
+    setSelectedInvoice(sale);
     setOriginalSaleId(sale.id);
-    setOriginalInvoiceNo(sale.voucher_no || sale.reference_no || sale.id);
     setInvoiceSearchQuery(sale.voucher_no || sale.reference_no || String(sale.id));
     setShowInvoiceDropdown(false);
+
+    // setOriginalSaleId(sale.id);
+    // setOriginalInvoiceNo(sale.voucher_no || sale.reference_no || sale.id);
+    // setInvoiceSearchQuery(sale.voucher_no || sale.reference_no || String(sale.id));
+    // setShowInvoiceDropdown(false);
 
     // Show items table, pre-populate with sale's items
     try {
@@ -361,9 +363,9 @@ const GenerateCreditNote = ({salesLedger}) => {
 
     // Fetch bill references for this sale
     try {
-      const res = await API.get(
-        `${API_ENDPOINTS.GET_SALES_BILL_REFERENCES || "/sales-bill-references"}?sale_id=${sale.id}`
-      );
+         const res = await API.get(
+ `${API_ENDPOINTS.GET_SALES_BILL_REFERENCES}?sale_id=${sale.id}`
+);
       setBillReferences(res?.data?.data || []);
     } catch (e) {
       console.error("fetch bill references error:", e);
@@ -676,6 +678,8 @@ const GenerateCreditNote = ({salesLedger}) => {
     setCreditNoteDate(new Date().toISOString().slice(0, 10));
   };
 
+  
+
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <>
@@ -727,15 +731,15 @@ const GenerateCreditNote = ({salesLedger}) => {
               </Text>
               <Box position="relative">
                 <Input
-                  {...inputStyle}
                   value={invoiceSearchQuery}
                   onChange={(e) => {
                     setInvoiceSearchQuery(e.target.value);
                     setShowInvoiceDropdown(true);
                   }}
-                  onFocus={() => setShowInvoiceDropdown(true)}
-                  placeholder={customerLedgerId ? "Search invoice..." : "Select party first"}
-                  isDisabled={!customerLedgerId}
+                  onFocus={() => {
+                    setInvoiceSearchQuery(""); // clear search
+                    setShowInvoiceDropdown(true);
+                  }}
                 />
                 {showInvoiceDropdown && invoiceSearchList.length > 0 && (
                   <Box
@@ -786,6 +790,57 @@ const GenerateCreditNote = ({salesLedger}) => {
                 />
               )}
             </GridItem>
+            {/* <GridItem>
+{billRefRows.map((row, index) => (
+  <Table>
+  <Tr key={index}>
+    <Td>
+      <Select
+        value={row.sales_bill_reference_id}
+        onChange={(e) =>
+          handleBillRefChange(
+            index,
+            "sales_bill_reference_id",
+            e.target.value
+          )
+        }
+      >
+        <option value="">Select Bill</option>
+
+        {billReferences.map((bill) => (
+          <option
+            key={bill.id}
+            value={bill.id}
+          >
+            {bill.reference_no} | Pending ₹{bill.pending_amount}
+          </option>
+        ))}
+      </Select>
+    </Td>
+
+    <Td>
+      <Input
+        value={row.pending_amount || ""}
+        readOnly
+      />
+    </Td>
+
+    <Td>
+      <Input
+        value={row.amount || ""}
+        onChange={(e) =>
+          handleBillRefChange(
+            index,
+            "amount",
+            e.target.value
+          )
+        }
+      />
+    </Td>
+  </Tr>
+  </Table>
+))}
+            </GridItem> */}
 
             {/* Sales Return Ledger */}
             <GridItem>
@@ -1261,11 +1316,7 @@ const GenerateCreditNote = ({salesLedger}) => {
                           colorScheme="red"
                           variant="ghost"
                           onClick={() => removeBillRefRow(index)}
-                          fontSize="14px"
-                          minW="24px"
-                          h="24px"
-                          p={0}
-                        >
+                          fontSize="14px" minW="24px" h="24px" p={0} >
                           ×
                         </Button>
                       )}

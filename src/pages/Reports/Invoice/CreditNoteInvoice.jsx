@@ -1,22 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Box, Flex, Text, Table, Thead, Tbody, Tr, Td, Th, Button, Spinner, Divider, VStack, Img,} from "@chakra-ui/react";
+import {
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton,
+  Box, Flex, Text, Table, Thead, Tbody, Tr, Td, Th, Button, Spinner,
+  Divider, VStack, Img, HStack,
+} from "@chakra-ui/react";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import stamp_img from "../../../assets/images/stamp_jsc.png";
 import jamidara_seeds_logo from "../../../assets/images/jsc_logo_.png";
 
-const PurchaseInvoice = ({ isOpen, onClose, invoiceId }) => {
+const CreditNoteInvoice = ({ isOpen, onClose, creditNoteId }) => {
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const printRef = useRef();
 
   const fetchInvoice = async () => {
-    if (!invoiceId) return;
+    if (!creditNoteId) return;
     try {
       setLoading(true);
       const response = await API.get(
-        `${API_ENDPOINTS.GENERATE_PURCHASE_INVOICE}/${invoiceId}`
+        `${API_ENDPOINTS.GET_CREDIT_NOTE_INVOICE}/${creditNoteId}`
       );
       if (response.status === 200) {
         setInvoice(response.data.data);
@@ -29,13 +33,13 @@ const PurchaseInvoice = ({ isOpen, onClose, invoiceId }) => {
   };
 
   useEffect(() => {
-    if (isOpen && invoiceId) {
+    if (isOpen && creditNoteId) {
       fetchInvoice();
     }
     if (!isOpen) {
       setInvoice(null);
     }
-  }, [isOpen, invoiceId]);
+  }, [isOpen, creditNoteId]);
 
   const handleDownloadPdf = async () => {
     try {
@@ -44,7 +48,7 @@ const PurchaseInvoice = ({ isOpen, onClose, invoiceId }) => {
       const element = printRef.current;
       const options = {
         margin: 5,
-        filename: `Purchase_Invoice_${invoice?.purchase?.voucher_no || invoiceId}.pdf`,
+        filename: `Credit_Note_${invoice?.creditNote?.voucher_no || creditNoteId}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
@@ -63,8 +67,10 @@ const PurchaseInvoice = ({ isOpen, onClose, invoiceId }) => {
       "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen",
       "Sixteen", "Seventeen", "Eighteen", "Nineteen",
     ];
-    const tens = [ "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety", ];
-
+    const tens = [
+      "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy",
+      "Eighty", "Ninety",
+    ];
     const convert = (n) => {
       if (n === 0) return "";
       if (n < 20) return ones[n] + " ";
@@ -78,7 +84,6 @@ const PurchaseInvoice = ({ isOpen, onClose, invoiceId }) => {
         return convert(Math.floor(n / 100000)) + "Lakh " + convert(n % 100000);
       return convert(Math.floor(n / 10000000)) + "Crore " + convert(n % 10000000);
     };
-
     const intPart = Math.floor(num);
     const result = convert(intPart).trim();
     return result ? "Rupees " + result + " Only" : "Rupees Zero Only";
@@ -87,11 +92,13 @@ const PurchaseInvoice = ({ isOpen, onClose, invoiceId }) => {
   const renderInvoiceContent = () => {
     if (!invoice) return null;
 
-    const purchase = invoice.purchase;
+    const cn = invoice.creditNote;
     const items = invoice.items;
+    const billReferences = invoice.billReferences || [];
 
+    // ── Totals ──────────────────────────────────────────────────
     const totalQty = items.reduce(
-      (sum, item) => sum + parseFloat(item.billed_qty || 0), 0
+      (sum, item) => sum + parseFloat(item.return_qty || 0), 0
     );
     const totalAmount = items.reduce(
       (sum, item) => sum + parseFloat(item.amount || 0), 0
@@ -104,33 +111,10 @@ const PurchaseInvoice = ({ isOpen, onClose, invoiceId }) => {
         parseFloat(item.sgst_amount || 0),
       0
     );
-    // const totalAmountNum = parseFloat(purchase.total_amount || 0);
-    const itemsTotal = items.reduce(
-  (sum, item) => sum + parseFloat(item.amount || 0),
-  0
-);
-
-const taxTotal = items.reduce(
-  (sum, item) =>
-    sum +
-    parseFloat(item.igst_amount || 0) +
-    parseFloat(item.cgst_amount || 0) +
-    parseFloat(item.sgst_amount || 0),
-  0
-);
-
-// const freight = parseFloat(
-//   purchase.transport_freight || 0
-// );
-
-const grossTotal =
-  itemsTotal +
-  taxTotal 
-  
-
-const finalTotal = Math.round(grossTotal);
-
-const roundOff = finalTotal - grossTotal;
+    const taxTotal = totalTaxAmount;
+    const grossTotal = totalAmount + taxTotal;
+    const finalTotal = Math.round(grossTotal);
+    const roundOff = finalTotal - grossTotal;
 
     return (
       <Box
@@ -140,30 +124,22 @@ const roundOff = finalTotal - grossTotal;
         mx="auto"
         fontFamily="serif"
         fontSize="13px"
-        p={4}
+        p={0}
       >
         {/* ===== COMPANY HEADER ===== */}
         <Box py={0}>
-          <img
-            src={jamidara_seeds_logo}
-            alt="logo"
-            style={{ width: "140px" }}
-          />
+          <img src={jamidara_seeds_logo} alt="logo" style={{ width: "140px" }} />
         </Box>
 
         <Text
-          textAlign="center"
-          fontSize="16px"
-          fontWeight="900"
-          color="brown"
-          textDecoration="underline"
-          fontFamily="serif"
-          mb={2}
+          textAlign="center" fontSize="16px" fontWeight="900"
+          color="brown" textDecoration="underline"
+          fontFamily="serif" mb={2}
         >
-          PURCHASE INVOICE
+          Credit Note
         </Text>
 
-        <Box mb={4}>
+        <Box mb={2}>
           <Text fontFamily="serif" color="black" fontSize="10px" fontWeight="900">
             JAMIDARA SEEDS CORPORATION
           </Text>
@@ -187,68 +163,68 @@ const roundOff = finalTotal - grossTotal;
           </Text>
         </Box>
 
-        {/* ===== PURCHASE TO + TRANSPORT DETAILS ===== */}
-        <Table size="sm" variant="unstyled" mb={2}>
+        {/* ===== BILL TO + TRANSPORT + META ===== */}
+        {/* Matching screenshot: 3 columns — Bill To | Transportation Details | Right meta */}
+        <Table size="sm" variant="unstyled" mb={1}>
           <Thead>
             <Tr>
-              <Th fontSize="10px">Purchase To:</Th>
+              <Th fontSize="10px">Bill To:</Th>
               <Th fontSize="10px">Transportation Details</Th>
               <Th fontSize="10px"></Th>
             </Tr>
           </Thead>
           <Tbody>
             <Tr>
-              <Td verticalAlign="top">
+              {/* Bill To */}
+              <Td verticalAlign="top" width="35%">
                 <Text fontFamily="serif" color="black" fontSize="10px" fontWeight="900">
-                  {purchase.supplier_name}
+                  {cn.customer_name}
                 </Text>
                 <Text fontFamily="serif" color="black" fontSize="10px">
-                  Contact No.: {purchase.mobile_no || "-"}
+                  Contact No.: {cn.customer_mobile || "-"}
                 </Text>
                 <Text fontFamily="serif" color="black" fontSize="10px">
-                  GSTN No.: {purchase.supplier_gst || "-"}
+                  GSTN No.: {cn.customer_gst || "-"}
                 </Text>
               </Td>
 
-              <Td verticalAlign="top">
+              {/* Transportation Details */}
+              <Td verticalAlign="top" width="35%">
                 <Text fontFamily="serif" color="black" fontSize="10px">
-                  Transport Name: By {purchase.transport_name || "-"}
+                  Transport Name: By {cn.transport_name || "-"}
                 </Text>
                 <Text fontFamily="serif" color="black" fontSize="10px">
-                  Vehicle No.: {purchase.vehicle_no || "-"}
+                  Vehicle No.: {cn.vehicle_no || "-"}
                 </Text>
                 <Text fontFamily="serif" color="black" fontSize="10px">
                   Delivery Dt.:{" "}
-                  {purchase.purchase_date
-                    ? new Date(purchase.purchase_date).toLocaleDateString("en-GB")
+                  {cn.credit_note_date
+                    ? new Date(cn.credit_note_date).toLocaleDateString("en-GB")
                     : "-"}
                 </Text>
                 <Text fontFamily="serif" color="black" fontSize="10px">
-                  Delivery Loc.: {purchase.destination || "-"}
+                  Delivery Loc.: {cn.delivery_place || "-"}
                 </Text>
               </Td>
 
-              <Td verticalAlign="top">
+              {/* Right Meta Column — matches screenshot right side */}
+              <Td verticalAlign="top" width="30%">
                 <Text fontFamily="serif" color="black" fontSize="10px" fontWeight="900">
-                  Under Emp.: {purchase.employee_under_name || "-"}
+                  Under Emp.: {cn.employee_under_name || "-"}
                 </Text>
                 <Text fontFamily="serif" color="black" fontSize="10px" fontWeight="900">
-                  Supplier Invoice No.: {purchase.supplier_invoice_no || "-"}
+                  Order No.: {cn.order_no || "-"}
                 </Text>
                 <Text fontFamily="serif" color="black" fontSize="10px" fontWeight="900">
                   Order Date:{" "}
-                  {purchase.purchase_date
-                    ? new Date(purchase.purchase_date).toLocaleDateString("en-GB")
-                    : "-"}
+                  {cn.credit_note_date ? new Date(cn.credit_note_date).toLocaleDateString("en-GB") : "-"}
                 </Text>
                 <Text fontFamily="serif" color="black" fontSize="10px" fontWeight="900">
-                  Bill No.: {purchase.voucher_no}
+                  Bill No.: {cn.voucher_no || "-"}
                 </Text>
                 <Text fontFamily="serif" color="black" fontSize="10px" fontWeight="900">
                   Bill Date:{" "}
-                  {purchase.purchase_date
-                    ? new Date(purchase.purchase_date).toLocaleDateString("en-GB")
-                    : "-"}
+                  {cn.credit_note_date ? new Date(cn.credit_note_date).toLocaleDateString("en-GB") : "-"}
                 </Text>
               </Td>
             </Tr>
@@ -258,6 +234,7 @@ const roundOff = finalTotal - grossTotal;
         <Divider borderColor="#4e4e4e" />
 
         {/* ===== ITEMS TABLE ===== */}
+        {/* Columns match screenshot: S.N. | Item name | HSN Code | Quantity | Price | Unit | Case/Bag | Amount | GST | Tax Amount */}
         <Box overflowX="auto">
           <Table
             size="sm"
@@ -273,6 +250,7 @@ const roundOff = finalTotal - grossTotal;
                 <Th>Quantity</Th>
                 <Th>Price</Th>
                 <Th>Unit</Th>
+                <Th>Case/Bag</Th>
                 <Th>Amount</Th>
                 <Th>GST</Th>
                 <Th>Tax Amount</Th>
@@ -288,46 +266,31 @@ const roundOff = finalTotal - grossTotal;
                   parseFloat(item.igst_amount || 0) +
                   parseFloat(item.cgst_amount || 0) +
                   parseFloat(item.sgst_amount || 0);
+
+                // Batch info line under item name — matches screenshot "(JS/HY.BAJRA/2022/02) (MFG-,EXP-)"
                 const batchInfo = [
-                  item.batch_no ? `Batch: ${item.batch_no}` : null,
-                  item.mfg_date
-                    ? `MFG: ${new Date(item.mfg_date).toLocaleDateString("en-GB")}`
-                    : null,
-                  item.expiry_date
-                    ? `EXP: ${new Date(item.expiry_date).toLocaleDateString("en-GB")}`
-                    : null,
+                  item.batch_no ? `${item.batch_no}` : null,
+                  item.mfg_date ? `MFG: ${new Date(item.mfg_date).toLocaleDateString("en-GB")}` : null,
+                  item.expiry_date ? `EXP: ${new Date(item.expiry_date).toLocaleDateString("en-GB")}` : null,
                 ]
                   .filter(Boolean)
-                  .join(" | ");
+                  .join(",");
 
                 return (
                   <Tr key={item.id} borderBottom="1px solid #ccc">
                     <Td>{index + 1}</Td>
                     <Td>
-                      <Text fontFamily="serif" color="black" fontWeight="semibold">
-                        {item.item_name}
-                      </Text>
-                      {batchInfo && (
-                        <Text fontFamily="serif" color="black" fontSize="11px">
-                          ({batchInfo})
-                        </Text>
-                      )}
+                      <Text fontFamily="serif" color="black" fontWeight="semibold"> {item.item_name} </Text>
+                      {batchInfo && ( <Text fontFamily="serif" color="black" fontSize="11px"> ({batchInfo}) </Text> )}
                     </Td>
                     <Td textAlign="center">{item.hsn_code || "-"}</Td>
-                    <Td textAlign="center">
-                      {parseFloat(item.billed_qty).toFixed(0)}
-                    </Td>
-                    <Td textAlign="center">
-                      {parseFloat(item.rate).toFixed(2)}
-                    </Td>
-                    <Td textAlign="center">{item.symbol}</Td>
-                    <Td textAlign="right">
-                      {parseFloat(item.amount).toFixed(2)}
-                    </Td>
-                    <Td textAlign="center">
-                      {taxPct > 0 ? `${taxPct.toFixed(1)} %` : "Not Applicable"}
-                    </Td>
-                    <Td textAlign="right">{taxAmount.toFixed(2)}</Td>
+                    <Td textAlign="center"> {parseFloat(item.return_qty || 0).toFixed(0)} </Td>
+                    <Td textAlign="center"> {parseFloat(item.rate || 0).toFixed(2)} </Td>
+                    <Td textAlign="center">{item.unit_name || "-"}</Td>
+                    <Td textAlign="center">{item.case_bag || "-"}</Td>
+                    <Td textAlign="right"> {parseFloat(item.amount || 0).toFixed(2)} </Td>
+                    <Td textAlign="center"> {taxPct > 0 ? `${taxPct.toFixed(1)} %` : "0.0 %"} </Td>
+                    <Td textAlign="right">{taxAmount.toFixed(1)}</Td>
                   </Tr>
                 );
               })}
@@ -335,13 +298,10 @@ const roundOff = finalTotal - grossTotal;
               {/* Totals Row */}
               <Tr borderTop="1px solid #4e4e4e" fontWeight="bold" bg="gray.50">
                 <Td fontSize="10px" border="1px solid #ddd" padding="4px" />
-                <Td fontSize="10px" border="1px solid #ddd" padding="4px" fontWeight="bold">
-                  TOTAL
-                </Td>
+                <Td fontSize="10px" border="1px solid #ddd" padding="4px" fontWeight="bold"> TOTAL </Td>
                 <Td fontSize="10px" border="1px solid #ddd" padding="4px" />
-                <Td fontSize="10px" border="1px solid #ddd" padding="4px" textAlign="center">
-                  {totalQty.toFixed(0)}
-                </Td>
+                <Td fontSize="10px" border="1px solid #ddd" padding="4px" textAlign="center"> {totalQty.toFixed(0)} </Td>
+                <Td fontSize="10px" border="1px solid #ddd" padding="4px" />
                 <Td fontSize="10px" border="1px solid #ddd" padding="4px" />
                 <Td fontSize="10px" border="1px solid #ddd" padding="4px" />
                 <Td fontSize="10px" border="1px solid #ddd" padding="4px" textAlign="right">
@@ -356,84 +316,49 @@ const roundOff = finalTotal - grossTotal;
           </Table>
         </Box>
 
-        {/* ===== GST SUMMARY + TOTALS ===== */}
-        {/* <Flex justify="flex-end" mt={2} borderBottom="1px solid #4e4e4e" pb={2}>
-          <Box minW="250px" fontSize="10px">
-            <Flex justify="space-between">
-              <Text>CGST@ :</Text>
-              <Text>{parseFloat(purchase.cgst_total || 0).toFixed(2)}</Text>
-            </Flex>
-            <Flex justify="space-between">
-              <Text>SGST@ :</Text>
-              <Text>{parseFloat(purchase.sgst_total || 0).toFixed(2)}</Text>
-            </Flex>
-            <Flex justify="space-between">
-              <Text>IGST@ :</Text>
-              <Text>{parseFloat(purchase.igst_total || 0).toFixed(2)}</Text>
-            </Flex>
-            <Divider borderColor="#4e4e4e" mt={1}/>
-            {parseFloat(purchase.transport_freight || 0) > 0 && (
-              <Flex justify="space-between" >
-                <Text>Freight Charges :</Text>
-                <Text>{parseFloat(purchase.transport_freight).toFixed(2)}</Text>
-              </Flex>
-            )}
-            <Flex justify="space-between">
-              <Text>Round Off :</Text>
-              <Text>
-                {(
-                  Math.round(totalAmountNum) -
-                  parseFloat(purchase.subtotal || 0) -
-                  parseFloat(purchase.tax_total || 0) -
-                  parseFloat(purchase.transport_freight || 0)
-                ).toFixed(2)}
-              </Text>
-            </Flex>
-            <Divider borderColor="#4e4e4e" mt={1} />
-            <Flex justify="space-between" px={2} py={1} fontWeight="bold" fontSize="13px">
-              <Text>TOTAL :</Text>
-              <Text>{parseFloat(purchase.total_amount || 0).toFixed(2)}</Text>
-            </Flex>
-          </Box>
-        </Flex> */}
+        {/* ===== GST SUMMARY — right aligned, matches screenshot ===== */}
+        <Flex justify="flex-end" mt={2} pb={1}>
+  <Box minW="260px">
+    {Number(cn?.cgst_total) > 0 && Number(cn?.sgst_total) > 0 && (
+      <>
+        <Flex justify="space-between">
+          <Text fontSize="12px" fontWeight="600">CGST :</Text>
+          <Text fontSize="12px" fontWeight="600">
+            {Number(cn?.cgst_total).toFixed(2)}
+          </Text>
+        </Flex>
 
         <Flex justify="space-between">
-  <Text>Items Total :</Text>
-  <Text>{itemsTotal.toFixed(2)}</Text>
+          <Text fontSize="12px" fontWeight="600">SGST :</Text>
+          <Text fontSize="12px" fontWeight="600">
+            {Number(cn?.sgst_total).toFixed(2)}
+          </Text>
+        </Flex>
+      </>
+    )}
+
+    {Number(cn?.igst_total) > 0 && (
+      <Flex justify="space-between">
+        <Text fontSize="12px" fontWeight="600">IGST :</Text>
+        <Text fontSize="12px" fontWeight="600">
+          {Number(cn?.igst_total).toFixed(2)}
+        </Text>
+      </Flex>
+    )}
+  </Box>
 </Flex>
 
-<Flex justify="space-between">
-  <Text>GST Total :</Text>
-  <Text>{taxTotal.toFixed(2)}</Text>
-</Flex>
+        <Divider borderColor="#4e4e4e" mt={1} />
 
-{/* {freight > 0 && (
-  <Flex justify="space-between">
-    <Text>Freight Charges :</Text>
-    <Text>{freight.toFixed(2)}</Text>
-  </Flex>
-)} */}
+        <Flex justify="space-between" px={2} py={1} fontWeight="bold" fontSize="12px">
+          <Text>TOTAL :</Text>
+          <Text>{finalTotal.toFixed(2)}</Text>
+        </Flex>
 
-<Flex justify="space-between">
-  <Text>Round Off :</Text>
-  <Text>{roundOff.toFixed(2)}</Text>
-</Flex>
-
-<Divider borderColor="#4e4e4e" mt={1} />
-
-<Flex
-  justify="space-between"
-  px={2}
-  py={1}
-  fontWeight="bold"
-  fontSize="13px"
->
-  <Text>TOTAL :</Text>
-  <Text>{finalTotal.toFixed(2)}</Text>
-</Flex>
+        <Divider borderColor="#4e4e4e" mt={1} />
 
         {/* ===== AMOUNT IN WORDS ===== */}
-        <Flex gap={2} py={1} borderBottom="1px solid #4e4e4e" fontSize="10px">
+        <Flex gap={2} py={1} borderBottom="1px solid #4e4e4e" fontSize="11px">
           <Text fontFamily="serif" color="black" fontWeight="bold" minW="fit-content">
             Amount In Words :
           </Text>
@@ -441,11 +366,11 @@ const roundOff = finalTotal - grossTotal;
         </Flex>
 
         {/* ===== NARRATION ===== */}
-        <Flex gap={2} py={1} borderBottom="1px solid #4e4e4e" fontSize="10px">
+        <Flex gap={2} py={1} borderBottom="1px solid #4e4e4e" fontSize="11px">
           <Text fontFamily="serif" color="black" fontWeight="bold" minW="fit-content">
             Narration :
           </Text>
-          <Text>{purchase.narration || "-"}</Text>
+          <Text>{cn.narration || "-"}</Text>
         </Flex>
 
         {/* ===== SIGNATURES ===== */}
@@ -454,7 +379,7 @@ const roundOff = finalTotal - grossTotal;
             Receiver's Signature
           </Text>
           <VStack>
-            <Img src={stamp_img} width="80px" />
+            <Img src={stamp_img} width="70px" />
             <Text fontFamily="serif" color="black" fontWeight="bold" fontSize="14px">
               Authorizer Signature
             </Text>
@@ -472,57 +397,54 @@ const roundOff = finalTotal - grossTotal;
           <Text fontFamily="serif" color="black" fontWeight="bold" mb={1}>
             Bank Details :
           </Text>
-          <Text>Company Name : JAMIDARA SEEDS CORPORATION</Text>
-          <Text>Bank Name : STATE BANK OF INDIA</Text>
-          <Text>Account No. : 61180709821</Text>
-          <Text>IFSC Code : SBIN0031764</Text>
-          <Text>Bank Name : ICICI BANK</Text>
-          <Text>Account No. : 678805501229</Text>
-          <Text>IFSC Code : ICIC0000106</Text>
+          <HStack justifyContent="space-between" alignItems="baseline">
+            <VStack alignItems="baseline" gap={0}>
+              <Text>Company Name : JAMIDARA SEEDS CORPORATION</Text>
+              <Text>Bank Name : STATE BANK OF INDIA</Text>
+              <Text>Bank Name : ICICI BANK</Text>
+            </VStack>
+            <VStack alignItems="baseline" gap={0}>
+              <Text>Account No. : 61180709821</Text>
+              <Text>Account No. : JSCRAJP53</Text>
+            </VStack>
+            <VStack alignItems="baseline" gap={0}>
+              <Text>IFSC Code : SBIN0031764</Text>
+              <Text>IFSC Code : ICIC0000106</Text>
+            </VStack>
+          </HStack>
         </Box>
 
         {/* ===== RULES & REGULATIONS ===== */}
-        <Box border="1px solid #000" mt={3} p={3} fontSize="8px">
-          <Text
-            fontFamily="serif"
-            color="black"
-            fontWeight="bold"
-            textDecoration="underline"
-            mb={2}
-          >
+        <Box border="1px solid #000" mt={3} p={1} fontSize="8px">
+          <Text fontFamily="serif" color="black" fontWeight="bold" textDecoration="underline" mb={1}>
             Rules & Regulations
           </Text>
-          <Text fontFamily="serif" color="black" mt="2px">
-            ❖ All cash discount plans and other plans shall be valid as per the
-            rules and conditions of the company.
+          <Text fontFamily="serif" color="black" mt="1px">
+            ❖ All cash discount plans and other plans shall be valid as per the rules and conditions of the company.
           </Text>
-          <Text fontFamily="serif" color="black" mt="2px">
-            ❖ If any goods packet is received by the distributor, it will have
-            to be reported to the company within three days of receipt of the
-            goods, after which the complaint will not be valid.
+          <Text fontFamily="serif" color="black" mt="1px">
+            ❖ If any goods packet is received by the distributor, it will have to be reported to the company within three days of receipt of the goods, after which the complaint will not be valid.
           </Text>
-          <Text fontFamily="serif" color="black" mt="2px">
-            ❖ The freight fare for the goods will be paid by the company only
-            for the price marked on the Bill-T.
+          <Text fontFamily="serif" color="black" mt="1px">
+            ❖ The freight fare for the goods will be paid by the company only for the price marked on the Bill-T.
           </Text>
-          <Text fontFamily="serif" color="black" mt="2px">
-            ❖ Transport fare will be paid by the company to the distributor only
-            after the borrowing time of the bill is paid within 45 days.
+          <Text fontFamily="serif" color="black" mt="1px">
+            ❖ Transport fare will be paid by the company to the distributor only after the borrowing time of the bill is paid within 45 days.
           </Text>
-          <Text fontFamily="serif" color="black" mt="2px">
-            ❖ Company has full rights to do changes in the value of any product
-            & schemes at any time.
+          <Text fontFamily="serif" color="black" mt="1px">
+            ❖ Company has full rights to do changes in the value of any product & schemes at any time.
           </Text>
-          <Text fontFamily="serif" color="black" mt="2px">
-            ❖ Distributor has to send the notice to the company within 7 days if
-            any complaint regarding the product or anything, otherwise it will
-            be discarded.
+          <Text fontFamily="serif" color="black" mt="1px">
+            ❖ Distributor has to send the notice to the company within 7 days if any complaint regarding the product or anything, otherwise it will be discarded.
           </Text>
-          <Text fontFamily="serif" color="black" mt="2px">
+          <Text fontFamily="serif" color="black" mt="1px">
             ❖ Goods once sold will not be taken back.
           </Text>
-          <Text fontFamily="serif" color="black" mt="2px">
+          <Text fontFamily="serif" color="black" mt="1px">
             ❖ Interest @24% P.A. will be charged on late payment after 45 Days.
+          </Text>
+          <Text fontFamily="serif" color="black" mt="1px">
+            ❖ Supercash bill payment is mandatory within 7 days from bill date! If bill is not paid within the time period, the bill automatically will be converted to regular price.
           </Text>
         </Box>
       </Box>
@@ -530,16 +452,14 @@ const roundOff = finalTotal - grossTotal;
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="5xl" >
+    <Modal isOpen={isOpen} onClose={onClose} size="5xl">
       <ModalOverlay />
       <ModalContent maxW="960px">
 
         {/* MODAL HEADER */}
         <ModalHeader borderBottom="1px solid #e2e8f0" py={3}>
           <Flex justify="space-between" align="center" pr={8}>
-            <Text fontSize="16px" fontWeight="600">
-              Purchase Invoice
-            </Text>
+            <Text fontSize="16px" fontWeight="600">Credit Note Invoice</Text>
             <Button
               colorScheme="green"
               size="sm"
@@ -565,9 +485,7 @@ const roundOff = finalTotal - grossTotal;
               <Spinner size="xl" />
             </Flex>
           ) : !invoice ? (
-            <Text fontFamily="serif" color="black" p={10}>
-              Invoice not found
-            </Text>
+            <Text fontFamily="serif" color="black" p={10}>Invoice not found</Text>
           ) : (
             renderInvoiceContent()
           )}
@@ -577,4 +495,4 @@ const roundOff = finalTotal - grossTotal;
   );
 };
 
-export default PurchaseInvoice;
+export default CreditNoteInvoice;

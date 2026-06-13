@@ -105,6 +105,7 @@ import ReceiptTxnMasterLayout from "../components/layout/TransactionMasterLayout
 import CreditNoteTxnMasterLayout from "../components/layout/TransactionMasterLayout/CreditNoteLayout";
 import DebitNoteTxnMasterLayout from "../components/layout/TransactionMasterLayout/DebitNoteLayout";
 import ContraTxnMasterLayout from "../components/layout/TransactionMasterLayout/ContraLayout";
+import JournalTxnMasterLayout from "../components/layout/TransactionMasterLayout/JournalLayout";
 
 
 function App() {
@@ -237,6 +238,7 @@ function App() {
         <Route path="/transaction-master/credit-note" element={<CreditNoteTxnMasterLayout/>}/>
         <Route path="/transaction-master/debit-note" element={<DebitNoteTxnMasterLayout/>}/>
         <Route path="/transaction-master/contra" element={<ContraTxnMasterLayout/>}/>
+        <Route path="/transaction-master/journal" element={<JournalTxnMasterLayout/>}/>
 
         <Route path="/print/purchase/:id" element={<PurchaseInvoice />} />
         <Route path="/print/payment/:id" element={<PaymentInvoice />} />

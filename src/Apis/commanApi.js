@@ -1,12 +1,9 @@
-// ================= STOCK ITEMS =================
-
 import API from "../services/api";
 import { API_ENDPOINTS } from "../services/endpoints";
 
 export const fetchStockItemDropdown = async () => {
   try {
     const response = await API.get(API_ENDPOINTS.GET_STOCK_ITEM_DROPDOWN);
-
     return response?.data?.data || [];
   } catch (error) {
     console.log("Error fetching stock items", error);
@@ -14,7 +11,7 @@ export const fetchStockItemDropdown = async () => {
   }
 };
 
-// ================= GODOWN =================
+
 
 export const fetchGodownList = async () => {
   try {
@@ -113,8 +110,13 @@ export const fetchStockItemDetailsByID = async (itemId) => {
         unit_id: d?.unit_id || "",
         rate: Number(d?.opening_stock?.rate || 0),
         available_qty: Number(d?.opening_stock?.quantity || 0),
+        alt_unit_id: d?.alt_unit_id || "",
         alt_unit_qty: d?.alternative_unit_value || "",
         alt_unit_name: d?.alternative_unit_name || "",
+        bulk_unit_id: d?.bulk_unit_id || "",
+        bulk_unit_value: d?.bulk_unit_value || "",
+        bulk_unit_name: d?.bulk_unit_name || "",
+        calculated_alt_unit: d?.calculated_alt_unit || "",
         supercash_price: Number(d?.opening_stock?.supercash_price || 0),
         gst_applicable: Number(d?.gst_applicable || 0),
         rate_of_duty: Number(d?.rate_of_duty || 0),
@@ -170,7 +172,6 @@ export const fetchLedgerDetailsByID = async (ledgerId) => {
 export const createPurchase = async (payload) => {
   try {
     const response = await API.post(API_ENDPOINTS.CREATE_PURCHASE, payload);
-
     return response.data;
   } catch (error) {
     throw error;
@@ -182,19 +183,11 @@ export const fetchPendingBills = async (
 ) => {
 
   if (!ledgerId) return [];
-
   try {
-
-    const response = await API.get(
-      `${API_ENDPOINTS.GET_PENDING_BILLS}/${ledgerId}`
-    );
-
+    const response = await API.get( `${API_ENDPOINTS.GET_PENDING_BILLS}/${ledgerId}` );
     return response?.data?.data || [];
-
   } catch (error) {
-
     console.log(error);
-
     return [];
   }
 };

@@ -2,8 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import {
     Box, Text, Grid, GridItem, FormControl, FormLabel, Input, Select,
     Textarea, Table, Thead, Tbody, Tr, Th, Td, Button, Flex,
-    useToast,
-} from "@chakra-ui/react";
+    useToast } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import useUsersapi from "../../Apis/GetUsersapi";
@@ -63,13 +62,13 @@ const Contra = () => {
     const [submitting, setSubmitting] = useState(false);
 
     const sectionStyle = {
-  bg: "white",
-  border: "1px solid #d0d7de",
-  borderRadius: "6px",
-  p: 0,
-  mb: 3,
-  boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
-};
+        bg: "white",
+        border: "1px solid #d0d7de",
+        borderRadius: "6px",
+        p: 0,
+        mb: 3,
+        boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+    };
 
     // ── boot ──────────────────────────────────────────────────────────────────
 
@@ -81,57 +80,57 @@ const Contra = () => {
         0
     );
 
-const loadVoucherNo = async () => {
-    try {
-        const voucherData = await fetchNextVoucherNo("CONTRA");
+    const loadVoucherNo = async () => {
+        try {
+            const voucherData = await fetchNextVoucherNo("CONTRA");
 
-        if (voucherData) {
-            setVoucherTypeId(voucherData.voucher_type_id);
+            if (voucherData) {
+                setVoucherTypeId(voucherData.voucher_type_id);
 
-            setFormData((prev) => ({
-                ...prev,
-                voucher_no: voucherData.voucher_no,
-            }));
+                setFormData((prev) => ({
+                    ...prev,
+                    voucher_no: voucherData.voucher_no,
+                }));
+            }
+        } catch (err) {
+            toast({
+                title: "Voucher Error",
+                description:
+                    err?.response?.data?.message || err.message,
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
         }
-    } catch (err) {
-        toast({
-            title: "Voucher Error",
-            description:
-                err?.response?.data?.message || err.message,
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-        });
-    }
-};
+    };
 
     // ── data loaders ─────────────────────────────────────────────────────────
 
-   const fetchInitialData = async () => {
-    try {
-        const res = await API.get(
-            API_ENDPOINTS.GET_BANK_ACCOUNT_LEDGER_DROPDOWN
-        );
+    const fetchInitialData = async () => {
+        try {
+            const res = await API.get(
+                API_ENDPOINTS.GET_BANK_ACCOUNT_LEDGER_DROPDOWN
+            );
 
-        if (res.status === 200) {
-            setBankLedger(res.data.data || []);
+            if (res.status === 200) {
+                setBankLedger(res.data.data || []);
+            }
+        } catch (error) {
+            toast({
+                title: "Error loading ledgers",
+                description:
+                    error?.response?.data?.message || error.message,
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
         }
-    } catch (error) {
-        toast({
-            title: "Error loading ledgers",
-            description:
-                error?.response?.data?.message || error.message,
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-        });
-    }
-};
+    };
 
-useEffect(() => {
-    loadVoucherNo();
-    fetchInitialData();
-}, []);
+    useEffect(() => {
+        loadVoucherNo();
+        fetchInitialData();
+    }, []);
 
     // ── field helpers ─────────────────────────────────────────────────────────
 
@@ -248,22 +247,22 @@ useEffect(() => {
         }
 
         const sameLedgerSelected = formData.entries.some(
-    (e) =>
-        String(e.ledger_id) === String(formData.account_ledger_id)
-);
+            (e) =>
+                String(e.ledger_id) === String(formData.account_ledger_id)
+        );
 
-if (sameLedgerSelected) {
-    toast({
-        title: "Invalid Contra Entry",
-        description:
-            "Particulars ledger cannot be the same as Account ledger",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-    });
+        if (sameLedgerSelected) {
+            toast({
+                title: "Invalid Contra Entry",
+                description:
+                    "Particulars ledger cannot be the same as Account ledger",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+            });
 
-    return false;
-}
+            return false;
+        }
         return true;
     };
 
@@ -303,11 +302,11 @@ if (sameLedgerSelected) {
                     duration: 4000,
                     isClosable: true,
                 });
- loadVoucherNo();
+                loadVoucherNo();
                 // Reset form and reload voucher no
                 setFormData(emptyForm());
                 await fetchInitialData();
-                
+
             }
         } catch (error) {
             console.error("Contra save error:", error);
@@ -319,7 +318,7 @@ if (sameLedgerSelected) {
                 duration: 4000,
                 isClosable: true,
             });
-           
+
         } finally {
             setSubmitting(false);
         }
@@ -329,17 +328,7 @@ if (sameLedgerSelected) {
 
     return (
         <Box p={5}>
-            {/* PAGE TITLE */}
-
-
-            {/* CARD WRAPPER */}
-            <Box
-             
-            >
-                {/* SECTION HEADER */}
-               
-
-                {/* TOP FIELDS */}
+            <Box>
                 <Grid templateColumns="repeat(2, 1fr)" gap={5} mb={6}>
                     {/* Contra No */}
                     <GridItem>
@@ -361,7 +350,7 @@ if (sameLedgerSelected) {
                         <FormControl isRequired>
                             <FormLabel fontSize="13px">
                                 Date{" "}
-                              
+
                             </FormLabel>
                             <Input
                                 {...inputStyle}
@@ -434,12 +423,12 @@ if (sameLedgerSelected) {
                 </Grid>
 
                 {/* ENTRIES TABLE */}
-       <Box {...sectionStyle} overflowX="auto">
-                      <Flex justify="space-between" align="center" bg="#4f9190" color="white" px={4} py={2} borderTopRadius="md">
-                          <Text fontWeight="500" fontSize="sm" >
-                              Transaction
-                          </Text>
-                      </Flex>
+                <Box {...sectionStyle} overflowX="auto">
+                    <Flex justify="space-between" align="center" bg="#4f9190" color="white" px={4} py={2} borderTopRadius="md">
+                        <Text fontWeight="500" fontSize="sm" >
+                            Transaction
+                        </Text>
+                    </Flex>
                     <Table
                         variant="simple"
                         size="sm"

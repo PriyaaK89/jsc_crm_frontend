@@ -203,6 +203,12 @@ export const API_ENDPOINTS = {
   GET_PURCHASE_ITEMS_BY_ID: "get-purchase-items",
 
   CREATE_CONTRA: "create-contra-entry",
-  
+
+  CREATE_JOURNAL_ENTRY: "create-journal",
+  GET_JOURNAL_BILL_REFERENCE: "get-journal-bill-references",
+
+  GET_SALES_INVOICE: "get-sales-invoice",
+  GET_CREDIT_NOTE_INVOICE: "get-credit-note-invoice",
+  GET_RECEIPT_INVOICE: "get-receipt-invoice",
 };
 // 

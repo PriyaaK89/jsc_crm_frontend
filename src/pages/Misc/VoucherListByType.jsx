@@ -213,9 +213,6 @@ const VoucherListByType = () => {
         bg="white"
         mb={6}
       >
-        <Heading size="md" mb={5}>
-          Voucher Report
-        </Heading>
 
         <Flex gap={5} alignItems="end">
           <FormControl>
@@ -240,14 +237,14 @@ const VoucherListByType = () => {
           </FormControl>
 
           <Button
-           bg="#237086"
-                fontWeight="500" fontSize="14px"
-                color="white"
-                _hover={{
-                  bg: "#1B5A6B"
-                }}
-                 px={8}
-                borderRadius="12px"
+            bg="#237086"
+            fontWeight="500" fontSize="14px"
+            color="white"
+            _hover={{
+              bg: "#1B5A6B"
+            }}
+            px={8}
+            borderRadius="12px"
             onClick={getVocherBySelectedType}
           >
             Load Voucher
@@ -257,8 +254,8 @@ const VoucherListByType = () => {
 
       {/* ================= TABLE SECTION ================= */}
 
-      <Box p={5} bg="white">
-        <Heading size="md" mb={5}>
+      <Box py={5} bg="white">
+        <Heading fontSize="17px" mb={3} ml={2.5} color='#4d4d4d'>
           Voucher List
         </Heading>
 
@@ -267,9 +264,9 @@ const VoucherListByType = () => {
             <Spinner size="lg" />
           </Flex>
         ) : (
-          <Box overflowX="auto">
+          <Box overflowX="auto" borderRadius="12px" shadow='sm' border='1px solid #d7d7d7'>
             <Table variant="simple" className="productsTable">
-              <Thead bg="#F9FAFB">
+              <Thead bg="#e8ecef;" height='48px !important' borderBottom="1px solid #d7d7d7">
                 <Tr>
                   <Th>Voucher Name</Th>
                   <Th>Voucher Type</Th>
@@ -286,15 +283,11 @@ const VoucherListByType = () => {
               <Tbody>
                 {list?.length > 0 ? (
                   list?.map((item) => (
-                    <Tr key={item?.id}>
-                      <Td>{item?.voucher_name}</Td>
-
+                    <Tr key={item?.id} fontSize="11px !important">
+                      <Td >{item?.voucher_name}</Td>
                       <Td>{item?.voucher_type}</Td>
-
                       <Td>{item?.prefix || "-"}</Td>
-
                       <Td>{item?.suffix || "-"}</Td>
-
                       <Td>{item?.starting_number || "-"}</Td>
 
                       <Td>
@@ -310,13 +303,8 @@ const VoucherListByType = () => {
                         </Text>
                       </Td>
 
-                      <Td>
-                        {item?.voucher_start_date || "-"}
-                      </Td>
-
-                      <Td>
-                        {item?.voucher_end_date || "-"}
-                      </Td>
+                      <Td> {item?.voucher_start_date ? new Date(item.voucher_start_date).toLocaleDateString("en-GB") : "-"} </Td>
+                      <Td>{item?.voucher_end_date ? new Date(item.voucher_end_date).toLocaleDateString("en-GB") : "-"} </Td>
 
                       <Td textAlign="center">
                         {item?.status === "ACTIVE" ? (
@@ -331,10 +319,7 @@ const VoucherListByType = () => {
                           <Button
                             fontSize="13px" height="30px"
                             colorScheme="blue" fontWeight="500"
-                            onClick={() =>
-                              openActivateModal(item?.id)
-                            }
-                          >
+                            onClick={() => openActivateModal(item?.id) } >
                             ACTIVATE
                           </Button>
                         )}

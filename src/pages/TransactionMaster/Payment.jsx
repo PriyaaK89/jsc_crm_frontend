@@ -214,26 +214,26 @@ const PaymentTransaction = () => {
     };
 
     // ─── Transaction type clicked/changed → open bill modal if needed ─────────────
-const handleTransactionTypeClick = (index) => {
-    const entry = formData.entries[index];
+    const handleTransactionTypeClick = (index) => {
+        const entry = formData.entries[index];
 
-    if (!entry.amount || Number(entry.amount) <= 0) {
-        toast({
-            title: "Enter Amount First",
-            status: "warning",
-            duration: 2000,
-            isClosable: true,
-        });
-        return;
-    }
+        if (!entry.amount || Number(entry.amount) <= 0) {
+            toast({
+                title: "Enter Amount First",
+                status: "warning",
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
 
-    if (
-        entry.maintain_bill_by_bill === 1 &&
-        entry.bill_references.length === 0
-    ) {
-        openBillModal(index, entry.ledger_id);
-    }
-};
+        if (
+            entry.maintain_bill_by_bill === 1 &&
+            entry.bill_references.length === 0
+        ) {
+            openBillModal(index, entry.ledger_id);
+        }
+    };
     const handleAccountSelect = async (e) => {
         const ledgerId = e.target.value;
         setFormData((prev) => ({ ...prev, account_ledger_id: ledgerId, current_balance: 0 }));
@@ -271,49 +271,49 @@ const handleTransactionTypeClick = (index) => {
     };
 
 
-   const openBillModal = async (index, ledgerId) => {
-    setBillLoading(true);
-    setSelectedEntryIndex(index);
-    setBillModal(true);
+    const openBillModal = async (index, ledgerId) => {
+        setBillLoading(true);
+        setSelectedEntryIndex(index);
+        setBillModal(true);
 
-    try {
-        const res = await API.get(`${API_ENDPOINTS?.GET_BILL_REFERENCE}/${ledgerId}`);
+        try {
+            const res = await API.get(`${API_ENDPOINTS?.GET_BILL_REFERENCE}/${ledgerId}`);
 
-        if (res.status === 200) {
-            const serverBills = res.data.data; // store as dropdown options
-            
-            // Store the raw server bills separately for dropdown population
-            setBillReferenceOptions(serverBills); // ← new state
+            if (res.status === 200) {
+                const serverBills = res.data.data; // store as dropdown options
 
-            // Restore saved allocations or start with one blank AGST REF row
-            const savedRefs = formData.entries[index]?.bill_references ?? [];
-            if (savedRefs.length > 0) {
-                setBillReferenceData(savedRefs.map(ref => ({
-                    ...ref,
-                    _pending_amount: serverBills.find(b => b.reference_no === ref.reference_no)?.pending_amount,
-                    _purchase_date: serverBills.find(b => b.reference_no === ref.reference_no)?.purchase_date,
-                })));
-            } else {
-                const entryAmount = Number(formData.entries[index]?.amount || 0);
+                // Store the raw server bills separately for dropdown population
+                setBillReferenceOptions(serverBills); // ← new state
 
-setBillReferenceData([{
-    reference_type: "AGST REF",
-    reference_no: "",
-    reference_amount: entryAmount,
-    due_date: "",
-    dr_cr: "Dr",
-}]);
+                // Restore saved allocations or start with one blank AGST REF row
+                const savedRefs = formData.entries[index]?.bill_references ?? [];
+                if (savedRefs.length > 0) {
+                    setBillReferenceData(savedRefs.map(ref => ({
+                        ...ref,
+                        _pending_amount: serverBills.find(b => b.reference_no === ref.reference_no)?.pending_amount,
+                        _purchase_date: serverBills.find(b => b.reference_no === ref.reference_no)?.purchase_date,
+                    })));
+                } else {
+                    const entryAmount = Number(formData.entries[index]?.amount || 0);
+
+                    setBillReferenceData([{
+                        reference_type: "AGST REF",
+                        reference_no: "",
+                        reference_amount: entryAmount,
+                        due_date: "",
+                        dr_cr: "Dr",
+                    }]);
+                }
             }
+        } catch (err) {
+            console.error("Error fetching bill references", err);
+            toast({ title: "Error", description: "Failed to load bill references.", status: "error", duration: 3000, isClosable: true });
+            setBillReferenceData([{ reference_type: "AGST REF", reference_no: "", reference_amount: 0, due_date: "", dr_cr: "Dr" }]);
+            setBillReferenceOptions([]);
+        } finally {
+            setBillLoading(false);
         }
-    } catch (err) {
-        console.error("Error fetching bill references", err);
-        toast({ title: "Error", description: "Failed to load bill references.", status: "error", duration: 3000, isClosable: true });
-        setBillReferenceData([{ reference_type: "AGST REF", reference_no: "", reference_amount: 0, due_date: "", dr_cr: "Dr" }]);
-        setBillReferenceOptions([]);
-    } finally {
-        setBillLoading(false);
-    }
-};
+    };
 
     /** Normalize a server bill object into the shape the modal uses */
     const mapServerBill = (bill) => ({
@@ -435,7 +435,7 @@ setBillReferenceData([{
                 });
                 // Reset form
                 setFormData(emptyForm());
-                  loadVoucherNo();
+                loadVoucherNo();
             }
         } catch (err) {
             console.error(err);
@@ -615,11 +615,11 @@ setBillReferenceData([{
                                 {/* TRANSACTION TYPE — opening bill modal on change */}
                                 <Td minW="160px">
                                     <Select
- value={entry.transaction_type}
-    onClick={() => handleTransactionTypeClick(index)}
-    onChange={(e) =>
-        handleEntryChange(index, "transaction_type", e.target.value)
-    }
+                                        value={entry.transaction_type}
+                                        onClick={() => handleTransactionTypeClick(index)}
+                                        onChange={(e) =>
+                                            handleEntryChange(index, "transaction_type", e.target.value)
+                                        }
                                         isDisabled={!entry.ledger_id}
                                         placeholder="Please select"
                                         minW="120px"
@@ -715,33 +715,19 @@ setBillReferenceData([{
             <Box mb={5}>
                 <FormControl isRequired>
                     <FormLabel>Upload Document</FormLabel>
-                    <Input
-                        type="file"
-                        accept=".pdf,.jpg,.jpeg,.png"
-                        onChange={handleFileChange}
-                        p={1}
-                    />
+                    <Input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={handleFileChange} p={1} />
                 </FormControl>
             </Box>
 
             {/* ── NARRATION ── */}
             <FormControl>
                 <FormLabel>Total Amount</FormLabel>
-                <Input
-                    value={formData.total_amount.toFixed(2)}
-                    readOnly
-                    bg="gray.50"
-                    fontWeight="semibold"
-                />
+                <Input value={formData.total_amount.toFixed(2)} readOnly bg="gray.50" fontWeight="semibold" />
             </FormControl>
             <Box mb={5}>
                 <FormControl>
                     <FormLabel>Narration</FormLabel>
-                    <Textarea
-                        name="narration"
-                        value={formData.narration}
-                        onChange={handleChange}
-                    />
+                    <Textarea name="narration" value={formData.narration} onChange={handleChange} />
                 </FormControl>
             </Box>
 
@@ -754,8 +740,7 @@ setBillReferenceData([{
                     px={8} borderRadius="12px"
                     onClick={handlePayment}
                     isLoading={submitting}
-                    loadingText="Saving…"
-                >
+                    loadingText="Saving…">
                     Save Payment
                 </Button>
             </Flex>
@@ -896,28 +881,21 @@ setBillReferenceData([{
                                                             />
                                                         ) : (
                                                             /* AGST REF — dropdown of pending bills */
-                                                          
-<Select
-    size="sm"
-    value={bill.reference_no}
-    onChange={(e) => {
-        // const selected = billReferenceOptions.find(b => b.reference_no === e.target.value);
-        handleBillReferenceChange(rowIndex, "reference_no", e.target.value);
-        // Auto-fill amount from pending_amount
-        // if (selected) {
-        //     handleBillReferenceChange(rowIndex, "reference_amount", selected.pending_amount);
-        // }
-    }}
->
-    <option value="">-- Select --</option>
-    {billReferenceOptions.map((b, bi) => (
-        <option key={bi} value={b.reference_no}>
-            {b.reference_no}
-            {b.purchase_date ? ` | ${b.purchase_date.slice(0, 10)}` : ""}
-            {b.pending_amount ? ` | ${Number(b.pending_amount).toFixed(2)} Cr` : ""}
-        </option>
-    ))}
-</Select>
+
+                                                            <Select
+                                                                size="sm"
+                                                                value={bill.reference_no}
+                                                                onChange={(e) => {
+                                                                    handleBillReferenceChange(rowIndex, "reference_no", e.target.value); }} >
+                                                                <option value="">-- Select --</option>
+                                                                {billReferenceOptions.map((b, bi) => (
+                                                                    <option key={bi} value={b.reference_no}>
+                                                                        {b.reference_no}
+                                                                        {b.purchase_date ? ` | ${b.purchase_date.slice(0, 10)}` : ""}
+                                                                        {b.pending_amount ? ` | ${Number(b.pending_amount).toFixed(2)} Cr` : ""}
+                                                                    </option>
+                                                                ))}
+                                                            </Select>
                                                         )}
                                                     </Td>
 
@@ -938,26 +916,17 @@ setBillReferenceData([{
                                                     </Td>
 
                                                     <Td>
-                                                        <Input
-                                                            size="sm"
-                                                            type="number"
-                                                            min={0}
+                                                        <Input size="sm" type="number" min={0}
                                                             value={bill.reference_amount}
-                                                            onChange={(e) => handleBillReferenceChange(rowIndex, "reference_amount", e.target.value,)}
-                                                            w="100px"
-                                                            textAlign="right" />
+                                                            onChange={(e) => handleBillReferenceChange(rowIndex, "reference_amount", e.target.value,)} w="100px" textAlign="right" />
                                                     </Td>
 
                                                     {/* DR/CR */}
-                                                    <Td>
-                                                        <Input size="sm" value={bill.dr_cr || "Dr"} readOnly w="50px" bg="gray.50" />
-                                                    </Td>
+                                                    <Td> <Input size="sm" value={bill.dr_cr || "Dr"} readOnly w="50px" bg="gray.50" /> </Td>
 
                                                     {/* DELETE */}
                                                     <Td textAlign="center">
-                                                        <Button size="xs" colorScheme="red" variant="outline" onClick={() => removeBillRow(rowIndex)} >
-                                                            ✕
-                                                        </Button>
+                                                        <Button size="xs" colorScheme="red" variant="outline" onClick={() => removeBillRow(rowIndex)} > ✕ </Button>
                                                     </Td>
 
                                                     {/* ADD */}

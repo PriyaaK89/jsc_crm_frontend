@@ -5,6 +5,9 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 import { Link } from "react-router-dom";
 import PurchaseInvoice from "./Invoice/PurchaseInvoice";
 import PaymentInvoice from "./Invoice/PaymentInvoice";
+import SalesInvoice from "./Invoice/SalesInvoice";
+import CreditNoteInvoice from "./Invoice/CreditNoteInvoice";
+import ReceiptInvoice from "./Invoice/ReceiptInvoice";
 
 function PartyLedgerReport() {
   const [ledgerList, setLedgerList] = useState([]);
@@ -27,13 +30,18 @@ function PartyLedgerReport() {
 
   const [selectedInvoiceId, setSelectedInvoiceId] = useState(null);
   const [selectedPaymentId, setSelectedPaymentId] = useState(null);
-const { isOpen: isPurchaseModalOpen, onOpen: onPurchaseModalOpen, onClose: onPurchaseModalClose } = useDisclosure();
-const {isOpen : isPaymentModalOpen , onOpen: onPaymentModalOpen, onClose: onPaymentModalClose} = useDisclosure();
+  const [selectedSalesId, setSelectedSalesId] = useState(null);
+  const [selectedCreditNoteId, setSelectedCreditNoteId] = useState(null);
+  const [selectedReceiptId, setSelectedReceiptId] = useState(null);
+  const { isOpen: isPurchaseModalOpen, onOpen: onPurchaseModalOpen, onClose: onPurchaseModalClose } = useDisclosure();
+  const { isOpen: isPaymentModalOpen, onOpen: onPaymentModalOpen, onClose: onPaymentModalClose } = useDisclosure();
+  const { isOpen: isSalesModalOpen, onOpen: onSalesModalOpen, onClose: onSalesModalClose } = useDisclosure();
+  const { isOpen: isCreditNoteModalOpen, onOpen: onCreditNoteModalOpen, onClose: onCreditNoteModalClose } = useDisclosure();
+  const { isOpen: isReceiptModalOpen, onOpen: onReceiptModalOpen, onClose: onReceiptModalClose } = useDisclosure();
 
   const fetchLedgerDropdown = async () => {
     try {
       const response = await API.get(API_ENDPOINTS.GET_LEDGER_DROPDOWN);
-
       if (response.status === 200) {
         setLedgerList(response.data.data);
       }
@@ -91,28 +99,39 @@ const {isOpen : isPaymentModalOpen , onOpen: onPaymentModalOpen, onClose: onPaym
     }
   }, [filters.page]);
 
- const openVoucher = (transactionType, referenceId) => {
-  if (transactionType === "PURCHASE") {
-    setSelectedInvoiceId(referenceId);
-    onPurchaseModalOpen();
-  } 
-  //  else if (transactionType === "PAYMENT") {
-  //   window.open(`${window.location.origin}/print/payment/${referenceId}`, "_blank");
-  // }
-  else if (transactionType === "PAYMENT") {
-   setSelectedPaymentId(referenceId);
-   onPaymentModalOpen();
-  }
-};
+  const openVoucher = (transactionType, referenceId) => {
+    if (transactionType === "PURCHASE") {
+      setSelectedInvoiceId(referenceId);
+      onPurchaseModalOpen();
+    }
+    //  else if (transactionType === "PAYMENT") {
+    //   window.open(`${window.location.origin}/print/payment/${referenceId}`, "_blank");
+    // }
+    else if (transactionType === "PAYMENT") {
+      setSelectedPaymentId(referenceId);
+      onPaymentModalOpen();
+    }
+    else if (transactionType === "SALES") {
+      setSelectedSalesId(referenceId);
+      onSalesModalOpen();
+    }
+    else if (transactionType === "CREDIT_NOTE") {
+      setSelectedCreditNoteId(referenceId);
+      onCreditNoteModalOpen();
+    }
+    else if (transactionType === "RECEIPT") {
+      setSelectedReceiptId(referenceId);
+      onReceiptModalOpen();
+    }
+  };
   return (
     <Box>
 
-     <PurchaseInvoice
-  isOpen={isPurchaseModalOpen}
-  onClose={onPurchaseModalClose}
-  invoiceId={selectedInvoiceId}
-/>
-      <PaymentInvoice isOpen={isPaymentModalOpen} onClose={onPaymentModalClose} paymentId={selectedPaymentId}/>
+      <PurchaseInvoice isOpen={isPurchaseModalOpen} onClose={onPurchaseModalClose} invoiceId={selectedInvoiceId} />
+      <PaymentInvoice isOpen={isPaymentModalOpen} onClose={onPaymentModalClose} paymentId={selectedPaymentId} />
+      <SalesInvoice isOpen={isSalesModalOpen} onClose={onSalesModalClose} invoiceId={selectedSalesId} />
+      <CreditNoteInvoice isOpen={isCreditNoteModalOpen} onClose={onCreditNoteModalClose} creditNoteId={selectedCreditNoteId} />
+      <ReceiptInvoice isOpen={isReceiptModalOpen} onClose={onReceiptModalClose} receiptId={selectedReceiptId} />
 
       <Heading size="md" mb={5} color="#4d4d4d">
         Party Ledger Report{" "}
@@ -124,50 +143,28 @@ const {isOpen : isPaymentModalOpen , onOpen: onPaymentModalOpen, onClose: onPaym
             <FormLabel>Select Party</FormLabel>
             <Select
               placeholder="Select Party"
-              name="ledger_id" height="40px"
+              name="ledger_id" height="40px" fontSize="14px"
               value={filters.ledger_id}
               onChange={handleChange}>
               {ledgerList.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.ledger_name}
-                </option>
+                <option key={item.id} value={item.id}> {item.ledger_name} </option>
               ))}
             </Select>
           </FormControl>
 
-          {/* FROM DATE */}
-
           <FormControl>
             <FormLabel>From Date</FormLabel>
-
-            <Input
-              type="date"
-              name="from_date"
-              value={filters.from_date}
-              onChange={handleChange} height="40px"
-            />
+            <Input type="date" name="from_date" value={filters.from_date} onChange={handleChange} height="40px"/>
           </FormControl>
-
-          {/* TO DATE */}
 
           <FormControl>
             <FormLabel>To Date</FormLabel>
-
-            <Input
-              type="date"
-              name="to_date"
-              value={filters.to_date} height="40px"
-              onChange={handleChange}
-            />
+            <Input type="date" name="to_date" value={filters.to_date} height="40px" onChange={handleChange}/>
           </FormControl>
-
-          {/* SEARCH */}
-
 
         </SimpleGrid>
 
         {/* BUTTONS */}
-
         <Flex justify="flex-end" mt={5} gap={3}>
           <Button
             colorScheme="blue"
@@ -188,17 +185,17 @@ const {isOpen : isPaymentModalOpen , onOpen: onPaymentModalOpen, onClose: onPaym
 
       <Box mt={6} bg="white" borderRadius="md" p={5} boxShadow="sm" overflowX="auto">
         {loading ? (
-          <Flex justify="center" py={10}> <Spinner size="xl" /> </Flex> ) : (
+          <Flex justify="center" py={10}> <Spinner size="xl" /> </Flex>) : (
           <>
-          <VStack alignItems="end">
-            <VStack width='40%' alignItems="start" gap={0} mb={3}>
-              <Input
-                placeholder="Search Voucher..."
-                name="search"
-                value={filters.search}
-                onChange={handleChange} height="40px"
-              />
-            </VStack>
+            <VStack alignItems="end">
+              <VStack width='40%' alignItems="start" gap={0} mb={3}>
+                <Input
+                  placeholder="Search Voucher..."
+                  name="search"
+                  value={filters.search}
+                  onChange={handleChange} height="40px"
+                />
+              </VStack>
             </VStack>
             <Table variant="simple" size="sm">
               <Thead bg="gray.100" height="40px">
@@ -222,7 +219,7 @@ const {isOpen : isPaymentModalOpen , onOpen: onPaymentModalOpen, onClose: onPaym
                   <Td isNumeric>{openingBalance?.type === "Dr" ? Number(openingBalance?.amount || 0).toFixed(2) : "-"} </Td>
                   <Td isNumeric> {openingBalance?.type === "Cr" ? Number(openingBalance?.amount || 0).toFixed(2) : "-"} </Td>
                   <Td isNumeric>
-                    <Text color={ openingBalance?.type === "Cr" ? "red.500" : "green.500" } fontWeight="bold">
+                    <Text color={openingBalance?.type === "Cr" ? "red.500" : "green.500"} fontWeight="bold">
                       {Number(openingBalance?.amount || 0).toFixed(2)}{" "}
                       {openingBalance?.type}
                     </Text>
@@ -246,34 +243,23 @@ const {isOpen : isPaymentModalOpen , onOpen: onPaymentModalOpen, onClose: onPaym
                       <Td color="blue.500">
                         <Link
                           color="blue.500"
-                          onClick={() =>
-                            openVoucher(
-                              item.transaction_type,
-                              item.reference_id,
-                            )
-                          }>
+                          onClick={() => openVoucher(item.transaction_type, item.reference_id,)}>
                           {item.voucher_no}
                         </Link>
                       </Td>
                       <Td isNumeric>
-                        {Number(item.debit) > 0
-                          ? Number(item.debit).toFixed(2)
-                          : "-"}
+                        {Number(item.debit) > 0 ? Number(item.debit).toFixed(2) : "-"}
                       </Td>
 
                       {/* CREDIT */}
 
                       <Td isNumeric>
-                        {Number(item.credit) > 0
-                          ? Number(item.credit).toFixed(2)
-                          : "-"}
+                        {Number(item.credit) > 0 ? Number(item.credit).toFixed(2) : "-"}
                       </Td>
 
                       <Td isNumeric>
                         <Text
-                          color={
-                            item.balance_type === "Cr" ? "red.500" : "green.500"
-                          }
+                          color={item.balance_type === "Cr" ? "red.500" : "green.500"}
                           fontWeight="bold">
                           {Number(item.balance || 0).toFixed(2)}{" "}
                           {item.balance_type}
@@ -304,9 +290,7 @@ const {isOpen : isPaymentModalOpen , onOpen: onPaymentModalOpen, onClose: onPaym
                 <Flex gap={8}>
                   <Text fontWeight="bold"> Closing Balance:</Text>
                   <Text
-                    color={
-                      totals.closing_type === "Cr" ? "red.500" : "green.500"
-                    }
+                    color={totals.closing_type === "Cr" ? "red.500" : "green.500"}
                     fontWeight="bold">
                     {Number(totals.closing_balance || 0).toFixed(2)}{" "}
                     {totals.closing_type}
@@ -316,10 +300,7 @@ const {isOpen : isPaymentModalOpen , onOpen: onPaymentModalOpen, onClose: onPaym
             </Box>
 
             <Flex justify="space-between" align="center" mt={6}>
-              <Text>
-                Page {pagination.current_page || 1} of{" "}
-                {pagination.total_pages || 1}
-              </Text>
+              <Text> Page {pagination.current_page || 1} of{" "} {pagination.total_pages || 1} </Text>
 
               <Flex gap={2}>
                 <Button

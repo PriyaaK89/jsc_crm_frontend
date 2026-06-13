@@ -23,7 +23,7 @@ import { FaClipboardList,FaCalculator,FaWallet,FaList,FaTrash,FaFileInvoiceDolla
   import { Printer, Barcode } from "lucide-react";
 import {RiDashboardLine,RiUserAddLine,RiUser3Line,RiFileList3Line,RiBarChartLine,RiSettings3Line, RiTeamFill,} from "react-icons/ri";
 import { UserCheck,DollarSign,Package } from "lucide-react";
-import { BsBank, BsUpcScan } from "react-icons/bs";
+import { BsBank, BsJournalBookmarkFill, BsUpcScan } from "react-icons/bs";
 import { Ticket } from "lucide-react";
 import { BsCreditCard2Front } from "react-icons/bs";
 import { BiPurchaseTagAlt, BiSolidPurchaseTag, BiSolidReport } from "react-icons/bi";
@@ -81,9 +81,10 @@ const Newsidebar = () => {
     justifyContent: "flex-start",
     fontWeight: "600",
     color: "#29404a",
-    fontSize: "14px",
+    fontSize: "13.5px",
     transition: "all 0.3s ease", 
     paddingLeft: "21px !important",
+    
 
     _hover: {
       bg: "gray.100",
@@ -210,6 +211,7 @@ const Newsidebar = () => {
           {label: "Credit Note", path: "/transaction-master/credit-note" , icon: LuPanelRightOpen   },
           {label: "Debit Note", path: "/transaction-master/debit-note" , icon: LuPanelRightClose   },
           {label: "Contra", path: "/transaction-master/contra" , icon: BsBank  },
+          {label: "Journal", path: "/transaction-master/journal" , icon: BsJournalBookmarkFill  },
         ]
       },
      

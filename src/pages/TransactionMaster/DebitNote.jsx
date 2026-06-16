@@ -5,6 +5,7 @@ import {
     Flex, Modal, ModalOverlay, ModalContent, ModalHeader,
     ModalBody, useDisclosure, Badge, Divider,
     GridItem, ModalCloseButton, useToast,
+    VStack,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import useUsersapi from "../../Apis/GetUsersapi";
@@ -21,6 +22,7 @@ import {
 } from "../../Apis/commanApi";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import { useRef } from "react";
 
 // ─── empty item row ───────────────────────────────────────────────────────────
 const emptyItem = () => ({
@@ -43,8 +45,8 @@ const initialForm = {
     supplier_ledger_id: "",
     purchase_return_ledger_id: "",
     assign_employee: "", employee_under_id: "",
-    dispatch_doc_no: "", transport_name: "", destination: "",
-    bill_t_no: "", vehicle_no: "", transport_freight: 0,
+    dispatch_doc_no: "", dispatch_doc_image: null, transport_name: "", destination: "",
+    bill_t_no: "", bill_t_image: null, vehicle_no: "", transport_freight: 0,
     eway_number: "", transporter_gst: "", delivery_place: "",
     subtotal: 0, igst_total: 0, cgst_total: 0, sgst_total: 0, tax_total: 0, total_amount: 0,
     narration: "",
@@ -108,6 +110,8 @@ const computeItemAmounts = (item) => {
 const GenerateDebitNote = () => {
     const { users } = useUsersapi();
     const toast = useToast();
+    const billTImageRef = useRef(null);
+    const dispatchImageRef = useRef(null);
 
     // dropdown data
     const [godownList, setGodownList] = useState([]);
@@ -180,7 +184,7 @@ const GenerateDebitNote = () => {
             sgst_total += Number(item.sgst_amount || 0);
         });
         const tax_total = igst_total + cgst_total + sgst_total;
-        const total_amount = subtotal + tax_total ;
+        const total_amount = subtotal + tax_total;
         return {
             subtotal: Number(subtotal.toFixed(2)),
             igst_total: Number(igst_total.toFixed(2)),
@@ -226,6 +230,15 @@ const GenerateDebitNote = () => {
                 });
             }
         }
+    };
+
+    const handleFileChange = (e) => {
+        const { name, files } = e.target;
+
+        setFormData((prev) => ({
+            ...prev,
+            [name]: files?.[0] || null,
+        }));
     };
 
     // ── item field change ─────────────────────────────────────────────────────
@@ -429,54 +442,219 @@ const GenerateDebitNote = () => {
 
         setSaving(true);
         try {
-            const payload = {
-                voucher_no: formData.voucher_no,
-                voucher_type_id: formData.voucher_type_id,
-                debit_note_date: formData.debit_note_date,
-                original_purchase_id: formData.original_purchase_id,
-                supplier_ledger_id: formData.supplier_ledger_id,
-                purchase_return_ledger_id: formData.purchase_return_ledger_id,
-                assign_employee_id: formData.employee_under_id || null,
-                employee_under_id: formData.employee_under_id || null,
-                dispatch_doc_no: formData.dispatch_doc_no,
-                transport_name: formData.transport_name,
-                destination: formData.destination,
-                bill_t_no: formData.bill_t_no,
-                vehicle_no: formData.vehicle_no,
-                transport_freight: Number(formData.transport_freight || 0),
-                eway_number: formData.eway_number,
-                transporter_gst: formData.transporter_gst,
-                delivery_place: formData.delivery_place,
-                subtotal: formData.subtotal,
-                igst_total: formData.igst_total,
-                cgst_total: formData.cgst_total,
-                sgst_total: formData.sgst_total,
-                tax_total: formData.tax_total,
-                total_amount: formData.total_amount,
-                narration: formData.narration,
-                bill_references: [],
-                items: validItems.map((item) => ({
-                    stock_item_id: item.stock_item_id,
-                    godown_id: item.godown_id || null,
-                    batch_no: item.batch_no || null,
-                    available_qty: item.available_qty,
-                    return_qty: Number(item.return_qty),
-                    rate: Number(item.rate),
-                    unit_id: item.unit_id || null,
-                    alt_unit_id: item.alt_unit_id || null,
-                    alt_unit_qty: item.alt_unit_qty || null,
-                    amount: item.amount,
-                    igst_percent: item.igst_percent,
-                    igst_amount: item.igst_amount,
-                    cgst_percent: item.cgst_percent,
-                    cgst_amount: item.cgst_amount,
-                    sgst_percent: item.sgst_percent,
-                    sgst_amount: item.sgst_amount,
-                    total_amount: item.total_amount,
-                })),
-            };
+            // const payload = {
+            //     voucher_no: formData.voucher_no,
+            //     voucher_type_id: formData.voucher_type_id,
+            //     debit_note_date: formData.debit_note_date,
+            //     original_purchase_id: formData.original_purchase_id,
+            //     supplier_ledger_id: formData.supplier_ledger_id,
+            //     purchase_return_ledger_id: formData.purchase_return_ledger_id,
+            //     assign_employee_id: formData.employee_under_id || null,
+            //     employee_under_id: formData.employee_under_id || null,
+            //     dispatch_doc_no: formData.dispatch_doc_no,
+            //     transport_name: formData.transport_name,
+            //     destination: formData.destination,
+            //     bill_t_no: formData.bill_t_no,
+            //     vehicle_no: formData.vehicle_no,
+            //     transport_freight: Number(formData.transport_freight || 0),
+            //     eway_number: formData.eway_number,
+            //     transporter_gst: formData.transporter_gst,
+            //     delivery_place: formData.delivery_place,
+            //     subtotal: formData.subtotal,
+            //     igst_total: formData.igst_total,
+            //     cgst_total: formData.cgst_total,
+            //     sgst_total: formData.sgst_total,
+            //     tax_total: formData.tax_total,
+            //     total_amount: formData.total_amount,
+            //     narration: formData.narration,
+            //     bill_references: [],
+            //     items: validItems.map((item) => ({
+            //         stock_item_id: item.stock_item_id,
+            //         godown_id: item.godown_id || null,
+            //         batch_no: item.batch_no || null,
+            //         available_qty: item.available_qty,
+            //         return_qty: Number(item.return_qty),
+            //         rate: Number(item.rate),
+            //         unit_id: item.unit_id || null,
+            //         alt_unit_id: item.alt_unit_id || null,
+            //         alt_unit_qty: item.alt_unit_qty || null,
+            //         amount: item.amount,
+            //         igst_percent: item.igst_percent,
+            //         igst_amount: item.igst_amount,
+            //         cgst_percent: item.cgst_percent,
+            //         cgst_amount: item.cgst_amount,
+            //         sgst_percent: item.sgst_percent,
+            //         sgst_amount: item.sgst_amount,
+            //         total_amount: item.total_amount,
+            //     })),
+            // };
 
-            const res = await API.post(API_ENDPOINTS.CREATE_DEBIT_NOTE, payload);
+            const formPayload = new FormData();
+
+            formPayload.append("voucher_no", formData.voucher_no);
+            formPayload.append("voucher_type_id", formData.voucher_type_id);
+            formPayload.append("debit_note_date", formData.debit_note_date);
+
+            formPayload.append(
+                "original_purchase_id",
+                formData.original_purchase_id
+            );
+
+            formPayload.append(
+                "supplier_ledger_id",
+                formData.supplier_ledger_id
+            );
+
+            formPayload.append(
+                "purchase_return_ledger_id",
+                formData.purchase_return_ledger_id
+            );
+
+
+            if (formData.employee_under_id) {
+                formPayload.append(
+                    "assign_employee_id",
+                    formData.employee_under_id
+                );
+            }
+
+            formPayload.append(
+                "employee_under_id",
+                formData.employee_under_id || ""
+            );
+
+            formPayload.append(
+                "dispatch_doc_no",
+                formData.dispatch_doc_no
+            );
+
+            formPayload.append(
+                "transport_name",
+                formData.transport_name
+            );
+
+            formPayload.append(
+                "destination",
+                formData.destination
+            );
+
+            formPayload.append(
+                "bill_t_no",
+                formData.bill_t_no
+            );
+
+            formPayload.append(
+                "vehicle_no",
+                formData.vehicle_no
+            );
+
+            formPayload.append(
+                "transport_freight",
+                formData.transport_freight
+            );
+
+            formPayload.append(
+                "eway_number",
+                formData.eway_number
+            );
+
+            formPayload.append(
+                "transporter_gst",
+                formData.transporter_gst
+            );
+
+            formPayload.append(
+                "delivery_place",
+                formData.delivery_place
+            );
+
+            formPayload.append(
+                "subtotal",
+                formData.subtotal
+            );
+
+            formPayload.append(
+                "igst_total",
+                formData.igst_total
+            );
+
+            formPayload.append(
+                "cgst_total",
+                formData.cgst_total
+            );
+
+            formPayload.append(
+                "sgst_total",
+                formData.sgst_total
+            );
+
+            formPayload.append(
+                "tax_total",
+                formData.tax_total
+            );
+
+            formPayload.append(
+                "total_amount",
+                formData.total_amount
+            );
+
+            formPayload.append(
+                "narration",
+                formData.narration
+            );
+
+            if (formData.bill_t_image) {
+                formPayload.append(
+                    "bill_t_image",
+                    formData.bill_t_image
+                );
+            }
+
+            if (formData.dispatch_doc_image) {
+                formPayload.append(
+                    "dispatch_doc_image",
+                    formData.dispatch_doc_image
+                );
+            }
+            formPayload.append(
+                "items",
+                JSON.stringify(
+                    validItems.map((item) => ({
+                        stock_item_id: item.stock_item_id,
+                        godown_id: item.godown_id || null,
+                        batch_no: item.batch_no || null,
+                        available_qty: item.available_qty,
+                        return_qty: Number(item.return_qty),
+                        rate: Number(item.rate),
+
+                        unit_id: item.unit_id || null,
+                        alt_unit_id: item.alt_unit_id || null,
+                        alt_unit_qty: item.alt_unit_qty || null,
+
+                        amount: item.amount,
+
+                        igst_percent: item.igst_percent,
+                        igst_amount: item.igst_amount,
+
+                        cgst_percent: item.cgst_percent,
+                        cgst_amount: item.cgst_amount,
+
+                        sgst_percent: item.sgst_percent,
+                        sgst_amount: item.sgst_amount,
+
+                        total_amount: item.total_amount,
+                    }))
+                )
+            );
+            const res = await API.post(
+                API_ENDPOINTS.CREATE_DEBIT_NOTE,
+                formPayload,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
             if (res?.data?.success) {
                 toast({
                     description: `Debit Note Created!\nVoucher No: ${res.data.voucher_no}`,
@@ -488,6 +666,13 @@ const GenerateDebitNote = () => {
                     security_amount: "0.0", credit_limit: "Not Specified",
                 });
                 setPurchasesBySupplier([]);
+                if (billTImageRef.current) {
+                    billTImageRef.current.value = "";
+                }
+
+                if (dispatchImageRef.current) {
+                    dispatchImageRef.current.value = "";
+                }
                 loadVoucherNo();
             }
         } catch (error) {
@@ -513,7 +698,7 @@ const GenerateDebitNote = () => {
         if (!purchaseId) { return; }
 
         try {
-            const res = await API.get( `${API_ENDPOINTS.GET_PURCHASE_ITEMS_BY_ID}/${purchaseId}/items` );
+            const res = await API.get(`${API_ENDPOINTS.GET_PURCHASE_ITEMS_BY_ID}/${purchaseId}/items`);
             const purchaseItems = res?.data?.data || [];
 
             const populated = purchaseItems.map((pi) => ({
@@ -628,9 +813,9 @@ const GenerateDebitNote = () => {
                                 value={formData.original_purchase_id}
                                 // onChange={handleChange}
                                 isDisabled={!formData.supplier_ledger_id}
-    onChange={(e) =>
-        handlePurchaseSelect(e.target.value)
-    }
+                                onChange={(e) =>
+                                    handlePurchaseSelect(e.target.value)
+                                }
                             >
                                 <option value="">
                                     {formData.supplier_ledger_id
@@ -757,22 +942,77 @@ const GenerateDebitNote = () => {
                         ))}
                     </Grid>
                     <Grid templateColumns="1fr 1fr 1fr" gap={3} p={4}>
-                        {[
-                            { label: "Bill-T No.", name: "bill_t_no" },
-                            { label: "Vehicle No.", name: "vehicle_no" },
-                        ].map(({ label, name }) => (
-                            <Box key={name}>
-                                <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>{label}</Text>
-                                <Input {...inputStyle} name={name} value={formData[name]} onChange={handleChange} />
-                            </Box>
-                        ))}
-                        <Box>
-                            <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>Transport Freight</Text>
+                        <VStack alignItems="baseline">
+                           
+                            <Text fontSize="11px" fontWeight="600" color="#555" mb={0}>
+                                Bill-T No.
+                            </Text>
+
                             <Input
-                                {...inputStyle} type="number"
+                                {...inputStyle}
+                                name="bill_t_no"
+                                value={formData.bill_t_no}
+                                onChange={handleChange}
+                            />
+                           
+                            <Box>
+
+                            <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>
+                                Bill-T Image
+                            </Text>
+
+                            <Input
+                                ref={billTImageRef}
+                                type="file"
+                                accept="image/*"
+                                name="bill_t_image"
+                                onChange={handleFileChange}
+                            />
+                            </Box>
+                        </VStack>
+
+                     
+
+                        <VStack alignItems="baseline">
+                            
+                            <Text fontSize="11px" fontWeight="600" color="#555" mb={0}>
+                                Transport Freight
+                            </Text>
+
+                            <Input
+                                {...inputStyle}
+                                type="number"
                                 name="transport_freight"
                                 value={formData.transport_freight}
                                 onChange={handleFreightChange}
+                            />
+                            
+                            <Box>
+
+                            <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>
+                                Transport Freight Image
+                            </Text>
+
+                            <Input
+                                ref={dispatchImageRef}
+                                type="file"
+                                accept="image/*"
+                                name="dispatch_doc_image"
+                                onChange={handleFileChange}
+                            />
+                            </Box>
+                        </VStack>
+
+                           <Box>
+                            <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>
+                                Vehicle No.
+                            </Text>
+
+                            <Input
+                                {...inputStyle}
+                                name="vehicle_no"
+                                value={formData.vehicle_no}
+                                onChange={handleChange}
                             />
                         </Box>
                     </Grid>

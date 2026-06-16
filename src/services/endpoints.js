@@ -210,5 +210,12 @@ export const API_ENDPOINTS = {
   GET_SALES_INVOICE: "get-sales-invoice",
   GET_CREDIT_NOTE_INVOICE: "get-credit-note-invoice",
   GET_RECEIPT_INVOICE: "get-receipt-invoice",
+  GET_DEBIT_NOTE_INVOICE: "get-debitNote-invoice",
+  GET_JOURNAL_INVOICE: "get-journal-invoice",  
+  GET_CONTRA_INVOICE: "get-contra-invoice",
+
+  GET_PARTYTRANSACTION_BILLS: "get-partyTransactionBills",
+  GET_PARTY_TRANSACTION_REPORT: "get-party-transaction-report",
+  DELETE_PARTY_TRANSACTION: "cancel-party-transaction"
 };
 // 

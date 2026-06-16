@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Box, Grid, GridItem, Input, Select, Text, Button,
   Table, Thead, Tbody, Tr, Th, Td, Textarea, Flex,
@@ -158,6 +158,8 @@ const GenerateCreditNote = ({ salesLedger }) => {
   const [transporterGst, setTransporterGst] = useState("");
   const [deliveryPlace, setDeliveryPlace] = useState("");
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [billTImage, setBillTImage] = useState(null);
+  const [dispatchDocImage, setDispatchDocImage] = useState(null);
 
   // ── Customer info
   const [customerInfo, setCustomerInfo] = useState({
@@ -175,6 +177,8 @@ const GenerateCreditNote = ({ salesLedger }) => {
   // ── Items
   const [items, setItems] = useState([]);
   const [showItemsTable, setShowItemsTable] = useState(false);
+  const billTImageRef = useRef(null);
+  const dispatchDocImageRef = useRef(null);
 
   // ── Totals
   const [totals, setTotals] = useState({
@@ -363,9 +367,9 @@ const GenerateCreditNote = ({ salesLedger }) => {
 
     // Fetch bill references for this sale
     try {
-         const res = await API.get(
- `${API_ENDPOINTS.GET_SALES_BILL_REFERENCES}?sale_id=${sale.id}`
-);
+      const res = await API.get(
+        `${API_ENDPOINTS.GET_SALES_BILL_REFERENCES}?sale_id=${sale.id}`
+      );
       setBillReferences(res?.data?.data || []);
     } catch (e) {
       console.error("fetch bill references error:", e);
@@ -564,54 +568,191 @@ const GenerateCreditNote = ({ salesLedger }) => {
 
     setSaving(true);
     try {
-      const payload = {
-        credit_note_date: creditNoteDate,
-        original_sale_id: originalSaleId,
-        customer_ledger_id: customerLedgerId,
-        sales_return_ledger_id: salesReturnLedgerId,
-        assign_employee_id:
-          assignEmployee === "Applicable" ? employeeUnderId || null : null,
-        employee_under_id:
-          assignEmployee === "Applicable" ? employeeUnderId || null : null,
-        dispatch_doc_no: dispatchDocNo,
-        transport_name: transportName,
-        destination,
-        bill_t_no: billTNo,
-        vehicle_no: vehicleNo,
-        transport_freight: transportFreight,
-        eway_number: ewayNumber,
-        transporter_gst: transporterGst,
-        delivery_place: deliveryPlace,
-        ...totals,
-        narration,
-        items: validItems.map((it) => ({
-          stock_item_id: it.stock_item_id,
-          godown_id: it.godown_id || null,
-          batch_no: it.batch_no || null,
-          available_qty: it.available_qty,
-          return_qty: it.return_qty,
-          rate: it.rate,
-          unit_id: it.unit_id || null,
-          alt_unit_id: it.alt_unit_id || null,
-          alt_unit_qty: it.alt_unit_qty || null,
-          amount: it.amount,
-          igst_percent: it.igst_percent,
-          igst_amount: it.igst_amount,
-          cgst_percent: it.cgst_percent,
-          cgst_amount: it.cgst_amount,
-          sgst_percent: it.sgst_percent,
-          sgst_amount: it.sgst_amount,
-          total_amount: it.total_amount,
-        })),
-        bill_references: validBillRefs.map((r) => ({
-          sales_bill_reference_id: r.sales_bill_reference_id,
-          amount: Number(r.amount),
-        })),
-      };
+      // const payload = {
+      //   credit_note_date: creditNoteDate,
+      //   original_sale_id: originalSaleId,
+      //   customer_ledger_id: customerLedgerId,
+      //   sales_return_ledger_id: salesReturnLedgerId,
+      //   assign_employee_id:
+      //     assignEmployee === "Applicable" ? employeeUnderId || null : null,
+      //   employee_under_id:
+      //     assignEmployee === "Applicable" ? employeeUnderId || null : null,
+      //   dispatch_doc_no: dispatchDocNo,
+      //   transport_name: transportName,
+      //   destination,
+      //   bill_t_no: billTNo,
+      //   vehicle_no: vehicleNo,
+      //   transport_freight: transportFreight,
+      //   eway_number: ewayNumber,
+      //   transporter_gst: transporterGst,
+      //   delivery_place: deliveryPlace,
+      //   ...totals,
+      //   narration,
+      //   items: validItems.map((it) => ({
+      //     stock_item_id: it.stock_item_id,
+      //     godown_id: it.godown_id || null,
+      //     batch_no: it.batch_no || null,
+      //     available_qty: it.available_qty,
+      //     return_qty: it.return_qty,
+      //     rate: it.rate,
+      //     unit_id: it.unit_id || null,
+      //     alt_unit_id: it.alt_unit_id || null,
+      //     alt_unit_qty: it.alt_unit_qty || null,
+      //     amount: it.amount,
+      //     igst_percent: it.igst_percent,
+      //     igst_amount: it.igst_amount,
+      //     cgst_percent: it.cgst_percent,
+      //     cgst_amount: it.cgst_amount,
+      //     sgst_percent: it.sgst_percent,
+      //     sgst_amount: it.sgst_amount,
+      //     total_amount: it.total_amount,
+      //   })),
+      //   bill_references: validBillRefs.map((r) => ({
+      //     sales_bill_reference_id: r.sales_bill_reference_id,
+      //     amount: Number(r.amount),
+      //   })),
+      // };
 
+      const formData = new FormData();
+
+      // ==========================
+      // CREDIT NOTE DETAILS
+      // ==========================
+
+      formData.append("credit_note_date", creditNoteDate);
+      formData.append("original_sale_id", originalSaleId);
+      formData.append("customer_ledger_id", customerLedgerId);
+      formData.append("sales_return_ledger_id", salesReturnLedgerId);
+
+      formData.append(
+        "assign_employee_id",
+        assignEmployee === "Applicable"
+          ? employeeUnderId || null
+          : null
+      );
+
+      formData.append(
+        "employee_under_id",
+        assignEmployee === "Applicable"
+          ? employeeUnderId || null
+          : null
+      );
+
+      // ==========================
+      // TRANSPORT DETAILS
+      // ==========================
+
+      formData.append("dispatch_doc_no", dispatchDocNo || "");
+      formData.append("transport_name", transportName || "");
+      formData.append("destination", destination || "");
+
+      formData.append("bill_t_no", billTNo || "");
+      formData.append("vehicle_no", vehicleNo || "");
+
+      formData.append(
+        "transport_freight",
+        transportFreight || 0
+      );
+
+      formData.append("eway_number", ewayNumber || "");
+      formData.append("transporter_gst", transporterGst || "");
+      formData.append("delivery_place", deliveryPlace || "");
+
+      // ==========================
+      // TOTALS
+      // ==========================
+
+      formData.append("subtotal", totals.subtotal || 0);
+      formData.append("igst_total", totals.igst_total || 0);
+      formData.append("cgst_total", totals.cgst_total || 0);
+      formData.append("sgst_total", totals.sgst_total || 0);
+      formData.append("tax_total", totals.tax_total || 0);
+      formData.append("total_amount", totals.total_amount || 0);
+
+      // ==========================
+      // OTHER DETAILS
+      // ==========================
+
+      formData.append("narration", narration || "");
+
+      // ==========================
+      // FILES
+      // ==========================
+
+      if (billTImage) {
+        formData.append("bill_t_image", billTImage);
+      }
+
+      if (dispatchDocImage) {
+        formData.append("dispatch_doc_image", dispatchDocImage);
+      }
+
+      // ==========================
+      // ITEMS
+      // ==========================
+
+      formData.append(
+        "items",
+        JSON.stringify(
+          validItems.map((it) => ({
+            stock_item_id: it.stock_item_id,
+
+            godown_id: it.godown_id || null,
+
+            batch_no: it.batch_no || null,
+
+            available_qty: Number(it.available_qty || 0),
+
+            return_qty: Number(it.return_qty || 0),
+
+            rate: Number(it.rate || 0),
+
+            unit_id: it.unit_id || null,
+
+            alt_unit_id: it.alt_unit_id || null,
+
+            alt_unit_qty: it.alt_unit_qty || null,
+
+            amount: Number(it.amount || 0),
+
+            igst_percent: Number(it.igst_percent || 0),
+
+            igst_amount: Number(it.igst_amount || 0),
+
+            cgst_percent: Number(it.cgst_percent || 0),
+
+            cgst_amount: Number(it.cgst_amount || 0),
+
+            sgst_percent: Number(it.sgst_percent || 0),
+
+            sgst_amount: Number(it.sgst_amount || 0),
+
+            total_amount: Number(it.total_amount || 0),
+          }))
+        )
+      );
+
+      // ==========================
+      // BILL REFERENCES
+      // ==========================
+
+      formData.append(
+        "bill_references",
+        JSON.stringify(
+          validBillRefs.map((r) => ({
+            sales_bill_reference_id: r.sales_bill_reference_id,
+            amount: Number(r.amount || 0),
+          }))
+        )
+      );
       const res = await API.post(
         API_ENDPOINTS.CREATE_CREDIT_NOTE || "/credit-note/create",
-        payload
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       if (res?.data?.success) {
@@ -676,9 +817,18 @@ const GenerateCreditNote = ({ salesLedger }) => {
       total_amount: 0,
     });
     setCreditNoteDate(new Date().toISOString().slice(0, 10));
+    setBillTImage(null);
+    setDispatchDocImage(null);
+    if (billTImageRef.current) {
+      billTImageRef.current.value = "";
+    }
+
+    if (dispatchDocImageRef.current) {
+      dispatchDocImageRef.current.value = "";
+    }
   };
 
-  
+
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
@@ -959,6 +1109,32 @@ const GenerateCreditNote = ({ salesLedger }) => {
                 <Input type={type || "text"} value={val} onChange={(e) => set(e.target.value)} />
               </Box>
             ))}
+            <Box>
+              <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>
+                Bill-T Image
+              </Text>
+
+              <Input
+                ref={billTImageRef}
+                type="file"
+                accept="image/*,.pdf"
+                onChange={(e) => setBillTImage(e.target.files[0] || null)}
+              />
+            </Box>
+
+            {/* Dispatch Image */}
+            <Box>
+              <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>
+                Dispatch Document Image
+              </Text>
+
+              <Input
+                ref={dispatchDocImageRef}
+                type="file"
+                accept="image/*,.pdf"
+                onChange={(e) => setDispatchDocImage(e.target.files[0] || null)}
+              />
+            </Box>
           </Grid>
         </Box>
 
@@ -990,12 +1166,7 @@ const GenerateCreditNote = ({ salesLedger }) => {
               </Button>
             </Flex>
 
-            <Table
-              size="sm"
-              variant="simple"
-              style={{ borderCollapse: "separate", borderSpacing: 0 }}
-              className="material_mfg"
-            >
+            <Table size="sm" variant="simple" style={{ borderCollapse: "separate", borderSpacing: 0 }} className="material_mfg" >
               <Thead bg="gray.50">
                 <Tr>
                   <Th {...thStyle} minW="140px">Name of Item</Th>
@@ -1015,11 +1186,7 @@ const GenerateCreditNote = ({ salesLedger }) => {
               </Thead>
               <Tbody>
                 {items.map((item, index) => (
-                  <Tr
-                    key={index}
-                    bg={index % 2 === 0 ? "white" : "#f7faf8"}
-                    _hover={{ bg: "#edf5ef" }}
-                  >
+                  <Tr key={index} bg={index % 2 === 0 ? "white" : "#f7faf8"} _hover={{ bg: "#edf5ef" }} >
                     {/* Stock Item */}
                     <Td {...tdStyle}>
                       <Select
@@ -1027,8 +1194,7 @@ const GenerateCreditNote = ({ salesLedger }) => {
                         fontSize="11px"
                         value={item.stock_item_id}
                         onChange={(e) => handleStockItemSelect(index, e.target.value)}
-                        minW="140px"
-                      >
+                        minW="140px" >
                         <option value="">-- End Of List --</option>
                         {stockItemList.map((s) => (
                           <option key={s.id} value={s.id}>{s.item_name}</option>

@@ -171,7 +171,12 @@ export const fetchLedgerDetailsByID = async (ledgerId) => {
 
 export const createPurchase = async (payload) => {
   try {
-    const response = await API.post(API_ENDPOINTS.CREATE_PURCHASE, payload);
+    const response = await API.post(API_ENDPOINTS.CREATE_PURCHASE, payload,   {
+            headers: {
+                "Content-Type":
+                    "multipart/form-data",
+            },
+        });
     return response.data;
   } catch (error) {
     throw error;

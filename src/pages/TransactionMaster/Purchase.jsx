@@ -4,7 +4,8 @@ import {
     Table, Thead, Tbody, Tr, Th, Td, Textarea,
     Flex, Modal, ModalOverlay, ModalContent, ModalHeader,
     ModalBody, useDisclosure, Badge, Divider,
-    GridItem, ModalCloseButton, useToast, } from "@chakra-ui/react";
+    GridItem, ModalCloseButton, useToast,
+} from "@chakra-ui/react";
 import useUsersapi from "../../Apis/GetUsersapi";
 import {
     fetchGodownList,
@@ -20,6 +21,7 @@ import {
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { AddIcon } from "@chakra-ui/icons";
+import { useRef } from "react";
 
 // ─── Empty item template ──────────────────────────────────────────────────────
 const emptyItem = () => ({
@@ -82,6 +84,8 @@ const initialForm = {
     sgst_total: 0,
     tax_total: 0,
     total_amount: 0,
+  bill_t_image: null,
+   dispatch_doc_image: null,
     narration: "",
     reference_type: "NEW REF",
     reference_no: "",
@@ -209,6 +213,9 @@ const Purchase = () => {
     const [ledgerDetails, setLedgerDetails] = useState({});
     const toast = useToast();
 
+    const billTImageRef = useRef(null);
+    const dispatchDocImageRef = useRef(null);
+
     const [formData, setFormData] = useState(initialForm);
     const { isOpen: isGodownOpen, onOpen: openGodown, onClose: closeGodown } = useDisclosure();
     const [activeItemIndex, setActiveItemIndex] = useState(null);
@@ -263,28 +270,28 @@ const Purchase = () => {
         }
     };
 
-const loadVoucherNo = async () => {
-    try {
-        const voucherData = await fetchNextVoucherNo("PURCHASE");
+    const loadVoucherNo = async () => {
+        try {
+            const voucherData = await fetchNextVoucherNo("PURCHASE");
 
-        setFormData((prev) => ({
-            ...prev,
-            voucher_no: voucherData?.voucher_no || "",
-            voucher_type_id: voucherData?.voucher_type_id || "",
-        }));
-    } catch (err) {
-  console.log(err);
-  console.log(err.response);
+            setFormData((prev) => ({
+                ...prev,
+                voucher_no: voucherData?.voucher_no || "",
+                voucher_type_id: voucherData?.voucher_type_id || "",
+            }));
+        } catch (err) {
+            console.log(err);
+            console.log(err.response);
 
-  toast({
-    title: "Error",
-    description: err.response?.data?.message || err.message,
-    status: "error",
-    duration: 3000,
-    isClosable: true,
-  });
-}
-};
+            toast({
+                title: "Error",
+                description: err.response?.data?.message || err.message,
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+        }
+    };
 
     // ─── Recalculate grand totals ──────────────────────────────────────────────
     const recalcTotals = useCallback((items, freight, ledgers) => {
@@ -340,6 +347,15 @@ const loadVoucherNo = async () => {
                 credit_limit: "Not Specified",
             });
         }
+    };
+
+    const handleImageChange = (e) => {
+        const { name, files } = e.target;
+
+        setFormData((prev) => ({
+            ...prev,
+            [name]: files[0] || null,
+        }));
     };
 
     // ─── Item field change + auto-recalc ──────────────────────────────────────
@@ -489,38 +505,38 @@ const loadVoucherNo = async () => {
     };
 
     // ─── Save godown modal → write back to item ────────────────────────────────
-   const handleGodownSave = () => {
-    if (activeItemIndex === null) return;
-    const finalBatchNo = godownModal.isNewBatch
-        ? godownModal.newBatchNo
-        : godownModal.batch_no === "NOT_APPLICABLE"
-            ? "NOT_APPLICABLE"
-            : godownModal.batch_no;
+    const handleGodownSave = () => {
+        if (activeItemIndex === null) return;
+        const finalBatchNo = godownModal.isNewBatch
+            ? godownModal.newBatchNo
+            : godownModal.batch_no === "NOT_APPLICABLE"
+                ? "NOT_APPLICABLE"
+                : godownModal.batch_no;
 
-    // If a specific existing batch was selected, use that batch's available_qty
-    const selectedBatch = batchList.find((b) => b.batch_no === finalBatchNo);
+        // If a specific existing batch was selected, use that batch's available_qty
+        const selectedBatch = batchList.find((b) => b.batch_no === finalBatchNo);
 
-    setFormData((prev) => {
-        const items = [...prev.items];
-        // Use batch-level available_qty if a known batch was picked,
-        // otherwise keep the godown-level qty already on the item
-        const resolvedAvailableQty = selectedBatch
-            ? (selectedBatch.available_qty ?? selectedBatch.qty ?? 0)
-            : items[activeItemIndex].available_qty;
+        setFormData((prev) => {
+            const items = [...prev.items];
+            // Use batch-level available_qty if a known batch was picked,
+            // otherwise keep the godown-level qty already on the item
+            const resolvedAvailableQty = selectedBatch
+                ? (selectedBatch.available_qty ?? selectedBatch.qty ?? 0)
+                : items[activeItemIndex].available_qty;
 
-        items[activeItemIndex] = {
-            ...items[activeItemIndex],
-            batch_no: finalBatchNo,
-            mfg_date: godownModal.mfg_date,
-            expiry_date: godownModal.expiry_date,
-            remind_expiry: godownModal.remind_expiry,
-            remind_date: godownModal.remind_date,
-            available_qty: resolvedAvailableQty,  // ← key fix
-        };
-        return { ...prev, items };
-    });
-    closeGodown();
-};
+            items[activeItemIndex] = {
+                ...items[activeItemIndex],
+                batch_no: finalBatchNo,
+                mfg_date: godownModal.mfg_date,
+                expiry_date: godownModal.expiry_date,
+                remind_expiry: godownModal.remind_expiry,
+                remind_date: godownModal.remind_date,
+                available_qty: resolvedAvailableQty,  // ← key fix
+            };
+            return { ...prev, items };
+        });
+        closeGodown();
+    };
 
     // ─── Add / Remove item rows ────────────────────────────────────────────────
     const addItemRow = () => {
@@ -602,28 +618,84 @@ const loadVoucherNo = async () => {
         }
         setSaving(true);
         try {
-            const payload = {
-                ...formData,
-                // items: formData.items.filter((i) => i.stock_item_id),
-                extra_ledgers: extraLedgers.filter((l) => l.ledger_id),
+            const payload = new FormData();
 
+            const payloadData = {
+                ...formData,
                 employee_under_id: formData.employee_under_id || null,
                 purchase_ledger_id: formData.purchase_ledger_id || null,
                 supplier_ledger_id: formData.supplier_ledger_id || null,
-                items: formData.items
-                    .filter((i) => i.stock_item_id)
-                    .map((item) => ({
-                        ...item,
-                        mfg_date: item.mfg_date || null,
-                        expiry_date: item.expiry_date || null,
-                        remind_date: item.remind_date || null,
-                        alt_unit_id: item.alt_unit_id === "" ? null : item.alt_unit_id,
-                        alt_unit_qty: item.alt_unit_qty === "" ? null : item.alt_unit_qty,
-                        unit_id: item.unit_id === "" ? null : item.unit_id,
-                        godown_id: item.godown_id === "" ? null : item.godown_id,
-                    })),
-
             };
+
+            // Append all normal form fields
+            Object.entries(payloadData).forEach(([key, value]) => {
+                if (
+                    key !== "items" &&
+                    key !== "bill_t_image" &&
+                    key !== "dispatch_doc_image"
+                ) {
+                    payload.append(key, value ?? "");
+                }
+            });
+
+
+            // Append items
+            payload.append(
+                "items",
+                JSON.stringify(
+                    formData.items
+                        .filter((i) => i.stock_item_id)
+                        .map((item) => ({
+                            ...item,
+                            mfg_date: item.mfg_date || null,
+                            expiry_date: item.expiry_date || null,
+                            remind_date: item.remind_date || null,
+                            alt_unit_id: item.alt_unit_id === "" ? null : item.alt_unit_id,
+                            alt_unit_qty: item.alt_unit_qty === "" ? null : item.alt_unit_qty,
+                            unit_id: item.unit_id === "" ? null : item.unit_id,
+                            godown_id: item.godown_id === "" ? null : item.godown_id,
+                        }))
+                )
+            );
+
+            // Append extra ledgers
+            payload.append(
+                "extra_ledgers",
+                JSON.stringify(
+                    extraLedgers.filter((l) => l.ledger_id)
+                )
+            );
+
+            // Append files
+            if (formData.bill_t_image) {
+                payload.append("bill_t_image", formData.bill_t_image);
+            }
+
+            if (formData.dispatch_doc_image) {
+                payload.append("dispatch_doc_image", formData.dispatch_doc_image);
+            }
+            // const payload = {
+            //     ...formData,
+            //     // items: formData.items.filter((i) => i.stock_item_id),
+            //     extra_ledgers: extraLedgers.filter((l) => l.ledger_id),
+
+            //     employee_under_id: formData.employee_under_id || null,
+            //     purchase_ledger_id: formData.purchase_ledger_id || null,
+            //     supplier_ledger_id: formData.supplier_ledger_id || null,
+            //     items: formData.items
+            //         .filter((i) => i.stock_item_id)
+            //         .map((item) => ({
+            //             ...item,
+            //             mfg_date: item.mfg_date || null,
+            //             expiry_date: item.expiry_date || null,
+            //             remind_date: item.remind_date || null,
+            //             alt_unit_id: item.alt_unit_id === "" ? null : item.alt_unit_id,
+            //             alt_unit_qty: item.alt_unit_qty === "" ? null : item.alt_unit_qty,
+            //             unit_id: item.unit_id === "" ? null : item.unit_id,
+            //             godown_id: item.godown_id === "" ? null : item.godown_id,
+            //         })),
+
+            // };
             const response = await createPurchase(payload);
             if (response.success) {
                 toast({
@@ -634,6 +706,13 @@ const loadVoucherNo = async () => {
                 setFormData({ ...initialForm });
                 setExtraLedgers(Array.from({ length: 1 }, emptyLedger));
                 loadVoucherNo();
+                if (billTImageRef.current) {
+                    billTImageRef.current.value = "";
+                }
+
+                if (dispatchDocImageRef.current) {
+                    dispatchDocImageRef.current.value = "";
+                }
             }
         } catch (error) {
             console.error(error);
@@ -889,17 +968,79 @@ const loadVoucherNo = async () => {
                             { label: "Vehicle No.", name: "vehicle_no" },
                         ].map(({ label, name }) => (
                             <Box key={name}>
-                                <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>{label}</Text>
-                                <Input name={name} value={formData[name]} onChange={handleChange} />
+                                <Text
+                                    fontSize="11px"
+                                    fontWeight="600"
+                                    color="#555"
+                                    mb={1}
+                                >
+                                    {label}
+                                </Text>
+
+                                <Input
+                                    name={name}
+                                    value={formData[name]}
+                                    onChange={handleChange}
+                                />
                             </Box>
                         ))}
+
                         <Box>
-                            <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>Transport Freight</Text>
+                            <Text
+                                fontSize="11px"
+                                fontWeight="600"
+                                color="#555"
+                                mb={1}
+                            >
+                                Transport Freight
+                            </Text>
+
                             <Input
                                 type="number"
                                 name="transport_freight"
                                 value={formData.transport_freight}
                                 onChange={handleFreightChange}
+                            />
+                        </Box>
+                    </Grid>
+
+                    <Grid templateColumns="1fr 1fr" gap={3} px={4} pb={4}>
+                        <Box>
+                            <Text
+                                fontSize="11px"
+                                fontWeight="600"
+                                color="#555"
+                                mb={1}
+                            >
+                                Bill-T Image
+                            </Text>
+
+                            <Input
+                                ref={billTImageRef}
+                                type="file"
+                                name="bill_t_image"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                            />
+
+                        </Box>
+
+                        <Box>
+                            <Text
+                                fontSize="11px"
+                                fontWeight="600"
+                                color="#555"
+                                mb={1}
+                            >
+                                Dispatch Document Image
+                            </Text>
+
+                            <Input
+                                ref={dispatchDocImageRef}
+                                type="file"
+                                name="dispatch_doc_image"
+                                accept="image/*"
+                                onChange={handleImageChange}
                             />
                         </Box>
                     </Grid>

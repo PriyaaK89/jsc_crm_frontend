@@ -1,26 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalCloseButton,
-    Box,
-    Text,
-    Table,
-    Thead,
-    Tbody,
-    Tr,
-    Td,
-    Th,
-    Divider,
-    Flex,
-    VStack,
-    Img,
-    Button,
-    Spinner,
-} from "@chakra-ui/react";
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Box, Text, Table, Thead, Tbody, Tr, Td, Th, Divider, Flex, VStack, Img, Button, Spinner,} from "@chakra-ui/react";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import { toWords } from "number-to-words";
@@ -384,7 +363,6 @@ const ReceiptInvoice = ({ isOpen, onClose, receiptId }) => {
                         renderInvoiceContent()
                     )}
                 </ModalBody>
-
             </ModalContent>
         </Modal>
     );

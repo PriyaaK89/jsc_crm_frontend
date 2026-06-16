@@ -8,6 +8,9 @@ import PaymentInvoice from "./Invoice/PaymentInvoice";
 import SalesInvoice from "./Invoice/SalesInvoice";
 import CreditNoteInvoice from "./Invoice/CreditNoteInvoice";
 import ReceiptInvoice from "./Invoice/ReceiptInvoice";
+import DebitNoteInvoice from "./Invoice/DebitNoteInvoice";
+import JournalInvoice from "./Invoice/JournalInvoice";
+import ContraInvoice from "./Invoice/ContraInvoice";
 
 function PartyLedgerReport() {
   const [ledgerList, setLedgerList] = useState([]);
@@ -33,11 +36,17 @@ function PartyLedgerReport() {
   const [selectedSalesId, setSelectedSalesId] = useState(null);
   const [selectedCreditNoteId, setSelectedCreditNoteId] = useState(null);
   const [selectedReceiptId, setSelectedReceiptId] = useState(null);
+  const [selectedDebitNoteId, setSelectedDebitNoteId] = useState(null);
+  const [selectJournal, setSelectedJournal] = useState(null);
+  const [selectContra, setSelectedContra] = useState(null);
   const { isOpen: isPurchaseModalOpen, onOpen: onPurchaseModalOpen, onClose: onPurchaseModalClose } = useDisclosure();
   const { isOpen: isPaymentModalOpen, onOpen: onPaymentModalOpen, onClose: onPaymentModalClose } = useDisclosure();
   const { isOpen: isSalesModalOpen, onOpen: onSalesModalOpen, onClose: onSalesModalClose } = useDisclosure();
   const { isOpen: isCreditNoteModalOpen, onOpen: onCreditNoteModalOpen, onClose: onCreditNoteModalClose } = useDisclosure();
   const { isOpen: isReceiptModalOpen, onOpen: onReceiptModalOpen, onClose: onReceiptModalClose } = useDisclosure();
+  const {isOpen: isDebitNoteModalOpen, onOpen: onDebitNoteModalOpen, onClose: onDebitNoteModalClose} = useDisclosure();
+  const {isOpen: isJournalModalOpen, onOpen:onJournalModalOpen, onClose: onJournalModalClose} = useDisclosure();
+  const {isOpen: isContraModalOpen, onOpen:onContraModalOpen, onClose: onContraModalClose} = useDisclosure();
 
   const fetchLedgerDropdown = async () => {
     try {
@@ -123,6 +132,18 @@ function PartyLedgerReport() {
       setSelectedReceiptId(referenceId);
       onReceiptModalOpen();
     }
+    else if (transactionType === "DEBIT_NOTE") {
+      setSelectedDebitNoteId(referenceId);
+      onDebitNoteModalOpen();
+    }
+    else if (transactionType === "JOURNAL"){
+      setSelectedJournal(referenceId);
+      onJournalModalOpen();
+    }
+    else if(transactionType === "CONTRA"){
+      setSelectedContra(referenceId);
+      onContraModalOpen();
+    }
   };
   return (
     <Box>
@@ -132,6 +153,9 @@ function PartyLedgerReport() {
       <SalesInvoice isOpen={isSalesModalOpen} onClose={onSalesModalClose} invoiceId={selectedSalesId} />
       <CreditNoteInvoice isOpen={isCreditNoteModalOpen} onClose={onCreditNoteModalClose} creditNoteId={selectedCreditNoteId} />
       <ReceiptInvoice isOpen={isReceiptModalOpen} onClose={onReceiptModalClose} receiptId={selectedReceiptId} />
+      <DebitNoteInvoice isOpen={isDebitNoteModalOpen} onClose={onDebitNoteModalClose} debitNoteId={selectedDebitNoteId} />
+      <JournalInvoice isOpen={isJournalModalOpen} onClose={onJournalModalClose} journalId={selectJournal} />
+      <ContraInvoice isOpen={isContraModalOpen} onClose={onContraModalClose} contraId={selectContra} />
 
       <Heading size="md" mb={5} color="#4d4d4d">
         Party Ledger Report{" "}

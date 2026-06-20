@@ -8,6 +8,15 @@ import Pagination from "../../Pagination/Pagination";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
 import { useDisclosure } from "@chakra-ui/react";
 import CanclePartyTransactionModal from "../../components/models/CancelPartyTransactionModal";
+import ContraInvoice from "./Invoice/ContraInvoice";
+import JournalInvoice from "./Invoice/JournalInvoice";
+import DebitNoteInvoice from "./Invoice/DebitNoteInvoice";
+import ReceiptInvoice from "./Invoice/ReceiptInvoice";
+import CreditNoteInvoice from "./Invoice/CreditNoteInvoice";
+import SalesInvoice from "./Invoice/SalesInvoice";
+import PaymentInvoice from "./Invoice/PaymentInvoice";
+import PurchaseInvoice from "./Invoice/PurchaseInvoice";
+import { Link } from "react-router-dom";
 
 const TRANSACTION_TYPES = [
   "PURCHASE",
@@ -46,6 +55,23 @@ function PartyTransactionReport() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState(null);
+  const [selectedPaymentId, setSelectedPaymentId] = useState(null);
+  const [selectedSalesId, setSelectedSalesId] = useState(null);
+  const [selectedCreditNoteId, setSelectedCreditNoteId] = useState(null);
+  const [selectedReceiptId, setSelectedReceiptId] = useState(null);
+  const [selectedDebitNoteId, setSelectedDebitNoteId] = useState(null);
+  const [selectJournal, setSelectedJournal] = useState(null);
+  const [selectContra, setSelectedContra] = useState(null);
+  const { isOpen: isPurchaseModalOpen, onOpen: onPurchaseModalOpen, onClose: onPurchaseModalClose } = useDisclosure();
+  const { isOpen: isPaymentModalOpen, onOpen: onPaymentModalOpen, onClose: onPaymentModalClose } = useDisclosure();
+  const { isOpen: isSalesModalOpen, onOpen: onSalesModalOpen, onClose: onSalesModalClose } = useDisclosure();
+  const { isOpen: isCreditNoteModalOpen, onOpen: onCreditNoteModalOpen, onClose: onCreditNoteModalClose } = useDisclosure();
+  const { isOpen: isReceiptModalOpen, onOpen: onReceiptModalOpen, onClose: onReceiptModalClose } = useDisclosure();
+  const { isOpen: isDebitNoteModalOpen, onOpen: onDebitNoteModalOpen, onClose: onDebitNoteModalClose } = useDisclosure();
+  const { isOpen: isJournalModalOpen, onOpen: onJournalModalOpen, onClose: onJournalModalClose } = useDisclosure();
+  const { isOpen: isContraModalOpen, onOpen: onContraModalOpen, onClose: onContraModalClose } = useDisclosure();
 
   // Load party (ledger) dropdown once on mount
   useEffect(() => {
@@ -162,29 +188,74 @@ function PartyTransactionReport() {
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedRow, setSelectedRow] = useState(null);
 
-const handleDeleteClick = (row) => {
-  setSelectedRow(row);
-  onOpen();
-};
+  const handleDeleteClick = (row) => {
+    setSelectedRow(row);
+    onOpen();
+  };
 
-const handleDeleteSuccess = () => {
-  fetchPartyTransactionReport(page, limit); // refresh current page
-};
+  const handleDeleteSuccess = () => {
+    fetchPartyTransactionReport(page, limit); // refresh current page
+  };
+
+  const openVoucher = (transactionType, referenceId) => {
+    if (transactionType === "PURCHASE") {
+      setSelectedInvoiceId(referenceId);
+      onPurchaseModalOpen();
+    }
+    else if (transactionType === "PAYMENT") {
+      setSelectedPaymentId(referenceId);
+      onPaymentModalOpen();
+    }
+    else if (transactionType === "SALES") {
+      setSelectedSalesId(referenceId);
+      onSalesModalOpen();
+    }
+    else if (transactionType === "CREDIT_NOTE") {
+      setSelectedCreditNoteId(referenceId);
+      onCreditNoteModalOpen();
+    }
+    else if (transactionType === "RECEIPT") {
+      setSelectedReceiptId(referenceId);
+      onReceiptModalOpen();
+    }
+    else if (transactionType === "DEBIT_NOTE") {
+      setSelectedDebitNoteId(referenceId);
+      onDebitNoteModalOpen();
+    }
+    else if (transactionType === "JOURNAL") {
+      setSelectedJournal(referenceId);
+      onJournalModalOpen();
+    }
+    else if (transactionType === "CONTRA") {
+      setSelectedContra(referenceId);
+      onContraModalOpen();
+    }
+  };
 
   return (
     <Box>
       {/* Form Card */}
       <Box bg="white" p={6} borderRadius="md" border="1px solid" borderColor="gray.300">
 
+        <PurchaseInvoice isOpen={isPurchaseModalOpen} onClose={onPurchaseModalClose} invoiceId={selectedInvoiceId} />
+        <PaymentInvoice isOpen={isPaymentModalOpen} onClose={onPaymentModalClose} paymentId={selectedPaymentId} />
+        <SalesInvoice isOpen={isSalesModalOpen} onClose={onSalesModalClose} invoiceId={selectedSalesId} />
+        <CreditNoteInvoice isOpen={isCreditNoteModalOpen} onClose={onCreditNoteModalClose} creditNoteId={selectedCreditNoteId} />
+        <ReceiptInvoice isOpen={isReceiptModalOpen} onClose={onReceiptModalClose} receiptId={selectedReceiptId} />
+        <DebitNoteInvoice isOpen={isDebitNoteModalOpen} onClose={onDebitNoteModalClose} debitNoteId={selectedDebitNoteId} />
+        <JournalInvoice isOpen={isJournalModalOpen} onClose={onJournalModalClose} journalId={selectJournal} />
+        <ContraInvoice isOpen={isContraModalOpen} onClose={onContraModalClose} contraId={selectContra} />
+
+
         <CanclePartyTransactionModal
-  isOpen={isOpen}
-  onClose={onClose}
-  transactionType={selectedRow?.transaction_type}
-  referenceId={selectedRow?.reference_id}
-  onSuccess={handleDeleteSuccess}
-/>
+          isOpen={isOpen}
+          onClose={onClose}
+          transactionType={selectedRow?.transaction_type}
+          referenceId={selectedRow?.reference_id}
+          onSuccess={handleDeleteSuccess}
+        />
 
 
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
@@ -193,8 +264,7 @@ const handleDeleteSuccess = () => {
             <Select
               placeholder="--Please Select--"
               value={formData.transaction_type}
-              onChange={(e) => handleChange("transaction_type", e.target.value)}
-            >
+              onChange={(e) => handleChange("transaction_type", e.target.value)} >
               {TRANSACTION_TYPES.map((type) => (
                 <option key={type} value={type}>
                   {type.replace("_", " ")}
@@ -292,9 +362,7 @@ const handleDeleteSuccess = () => {
 
       {/* Results Table */}
       <Box bg="white" mt={10}>
-        <Heading fontSize="18px" mb={4}>
-          Transaction Report
-        </Heading>
+        <Heading fontSize="18px" mb={4}> Transaction Report </Heading>
 
         {loading ? (
           <Center py={10}>
@@ -353,17 +421,22 @@ const handleDeleteSuccess = () => {
                           <Td> {row.employee_name || "-"} </Td>
                           <Td>{row.transaction_type}</Td>
                           <Td>{row.sub_ledger}</Td>
-                          <Td>{row.voucher_no}</Td>
+                          <Td color='blue.700 !important' fontWeight="600">
+                            {/* {row.voucher_no} */}
+                            <Link
+                              onClick={() => openVoucher(row.transaction_type, row.reference_id,)}>
+                              {row.voucher_no}
+                            </Link></Td>
                           <Td>{row.reference_type}</Td>
                           <Td>{row.bill_used}</Td>
                           <Td isNumeric> {Number(row.bill_amount).toFixed(2)} </Td>
                           <Td isNumeric> {Number(row.bill_due_amount).toFixed(2)} </Td>
                           <Td>{row.entry_type}</Td>
                           <Td>
-  <Button size="xs" colorScheme="red" onClick={() => handleDeleteClick(row)}>
-    Delete
-  </Button>
-</Td>
+                            <Button size="xs" colorScheme="red" onClick={() => handleDeleteClick(row)}>
+                              Delete
+                            </Button>
+                          </Td>
                         </Tr>
                       ))}
                     </>

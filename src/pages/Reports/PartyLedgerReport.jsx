@@ -113,9 +113,6 @@ function PartyLedgerReport() {
       setSelectedInvoiceId(referenceId);
       onPurchaseModalOpen();
     }
-    //  else if (transactionType === "PAYMENT") {
-    //   window.open(`${window.location.origin}/print/payment/${referenceId}`, "_blank");
-    // }
     else if (transactionType === "PAYMENT") {
       setSelectedPaymentId(referenceId);
       onPaymentModalOpen();

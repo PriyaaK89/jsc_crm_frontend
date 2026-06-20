@@ -216,6 +216,20 @@ export const API_ENDPOINTS = {
 
   GET_PARTYTRANSACTION_BILLS: "get-partyTransactionBills",
   GET_PARTY_TRANSACTION_REPORT: "get-party-transaction-report",
-  DELETE_PARTY_TRANSACTION: "cancel-party-transaction"
+  DELETE_PARTY_TRANSACTION: "cancel-party-transaction",
+
+  CREATE_TRANSACTION_APPROVAL: "create-transaction-approval-config",
+  GET_TRANSACTION_APPROVAL: "get-transaction-approval-config",
+  GET_TRANSACTION_APPROVAL_BY_ID: "get-approvalConfig-employee",
+  UPDATE_TRANSACTION_APPROVAL: "update-transaction-approval",
+
+  GET_ORDER_NOTIFICATIONS: "get-notifications",
+  GET_ORDER_NOTIFICATION_COUNT: "get-notification-counts",
+  GET_PENDING_APPROVALS: "get-pending-approvals",
+  GET_PENDING_APPROVALS_BY_ID: "get-order-approval",
+
+  GET_SALE_ORDER_BY_ID: "get-order-approval",
+  CREATE_REQUEST_APPROVE: "approve-sale-order"
+
 };
 // 

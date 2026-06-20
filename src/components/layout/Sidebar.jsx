@@ -4,7 +4,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
 import { MdAssignmentInd, MdAttractions, MdOutlineAssignmentReturn, MdOutlineInventory2, MdOutlineTrackChanges, MdPayment } from "react-icons/md";
 import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
-import { FaExchangeAlt, FaListAlt, FaMoneyBill, FaTable, FaUserAlt, FaUserTie, FaWarehouse } from 'react-icons/fa';
+import { FaExchangeAlt, FaListAlt, FaMoneyBill, FaTable, FaUserAlt, FaUserCheck, FaUserTie, FaWarehouse } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
 import { MdCorporateFare, MdGroupAdd } from "react-icons/md";
 import { HiOfficeBuilding ,HiOutlineDocumentReport} from "react-icons/hi";
@@ -251,6 +251,7 @@ const Newsidebar = () => {
           {label:"Activate/Deactivate Voucher",path:"/misc/voucher-action",icon:FaMoneyBill  },      
           {label:"Define Retailer",path:"/misc/create-retailer",icon:IoMdPersonAdd   },      
           {label:"View Retailer",path:"/misc/view-retailers",icon:IoCreate  },      
+          {label:"Transaction Approval",path:"/misc/transaction-approval",icon:FaUserCheck  },      
          ]
       },
       {

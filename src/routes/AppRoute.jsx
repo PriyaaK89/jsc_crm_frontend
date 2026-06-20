@@ -106,11 +106,15 @@ import CreditNoteTxnMasterLayout from "../components/layout/TransactionMasterLay
 import DebitNoteTxnMasterLayout from "../components/layout/TransactionMasterLayout/DebitNoteLayout";
 import ContraTxnMasterLayout from "../components/layout/TransactionMasterLayout/ContraLayout";
 import JournalTxnMasterLayout from "../components/layout/TransactionMasterLayout/JournalLayout";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import TransactionApprovalLayout from "../components/layout/MiscActions/TransactionApprovalLayout";
 
 
 function App() {
   return (
     <Router>
+        <ToastContainer />
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<UserLogin />} />
@@ -192,7 +196,7 @@ function App() {
 
         <Route path="/order-vochor/payment" element={<PaymentLayout />} />
         <Route path="/order-vochor/purchase" element={<PurchaseLayout />} />
-        <Route path="/order-vochor/sales" element={<SalesLayout />} />
+        <Route path="/order-vochor/sales/:id" element={<SalesLayout />} />
         <Route path="/order-vochor/receipt" element={<ReceiptLayout />} />
         <Route path="/order-vochor/credit" element={<CreditLayout />} />
         <Route path="/order-vochor/debit" element={<DebitLayout />} />
@@ -230,6 +234,7 @@ function App() {
         <Route path="/misc/voucher-action" element={<ActivateVoucherLayout />} />
         <Route path="/misc/create-retailer" element={<CreateRetailerLayout />} />
         <Route path="/misc/view-retailers" element={<ViewRetailerLayout />} />
+        <Route path="/misc/transaction-approval" element={<TransactionApprovalLayout/>}/>
 
         <Route path="/transaction-master/purchase" element={<PurchaseTxnMasterLayout />} />
         <Route path="/transaction-master/payment" element={<PaymentTxnMasterLayout />} />

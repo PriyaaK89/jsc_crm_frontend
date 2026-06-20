@@ -11,6 +11,25 @@ export const fetchStockItemDropdown = async () => {
   }
 };
 
+// ================= NEXT VOUCHER NO =================
+
+export const fetchNextVoucherNo = async (voucherType) => {
+  if (!voucherType) return null;
+
+  try {
+    const response = await API.get(
+      `${API_ENDPOINTS.GET_NEXTVOUCHER_NO}?voucher_type=${voucherType}`,
+    );
+
+    return {
+      voucher_no: response?.data?.voucher_no,
+      voucher_type_id: response?.data?.voucher_type_id,
+      nextSequence: response?.data?.nextSequence,
+    };
+  } catch (err) {
+   throw err;
+}
+};
 
 
 export const fetchGodownList = async () => {
@@ -128,25 +147,7 @@ export const fetchStockItemDetailsByID = async (itemId) => {
   return null;
 };
 
-// ================= NEXT VOUCHER NO =================
 
-export const fetchNextVoucherNo = async (voucherType) => {
-  if (!voucherType) return null;
-
-  try {
-    const response = await API.get(
-      `${API_ENDPOINTS.GET_NEXTVOUCHER_NO}?voucher_type=${voucherType}`,
-    );
-
-    return {
-      voucher_no: response?.data?.voucher_no,
-      voucher_type_id: response?.data?.voucher_type_id,
-      nextSequence: response?.data?.nextSequence,
-    };
-  } catch (err) {
-   throw err;
-}
-};
 
 export const fetchLedgerDetailsByID = async (ledgerId) => {
   if (!ledgerId) return null;

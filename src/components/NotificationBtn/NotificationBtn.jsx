@@ -17,6 +17,7 @@ const NotificationBtn = () => {
     });
     const [salesModalOpen, setSalesModalOpen] = useState(false);
     const [alertModalOpen, setAlertModalOpen] = useState(false);
+    const EWAY_BILL_URL = "https://ewaybillgst.gov.in/";
 
     useEffect(() => {
         fetchCounts();
@@ -140,8 +141,10 @@ const fetchCounts = async () => {
                         fontSize={{ sm: "11px", base: "11px", md: "12px" }}
                         onClick={() => {
                             if (btn.label === "Sale Order") { setSalesModalOpen(true); }
-
                             if (btn.label === "Alert") { setAlertModalOpen(true); }
+                            if (btn.label === "E-Way Bill") { window.open("https://ewaybillgst.gov.in/", "_blank"); }
+                            if(btn.label === "Open MailBox"){window.open("http://jamidaraseeds.com/webmail", "_blank");}
+                            if(btn.label === "Whatsapp"){window.open("https://web.whatsapp.com/send", "_blank");}
                         }}
                         fontWeight="500">
                         {btn.label}

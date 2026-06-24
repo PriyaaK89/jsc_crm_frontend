@@ -227,9 +227,15 @@ export const API_ENDPOINTS = {
   GET_ORDER_NOTIFICATION_COUNT: "get-notification-counts",
   GET_PENDING_APPROVALS: "get-pending-approvals",
   GET_PENDING_APPROVALS_BY_ID: "get-order-approval",
+  CREATE_SALE_REQUEST_AS_JUNIOR_ACCOUNTANT: "create-sales-approval-request",
 
-  GET_SALE_ORDER_BY_ID: "get-order-approval",
-  CREATE_REQUEST_APPROVE: "approve-sale-order"
+  REJECT_SALES_ORDER: "reject-sale-order",
+  RETURN_SALES_ORDER:"return-sale-order",
+  RESUBMIT_SALES_ORDER: "/resubmit-sale-order",
+
+  CREATE_REQUEST_APPROVE: "approve-sale-order",
+  GENERATE_NEXT_ORDER_NO: "next-order-number",
+
 
 };
 // 

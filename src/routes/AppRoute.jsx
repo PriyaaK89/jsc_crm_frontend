@@ -109,6 +109,7 @@ import JournalTxnMasterLayout from "../components/layout/TransactionMasterLayout
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TransactionApprovalLayout from "../components/layout/MiscActions/TransactionApprovalLayout";
+import CreateSalesLayout from "../components/layout/TransactionMasterLayout/CreateSalesLayout";
 
 
 function App() {
@@ -196,12 +197,14 @@ function App() {
 
         <Route path="/order-vochor/payment" element={<PaymentLayout />} />
         <Route path="/order-vochor/purchase" element={<PurchaseLayout />} />
-        <Route path="/order-vochor/sales/:id" element={<SalesLayout />} />
+        <Route path="/order-vochor/sales/:approvalId" element={<SalesLayout />} />
         <Route path="/order-vochor/receipt" element={<ReceiptLayout />} />
         <Route path="/order-vochor/credit" element={<CreditLayout />} />
         <Route path="/order-vochor/debit" element={<DebitLayout />} />
         <Route path="/esign-success" element={<ESignSuccess />} />
         <Route path="/esign-error" element={<ESignError />} />
+
+        <Route path="/order-voucher/create-sales" element={<CreateSalesLayout/>}/>
 
         {/* reports */}
         <Route path="/report/emp-attendance-report" element={<EmpAttendanceLayout />} />

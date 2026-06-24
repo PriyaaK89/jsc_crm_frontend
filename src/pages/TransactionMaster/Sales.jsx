@@ -114,7 +114,7 @@ const computeItemAmounts = (item) => {
 };
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-const Sales = () => {
+const SalesTransaction = () => {
     const { users } = useUsersapi();
     const toast = useToast();
 
@@ -1951,4 +1951,4 @@ const Sales = () => {
     );
 };
 
-export default Sales;
+export default SalesTransaction;

@@ -195,7 +195,7 @@ const Newsidebar = () => {
          children:[
           {label:"Payment",path:"/order-vochor/payment",icon:FiMapPin},
           {label:"Purchase",path:"/order-vochor/purchase",icon:BiPurchaseTagAlt},
-          {label:"Sales",path:"/order-vochor/sales",icon:FaShoppingCart},
+          {label:"Sales",path:"/order-voucher/create-sales",icon:FaShoppingCart},
           {label:"Receipt",path:"/order-vochor/receipt",icon:FaReceipt},
           {label:"Credit",path:"/order-vochor/credit",icon:BsCreditCard2Front},
           {label:"Debit",path:"/order-vochor/debit",icon:FaMoneyBillWave},
@@ -259,9 +259,10 @@ const Newsidebar = () => {
         children:[
           {label:"Shipping label printer",path:"/print/mgmt/shipping_lable_printer",icon:BsUpcScan},
           {label:"TruthFull Label Print",path:"/print/mgmt/truthful_labelprint",icon:Ticket}
-        ]},{
-          label:"Settings",path:"/settings",icon:RiSettings3Line,
-        },
+        ]},
+        // {
+        //   label:"Settings",path:"/settings",icon:RiSettings3Line,
+        // },
   ];
 
 useEffect(() => {

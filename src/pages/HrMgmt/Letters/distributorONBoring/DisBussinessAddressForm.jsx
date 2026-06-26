@@ -24,7 +24,7 @@ function DisBussinessAddressForm({
 {
    
   return (
-      <Box border="1px" border="1px solid #b6c0c9" gridColumn={{ base: "span 1", md: "span 2" }} borderRadius="lg">
+      <Box  border="1px solid #b6c0c9" gridColumn={{ base: "span 1", md: "span 2" }} borderRadius="lg">
     <Text bg="#e6e9eb" fontSize="14px" borderRadius="8px 8px 0px 0px" padding="8px 20px" fontWeight="600" color="gray.600">Business Details</Text>
     <Box p={4}>
                 <FormControl mt={3} isInvalid={!!errors.business_address}>

@@ -131,11 +131,16 @@ const fetchCounts = async () => {
                 <Box key={i} position="relative">
                     {/* Button */}
                     <Button
-                        bgGradient="linear(45deg, #325180, #8993b3)"
                         color="white"
                         px={{ base: "8px", sm: "8px", md: "16px" }}
-                        transition="all 0.3s ease"
-                        _hover={{ bg: "#505572", transform: "scale(1.01)", color: "white" }}
+                        bgGradient="linear(45deg, #325180, #8993b3)"
+  transition="transform 0.6s ease-in-out"
+  _hover={{
+    bgGradient: "linear(45deg, #8993b3, #325180)",
+    transform: "translateX(2px)",
+    color: "white",
+  }}
+                       
                         variant="outline"
                         borderRadius="lg"
                         fontSize={{ sm: "11px", base: "11px", md: "12px" }}

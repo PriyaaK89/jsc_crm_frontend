@@ -616,14 +616,8 @@ const SalesTransaction = () => {
                 total_amount: totals.total_amount,
 
                 narration,
-            }).forEach(([key, value]) => {
-
-                formData.append(
-                    key,
-                    value ?? ""
-                );
-
-            });
+            }).
+            forEach(([key, value]) => {formData.append( key, value ?? "");});
             formData.append(
                 "items",
                 JSON.stringify(
@@ -654,29 +648,12 @@ const SalesTransaction = () => {
                     }))
                 )
             );
-            formData.append(
-                "extra_ledgers",
-                JSON.stringify(
-                    extraLedgers
-                )
-            );
-            if (dispatchDocImage) {
+            const validExtraLedgers = extraLedgers.filter( ledger => ledger.ledger_id && Number(ledger.amount) > 0 );
 
-                formData.append(
-                    "dispatch_doc_image",
-                    dispatchDocImage
-                );
-
-            }
-
-            if (billTImage) {
-
-                formData.append(
-                    "bill_t_image",
-                    billTImage
-                );
-
-            }
+            formData.append( "extra_ledgers", JSON.stringify(validExtraLedgers));
+            // formData.append( "extra_ledgers", JSON.stringify( extraLedgers ) );
+            if (dispatchDocImage) { formData.append( "dispatch_doc_image",  dispatchDocImage);}
+            if (billTImage) { formData.append( "bill_t_image", billTImage ); }
 
 
             const res = await API.post(
@@ -1192,7 +1169,7 @@ const SalesTransaction = () => {
                         </Button>
                     </Flex>
 
-                    {customerLedgerId && (
+                    {isSuperCashSale && (
                         <Box overflow="hidden" py={2}>
                             <Text
                                 fontSize="12px"

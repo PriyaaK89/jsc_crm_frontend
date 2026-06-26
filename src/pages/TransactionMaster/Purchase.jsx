@@ -1019,7 +1019,7 @@ const Purchase = () => {
                                 ref={billTImageRef}
                                 type="file"
                                 name="bill_t_image"
-                                accept="image/*"
+                                accept="image/*,.pdf"
                                 onChange={handleImageChange}
                             />
 
@@ -1039,7 +1039,7 @@ const Purchase = () => {
                                 ref={dispatchDocImageRef}
                                 type="file"
                                 name="dispatch_doc_image"
-                                accept="image/*"
+                                accept="image/*,.pdf"
                                 onChange={handleImageChange}
                             />
                         </Box>

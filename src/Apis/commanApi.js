@@ -14,7 +14,9 @@ export const fetchStockItemDropdown = async () => {
 // ================= NEXT VOUCHER NO =================
 
 export const fetchNextVoucherNo = async (voucherType) => {
-  if (!voucherType) return null;
+    if (!voucherType ) {
+    return null;
+  }
 
   try {
     const response = await API.get(

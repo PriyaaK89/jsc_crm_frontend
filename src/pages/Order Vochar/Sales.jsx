@@ -102,6 +102,7 @@ const Sales = () => {
 const [returnRemarks, setReturnRemarks] = useState("");
 const [returnImageFile, setReturnImageFile] = useState(null);
 const returnImageRef = useRef();
+const [errors, setErrors] = useState({});
 
   // Dispatcher/Senior extra fields
   const [dispatchData, setDispatchData] = useState({
@@ -335,6 +336,30 @@ const canResubmit = isReturned && isReturnedToMe;
     return round2(totals.totalAmount + extraLedgerTotal);
   }, [totals.totalAmount, extraLedgerTotal]);
 
+  const validate = () => {
+  const newErrors = {};
+
+  if (approval?.approval_level === "SENIOR" && !formData.salesLedgerId) {
+    newErrors.salesLedgerId = "Sales Ledger is required";
+  }
+
+  if (isDispatcherOrSenior) {
+    if (!dispatchData.billTNo?.trim())       newErrors.billTNo = "Bill-T No. is required";
+    if (!formData.transportName?.trim())     newErrors.transportName = "Transport Name is required";
+    if (!dispatchData.destination?.trim())   newErrors.destination = "Destination is required";
+    if (!dispatchData.dispatchDocNo?.trim()) newErrors.dispatchDocNo = "Dispatch Doc No. is required";
+    if (!formData.deliveryPlace?.trim())     newErrors.deliveryPlace = "Delivery Place is required";
+
+    if (!dispatchData.dispatchDocImageFile && !dispatchData.dispatchDocImage)
+      newErrors.dispatchDocImage = "Dispatch Doc Image is required";
+
+    if (!dispatchData.billTImageFile && !dispatchData.billTImage)
+      newErrors.billTImage = "Bill-T Image is required";
+  }
+
+  return newErrors;
+};
+
   const handleExtraLedgerChange = (index, field, value) => {
     setExtraLedgers(prev => {
       const updated = [...prev];
@@ -460,6 +485,7 @@ const canResubmit = isReturned && isReturnedToMe;
       dispatchDocImageFile: file,
       dispatchDocImage: URL.createObjectURL(file),
     }));
+    setErrors((prev) => ({ ...prev, dispatchDocImage: undefined }));
   };
 
   const handleBillTImage = (e) => {
@@ -470,6 +496,7 @@ const canResubmit = isReturned && isReturnedToMe;
       billTImageFile: file,
       billTImage: URL.createObjectURL(file),
     }));
+    setErrors((prev) => ({ ...prev, billTImage: undefined }));
   };
 
   // ─── Approve / Reject ──────────────────────────────────────────────────────
@@ -632,108 +659,77 @@ const handleResubmit = async () => {
   }
 };
   // Replace handleApprove
-  const handleApprove = async () => {
-    if (!formData.salesLedgerId) {
-      toast({
-        title: "Sales Ledger is required",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
+const handleApprove = async () => {
+  if (items.length === 0) {
+    toast({
+      title: "At least one item is required",
+      status: "warning",
+      duration: 3000,
+      isClosable: true,
+    });
+    return;
+  }
+
+  const validationErrors = validate();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
+
+  setErrors({});
+  setSubmitting(true);
+
+  try {
+    const payload = buildUpdatedPayload();
+    const formDataObj = new FormData();
+
+    formDataObj.append("remarks", "Approved");
+    formDataObj.append("payload_json", JSON.stringify(payload));
+
+    if (dispatchData.dispatchDocImageFile) {
+      formDataObj.append(
+        "dispatch_doc_image",
+        dispatchData.dispatchDocImageFile,
+        dispatchData.dispatchDocImageFile.name
+      );
     }
 
-    if (items.length === 0) {
-      toast({
-        title: "At least one item is required",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
+    if (dispatchData.billTImageFile) {
+      formDataObj.append(
+        "bill_t_image",
+        dispatchData.billTImageFile,
+        dispatchData.billTImageFile.name
+      );
     }
 
-    setSubmitting(true);
+    await API.post(
+      `${API_ENDPOINTS.CREATE_REQUEST_APPROVE}/${approvalId}`,
+      formDataObj,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
 
-    try {
-      const payload = buildUpdatedPayload();
+    toast({
+      title: "Approved",
+      description: "Sales order approved successfully",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
 
-      const formDataObj = new FormData();
-
-      // Required fields
-      formDataObj.append("remarks", "Approved");
-
-      // Send complete payload as JSON string
-      formDataObj.append("payload_json", JSON.stringify(payload));
-
-      // Dispatch document image
-      if (dispatchData.dispatchDocImageFile) {
-        formDataObj.append(
-          "dispatch_doc_image",
-          dispatchData.dispatchDocImageFile,
-          dispatchData.dispatchDocImageFile.name
-        );
-      }
-
-      // Bill-T image
-      if (dispatchData.billTImageFile) {
-        formDataObj.append(
-          "bill_t_image",
-          dispatchData.billTImageFile,
-          dispatchData.billTImageFile.name
-        );
-      }
-
-      // Debug logs
-      console.log("PAYLOAD JSON =>", payload);
-      console.log(
-        "DISPATCH FILE =>",
-        dispatchData.dispatchDocImageFile
-      );
-      console.log(
-        "BILL T FILE =>",
-        dispatchData.billTImageFile
-      );
-
-      for (const pair of formDataObj.entries()) {
-        console.log(pair[0], pair[1]);
-      }
-
-      await API.post(
-        `${API_ENDPOINTS.CREATE_REQUEST_APPROVE}/${approvalId}`,
-        formDataObj,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data", // ← add this
-          },
-        }
-      );
-
-      toast({
-        title: "Approved",
-        description: "Sales order approved successfully",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-
-      navigate(-1);
-    } catch (error) {
-      console.error("APPROVE ERROR =>", error);
-
-      toast({
-        title: "Error",
-        description:
-          error?.response?.data?.message ||
-          "Failed to approve sales order",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
+    navigate(-1);
+  } catch (error) {
+    console.error("APPROVE ERROR =>", error);
+    toast({
+      title: "Error",
+      description: error?.response?.data?.message || "Failed to approve sales order",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
+  } finally {
+    setSubmitting(false);
+  }
+};
 
 const handleReject = async () => {
   if (!rejectRemarks.trim()) {
@@ -960,10 +956,18 @@ const handleReject = async () => {
           <Text fontWeight="500" fontSize="sm">Transport Details</Text>
         </Box>
         <Grid templateColumns={{ base: "1fr", md: "repeat(3,1fr)" }} gap={4} p={4}>
-          <Box>
+         <FormControl isInvalid={!!errors.transportName}>
             <Text {...labelStyle}>Transport Name</Text>
-            <Input {...inputStyle} value={formData.transportName} onChange={(e) => setFormData((prev) => ({ ...prev, transportName: e.target.value }))} />
-          </Box>
+            <Input {...inputStyle} value={formData.transportName} 
+            onChange={(e) => {
+  setFormData((prev) => ({ ...prev, transportName: e.target.value }));
+  if (e.target.value) setErrors((prev) => ({ ...prev, transportName: undefined }));
+}} />
+  {errors.transportName && (
+    <Text fontSize="11px" color="red.500" mt="2px">{errors.transportName}</Text>
+  )}
+
+          </FormControl>
           <Box>
             <Text {...labelStyle}>E-Way Number</Text>
             <Input {...inputStyle} value={formData.ewayNumber} onChange={(e) => setFormData((prev) => ({ ...prev, ewayNumber: e.target.value }))} />
@@ -973,8 +977,17 @@ const handleReject = async () => {
             <Input {...inputStyle} value={formData.transporterGst} onChange={(e) => setFormData((prev) => ({ ...prev, transporterGst: e.target.value }))} />
           </Box>
           <Box>
+            <FormControl isInvalid={!!errors.deliveryPlace}>
             <Text {...labelStyle}>Delivery Place</Text>
-            <Input {...inputStyle} value={formData.deliveryPlace} onChange={(e) => setFormData((prev) => ({ ...prev, deliveryPlace: e.target.value }))} />
+            <Input {...inputStyle} value={formData.deliveryPlace} 
+            onChange={(e) => {
+  setFormData((prev) => ({ ...prev, deliveryPlace: e.target.value }));
+  if (e.target.value) setErrors((prev) => ({ ...prev, deliveryPlace: undefined }));
+}} />
+ {errors.deliveryPlace && (
+    <Text fontSize="11px" color="red.500" mt="2px">{errors.deliveryPlace}</Text>
+  )}
+</FormControl>
           </Box>
         </Grid>
       </Box>
@@ -996,22 +1009,37 @@ const handleReject = async () => {
           <Grid templateColumns={{ base: "1fr", md: "repeat(3,1fr)" }} gap={4} p={4}>
             {/* Row 1 */}
             <Box>
+              <FormControl isInvalid={!!errors.dispatchDocNo}>
               <Text {...labelStyle}>Dispatch Doc No.</Text>
               <Input
                 {...inputStyle}
                 value={dispatchData.dispatchDocNo}
-                onChange={(e) => setDispatchData((prev) => ({ ...prev, dispatchDocNo: e.target.value }))}
+               onChange={(e) => {
+  setDispatchData((prev) => ({ ...prev, dispatchDocNo: e.target.value }));
+  if (e.target.value) setErrors((prev) => ({ ...prev, dispatchDocNo: undefined }));}}
                 placeholder="Enter dispatch doc no."
               />
+              {errors.dispatchDocNo && (
+    <Text fontSize="11px" color="red.500" mt="2px">{errors.dispatchDocNo}</Text>
+  )}
+              </FormControl>
             </Box>
             <Box>
+              <FormControl isInvalid={!!errors.billTNo}>
               <Text {...labelStyle}>Bill-T No.</Text>
               <Input
                 {...inputStyle}
                 value={dispatchData.billTNo}
-                onChange={(e) => setDispatchData((prev) => ({ ...prev, billTNo: e.target.value }))}
+                onChange={(e) => {
+  setDispatchData((prev) => ({ ...prev, billTNo: e.target.value }));
+  if (e.target.value) setErrors((prev) => ({ ...prev, billTNo: undefined }));
+}}
                 placeholder="Enter Bill-T no."
               />
+                {errors.billTNo && (
+    <Text fontSize="11px" color="red.500" mt="2px">{errors.billTNo}</Text>
+  )}
+              </FormControl>
             </Box>
             <Box>
               <Text {...labelStyle}>Vehicle No.</Text>
@@ -1025,13 +1053,18 @@ const handleReject = async () => {
 
             {/* Row 2 */}
             <Box>
+              <FormControl isInvalid={!!errors.destination}>
               <Text {...labelStyle}>Destination</Text>
               <Input
                 {...inputStyle}
                 value={dispatchData.destination}
-                onChange={(e) => setDispatchData((prev) => ({ ...prev, destination: e.target.value }))}
+                onChange={(e) => { setDispatchData((prev) => ({ ...prev, destination: e.target.value })); if (e.target.value) setErrors((prev) => ({ ...prev, destination: undefined }));}}
                 placeholder="Enter destination"
               />
+               {errors.destination && (
+    <Text fontSize="11px" color="red.500" mt="2px">{errors.destination}</Text>
+  )}
+              </FormControl>
             </Box>
             <Box>
               <Text {...labelStyle}>Transport Freight (₹)</Text>
@@ -1077,6 +1110,7 @@ const handleReject = async () => {
               <Divider my={2} borderColor="#d8d0e8" />
               <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)" }} gap={4}>
                 <Box>
+                  <FormControl isInvalid={!!errors.dispatchDocImage}>
                   <Text {...labelStyle} fontWeight="600">Dispatch Doc Image</Text>
                   <Flex align="center" gap={2} mt={1}>
                     <Button
@@ -1099,6 +1133,8 @@ const handleReject = async () => {
                       onChange={handleDispatchDocImage}
                     />
                   </Flex>
+                   {errors.dispatchDocImage && ( <Text fontSize="11px" color="red.500" mt="2px">{errors.dispatchDocImage}</Text> )}
+                  </FormControl>
                   {dispatchData.dispatchDocImage && (
                     <Box mt={2} border="1px solid #d0d7de" borderRadius="6px" overflow="hidden" maxW="200px">
                       <img src={dispatchData.dispatchDocImage} alt="Dispatch Doc" style={{ width: "100%", objectFit: "cover" }} />
@@ -1106,6 +1142,7 @@ const handleReject = async () => {
                   )}
                 </Box>
                 <Box>
+                  <FormControl isInvalid={!!errors.billTImage}>
                   <Text {...labelStyle} fontWeight="600">Bill-T Image</Text>
                   <Flex align="center" gap={2} mt={1}>
                     <Button
@@ -1128,6 +1165,10 @@ const handleReject = async () => {
                       onChange={handleBillTImage}
                     />
                   </Flex>
+                   {errors.billTImage && (
+    <Text fontSize="11px" color="red.500" mt="2px">{errors.billTImage}</Text>
+  )}
+                  </FormControl>
                   {dispatchData.billTImage && (
                     <Box mt={2} border="1px solid #d0d7de" borderRadius="6px" overflow="hidden" maxW="200px">
                       <img src={dispatchData.billTImage} alt="Bill-T" style={{ width: "100%", objectFit: "cover" }} />
@@ -1156,13 +1197,23 @@ const handleReject = async () => {
             </Select>
           </Box>
           <Box>
+            <FormControl isInvalid={!!errors.salesLedgerId}>
             <Text {...labelStyle}>Sales Ledger</Text>
-            <Select {...inputStyle} value={formData.salesLedgerId} onChange={(e) => setFormData((prev) => ({ ...prev, salesLedgerId: e.target.value }))}>
+            <Select {...inputStyle} value={formData.salesLedgerId} 
+            onChange={(e) => {
+  setFormData((prev) => ({ ...prev, salesLedgerId: e.target.value }));
+  if (e.target.value) setErrors((prev) => ({ ...prev, salesLedgerId: undefined }));
+}}
+>
               <option value="">-- Please Select --</option>
               {salesLedgerOptions.map((ledger) => (
                 <option key={ledger.id} value={ledger.id}>{ledger.ledger_name || ledger.name}</option>
               ))}
             </Select>
+             {errors.salesLedgerId && (
+    <Text fontSize="11px" color="red.500" mt="2px">{errors.salesLedgerId}</Text>
+  )}
+            </FormControl>
           </Box>
         </Grid>
       </Box>

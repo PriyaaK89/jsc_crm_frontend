@@ -56,7 +56,7 @@ const SalesTxnMasterLayout = () => {
                     </HStack>
 
                     <Text className="action_heading" mb={6} textAlign="center">
-                        Create Sale
+                        Create Sale transaction
                     </Text>
 
                     <Sales salesLedger={salesLedger}/>

@@ -1,12 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import {
-    Box, Grid, Input, Select, Text, Button,
-    Table, Thead, Tbody, Tr, Th, Td, Textarea,
-    Flex, Modal, ModalOverlay, ModalContent, ModalHeader,
-    ModalBody, useDisclosure, Badge, Divider,
-    GridItem, ModalCloseButton, useToast,
-    VStack,
-} from "@chakra-ui/react";
+import { Box, Grid, Input, Select, Text, Button, Table, Thead, Tbody, Tr, Th, Td, Textarea, Flex, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, useDisclosure, Badge, Divider, GridItem, ModalCloseButton, useToast, VStack,} from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import useUsersapi from "../../Apis/GetUsersapi";
 import {
@@ -421,18 +414,11 @@ const GenerateDebitNote = () => {
 
     // ── save / submit ─────────────────────────────────────────────────────────
     const handleSave = async () => {
-        if (!formData.debit_note_date) {
-            toast({ description: "Date is required!", status: "error", duration: 1500 }); return;
-        }
-        if (!formData.supplier_ledger_id) {
-            toast({ description: "Please select Party A/c Name!", status: "error", duration: 1500 }); return;
-        }
-        if (!formData.original_purchase_id) {
-            toast({ description: "Please select Original Purchase Invoice!", status: "error", duration: 1500 }); return;
-        }
-        if (!formData.purchase_return_ledger_id) {
-            toast({ description: "Please select Purchase Return Ledger!", status: "error", duration: 1500 }); return;
-        }
+        if (!formData.debit_note_date) {toast({ description: "Date is required!", status: "error", duration: 1500 }); return; }
+        if (!formData.supplier_ledger_id) {toast({ description: "Please select Party A/c Name!", status: "error", duration: 1500 }); return; }
+        if (!formData.original_purchase_id) {toast({ description: "Please select Original Purchase Invoice!", status: "error", duration: 1500 }); return; }
+        if (!formData.purchase_return_ledger_id) {toast({ description: "Please select Purchase Return Ledger!", status: "error", duration: 1500 }); return; }
+
         const validItems = formData.items.filter(
             (i) => i.stock_item_id && Number(i.return_qty) > 0
         );
@@ -442,180 +428,38 @@ const GenerateDebitNote = () => {
 
         setSaving(true);
         try {
-            // const payload = {
-            //     voucher_no: formData.voucher_no,
-            //     voucher_type_id: formData.voucher_type_id,
-            //     debit_note_date: formData.debit_note_date,
-            //     original_purchase_id: formData.original_purchase_id,
-            //     supplier_ledger_id: formData.supplier_ledger_id,
-            //     purchase_return_ledger_id: formData.purchase_return_ledger_id,
-            //     assign_employee_id: formData.employee_under_id || null,
-            //     employee_under_id: formData.employee_under_id || null,
-            //     dispatch_doc_no: formData.dispatch_doc_no,
-            //     transport_name: formData.transport_name,
-            //     destination: formData.destination,
-            //     bill_t_no: formData.bill_t_no,
-            //     vehicle_no: formData.vehicle_no,
-            //     transport_freight: Number(formData.transport_freight || 0),
-            //     eway_number: formData.eway_number,
-            //     transporter_gst: formData.transporter_gst,
-            //     delivery_place: formData.delivery_place,
-            //     subtotal: formData.subtotal,
-            //     igst_total: formData.igst_total,
-            //     cgst_total: formData.cgst_total,
-            //     sgst_total: formData.sgst_total,
-            //     tax_total: formData.tax_total,
-            //     total_amount: formData.total_amount,
-            //     narration: formData.narration,
-            //     bill_references: [],
-            //     items: validItems.map((item) => ({
-            //         stock_item_id: item.stock_item_id,
-            //         godown_id: item.godown_id || null,
-            //         batch_no: item.batch_no || null,
-            //         available_qty: item.available_qty,
-            //         return_qty: Number(item.return_qty),
-            //         rate: Number(item.rate),
-            //         unit_id: item.unit_id || null,
-            //         alt_unit_id: item.alt_unit_id || null,
-            //         alt_unit_qty: item.alt_unit_qty || null,
-            //         amount: item.amount,
-            //         igst_percent: item.igst_percent,
-            //         igst_amount: item.igst_amount,
-            //         cgst_percent: item.cgst_percent,
-            //         cgst_amount: item.cgst_amount,
-            //         sgst_percent: item.sgst_percent,
-            //         sgst_amount: item.sgst_amount,
-            //         total_amount: item.total_amount,
-            //     })),
-            // };
-
+          
             const formPayload = new FormData();
 
             formPayload.append("voucher_no", formData.voucher_no);
             formPayload.append("voucher_type_id", formData.voucher_type_id);
             formPayload.append("debit_note_date", formData.debit_note_date);
 
-            formPayload.append(
-                "original_purchase_id",
-                formData.original_purchase_id
-            );
-
-            formPayload.append(
-                "supplier_ledger_id",
-                formData.supplier_ledger_id
-            );
-
-            formPayload.append(
-                "purchase_return_ledger_id",
-                formData.purchase_return_ledger_id
-            );
-
+            formPayload.append( "original_purchase_id", formData.original_purchase_id );
+            formPayload.append( "supplier_ledger_id", formData.supplier_ledger_id );
+            formPayload.append( "purchase_return_ledger_id", formData.purchase_return_ledger_id );
 
             if (formData.employee_under_id) {
-                formPayload.append(
-                    "assign_employee_id",
-                    formData.employee_under_id
-                );
-            }
-
-            formPayload.append(
-                "employee_under_id",
-                formData.employee_under_id || ""
-            );
-
-            formPayload.append(
-                "dispatch_doc_no",
-                formData.dispatch_doc_no
-            );
-
-            formPayload.append(
-                "transport_name",
-                formData.transport_name
-            );
-
-            formPayload.append(
-                "destination",
-                formData.destination
-            );
-
-            formPayload.append(
-                "bill_t_no",
-                formData.bill_t_no
-            );
-
-            formPayload.append(
-                "vehicle_no",
-                formData.vehicle_no
-            );
-
-            formPayload.append(
-                "transport_freight",
-                formData.transport_freight
-            );
-
-            formPayload.append(
-                "eway_number",
-                formData.eway_number
-            );
-
-            formPayload.append(
-                "transporter_gst",
-                formData.transporter_gst
-            );
-
-            formPayload.append(
-                "delivery_place",
-                formData.delivery_place
-            );
-
-            formPayload.append(
-                "subtotal",
-                formData.subtotal
-            );
-
-            formPayload.append(
-                "igst_total",
-                formData.igst_total
-            );
-
-            formPayload.append(
-                "cgst_total",
-                formData.cgst_total
-            );
-
-            formPayload.append(
-                "sgst_total",
-                formData.sgst_total
-            );
-
-            formPayload.append(
-                "tax_total",
-                formData.tax_total
-            );
-
-            formPayload.append(
-                "total_amount",
-                formData.total_amount
-            );
-
-            formPayload.append(
-                "narration",
-                formData.narration
-            );
-
-            if (formData.bill_t_image) {
-                formPayload.append(
-                    "bill_t_image",
-                    formData.bill_t_image
-                );
-            }
-
-            if (formData.dispatch_doc_image) {
-                formPayload.append(
-                    "dispatch_doc_image",
-                    formData.dispatch_doc_image
-                );
-            }
+            formPayload.append(  "assign_employee_id",  formData.employee_under_id ); }
+            formPayload.append( "employee_under_id", formData.employee_under_id || "" );
+            formPayload.append( "dispatch_doc_no", formData.dispatch_doc_no );
+            formPayload.append( "transport_name", formData.transport_name );
+            formPayload.append( "destination", formData.destination );
+            formPayload.append( "bill_t_no", formData.bill_t_no );
+            formPayload.append( "vehicle_no", formData.vehicle_no );
+            formPayload.append( "transport_freight", formData.transport_freight );
+            formPayload.append( "eway_number", formData.eway_number );
+            formPayload.append( "transporter_gst", formData.transporter_gst );
+            formPayload.append( "delivery_place", formData.delivery_place );
+            formPayload.append( "subtotal", formData.subtotal );
+            formPayload.append( "igst_total", formData.igst_total );
+            formPayload.append( "cgst_total", formData.cgst_total );
+            formPayload.append( "sgst_total", formData.sgst_total );
+            formPayload.append( "tax_total", formData.tax_total );
+            formPayload.append( "total_amount", formData.total_amount );
+            formPayload.append( "narration", formData.narration );
+            if (formData.bill_t_image) { formPayload.append( "bill_t_image", formData.bill_t_image ); }
+            if (formData.dispatch_doc_image) { formPayload.append( "dispatch_doc_image", formData.dispatch_doc_image ); }
             formPayload.append(
                 "items",
                 JSON.stringify(
@@ -632,16 +476,12 @@ const GenerateDebitNote = () => {
                         alt_unit_qty: item.alt_unit_qty || null,
 
                         amount: item.amount,
-
                         igst_percent: item.igst_percent,
                         igst_amount: item.igst_amount,
-
                         cgst_percent: item.cgst_percent,
                         cgst_amount: item.cgst_amount,
-
                         sgst_percent: item.sgst_percent,
                         sgst_amount: item.sgst_amount,
-
                         total_amount: item.total_amount,
                     }))
                 )
@@ -944,9 +784,7 @@ const GenerateDebitNote = () => {
                     <Grid templateColumns="1fr 1fr 1fr" gap={3} p={4}>
                         <VStack alignItems="baseline">
                            
-                            <Text fontSize="11px" fontWeight="600" color="#555" mb={0}>
-                                Bill-T No.
-                            </Text>
+                            <Text fontSize="11px" fontWeight="600" color="#555" mb={0}> Bill-T No. </Text>
 
                             <Input
                                 {...inputStyle}
@@ -957,9 +795,7 @@ const GenerateDebitNote = () => {
                            
                             <Box>
 
-                            <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>
-                                Bill-T Image
-                            </Text>
+                            <Text fontSize="11px" fontWeight="600" color="#555" mb={1}> Bill-T Image </Text>
 
                             <Input
                                 ref={billTImageRef}
@@ -1445,10 +1281,8 @@ const GenerateDebitNote = () => {
                         {/* Existing batches table */}
                         {batchList.length > 0 && (
                             <Box mt={3}>
-                                <Text
-                                    fontSize="11px" fontWeight="700" color="#3d7a52" mb={2}
-                                    textTransform="uppercase" letterSpacing="0.5px"
-                                >
+                                <Text fontSize="11px" fontWeight="700" color="#3d7a52" mb={2}
+                                    textTransform="uppercase" letterSpacing="0.5px">
                                     Existing Batches (click to select)
                                 </Text>
                                 <Box overflowX="auto" border="1px solid #d0d7de" borderRadius="4px">
@@ -1462,16 +1296,11 @@ const GenerateDebitNote = () => {
                                         </Thead>
                                         <Tbody>
                                             {batchList.map((b, bi) => (
-                                                <Tr
-                                                    key={bi}
+                                                <Tr key={bi}
                                                     _hover={{ bg: "#e4ede6", cursor: "pointer" }}
-                                                    bg={
-                                                        godownModal.batch_no === b.batch_no
-                                                            ? "#d4e8d8"
-                                                            : bi % 2 === 0 ? "white" : "#f7faf8"
-                                                    }
-                                                    onClick={() => handleBatchSelect(b.batch_no)}
-                                                >
+                                                    bg={ godownModal.batch_no === b.batch_no
+                                                    ? "#d4e8d8" : bi % 2 === 0 ? "white" : "#f7faf8" }
+                                                    onClick={() => handleBatchSelect(b.batch_no)}>
                                                     <Td {...tdStyle} fontSize="11px" fontWeight="600" color="#2d5a3d">{b.batch_no}</Td>
                                                     <Td {...tdStyle} fontSize="11px" textAlign="right">{b.total_qty ?? b.qty}</Td>
                                                     <Td {...tdStyle} fontSize="11px">{b.godown_name}</Td>
@@ -1493,8 +1322,7 @@ const GenerateDebitNote = () => {
                             <Button
                                 bg="#237086" fontWeight="500" fontSize="14px" color="white"
                                 _hover={{ bg: "#1B5A6B" }} px={8} size="sm" borderRadius="12px"
-                                onClick={handleGodownSave}
-                            >
+                                onClick={handleGodownSave}>
                                 SAVE
                             </Button>
                         </Flex>

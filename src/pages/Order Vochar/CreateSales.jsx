@@ -439,25 +439,19 @@ const SalesCreate = () => {
           </GridItem>
           <GridItem>
             <Text {...labelStyle}>Is Consignee</Text>
-            <Select {...inputStyle} value={formData.isConsignee} maxW="200px"
+            <Select {...inputStyle} value={formData.isConsignee} 
+            // maxW="200px"
               onChange={e => setFormData(prev => ({ ...prev, isConsignee: e.target.value }))}>
               <option value="No">No</option>
               <option value="Yes">Yes</option>
             </Select>
           </GridItem>
-          <GridItem colSpan={{ base: 1, md: 2 }}>
-            <Flex align="center" gap={3}>
-              <Checkbox isChecked={formData.setOverdueReminder} colorScheme="teal" size="sm"
-                onChange={e => setFormData(prev => ({ ...prev, setOverdueReminder: e.target.checked }))} />
-              <Text fontSize="12px" color="green.600" fontWeight="500">Set Default OverDue Reminder</Text>
-            </Flex>
-          </GridItem>
-          <GridItem>
+            <GridItem>
   <Text {...labelStyle}>Is Supercash Sale?</Text>
   <Flex align="center" gap={3} mt={1}>
     <Select
       {...inputStyle}
-      maxW="200px"
+    //   maxW="200px"
       value={isSupercash ? "Yes" : "No"}
       onChange={e => setIsSupercash(e.target.value === "Yes")}
     >
@@ -471,6 +465,14 @@ const SalesCreate = () => {
     )}
   </Flex>
 </GridItem>
+          <GridItem colSpan={{ base: 1, md: 2 }}>
+            <Flex align="center" gap={3}>
+              <Checkbox isChecked={formData.setOverdueReminder} colorScheme="teal" size="sm"
+                onChange={e => setFormData(prev => ({ ...prev, setOverdueReminder: e.target.checked }))} />
+              <Text fontSize="12px" color="green.600" fontWeight="500">Set Default OverDue Reminder</Text>
+            </Flex>
+          </GridItem>
+        
         </Grid>
       </Box>
 

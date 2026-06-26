@@ -1,29 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Box,
-  Button,
-  Text,
-  FormControl,
-  FormLabel,
-  VStack,
-  HStack,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Breadcrumb,
-  Input,
-  useDisclosure,
-  InputGroup,
-  Tooltip,
-  InputRightElement,
-  IconButton,
-  InputLeftElement,
-  Spinner,
-  Flex,
-  SimpleGrid,
-  Badge,
-  Select,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Button, Text, FormControl, FormLabel, VStack, HStack, BreadcrumbItem, BreadcrumbLink, Breadcrumb, Input, useDisclosure,
+  InputGroup, Tooltip, InputRightElement, IconButton, InputLeftElement, Spinner, Flex, SimpleGrid, Badge, Select, useToast, } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { AddIcon, CheckIcon } from "@chakra-ui/icons";
 import { WarningIcon } from "@chakra-ui/icons";
@@ -42,7 +19,7 @@ import AddressForm from "./Distributoronboardingownerandpartneraddform";
 import DisBussinessAddressForm from "./DisBussinessAddressForm";
 import CustomDatePicker from "../../../../components/common/CustomDatepicker";
 
-function DistributorAgreement() {
+function DistributorAgreementPage() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
@@ -55,49 +32,18 @@ function DistributorAgreement() {
   const generateModal = useDisclosure();
   const [distributorId, setDistributorId] = useState(null);
   const [firmtype, setFirmtype] = useState("");
-  const [formData, setFormData] = useState({
-    customer_name: "",
-    customer_dob: "",
-    gst_number: "",
-    firm_name: "",
-    firm_type: "",
-    firm_email: "",
-    gst_type: "",
-    firm_since: "",
-    firm_pan: "",
-    firm_aadhar: "",
-    branch: "",
-    firm_landmark: "",
+  const [formData, setFormData] = useState({ customer_name: "", customer_dob: "", gst_number: "", firm_name: "", 
+    firm_type: "", firm_email: "", gst_type: "", firm_since: "", firm_pan: "", firm_aadhar: "", branch: "", firm_landmark: "",
+    business_address: "", business_territory: "", district: "", tehsil: "", landmark: "", state: "", pincode: "",
+    contact_number: "", alt_contact_number: "",
 
-    business_address: "",
-    business_territory: "",
-    district: "",
-    tehsil: "",
-    landmark: "",
-    state: "",
-    pincode: "",
-    contact_number: "",
-    alt_contact_number: "",
-
-    responsible_person_name: "",
-    responsible_person_contact: "",
-    responsible_person_address: "",
-    responsible_person_alt_contact: "",
-
-    seed_license_no: "",
-    seed_license_expiry: "",
-
-    transport_name_a: "",
-    transport_name_b: "",
-
-    source_of_funds: "",
-    own_funds_details: "",
+    responsible_person_name: "", responsible_person_contact: "", responsible_person_address: "", responsible_person_alt_contact: "",
+    seed_license_no: "", seed_license_expiry: "", transport_name_a: "", transport_name_b: "", source_of_funds: "", own_funds_details: "",
 
     bank_name: "",
     bank_account_no: "",
     ifsc_code: "",
     bank_branch: "",
-
     security_cheque_no: "",
     security_cheque_no_2: "",
     approver_name: "",
@@ -108,9 +54,7 @@ function DistributorAgreement() {
   const [gstStatus, setGstStatus] = useState("");
   const [panStatus, setPanStatus] = useState({});
   const [errors, setError] = useState({});
-  const [otherCompanies, setOtherCompanies] = useState([
-    { name: "", turnover: "" },
-  ]);
+  const [otherCompanies, setOtherCompanies] = useState([ { name: "", turnover: "" } ]);
   const [ownerAddress, setOwnerAddress] = useState({
     address: "",
     state: "",
@@ -149,11 +93,10 @@ function DistributorAgreement() {
     partner_photo: null,
   });
 
-  // ---------------------------gst verification------------------------------------------------------
+  // ---------------------------gst verification-----------------------------------------
   const handleGSTverification = async () => {
     try {
       setLoading(true);
-
       if (!formData.gst_number) {
         toast({
           description: "Enter your GST number",
@@ -343,13 +286,13 @@ function DistributorAgreement() {
 
       //  STOP if data mil gaya
       if (isCompleted || hasBasicData) {
-        console.log("✅ Data mil gaya, stop polling");
+        console.log("Data mil gaya, stop polling");
 
         clearInterval(intervalRef.current);
         intervalRef.current = null;
 
         toast({
-          title: "KYC Completed ✅",
+          title: "KYC Completed ",
           description: "Aadhaar details received",
           status: "success",
           duration: 3000,
@@ -358,7 +301,7 @@ function DistributorAgreement() {
         return;
       }
 
-      console.log("⏳ Checking KYC...");
+      console.log(" Checking KYC...");
       getKycStatus(kycId);
     }, 10000); // 10 sec
 
@@ -374,7 +317,7 @@ function DistributorAgreement() {
     if (kycStatus?.is_completed && kycStatus?.aadhaar) {
       const aadhaar = kycStatus.aadhaar;
 
-      // console.log("✅ Auto filling Aadhaar data:", aadhaar);
+      // console.log(" Auto filling Aadhaar data:", aadhaar);
 
       setFormData((prev) => ({
         ...prev,
@@ -834,7 +777,7 @@ function DistributorAgreement() {
       setError(newErrors);
 
       return Object.keys(newErrors).length === 0;
-    }
+    }}
 
     // handle generate agreement
     const handleGenerateAgreement = () => {
@@ -854,29 +797,8 @@ function DistributorAgreement() {
 
     return (
       <>
-        <Box
-          bg="white"
-          mt={{ base: 2, md: 5 }}
-          px={{ base: 3, md: 6 }}
-          py={{ base: 3, md: 4 }}
-          borderRadius="lg"
-          boxShadow="md">
-          <HStack justifyContent="space-between">
-            <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
-              <BreadcrumbItem>
-                <BreadcrumbLink as={Link} to="/dashboard">
-                  {" "}
-                  <GoHomeFill color="#5570F1" />{" "}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-
-              <BreadcrumbItem>
-                <BreadcrumbLink isCurrentPage color="#8B8D97" fontSize="13px">
-                  Distributor On Boarding{" "}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-            </Breadcrumb>
-          </HStack>
+        <Box px={4} py={2}>
+      
 
           {loading && (
             <Flex
@@ -896,10 +818,6 @@ function DistributorAgreement() {
               </Text>
             </Flex>
           )}
-
-          <Text fontSize={{ base: "lg", md: "xl" }} mb={6} fontWeight="bold">
-            Distributor Agreement Form
-          </Text>
 
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
             <FormControl isInvalid={!!errors.customer_name}>
@@ -993,16 +911,8 @@ function DistributorAgreement() {
 
             <FormControl isInvalid={!!errors.firm_name}>
               <FormLabel>Firm Name</FormLabel>
-              <Input
-                name="firm_name"
-                value={formData.firm_name || ""}
-                onChange={handleChange}
-              />
-              {errors.firm_name && (
-                <Text color="red.500" fontSize="sm">
-                  {errors.firm_name}
-                </Text>
-              )}
+              <Input name="firm_name" value={formData.firm_name || ""} onChange={handleChange} />
+              {errors.firm_name && (<Text color="red.500" fontSize="sm"> {errors.firm_name} </Text>)}
             </FormControl>
 
             <FormControl isInvalid={!!errors.firm_type}>
@@ -1628,7 +1538,7 @@ function DistributorAgreement() {
 
             <FormControl
               gridColumn={{ base: "span 1", md: "span 2" }}
-              border="1px solid #413e3e"
+              border="1px solid #b6c0c9"
               p={4}
               borderRadius="lg">
               <FormLabel>Other Company Detail</FormLabel>
@@ -1686,7 +1596,7 @@ function DistributorAgreement() {
             </FormControl>
           </SimpleGrid>
 
-          <Box border="1px solid #313131" mt={5} p={5} borderRadius="lg">
+          <Box border="1px solid #b6c0c9" mt={5} p={5} borderRadius="lg">
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
               <FormControl isInvalid={!!errors.approver_name}>
                 <FormLabel>Approver Name</FormLabel>
@@ -1752,25 +1662,23 @@ function DistributorAgreement() {
                 <Button
                   onClick={() =>
                     document.getElementById("cameraUpload").click()
-                  }
-                  size={{ base: "sm", md: "lg" }}>
-                  📷 Upload Approver Image
+                  } bg="#d1d9da"
+                  fontSize="14px" gap={1}>
+                    <Text fontSize="22px !important" mb="6px">📷</Text>
+                  <Text color="gray.700"> Upload Approver Image </Text>
                 </Button>
               </FormControl>
             </SimpleGrid>
           </Box>
 
           {/* upload documents  */}
-          <DistributorDocuments
-            formData={formData}
-            onSendData={handleChildData}
-          />
+          <DistributorDocuments formData={formData} onSendData={handleChildData} />
         </Box>
 
         <Box textAlign="center">
           <Button
             colorScheme="blue"
-            ml={5}
+            ml={5} fontWeight="500"
             mt={6}
             onClick={previewModal.onOpen}>
             Download Letter
@@ -1819,6 +1727,6 @@ function DistributorAgreement() {
       </>
     );
   };
-}
 
-export default DistributorAgreement;
+
+export default DistributorAgreementPage;

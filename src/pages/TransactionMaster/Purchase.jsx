@@ -619,7 +619,6 @@ const Purchase = () => {
         setSaving(true);
         try {
             const payload = new FormData();
-
             const payloadData = {
                 ...formData,
                 employee_under_id: formData.employee_under_id || null,
@@ -637,8 +636,6 @@ const Purchase = () => {
                     payload.append(key, value ?? "");
                 }
             });
-
-
             // Append items
             payload.append(
                 "items",
@@ -667,35 +664,9 @@ const Purchase = () => {
             );
 
             // Append files
-            if (formData.bill_t_image) {
-                payload.append("bill_t_image", formData.bill_t_image);
-            }
-
-            if (formData.dispatch_doc_image) {
-                payload.append("dispatch_doc_image", formData.dispatch_doc_image);
-            }
-            // const payload = {
-            //     ...formData,
-            //     // items: formData.items.filter((i) => i.stock_item_id),
-            //     extra_ledgers: extraLedgers.filter((l) => l.ledger_id),
-
-            //     employee_under_id: formData.employee_under_id || null,
-            //     purchase_ledger_id: formData.purchase_ledger_id || null,
-            //     supplier_ledger_id: formData.supplier_ledger_id || null,
-            //     items: formData.items
-            //         .filter((i) => i.stock_item_id)
-            //         .map((item) => ({
-            //             ...item,
-            //             mfg_date: item.mfg_date || null,
-            //             expiry_date: item.expiry_date || null,
-            //             remind_date: item.remind_date || null,
-            //             alt_unit_id: item.alt_unit_id === "" ? null : item.alt_unit_id,
-            //             alt_unit_qty: item.alt_unit_qty === "" ? null : item.alt_unit_qty,
-            //             unit_id: item.unit_id === "" ? null : item.unit_id,
-            //             godown_id: item.godown_id === "" ? null : item.godown_id,
-            //         })),
-
-            // };
+            if (formData.bill_t_image) { payload.append("bill_t_image", formData.bill_t_image); }
+            if (formData.dispatch_doc_image) { payload.append("dispatch_doc_image", formData.dispatch_doc_image); }
+           
             const response = await createPurchase(payload);
             if (response.success) {
                 toast({
@@ -714,14 +685,19 @@ const Purchase = () => {
                     dispatchDocImageRef.current.value = "";
                 }
             }
-        } catch (error) {
-            console.error(error);
-            toast({
-                description: `Error creating purchase: ${error.message} || "Unknown error`,
-                status: "error",
-                duration: 1500
-            })
-        } finally {
+        }catch (error) {
+    console.error(error);
+
+    toast({
+        description:
+            error?.response?.data?.message ||
+            error?.message ||
+            "Unknown error",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+    });
+} finally {
             setSaving(false);
         }
     };
@@ -755,7 +731,8 @@ const Purchase = () => {
                         <GridItem>
 
                             <Text {...labelStyle}>
-                                Date <Text as="span" color="red.500">*</Text>
+                                Date 
+                                <Text as="span" color="red.500">*</Text>
                             </Text>
                             <Input
                                 {...inputStyle}

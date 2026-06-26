@@ -350,8 +350,8 @@ const canResubmit = isReturned && isReturnedToMe;
     if (!dispatchData.dispatchDocNo?.trim()) newErrors.dispatchDocNo = "Dispatch Doc No. is required";
     if (!formData.deliveryPlace?.trim())     newErrors.deliveryPlace = "Delivery Place is required";
 
-    if (!dispatchData.dispatchDocImageFile && !dispatchData.dispatchDocImage)
-      newErrors.dispatchDocImage = "Dispatch Doc Image is required";
+    // if (!dispatchData.dispatchDocImageFile && !dispatchData.dispatchDocImage)
+      // newErrors.dispatchDocImage = "Dispatch Doc Image is required";
 
     if (!dispatchData.billTImageFile && !dispatchData.billTImage)
       newErrors.billTImage = "Bill-T Image is required";
@@ -485,7 +485,7 @@ const canResubmit = isReturned && isReturnedToMe;
       dispatchDocImageFile: file,
       dispatchDocImage: URL.createObjectURL(file),
     }));
-    setErrors((prev) => ({ ...prev, dispatchDocImage: undefined }));
+    // setErrors((prev) => ({ ...prev, dispatchDocImage: undefined }));
   };
 
   const handleBillTImage = (e) => {
@@ -673,6 +673,14 @@ const handleApprove = async () => {
   const validationErrors = validate();
   if (Object.keys(validationErrors).length > 0) {
     setErrors(validationErrors);
+
+     toast({
+    title: "Required fields missing",
+    description: "Please fill in all required fields before approving.",
+    status: "warning",
+    duration: 4000,
+    isClosable: true,
+  });
     return;
   }
 
@@ -1110,7 +1118,9 @@ const handleReject = async () => {
               <Divider my={2} borderColor="#d8d0e8" />
               <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)" }} gap={4}>
                 <Box>
-                  <FormControl isInvalid={!!errors.dispatchDocImage}>
+                  <FormControl 
+                  // isInvalid={!!errors.dispatchDocImage}
+                  >
                   <Text {...labelStyle} fontWeight="600">Dispatch Doc Image</Text>
                   <Flex align="center" gap={2} mt={1}>
                     <Button
@@ -1133,7 +1143,7 @@ const handleReject = async () => {
                       onChange={handleDispatchDocImage}
                     />
                   </Flex>
-                   {errors.dispatchDocImage && ( <Text fontSize="11px" color="red.500" mt="2px">{errors.dispatchDocImage}</Text> )}
+                   {/* {errors.dispatchDocImage && ( <Text fontSize="11px" color="red.500" mt="2px">{errors.dispatchDocImage}</Text> )} */}
                   </FormControl>
                   {dispatchData.dispatchDocImage && (
                     <Box mt={2} border="1px solid #d0d7de" borderRadius="6px" overflow="hidden" maxW="200px">
@@ -1750,9 +1760,9 @@ const handleReject = async () => {
       <Modal isOpen={rejectModalOpen} onClose={() => setRejectModalOpen(false)} isCentered>
         <ModalOverlay bg="blackAlpha.500" />
         <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden">
-          <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#c0392b">
+          <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#e6210c" pl={3}>
             Reject Sales Order
-            <ModalCloseButton />
+            <ModalCloseButton top={0} right={0}/>
           </ModalHeader>
           <ModalBody p={4} bg="white">
             <FormControl>
@@ -1780,9 +1790,9 @@ const handleReject = async () => {
 <Modal isOpen={returnModalOpen} onClose={() => { setReturnModalOpen(false); setReturnRemarks(""); setReturnImageFile(null); }} isCentered>
   <ModalOverlay bg="blackAlpha.500" />
   <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden">
-    <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#b7791f">
+    <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#c57e14" pl={3}>
       Return Sales Order
-      <ModalCloseButton />
+      <ModalCloseButton top={0} right={0}/>
     </ModalHeader>
     <ModalBody p={4} bg="white">
       <FormControl mb={4}>

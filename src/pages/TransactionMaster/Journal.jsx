@@ -421,9 +421,7 @@ const Journal = () => {
     // ─── render ───────────────────────────────────────────────────────────────
 
     // Rows to render: always row 0, row 1 only when showSecondRow is true
-    const visibleEntries = showSecondRow
-        ? formData.entries
-        : [formData.entries[0]];
+    const visibleEntries = showSecondRow ? formData.entries : [formData.entries[0]];
 
     return (
         <Box  maxW="1100px">
@@ -449,7 +447,7 @@ const Journal = () => {
                         <GridItem>
                             <FormControl isRequired>
                                 <FormLabel fontSize="13px" color="#494949" mb="3px">
-                                    Date <Text as="span" color="red.500">*</Text>
+                                    Date
                                 </FormLabel>
                                 <Input
                                     {...inputStyle}

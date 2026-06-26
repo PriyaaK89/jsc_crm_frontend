@@ -195,7 +195,8 @@ const SalesOrderModal = ({ isOpen, onClose, onViewOrder }) => {
                             color: "green.700",
                             textDecoration: "underline",
                           }}
-                          onClick={() => handleViewOrder(item)}>
+                          // onClick={() => handleViewOrder(item)}
+                          >
                       <Link to={`/order-vochor/sales/${item.approval_id}`}>   {soNumber}</Link> 
                         </Text>{" "}
                         ({formatDate(item.created_at)}) to review the sales

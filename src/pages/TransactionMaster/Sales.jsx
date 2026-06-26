@@ -1014,21 +1014,12 @@ const SalesTransaction = () => {
                         </Box>
 
                         <Box>
-                            <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>
-                                Dispatch Doc Image
-                            </Text>
-
-                            <Input
-                            key={`dispatch-${fileResetKey}`}
+                            <Text fontSize="11px" fontWeight="600" color="#555" mb={1}> Dispatch Doc Image</Text>
+                            <Input key={`dispatch-${fileResetKey}`}
                                 type="file"
                                 accept="image/*,.pdf"
                                 p={1}
-                                onChange={(e) =>
-                                    setDispatchDocImage(
-                                        e.target.files?.[0] || null
-                                    )
-                                }
-                            />
+                                onChange={(e) => setDispatchDocImage( e.target.files?.[0] || null )} />
                         </Box>
 
                         <Box>

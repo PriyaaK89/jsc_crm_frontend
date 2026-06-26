@@ -40,9 +40,7 @@ const PurchaseTxnMasterLayout = () => {
                     </Breadcrumb>
                 </HStack>
 
-                <Text className="action_heading" mb={6} textAlign="center">
-                    Create Purchase
-                </Text>
+                <Text className="action_heading" mb={6} textAlign="center"> Create Purchase </Text>
 
                    <Purchase/>
             </Box>

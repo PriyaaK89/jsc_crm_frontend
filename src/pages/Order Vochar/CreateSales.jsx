@@ -121,12 +121,8 @@ const SalesCreate = () => {
 
   const fetchNextOrderNumber = async () => {
     try {
-      const response = await API.get(
-        `${API_ENDPOINTS.GENERATE_NEXT_ORDER_NO}?transaction_type=SALES`
-      );
-      if (response.status === 200) {
-        setOrderNo(response.data.next_order_no);
-      }
+      const response = await API.get(`${API_ENDPOINTS.GENERATE_NEXT_ORDER_NO}?transaction_type=SALES`);
+      if (response.status === 200) { setOrderNo(response.data.next_order_no); }
     } catch (error) {
       console.error("Error fetching order number:", error);
     }

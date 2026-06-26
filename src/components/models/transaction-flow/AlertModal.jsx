@@ -19,13 +19,13 @@ import { useEffect, useState } from "react";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import {
-  extractAfterKeyword,
   buildSalesOrderNumber,
   formatDate,
   getStatusColor,
 } from "../../common/notificationHelper";
+import { Link } from "react-router-dom";
 
-const AlertTabModal = ({ isOpen, onClose, onViewOrder }) => {
+const AlertTabModal = ({ isOpen, onClose }) => {
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,16 +43,21 @@ const AlertTabModal = ({ isOpen, onClose, onViewOrder }) => {
         `${API_ENDPOINTS?.GET_ORDER_NOTIFICATIONS}?notification_category=STATUS`,
       );
 
-      setNotifications(res.data?.data || []);
+      const raw = res.data?.data || [];
+      // Deduplicate: keep one entry per unique approval_id + message combo
+      const seen = new Set();
+      const deduped = raw.filter((item) => {
+        const key = `${item.approval_id}__${item.message}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      setNotifications(deduped);
     } catch (error) {
       console.log(error);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleViewOrder = (item) => {
-    if (onViewOrder) onViewOrder(item);
   };
 
   return (
@@ -93,7 +98,6 @@ const AlertTabModal = ({ isOpen, onClose, onViewOrder }) => {
           fontSize="14px"
           _hover={{
             bg: "whiteAlpha.300",
-            // transform: "rotate(90deg)",
           }}
           transition="all 0.2s ease"
         />
@@ -123,11 +127,6 @@ const AlertTabModal = ({ isOpen, onClose, onViewOrder }) => {
           ) : (
             <VStack spacing={4} align="stretch">
               {notifications.map((item) => {
-                const approverName = extractAfterKeyword(
-                  item.message,
-                  "approval by",
-                );
-
                 const soNumber = buildSalesOrderNumber(
                   item.user_id,
                   item.approval_id,
@@ -187,16 +186,7 @@ const AlertTabModal = ({ isOpen, onClose, onViewOrder }) => {
                         <Text as="span" fontWeight="700" color="gray.900">
                           {soNumber}
                         </Text>{" "}
-                        is{" "}
-                        <Text
-                          as="span"
-                          fontWeight="700"
-                          color={`${statusColor}.600`}>
-                          {item.status}
-                        </Text>
-                        {approverName
-                          ? ` for approval by ${approverName}. `
-                          : ". "}
+                        — {item.message}{" "}
                         <Text
                           as="span"
                           color="blue.600"
@@ -205,9 +195,10 @@ const AlertTabModal = ({ isOpen, onClose, onViewOrder }) => {
                           _hover={{
                             color: "blue.700",
                             textDecoration: "underline",
-                          }}
-                          onClick={() => handleViewOrder(item)}>
-                          Click here
+                          }}>
+                          <Link to={`/order-vochor/sales/${item.approval_id}`}>
+                            Click here
+                          </Link>
                         </Text>{" "}
                         to view details.
                       </Text>

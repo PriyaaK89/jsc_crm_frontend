@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 function UserLogin() {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ function UserLogin() {
     try {
       const response = await API.post(API_ENDPOINTS.LOGIN, { email, password });
       if (response?.status === 200) {
+        setIsLoading(true);
         loginUser(response.data);
         const profileRes = await API.get(API_ENDPOINTS.auth_my_profile);
         console.log("Profile Data:", profileRes.data);
@@ -39,6 +41,8 @@ function UserLogin() {
         duration: 2000,
         isClosable: true,
       });
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -113,24 +117,12 @@ function UserLogin() {
             </InputGroup>
 
             {/* Button */}
-            <Button
-              w="100%"
-              colorScheme="blue"
-              h="40px"
-              fontSize="sm"
-              onClick={handleLogin}
-              mb={3}
-            >
+            <Button w="100%" colorScheme="blue" h="40px" fontSize="sm" onClick={handleLogin} mb={3} >
               Login
             </Button>
 
             {/* Footer */}
-            <Text
-              color="white"
-              textShadow="1px 1px 2px black"
-              fontSize="10px"
-              fontWeight="bold"
-            >
+            <Text color="white" textShadow="1px 1px 2px black" fontSize="10px" fontWeight="bold">
               © Jamidara Seeds Corporation
             </Text>
           </Box>
@@ -142,18 +134,12 @@ function UserLogin() {
         <Image src={login_img} alt="CRM Illustration" maxW="94%" />
       </Flex>
 
-      <Flex
-        display={{ base: "none", md: "flex" }}
+      <Flex display={{ base: "none", md: "flex" }}
         flex="1"
         align="center"
         justify="center"
         p={10}
-        bg="white" onKeyDown={(e) => {
-    if (e.key === "Enter") {
-      handleLogin();
-    }
-  }}
-      >
+        bg="white" onKeyDown={(e) => {if (e.key === "Enter") { handleLogin();} }}>
         <Box w="100%" maxW="400px" bg="white">
           <Image src={logoRemovebgPreview} maxW="200px" mx="auto" mb={7} />
 
@@ -170,18 +156,17 @@ function UserLogin() {
             </Flex>
 
             <InputGroup mb={6}>
-              <Input
-                type={showPassword ? "text" : "password"}
+              <Input type={showPassword ? "text" : "password"}
                 placeholder="Enter password"
                 value={password} bg="white"
-                onChange={(e) => setPassword(e.target.value)}
-              />
+                onChange={(e) => setPassword(e.target.value)}/>
+
               <InputRightElement h="100%" onClick={() => setShowPassword(!showPassword)} >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </InputRightElement>
             </InputGroup>
-
-            <Button colorScheme="blue" w="100%" h="48px" fontWeight="500"
+       
+            <Button colorScheme="blue" w="100%" h="48px" fontWeight="500" isLoading={isLoading}
               onClick={handleLogin} onKeyDown={(e) => { if (e.key === "Enter") handleLogin(); }} >
               Login
             </Button>

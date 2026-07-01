@@ -982,16 +982,18 @@ const AddEmployee = () => {
               <Input name="esi" onChange={handleChange} />
             </FormControl>
           </SimpleGrid>
-
+<Box textAlign="center" mt={1}>
           <Button
-            colorScheme="blue"
-            alignSelf="center"
+             bg="#237086" fontWeight="500" 
+                fontSize="14px" color="white"
+                _hover={{ bg: "#1B5A6B" }}
+                 px={12} borderRadius="12px"
             isLoading={loading}
             onClick={handleSubmit}
           >
             Create User
           </Button>
-
+</Box>
 
 
           {/* <DocumentUploadTable/> */}

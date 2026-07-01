@@ -1563,7 +1563,7 @@ const handleReject = async () => {
 
       {/* ── Footer Actions ── */}
      {/* ── Footer Actions ── */}
-<Flex justify="flex-end" mt={2} gap={3}>
+<Flex justify="flex-end" alignItems="center" mt={2} gap={3}>
   {canResubmit ? (
     // ── RETURNED state: only Resubmit is available ──
     <Button
@@ -1587,7 +1587,7 @@ const handleReject = async () => {
       <Button
         variant="outline"
         colorScheme="yellow"
-        size="sm"
+        size="sm"  px={6} height="38px" borderRadius="13px"
         isDisabled={submitting}
         onClick={() => setReturnModalOpen(true)}
       >
@@ -1595,7 +1595,7 @@ const handleReject = async () => {
       </Button>
       <Button
         variant="outline"
-        colorScheme="red"
+        colorScheme="red" height="38px" borderRadius="13px"
         size="sm"
         px={6}
         onClick={() => setRejectModalOpen(true)}
@@ -1609,15 +1609,16 @@ const handleReject = async () => {
         fontSize="14px"
         color="white"
         _hover={{ bg: "#1B5A6B" }}
-        px={10}
+        px={7}
         borderRadius="12px"
         isLoading={submitting}
         loadingText="Saving..."
         onClick={handleApprove}
-        boxShadow="0 2px 8px rgba(45,90,61,0.4)"
+        // boxShadow="0 2px 8px rgba(45,90,61,0.4)"
       >
         Accept
       </Button>
+      <Button color="white" bg="green.600" fontSize="12px" fontWeight="500" borderRadius="13px">Download Bill</Button>
     </>
   )}
 </Flex>

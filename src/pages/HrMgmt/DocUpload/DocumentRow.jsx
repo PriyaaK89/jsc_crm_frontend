@@ -8,7 +8,7 @@ const DocumentRow = ({ label, documentType, userId }) => {
   return (
     <>
       <HStack justify="space-between">
-        <Text>{label}</Text>
+        <Text fontSize="13px">{label}</Text>
 
         <Button
           size="sm"

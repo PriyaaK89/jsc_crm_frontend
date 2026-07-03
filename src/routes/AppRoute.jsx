@@ -110,6 +110,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TransactionApprovalLayout from "../components/layout/MiscActions/TransactionApprovalLayout";
 import CreateSalesLayout from "../components/layout/TransactionMasterLayout/CreateSalesLayout";
+import DashboardLayout from "../components/layout/DashboardLayout";
 
 
 function App() {
@@ -119,7 +120,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<UserLogin />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<DashboardLayout />} />
         <Route path="/hr-mgmt/add-employee" element={<AddEmpLayout />} />
         <Route path="/hr-mgmt/change-password" element={<ChangePasswordLayout />} />
         <Route path="/hr-mgmt/dept/add-department" element={<DepartmentLayout />} />

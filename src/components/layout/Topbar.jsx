@@ -132,10 +132,11 @@ const Topbar = ({ profileImage }) => {
 
             <Portal>
               <PopoverContent
-                w="380px"
-                borderRadius="16px"
-                overflow="hidden"
-                boxShadow="xl"
+  w={{ base: "95vw", md: "380px" }}
+  maxW="380px"
+  borderRadius="16px"
+  overflow="hidden"
+  boxShadow="xl"
               >
                 <PopoverArrow />        
                 <NotofictionBarModel setUnreadCount={setUnreadCount} />

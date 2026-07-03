@@ -2,7 +2,17 @@
     padding: 0;
     margin: 0;
     font-family: 'InterRegular';
-   
+}
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  /* overflow-x: hidden; */
+}
+
+* {
+  box-sizing: border-box;
 }
 
 @font-face{
@@ -92,20 +102,6 @@
 .offer_letter_main div ul li{
   font-size: 14px;
 }
-
-/* .pdf-page {
-  width: 210mm;
-  height: 296mm; 
-padding: 40px;
-  box-sizing: border-box;  
-  position: relative;
-  background: white;
-  overflow: hidden;  
-}
-.page-break {
-  page-break-before: always;
-  break-before: page;
-} */
 
 #agre-letter-preview {
   width: 210mm;

@@ -113,13 +113,13 @@ const NotificationBtn = () => {
     <Box
       display="flex"
       justifyContent={{ base: "end", md: "flex-end" }}
-      gap={{ base: 1, md: 1 }}
+      gap={{ base: 1, md: 2 }}
       flexWrap="wrap"
       width="100%"
       maxW="100%"
       // overflow="hidden"
       mt={5} mb={5}
-      p={{ base: 1, md: 5 }}>
+      p={{ base: 1, md: 3 }}>
       <SalesOrderModal
         isOpen={salesModalOpen}
         onClose={() => setSalesModalOpen(false)}

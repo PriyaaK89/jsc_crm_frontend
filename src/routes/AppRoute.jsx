@@ -111,6 +111,8 @@ import "react-toastify/dist/ReactToastify.css";
 import TransactionApprovalLayout from "../components/layout/MiscActions/TransactionApprovalLayout";
 import CreateSalesLayout from "../components/layout/TransactionMasterLayout/CreateSalesLayout";
 import DashboardLayout from "../components/layout/DashboardLayout";
+import VisitTargetAssignmentLayout from "../components/layout/BusinessDevelopment/AssignVisitTargetLayout";
+import ProgressHistory from "../pages/BusinessDevelopment/VisitProgressHistory";
 
 
 function App() {
@@ -171,6 +173,8 @@ function App() {
         <Route path="/business-development/assign-target-rsm" element={<AssignTargetRSMLayout />} />
         <Route path="/business-development/view-assigned-targets" element={<ViewAssignedTargets />} />
         <Route path="/business-development/view-employee-targets" element={<ViewEmployeeTargets />} />
+        <Route path="/business-development/view-visit-target" element={<VisitTargetAssignmentLayout/>}/>
+        <Route path="/business-development/visit-progress-history" element={<ProgressHistory/>}/>
 
         <Route path="/company-master/create-company" element={<CreateCompanyLayout />} />
         <Route path="/company-master/comapny-list" element={<CompanyListLayout />} />

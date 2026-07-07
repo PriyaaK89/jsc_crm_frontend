@@ -133,7 +133,8 @@ const Newsidebar = () => {
       children: [
         {label: "Create Team",path: "/business-development/create-team",icon: FaUserPlus, },
         {label: "Create Sub Team",path: "/business-development/create-sub-team",icon: HiUserGroup,},
-        { label: "Assign Target", path: "/business-development/assign-target",  icon: MdAssignmentInd,},
+        { label: "Assign Team Target", path: "/business-development/assign-target",  icon: MdAssignmentInd,},
+        { label: "Assign Visit Target", path: "/business-development/view-visit-target",  icon: MdAssignmentInd,},
         { label: "View Teams", path: "/business-development/view-teams",  icon: RiTeamFill ,},
         { label: "View Assigned Targets", path: "/business-development/view-assigned-targets",  icon: FiTarget  ,},
         { label: "View Employee Targets", path: "/business-development/view-employee-targets",  icon: FaUserAlt   ,},

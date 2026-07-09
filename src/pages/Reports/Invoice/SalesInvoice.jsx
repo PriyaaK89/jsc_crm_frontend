@@ -4,12 +4,17 @@ import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import stamp_img from "../../../assets/images/stamp_jsc.png";
 import jamidara_seeds_logo from "../../../assets/images/jsc_logo_.png";
+import { useLocation } from "react-router-dom";
 
 const SalesInvoice = ({ isOpen, onClose, invoiceId }) => {
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const printRef = useRef();
+console.log(invoiceId,"invoiceid")
+  const location = useLocation();
+
+console.log(location.pathname ,"pathname")
 
   const fetchInvoice = async () => {
     if (!invoiceId) return;
@@ -563,7 +568,7 @@ const SalesInvoice = ({ isOpen, onClose, invoiceId }) => {
         {/* MODAL HEADER */}
         <ModalHeader borderBottom="1px solid #e2e8f0" py={3}>
           <Flex justify="space-between" align="center" pr={8}>
-            <Text fontSize="16px" fontWeight="600"> Sales Invoice </Text>
+            <Text fontSize="16px" fontWeight="600">{location.pathname === "/report/party-ledger-report" ? "Sales Invoice" : "Bill of Supply"}  </Text>
             <Button
               colorScheme="green"
               size="sm"

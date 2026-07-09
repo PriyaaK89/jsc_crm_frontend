@@ -11,8 +11,8 @@ export const extractAfterKeyword = (message = "", keyword = "") => {
 };
 
 // SO-{userId}-{approvalId}
-export const buildSalesOrderNumber = (userId, approvalId) =>
-  `SO-${userId}-${approvalId}`;
+export const buildSalesOrderNumber = (userId, id) =>
+  `EMP-${userId}-${id}`;
 
 // "2026-06-20T10:53:38.000Z" -> "20-06-2026"
 export const formatDate = (dateString) => {

@@ -33,7 +33,7 @@ import {
 } from "@chakra-ui/react";
 
 import { useEffect, useRef, useState } from "react";
-import { SearchIcon, CloseIcon, ChevronDownIcon, CalendarIcon } from "@chakra-ui/icons";
+import { SearchIcon, CloseIcon, ChevronDownIcon, CalendarIcon, CheckIcon } from "@chakra-ui/icons";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 
@@ -50,6 +50,7 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
 
   const [employeeOptions, setEmployeeOptions] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
+  const [dropUp, setDropUp] = useState(false);
 
   const [form, setForm] = useState({
     template_name: "",
@@ -57,7 +58,7 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
     is_recurring: true,
     start_date: "",
     end_date: "",
-    employee_ids: [],
+    employee_id: "",
   });
 
   const [targets, setTargets] = useState(emptyTargets);
@@ -74,6 +75,14 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
     handler: () => setEmpDropdownOpen(false),
   });
 
+  const openEmpDropdown = () => {
+  const rect = empDropdownRef.current?.getBoundingClientRect();
+  if (rect) {
+    const spaceBelow = window.innerHeight - rect.bottom;
+    setDropUp(spaceBelow < 240); // 240 ≈ dropdown max height + buffer
+  }
+  setEmpDropdownOpen(true);
+};
   // ==============================
   // LOAD EMPLOYEE DROPDOWN
   // ==============================
@@ -120,7 +129,8 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
           is_recurring: Boolean(data?.is_recurring),
           start_date: data?.start_date?.substring(0, 10) || "",
           end_date: data?.end_date?.substring(0, 10) || "",
-          employee_ids: data?.employees?.map((e) => String(e.id)) || [],
+          // single-select: just take the first assigned employee (if any)
+          employee_id: data?.employees?.[0]?.id != null ? String(data.employees[0].id) : "",
         });
 
         const targetMap = { ...emptyTargets };
@@ -158,7 +168,7 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
         is_recurring: true,
         start_date: "",
         end_date: "",
-        employee_ids: [],
+        employee_id: "",
       });
       setTargets(emptyTargets);
     }
@@ -178,26 +188,16 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
     setTargets((prev) => ({ ...prev, [visitType]: value }));
   };
 
-  // ---- employee multi-select helpers ----
-  const toggleEmployee = (id) => {
-    const idStr = String(id);
-    setForm((prev) => {
-      const exists = prev.employee_ids.includes(idStr);
-      return {
-        ...prev,
-        employee_ids: exists
-          ? prev.employee_ids.filter((e) => e !== idStr)
-          : [...prev.employee_ids, idStr],
-      };
-    });
+  // ---- employee single-select helpers ----
+  const selectEmployee = (id) => {
+    setForm((prev) => ({ ...prev, employee_id: String(id) }));
+    setEmpSearch("");
+    setEmpDropdownOpen(false);
   };
 
-  const removeEmployee = (id) => {
-    const idStr = String(id);
-    setForm((prev) => ({
-      ...prev,
-      employee_ids: prev.employee_ids.filter((e) => e !== idStr),
-    }));
+
+  const clearEmployee = () => {
+    setForm((prev) => ({ ...prev, employee_id: "" }));
   };
 
   const getEmployeeName = (id) => {
@@ -213,7 +213,7 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
     if (!form.template_name.trim()) return "Template name is required";
     if (!form.start_date || !form.end_date) return "Start and end date are required";
     if (form.start_date > form.end_date) return "Start date must be before end date";
-    if (form.employee_ids.length === 0) return "Select at least one employee";
+    if (!form.employee_id) return "Select an employee";
 
     const hasAtLeastOneTarget = VISIT_TYPES.some(
       (type) => targets[type] !== "" && Number(targets[type]) > 0
@@ -243,7 +243,8 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
       is_recurring: form.is_recurring,
       start_date: form.start_date,
       end_date: form.end_date,
-      employee_ids: form.employee_ids.map(Number),
+      // backend still expects an array — just send the single selected id
+      employee_ids: [Number(form.employee_id)],
       targets: VISIT_TYPES.filter(
         (type) => targets[type] !== "" && Number(targets[type]) > 0
       ).map((type) => ({
@@ -281,7 +282,7 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
         description:
           error?.response?.data?.message ||
           (conflicts
-            ? "Some employees already have an active target for this period"
+            ? "Selected employee already has an active target for this period"
             : `Failed to ${isEditMode ? "update" : "create"} template`),
         status: "error",
         duration: 4000,
@@ -314,7 +315,7 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
           </Text>
           <Text fontSize="10px" fontWeight="400" color="whiteAlpha.800" mt={1}>
             {isEditMode
-              ? "Update targets and assigned employees"
+              ? "Update targets and assigned employee"
               : "Set up visit targets for your field team"}
           </Text></VStack>
         </ModalHeader>
@@ -470,134 +471,114 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
               <Box bg="white" borderRadius="12px" p={5} boxShadow="sm" border="1px solid" borderColor="gray.100">
                 <Flex justify="space-between" align="center" mb={4}>
                   <Text fontSize="12px" fontWeight="700" color="gray.500" textTransform="uppercase" letterSpacing="0.5px">
-                    Assign Employees
+                    Assign Employee
                   </Text>
-                  {form.employee_ids.length > 0 && (
-                    <Badge colorScheme="blue" borderRadius="full" px={2}>
-                      {form.employee_ids.length} selected
-                    </Badge>
-                  )}
                 </Flex>
 
                 <Box position="relative" ref={empDropdownRef}>
-                  {/* Input that shows selected chips + search */}
-                  <Flex
-                    wrap="wrap"
-                    align="center"
-                    gap={2}
-                    minH="44px"
-                    px={3}
-                    py={2}
-                    bg="gray.50"
-                    border="1px solid"
-                    borderColor={empDropdownOpen ? "blue.400" : "gray.200"}
-                    borderRadius="8px"
-                    cursor="text"
-                    onClick={() => setEmpDropdownOpen(true)}
-                    boxShadow={empDropdownOpen ? "0 0 0 1px #4299E1" : "none"}
-                    transition="all 0.15s"
-                  >
-                    {form.employee_ids.map((id) => (
-                      <Flex
-                        key={id}
-                        align="center"
-                        bg="blue.50"
-                        color="blue.700"
-                        borderRadius="6px"
-                        pl={2}
-                        pr={1}
-                        py={1}
-                        fontSize="13px"
-                        fontWeight="500"
-                        gap={1}
-                      >
-                        {getEmployeeName(id)}
-                        <Icon
-                          as={CloseIcon}
-                          boxSize="8px"
-                          ml={1}
-                          cursor="pointer"
-                          color="blue.500"
-                          _hover={{ color: "red.500" }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeEmployee(id);
-                          }}
-                        />
-                      </Flex>
-                    ))}
+  {/* Single-select trigger field — always the same, just toggles dropdown */}
+  <Flex
+    align="center"
+    justify="space-between"
+    gap={2}
+    minH="44px"
+    px={3}
+    py={2}
+    bg="gray.50"
+    border="1px solid"
+    borderColor={empDropdownOpen ? "blue.400" : "gray.200"}
+    borderRadius="8px"
+    cursor="pointer"
+    onClick={() => (empDropdownOpen ? setEmpDropdownOpen(false) : openEmpDropdown())}
+    boxShadow={empDropdownOpen ? "0 0 0 1px #4299E1" : "none"}
+    transition="all 0.15s"
+  >
+    <Text fontSize="14px" color={form.employee_id ? "gray.700" : "gray.400"} fontWeight={form.employee_id ? "500" : "400"}>
+      {form.employee_id ? getEmployeeName(form.employee_id) : "Select an employee..."}
+    </Text>
 
-                    <Input
-                      value={empSearch}
-                      onChange={(e) => {
-                        setEmpSearch(e.target.value);
-                        setEmpDropdownOpen(true);
-                      }}
-                      onFocus={() => setEmpDropdownOpen(true)}
-                      placeholder={form.employee_ids.length === 0 ? "Search and select employees..." : ""}
-                      variant="unstyled"
-                      flex="1"
-                      minW="120px"
-                      fontSize="14px"
-                    />
+    <Flex align="center" gap={2}>
+      {form.employee_id && (
+        <Icon
+          as={CloseIcon}
+          boxSize="10px"
+          cursor="pointer"
+          color="gray.400"
+          _hover={{ color: "red.500" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            clearEmployee();
+          }}
+        />
+      )}
+      <Icon as={ChevronDownIcon} color="gray.400" />
+    </Flex>
+  </Flex>
 
-                    <Icon as={ChevronDownIcon} color="gray.400" />
-                  </Flex>
+  {/* Dropdown: search box + list, both live here so the trigger never changes shape */}
+  {empDropdownOpen && (
+    <Box
+      position="absolute"
+      top={dropUp ? "auto" : "calc(100% + 4px)"}
+      bottom={dropUp ? "calc(100% + 4px)" : "auto"}
+      left={0}
+      right={0}
+      bg="white"
+      border="1px solid"
+      borderColor="gray.200"
+      borderRadius="8px"
+      boxShadow="lg"
+      zIndex={20}
+      overflow="hidden"
+    >
+      <Box p={2} borderBottom="1px solid" borderColor="gray.100">
+        <Input
+          autoFocus
+          value={empSearch}
+          onChange={(e) => setEmpSearch(e.target.value)}
+          placeholder="Search employees..."
+          size="sm"
+          bg="gray.50"
+          borderRadius="6px"
+        />
+      </Box>
 
-                  {/* Dropdown list */}
-                  {empDropdownOpen && (
-                    <Box
-                      position="absolute"
-                      top="calc(100% + 4px)"
-                      left={0}
-                      right={0}
-                      bg="white"
-                      border="1px solid"
-                      borderColor="gray.200"
-                      borderRadius="8px"
-                      boxShadow="lg"
-                      maxH="220px"
-                      overflowY="auto"
-                      zIndex={20}
-                    >
-                      {usersLoading ? (
-                        <Flex justify="center" py={4}>
-                          <Spinner size="sm" color="blue.500" />
-                        </Flex>
-                      ) : filteredEmployeeOptions.length > 0 ? (
-                        filteredEmployeeOptions.map((emp) => {
-                          const checked = form.employee_ids.includes(String(emp.id));
-                          return (
-                            <Flex
-                              key={emp.id}
-                              align="center"
-                              px={3}
-                              py={2}
-                              cursor="pointer"
-                              bg={checked ? "blue.50" : "white"}
-                              _hover={{ bg: checked ? "blue.50" : "gray.50" }}
-                              onClick={() => toggleEmployee(emp.id)}
-                            >
-                              <Checkbox
-                                isChecked={checked}
-                                pointerEvents="none"
-                                colorScheme="blue"
-                                mr={3}
-                              />
-                              <Text fontSize="14px" color="gray.700">
-                                {emp.name}
-                              </Text>
-                            </Flex>
-                          );
-                        })
-                      ) : (
-                        <Text fontSize="13px" color="gray.500" px={3} py={3}>
-                          No employees found
-                        </Text>
-                      )}
-                    </Box>
-                  )}
-                </Box>
+      <Box maxH="180px" overflowY="auto">
+        {usersLoading ? (
+          <Flex justify="center" py={4}>
+            <Spinner size="sm" color="blue.500" />
+          </Flex>
+        ) : filteredEmployeeOptions.length > 0 ? (
+          filteredEmployeeOptions.map((emp) => {
+            const selected = String(emp.id) === String(form.employee_id);
+            return (
+              <Flex
+                key={emp.id}
+                align="center"
+                justify="space-between"
+                px={3}
+                py={2}
+                cursor="pointer"
+                bg={selected ? "blue.50" : "white"}
+                _hover={{ bg: selected ? "blue.50" : "gray.50" }}
+                onClick={() => selectEmployee(emp.id)}
+              >
+                <Text fontSize="14px" color="gray.700">
+                  {emp.name}
+                </Text>
+                {selected && <Icon as={CheckIcon} boxSize="12px" color="blue.500" />}
+              </Flex>
+            );
+          })
+        ) : (
+          <Text fontSize="13px" color="gray.500" px={3} py={3}>
+            No employees found
+          </Text>
+        )}
+      </Box>
+    </Box>
+  )}
+</Box>
               </Box>
             </>
           )}
@@ -614,8 +595,7 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
             onClick={handleSubmit}
             isLoading={saving}
             borderRadius="8px"
-            px={6}
-          >
+            px={6}>
             {isEditMode ? "Save Changes" : "Create Template"}
           </Button>
         </ModalFooter>

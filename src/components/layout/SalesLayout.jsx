@@ -41,7 +41,7 @@ const SalesLayout = () => {
           </HStack>
 
           <Text className="action_heading" mb={6} textAlign="center">
-            Sale Order 
+            Sale Order (First Level)
           </Text>
           <Sales />
           </Box>

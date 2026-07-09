@@ -13,6 +13,7 @@ import {
   fetchNextVoucherNo, fetchGodownList, fetchLedgerDropdown,
   fetchAvailableStock, fetchBatches, fetchLedgerDetailsByID,
 } from "../../Apis/commanApi";
+import SalesOrderPreviewModal from "./modals/SalesOrderPreview";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const round2 = (num) => Math.round((Number(num || 0) + Number.EPSILON) * 100) / 100;
@@ -95,6 +96,7 @@ const Sales = () => {
   const [rejectRemarks, setRejectRemarks] = useState("");
   const [docPreviewOpen, setDocPreviewOpen] = useState(false);
   const [dispatchPreview, setDispatchPreview] = useState({ isOpen: false, url: "", title: "" });
+  const [removeItemModal, setRemoveItemModal] = useState({ isOpen: false, index: null, itemName: "" });
   const [extraLedgers, setExtraLedgers] = useState([
     { ledger_id: "", amount: "", comments: "" },
   ]);
@@ -103,6 +105,8 @@ const [returnRemarks, setReturnRemarks] = useState("");
 const [returnImageFile, setReturnImageFile] = useState(null);
 const returnImageRef = useRef();
 const [errors, setErrors] = useState({});
+
+const [previewOpen, setPreviewOpen] = useState(false);
 
   // Dispatcher/Senior extra fields
   const [dispatchData, setDispatchData] = useState({
@@ -254,8 +258,10 @@ const canResubmit = isReturned && isReturnedToMe;
       }
 
       setItems(
+        
         parsedItems.map((item) => {
           const amount = round2(item.amount ?? Number(item.billed_qty || 0) * Number(item.rate || 0));
+          const isConfirmed = !!item.godown_confirmed;
           return {
             ...item,
             amount,
@@ -263,6 +269,13 @@ const canResubmit = isReturned && isReturnedToMe;
             cgst_amount: round2((amount * (item.cgst_percent || 0)) / 100),
             sgst_amount: round2((amount * (item.sgst_percent || 0)) / 100),
             total_amount: item.total_amount ?? amount,
+
+            godown_id: isConfirmed ? item.godown_id : "",
+      godown_name: isConfirmed ? item.godown_name : "",
+      batch_no: isConfirmed ? item.batch_no : "",
+      available_qty: isConfirmed ? item.available_qty : "",
+      total_qty: isConfirmed ? item.total_qty : "",
+      godown_confirmed: isConfirmed,
           };
         }),
       );
@@ -376,6 +389,10 @@ const canResubmit = isReturned && isReturnedToMe;
     setExtraLedgers(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleRemoveItem = (index) => {
+  setItems((prev) => prev.filter((_, i) => i !== index));
+};
+
   // ─── Item helpers ──────────────────────────────────────────────────────────
   const recalculateItem = (item) => {
     const qty = Number(item.billed_qty) || 0;
@@ -468,7 +485,9 @@ const canResubmit = isReturned && isReturnedToMe;
         batch_no: batchNo || "Not Applicable",
         available_qty: availableQty,   // ← explicitly set
         total_qty: availableQty,       // ← explicitly set same value
+         godown_confirmed: true, 
         _prevGodownId: undefined,
+        
       });
       return updated;
     });
@@ -541,6 +560,7 @@ const canResubmit = isReturned && isReturnedToMe;
         items.map((item) => ({
           ...item,
           godown_id: item.godown_id || item._prevGodownId || "",
+          godown_confirmed: !!item.godown_confirmed,
         }))
       ),
       orderBillImage: formData.orderDocumentPath,
@@ -787,6 +807,30 @@ const handleReject = async () => {
     }
     setDocPreviewOpen(true);
   };
+
+  const openRemoveItemModal = (index) => {
+  setRemoveItemModal({
+    isOpen: true,
+    index,
+    itemName: items[index]?.item_name || "this item",
+  });
+};
+
+const confirmRemoveItem = () => {
+  const { index, itemName } = removeItemModal;
+  if (index === null) return;
+
+  setItems((prev) => prev.filter((_, i) => i !== index));
+  setRemoveItemModal({ isOpen: false, index: null, itemName: "" });
+
+  toast({
+    title: "Item removed",
+    description: `"${itemName}" has been removed from this order`,
+    status: "success",
+    duration: 3000,
+    isClosable: true,
+  });
+};
 
   if (loading) {
     return <Center h="60vh"><Spinner size="xl" color="#4f9190" /></Center>;
@@ -1247,6 +1291,7 @@ const handleReject = async () => {
               <Th {...thStyle} minW="60px">IGST %</Th>
               <Th {...thStyle} minW="80px">Tax Amt.</Th>
               <Th {...thStyle} minW="90px">Total Amt.</Th>
+              <Th {...thStyle} minW="50px" textAlign="center">Action</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -1334,6 +1379,17 @@ const handleReject = async () => {
                     textAlign="right" fontWeight="600" color="#1e4a2e" minW="100px"
                   />
                 </Td>
+              <Td {...tdStyle} textAlign="center">
+  <Button
+    size="xs"
+    variant="ghost"
+    colorScheme="red"
+    onClick={() => openRemoveItemModal(index)}
+    title="Remove item"
+  >
+    ✕
+  </Button>
+</Td>
               </Tr>
             ))}
             {items.length === 0 && (
@@ -1618,7 +1674,7 @@ const handleReject = async () => {
       >
         Accept
       </Button>
-      <Button color="white" bg="green.600" fontSize="12px" fontWeight="500" borderRadius="13px">Download Bill</Button>
+      <Button color="white" bg="green.600" _hover={{bg: "green.700"}} fontSize="12px" fontWeight="500" borderRadius="13px"  onClick={() => setPreviewOpen(true)}>Download Bill</Button>
     </>
   )}
 </Flex>
@@ -1934,6 +1990,59 @@ const handleReject = async () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      {/* ══ Remove Item Confirm Modal ══ */}
+<Modal
+  isOpen={removeItemModal.isOpen}
+  onClose={() => setRemoveItemModal({ isOpen: false, index: null, itemName: "" })}
+  isCentered
+>
+  <ModalOverlay bg="blackAlpha.500" />
+  <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden">
+    <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#e6210c" pl={3}>
+      Remove Item
+      <ModalCloseButton top={0} right={0} />
+    </ModalHeader>
+    <ModalBody p={4} bg="white">
+      <Text fontSize="13px" color="#333">
+        Are you sure you want to remove <b>"{removeItemModal.itemName}"</b> from this order?
+      </Text>
+      <Text fontSize="12px" color="red.500" mt={2}>
+        This action can't be undone.
+      </Text>
+    </ModalBody>
+    <ModalFooter bg="#f7f9f8" borderTop="1px solid #e0e8e2">
+      <Flex gap={3}>
+        <Button
+          variant="ghost"
+          colorScheme="gray"
+          size="sm"
+          onClick={() => setRemoveItemModal({ isOpen: false, index: null, itemName: "" })}
+        >
+          Cancel
+        </Button>
+        <Button
+          colorScheme="red"
+          size="sm"
+          px={6}
+          borderRadius="12px"
+          onClick={confirmRemoveItem}
+        >
+          OK, Remove
+        </Button>
+      </Flex>
+    </ModalFooter>
+  </ModalContent>
+</Modal>
+
+<SalesOrderPreviewModal
+  isOpen={previewOpen}
+  onClose={() => setPreviewOpen(false)}
+  approval={approval}
+  formData={formData}
+  items={items}
+  dispatchData={dispatchData}
+  extraLedgers={extraLedgers}
+/>
     </Box>
   );
 };

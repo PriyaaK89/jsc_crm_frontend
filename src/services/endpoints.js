@@ -242,6 +242,18 @@ export const API_ENDPOINTS = {
   GET_ADMIN_PROGRESS: "visit-targets/progress/admin",
   GET_PROGRESS_HISTORY: "visit-targets/progress/history",
 
+  CREATE_RECEIPT_APPROVAL_REQUEST: "create-receipt-approval-request",
+  GET_NEXT_ORDER_NUMBER: "next-order-number", // matches router.get("/next-order-number", ...)
+
+
+  GET_RECEIPT_ORDER_BY_ID: "get-order-approval",
+APPROVE_RECEIPT_REQUEST: "approve-receipt-order",
+
+  RETURN_RECEIPT_REQUEST: "return-receipt-order",
+  REJECT_RECEIPT_REQUEST: "reject-receipt-order",
+  RESUBMIT_RECEIPT_REQUEST: "resubmit-receipt-order",
+  GET_ASSIGNED_LEDGERS_LIST: "get-my-assigned-ledgers",
+
 GET_TEMPLATE_BY_ID: (id) => `visit-targets/templates/${id}`,
 UPDATE_TEMPLATE_BY_ID: (id) => `visit-targets/templates/${id}`,
 DELETE_TEMPLATE: (id) => `visit-targets/templates/${id}`,

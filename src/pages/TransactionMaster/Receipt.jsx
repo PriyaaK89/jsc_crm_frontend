@@ -332,16 +332,7 @@ const Receipt = () => {
     sales_bill_reference_id: matchedBill ? matchedBill.id : null,
     due_date: matchedBill?.due_date ?? updated[rowIndex].due_date,
 };
-            // updated[rowIndex] = {
-            //     ...updated[rowIndex],
-            //     reference_no: selectedReferenceNo,
-            //     // Store the DB id so controller can call updateSalesBillPendingAmount
-            //     sales_bill_reference_id: matchedBill ? matchedBill.id : null,
-            //     // Auto-fill pending amount; user can still override
-            //     reference_amount: matchedBill ? matchedBill.pending_amount : updated[rowIndex].reference_amount,
-            //     due_date: matchedBill?.due_date ?? updated[rowIndex].due_date,
-            // };
-
+          
             // Sync total back to entry amount
             const total = updated.reduce((sum, row) => sum + Number(row.reference_amount || 0), 0);
             setFormData((prevForm) => {
@@ -579,9 +570,9 @@ const thStyle = {
     return (
         <Box p={5}>
             {/* ── PAGE TITLE ── */}
-            <Text fontSize="xl" fontWeight="bold" mb={5} color="#2d2d2d">
+            {/* <Text fontSize="xl" fontWeight="bold" mb={5} color="#2d2d2d">
                 Receipt Voucher
-            </Text>
+            </Text> */}
 
             {/* ── TOP FORM ── */}
             <Grid templateColumns="repeat(2, 1fr)" gap={5} mb={6}>

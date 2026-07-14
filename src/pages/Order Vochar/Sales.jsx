@@ -101,12 +101,12 @@ const Sales = () => {
     { ledger_id: "", amount: "", comments: "" },
   ]);
   const [returnModalOpen, setReturnModalOpen] = useState(false);
-const [returnRemarks, setReturnRemarks] = useState("");
-const [returnImageFile, setReturnImageFile] = useState(null);
-const returnImageRef = useRef();
-const [errors, setErrors] = useState({});
+  const [returnRemarks, setReturnRemarks] = useState("");
+  const [returnImageFile, setReturnImageFile] = useState(null);
+  const returnImageRef = useRef();
+  const [errors, setErrors] = useState({});
 
-const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   // Dispatcher/Senior extra fields
   const [dispatchData, setDispatchData] = useState({
@@ -159,8 +159,8 @@ const [previewOpen, setPreviewOpen] = useState(false);
 
   // ─── Derived: is dispatcher or senior level ───────────────────────────────
   const isReturned = approval?.status === "RETURNED";
-const isReturnedToMe = approval?.returned_to_user_id === approval?.current_approver_id;
-const canResubmit = isReturned && isReturnedToMe;
+  const isReturnedToMe = approval?.returned_to_user_id === approval?.current_approver_id;
+  const canResubmit = isReturned && isReturnedToMe;
   const isDispatcherOrSenior = approval
     ? DISPATCHER_LEVELS.includes(approval.approval_level)
     : false;
@@ -258,7 +258,7 @@ const canResubmit = isReturned && isReturnedToMe;
       }
 
       setItems(
-        
+
         parsedItems.map((item) => {
           const amount = round2(item.amount ?? Number(item.billed_qty || 0) * Number(item.rate || 0));
           const isConfirmed = !!item.godown_confirmed;
@@ -271,11 +271,11 @@ const canResubmit = isReturned && isReturnedToMe;
             total_amount: item.total_amount ?? amount,
 
             godown_id: isConfirmed ? item.godown_id : "",
-      godown_name: isConfirmed ? item.godown_name : "",
-      batch_no: isConfirmed ? item.batch_no : "",
-      available_qty: isConfirmed ? item.available_qty : "",
-      total_qty: isConfirmed ? item.total_qty : "",
-      godown_confirmed: isConfirmed,
+            godown_name: isConfirmed ? item.godown_name : "",
+            batch_no: isConfirmed ? item.batch_no : "",
+            available_qty: isConfirmed ? item.available_qty : "",
+            total_qty: isConfirmed ? item.total_qty : "",
+            godown_confirmed: isConfirmed,
           };
         }),
       );
@@ -350,28 +350,28 @@ const canResubmit = isReturned && isReturnedToMe;
   }, [totals.totalAmount, extraLedgerTotal]);
 
   const validate = () => {
-  const newErrors = {};
+    const newErrors = {};
 
-  if (approval?.approval_level === "SENIOR" && !formData.salesLedgerId) {
-    newErrors.salesLedgerId = "Sales Ledger is required";
-  }
+    if (approval?.approval_level === "SENIOR" && !formData.salesLedgerId) {
+      newErrors.salesLedgerId = "Sales Ledger is required";
+    }
 
-  if (isDispatcherOrSenior) {
-    if (!dispatchData.billTNo?.trim())       newErrors.billTNo = "Bill-T No. is required";
-    if (!formData.transportName?.trim())     newErrors.transportName = "Transport Name is required";
-    if (!dispatchData.destination?.trim())   newErrors.destination = "Destination is required";
-    if (!dispatchData.dispatchDocNo?.trim()) newErrors.dispatchDocNo = "Dispatch Doc No. is required";
-    if (!formData.deliveryPlace?.trim())     newErrors.deliveryPlace = "Delivery Place is required";
+    if (isDispatcherOrSenior) {
+      if (!dispatchData.billTNo?.trim()) newErrors.billTNo = "Bill-T No. is required";
+      if (!formData.transportName?.trim()) newErrors.transportName = "Transport Name is required";
+      if (!dispatchData.destination?.trim()) newErrors.destination = "Destination is required";
+      if (!dispatchData.dispatchDocNo?.trim()) newErrors.dispatchDocNo = "Dispatch Doc No. is required";
+      if (!formData.deliveryPlace?.trim()) newErrors.deliveryPlace = "Delivery Place is required";
 
-    // if (!dispatchData.dispatchDocImageFile && !dispatchData.dispatchDocImage)
+      // if (!dispatchData.dispatchDocImageFile && !dispatchData.dispatchDocImage)
       // newErrors.dispatchDocImage = "Dispatch Doc Image is required";
 
-    if (!dispatchData.billTImageFile && !dispatchData.billTImage)
-      newErrors.billTImage = "Bill-T Image is required";
-  }
+      if (!dispatchData.billTImageFile && !dispatchData.billTImage)
+        newErrors.billTImage = "Bill-T Image is required";
+    }
 
-  return newErrors;
-};
+    return newErrors;
+  };
 
   const handleExtraLedgerChange = (index, field, value) => {
     setExtraLedgers(prev => {
@@ -390,8 +390,8 @@ const canResubmit = isReturned && isReturnedToMe;
   };
 
   const handleRemoveItem = (index) => {
-  setItems((prev) => prev.filter((_, i) => i !== index));
-};
+    setItems((prev) => prev.filter((_, i) => i !== index));
+  };
 
   // ─── Item helpers ──────────────────────────────────────────────────────────
   const recalculateItem = (item) => {
@@ -485,9 +485,9 @@ const canResubmit = isReturned && isReturnedToMe;
         batch_no: batchNo || "Not Applicable",
         available_qty: availableQty,   // ← explicitly set
         total_qty: availableQty,       // ← explicitly set same value
-         godown_confirmed: true, 
+        godown_confirmed: true,
         _prevGodownId: undefined,
-        
+
       });
       return updated;
     });
@@ -584,218 +584,218 @@ const canResubmit = isReturned && isReturnedToMe;
   };
 
   const handleReturn = async () => {
-  if (!returnRemarks.trim()) {
-    toast({
-      title: "Return reason is required",
-      status: "warning",
-      duration: 3000,
-      isClosable: true,
-    });
-    return;
-  }
+    if (!returnRemarks.trim()) {
+      toast({
+        title: "Return reason is required",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
 
-  if (!returnImageFile) {
-    toast({
-      title: "Return image is required",
-      status: "warning",
-      duration: 3000,
-      isClosable: true,
-    });
-    return;
-  }
+    if (!returnImageFile) {
+      toast({
+        title: "Return image is required",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
 
-  setSubmitting(true);
-  try {
-    const formDataObj = new FormData();
-    formDataObj.append("reason", returnRemarks.trim());
-    formDataObj.append("returnImage", returnImageFile, returnImageFile.name);
+    setSubmitting(true);
+    try {
+      const formDataObj = new FormData();
+      formDataObj.append("reason", returnRemarks.trim());
+      formDataObj.append("returnImage", returnImageFile, returnImageFile.name);
 
-    await API.post(
-      `${API_ENDPOINTS.RETURN_SALES_ORDER}/${approvalId}`,
-      formDataObj,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
+      await API.post(
+        `${API_ENDPOINTS.RETURN_SALES_ORDER}/${approvalId}`,
+        formDataObj,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
-    toast({
-      title: "Returned",
-      description: "Sales order returned successfully",
-      status: "info",
-      duration: 3000,
-      isClosable: true,
-    });
-    setReturnModalOpen(false);
-    navigate(-1);
-  } catch (error) {
-    toast({
-      title: "Error",
-      description: error?.response?.data?.message || "Failed to return sales order",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-  } finally {
-    setSubmitting(false);
-  }
-};
+      toast({
+        title: "Returned",
+        description: "Sales order returned successfully",
+        status: "info",
+        duration: 3000,
+        isClosable: true,
+      });
+      setReturnModalOpen(false);
+      navigate(-1);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error?.response?.data?.message || "Failed to return sales order",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-const handleResubmit = async () => {
-  if (items.length === 0) {
-    toast({
-      title: "At least one item is required",
-      status: "warning",
-      duration: 3000,
-      isClosable: true,
-    });
-    return;
-  }
+  const handleResubmit = async () => {
+    if (items.length === 0) {
+      toast({
+        title: "At least one item is required",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
 
-  setSubmitting(true);
-  try {
-    const payload = buildUpdatedPayload();
+    setSubmitting(true);
+    try {
+      const payload = buildUpdatedPayload();
 
-    await API.post(
-      `${API_ENDPOINTS.RESUBMIT_SALES_ORDER}/${approvalId}`,
-      payload                     // ← backend does JSON.stringify(req.body) directly
-    );
+      await API.post(
+        `${API_ENDPOINTS.RESUBMIT_SALES_ORDER}/${approvalId}`,
+        payload                     // ← backend does JSON.stringify(req.body) directly
+      );
 
-    toast({
-      title: "Resubmitted",
-      description: "Sales order resubmitted successfully",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
-    navigate(-1);
-  } catch (error) {
-    toast({
-      title: "Error",
-      description: error?.response?.data?.message || "Failed to resubmit sales order",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-  } finally {
-    setSubmitting(false);
-  }
-};
+      toast({
+        title: "Resubmitted",
+        description: "Sales order resubmitted successfully",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      navigate(-1);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error?.response?.data?.message || "Failed to resubmit sales order",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
   // Replace handleApprove
-const handleApprove = async () => {
-  if (items.length === 0) {
-    toast({
-      title: "At least one item is required",
-      status: "warning",
-      duration: 3000,
-      isClosable: true,
-    });
-    return;
-  }
-
-  const validationErrors = validate();
-  if (Object.keys(validationErrors).length > 0) {
-    setErrors(validationErrors);
-
-     toast({
-    title: "Required fields missing",
-    description: "Please fill in all required fields before approving.",
-    status: "warning",
-    duration: 4000,
-    isClosable: true,
-  });
-    return;
-  }
-
-  setErrors({});
-  setSubmitting(true);
-
-  try {
-    const payload = buildUpdatedPayload();
-    const formDataObj = new FormData();
-
-    formDataObj.append("remarks", "Approved");
-    formDataObj.append("payload_json", JSON.stringify(payload));
-
-    if (dispatchData.dispatchDocImageFile) {
-      formDataObj.append(
-        "dispatch_doc_image",
-        dispatchData.dispatchDocImageFile,
-        dispatchData.dispatchDocImageFile.name
-      );
+  const handleApprove = async () => {
+    if (items.length === 0) {
+      toast({
+        title: "At least one item is required",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
     }
 
-    if (dispatchData.billTImageFile) {
-      formDataObj.append(
-        "bill_t_image",
-        dispatchData.billTImageFile,
-        dispatchData.billTImageFile.name
-      );
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+
+      toast({
+        title: "Required fields missing",
+        description: "Please fill in all required fields before approving.",
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+      });
+      return;
     }
 
-    await API.post(
-      `${API_ENDPOINTS.CREATE_REQUEST_APPROVE}/${approvalId}`,
-      formDataObj,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
+    setErrors({});
+    setSubmitting(true);
 
-    toast({
-      title: "Approved",
-      description: "Sales order approved successfully",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
+    try {
+      const payload = buildUpdatedPayload();
+      const formDataObj = new FormData();
 
-    navigate(-1);
-  } catch (error) {
-    console.error("APPROVE ERROR =>", error);
-    toast({
-      title: "Error",
-      description: error?.response?.data?.message || "Failed to approve sales order",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-  } finally {
-    setSubmitting(false);
-  }
-};
+      formDataObj.append("remarks", "Approved");
+      formDataObj.append("payload_json", JSON.stringify(payload));
 
-const handleReject = async () => {
-  if (!rejectRemarks.trim()) {
-    toast({
-      title: "Rejection reason is required",
-      status: "warning",
-      duration: 3000,
-      isClosable: true,
-    });
-    return;
-  }
+      if (dispatchData.dispatchDocImageFile) {
+        formDataObj.append(
+          "dispatch_doc_image",
+          dispatchData.dispatchDocImageFile,
+          dispatchData.dispatchDocImageFile.name
+        );
+      }
 
-  setSubmitting(true);
-  try {
-    await API.post(`${API_ENDPOINTS.REJECT_SALES_ORDER}/${approvalId}`, {
-      reason: rejectRemarks.trim(),   // ← was "remarks", backend expects "reason"
-    });
-    toast({
-      title: "Rejected",
-      description: "Sales order rejected successfully",
-      status: "info",
-      duration: 3000,
-      isClosable: true,
-    });
-    setRejectModalOpen(false);
-    navigate(-1);
-  } catch (error) {
-    toast({
-      title: "Error",
-      description: error?.response?.data?.message || "Failed to reject sales order",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-  } finally {
-    setSubmitting(false);
-  }
-};
+      if (dispatchData.billTImageFile) {
+        formDataObj.append(
+          "bill_t_image",
+          dispatchData.billTImageFile,
+          dispatchData.billTImageFile.name
+        );
+      }
+
+      await API.post(
+        `${API_ENDPOINTS.CREATE_REQUEST_APPROVE}/${approvalId}`,
+        formDataObj,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      toast({
+        title: "Approved",
+        description: "Sales order approved successfully",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      navigate(-1);
+    } catch (error) {
+      console.error("APPROVE ERROR =>", error);
+      toast({
+        title: "Error",
+        description: error?.response?.data?.message || "Failed to approve sales order",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!rejectRemarks.trim()) {
+      toast({
+        title: "Rejection reason is required",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await API.post(`${API_ENDPOINTS.REJECT_SALES_ORDER}/${approvalId}`, {
+        reason: rejectRemarks.trim(),   // ← was "remarks", backend expects "reason"
+      });
+      toast({
+        title: "Rejected",
+        description: "Sales order rejected successfully",
+        status: "info",
+        duration: 3000,
+        isClosable: true,
+      });
+      setRejectModalOpen(false);
+      navigate(-1);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error?.response?.data?.message || "Failed to reject sales order",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const isImageDoc = () => /\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?|$)/i.test(formData.orderDocumentUrl || "");
   const isPdfDoc = () => /\.pdf(\?|$)/i.test(formData.orderDocumentUrl || "");
@@ -809,28 +809,28 @@ const handleReject = async () => {
   };
 
   const openRemoveItemModal = (index) => {
-  setRemoveItemModal({
-    isOpen: true,
-    index,
-    itemName: items[index]?.item_name || "this item",
-  });
-};
+    setRemoveItemModal({
+      isOpen: true,
+      index,
+      itemName: items[index]?.item_name || "this item",
+    });
+  };
 
-const confirmRemoveItem = () => {
-  const { index, itemName } = removeItemModal;
-  if (index === null) return;
+  const confirmRemoveItem = () => {
+    const { index, itemName } = removeItemModal;
+    if (index === null) return;
 
-  setItems((prev) => prev.filter((_, i) => i !== index));
-  setRemoveItemModal({ isOpen: false, index: null, itemName: "" });
+    setItems((prev) => prev.filter((_, i) => i !== index));
+    setRemoveItemModal({ isOpen: false, index: null, itemName: "" });
 
-  toast({
-    title: "Item removed",
-    description: `"${itemName}" has been removed from this order`,
-    status: "success",
-    duration: 3000,
-    isClosable: true,
-  });
-};
+    toast({
+      title: "Item removed",
+      description: `"${itemName}" has been removed from this order`,
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+  };
 
   if (loading) {
     return <Center h="60vh"><Spinner size="xl" color="#4f9190" /></Center>;
@@ -842,35 +842,35 @@ const confirmRemoveItem = () => {
   return (
     <Box>
       {/* Status bar */}
-   {approval && (
-  <Flex align="center" gap={2} mb={3}>
-    <Box
-      w="8px" h="8px"
-      bg={isReturned ? "#d69e2e" : "#4f9190"}
-      borderRadius="50%"
-    />
-    <Text fontSize="12px" color="gray.500">
-      Created by{" "}
-      <Text as="span" fontWeight="600" color="#333">{approval.created_by_name}</Text>
-      &nbsp;&middot;&nbsp;{approval.current_status_message}
-    </Text>
-    <Badge
-      ml={2}
-      colorScheme={
-        approval.status === "RETURNED" ? "yellow"
-          : approval.approval_level === "DISPATCHER" ? "orange"
-            : approval.approval_level === "SENIOR" ? "purple"
-              : "teal"
-      }
-      fontSize="10px"
-      px={2}
-    >
-      {approval.status === "RETURNED"
-        ? `RETURNED → fix & resubmit`
-        : approval.approval_level?.replace("_", " ")}
-    </Badge>
-  </Flex>
-)}
+      {approval && (
+        <Flex align="center" gap={2} mb={3}>
+          <Box
+            w="8px" h="8px"
+            bg={isReturned ? "#d69e2e" : "#4f9190"}
+            borderRadius="50%"
+          />
+          <Text fontSize="12px" color="gray.500">
+            Created by{" "}
+            <Text as="span" fontWeight="600" color="#333">{approval.created_by_name}</Text>
+            &nbsp;&middot;&nbsp;{approval.current_status_message}
+          </Text>
+          <Badge
+            ml={2}
+            colorScheme={
+              approval.status === "RETURNED" ? "yellow"
+                : approval.approval_level === "DISPATCHER" ? "orange"
+                  : approval.approval_level === "SENIOR" ? "purple"
+                    : "teal"
+            }
+            fontSize="10px"
+            px={2}
+          >
+            {approval.status === "RETURNED"
+              ? `RETURNED → fix & resubmit`
+              : approval.approval_level?.replace("_", " ")}
+          </Badge>
+        </Flex>
+      )}
       {/* ── Section 1: Voucher Details ── */}
       <Box {...sectionStyle}>
         <Box {...sectionHeaderStyle}>
@@ -1008,16 +1008,16 @@ const confirmRemoveItem = () => {
           <Text fontWeight="500" fontSize="sm">Transport Details</Text>
         </Box>
         <Grid templateColumns={{ base: "1fr", md: "repeat(3,1fr)" }} gap={4} p={4}>
-         <FormControl isInvalid={!!errors.transportName}>
+          <FormControl isInvalid={!!errors.transportName}>
             <Text {...labelStyle}>Transport Name</Text>
-            <Input {...inputStyle} value={formData.transportName} 
-            onChange={(e) => {
-  setFormData((prev) => ({ ...prev, transportName: e.target.value }));
-  if (e.target.value) setErrors((prev) => ({ ...prev, transportName: undefined }));
-}} />
-  {errors.transportName && (
-    <Text fontSize="11px" color="red.500" mt="2px">{errors.transportName}</Text>
-  )}
+            <Input {...inputStyle} value={formData.transportName}
+              onChange={(e) => {
+                setFormData((prev) => ({ ...prev, transportName: e.target.value }));
+                if (e.target.value) setErrors((prev) => ({ ...prev, transportName: undefined }));
+              }} />
+            {errors.transportName && (
+              <Text fontSize="11px" color="red.500" mt="2px">{errors.transportName}</Text>
+            )}
 
           </FormControl>
           <Box>
@@ -1030,16 +1030,16 @@ const confirmRemoveItem = () => {
           </Box>
           <Box>
             <FormControl isInvalid={!!errors.deliveryPlace}>
-            <Text {...labelStyle}>Delivery Place</Text>
-            <Input {...inputStyle} value={formData.deliveryPlace} 
-            onChange={(e) => {
-  setFormData((prev) => ({ ...prev, deliveryPlace: e.target.value }));
-  if (e.target.value) setErrors((prev) => ({ ...prev, deliveryPlace: undefined }));
-}} />
- {errors.deliveryPlace && (
-    <Text fontSize="11px" color="red.500" mt="2px">{errors.deliveryPlace}</Text>
-  )}
-</FormControl>
+              <Text {...labelStyle}>Delivery Place</Text>
+              <Input {...inputStyle} value={formData.deliveryPlace}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, deliveryPlace: e.target.value }));
+                  if (e.target.value) setErrors((prev) => ({ ...prev, deliveryPlace: undefined }));
+                }} />
+              {errors.deliveryPlace && (
+                <Text fontSize="11px" color="red.500" mt="2px">{errors.deliveryPlace}</Text>
+              )}
+            </FormControl>
           </Box>
         </Grid>
       </Box>
@@ -1062,35 +1062,36 @@ const confirmRemoveItem = () => {
             {/* Row 1 */}
             <Box>
               <FormControl isInvalid={!!errors.dispatchDocNo}>
-              <Text {...labelStyle}>Dispatch Doc No.</Text>
-              <Input
-                {...inputStyle}
-                value={dispatchData.dispatchDocNo}
-               onChange={(e) => {
-  setDispatchData((prev) => ({ ...prev, dispatchDocNo: e.target.value }));
-  if (e.target.value) setErrors((prev) => ({ ...prev, dispatchDocNo: undefined }));}}
-                placeholder="Enter dispatch doc no."
-              />
-              {errors.dispatchDocNo && (
-    <Text fontSize="11px" color="red.500" mt="2px">{errors.dispatchDocNo}</Text>
-  )}
+                <Text {...labelStyle}>Dispatch Doc No.</Text>
+                <Input
+                  {...inputStyle}
+                  value={dispatchData.dispatchDocNo}
+                  onChange={(e) => {
+                    setDispatchData((prev) => ({ ...prev, dispatchDocNo: e.target.value }));
+                    if (e.target.value) setErrors((prev) => ({ ...prev, dispatchDocNo: undefined }));
+                  }}
+                  placeholder="Enter dispatch doc no."
+                />
+                {errors.dispatchDocNo && (
+                  <Text fontSize="11px" color="red.500" mt="2px">{errors.dispatchDocNo}</Text>
+                )}
               </FormControl>
             </Box>
             <Box>
               <FormControl isInvalid={!!errors.billTNo}>
-              <Text {...labelStyle}>Bill-T No.</Text>
-              <Input
-                {...inputStyle}
-                value={dispatchData.billTNo}
-                onChange={(e) => {
-  setDispatchData((prev) => ({ ...prev, billTNo: e.target.value }));
-  if (e.target.value) setErrors((prev) => ({ ...prev, billTNo: undefined }));
-}}
-                placeholder="Enter Bill-T no."
-              />
+                <Text {...labelStyle}>Bill-T No.</Text>
+                <Input
+                  {...inputStyle}
+                  value={dispatchData.billTNo}
+                  onChange={(e) => {
+                    setDispatchData((prev) => ({ ...prev, billTNo: e.target.value }));
+                    if (e.target.value) setErrors((prev) => ({ ...prev, billTNo: undefined }));
+                  }}
+                  placeholder="Enter Bill-T no."
+                />
                 {errors.billTNo && (
-    <Text fontSize="11px" color="red.500" mt="2px">{errors.billTNo}</Text>
-  )}
+                  <Text fontSize="11px" color="red.500" mt="2px">{errors.billTNo}</Text>
+                )}
               </FormControl>
             </Box>
             <Box>
@@ -1106,16 +1107,16 @@ const confirmRemoveItem = () => {
             {/* Row 2 */}
             <Box>
               <FormControl isInvalid={!!errors.destination}>
-              <Text {...labelStyle}>Destination</Text>
-              <Input
-                {...inputStyle}
-                value={dispatchData.destination}
-                onChange={(e) => { setDispatchData((prev) => ({ ...prev, destination: e.target.value })); if (e.target.value) setErrors((prev) => ({ ...prev, destination: undefined }));}}
-                placeholder="Enter destination"
-              />
-               {errors.destination && (
-    <Text fontSize="11px" color="red.500" mt="2px">{errors.destination}</Text>
-  )}
+                <Text {...labelStyle}>Destination</Text>
+                <Input
+                  {...inputStyle}
+                  value={dispatchData.destination}
+                  onChange={(e) => { setDispatchData((prev) => ({ ...prev, destination: e.target.value })); if (e.target.value) setErrors((prev) => ({ ...prev, destination: undefined })); }}
+                  placeholder="Enter destination"
+                />
+                {errors.destination && (
+                  <Text fontSize="11px" color="red.500" mt="2px">{errors.destination}</Text>
+                )}
               </FormControl>
             </Box>
             <Box>
@@ -1162,32 +1163,32 @@ const confirmRemoveItem = () => {
               <Divider my={2} borderColor="#d8d0e8" />
               <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)" }} gap={4}>
                 <Box>
-                  <FormControl 
+                  <FormControl
                   // isInvalid={!!errors.dispatchDocImage}
                   >
-                  <Text {...labelStyle} fontWeight="600">Dispatch Doc Image</Text>
-                  <Flex align="center" gap={2} mt={1}>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      colorScheme="purple"
-                      fontSize="12px"
-                      onClick={() => dispatchDocRef.current?.click()}
-                    >
-                      Choose File
-                    </Button>
-                    <Text fontSize="11px" color="gray.500">
-                      {dispatchData.dispatchDocImageFile?.name || "No file chosen"}
-                    </Text>
-                    <input
-                      type="file"
-                      ref={dispatchDocRef}
-                      accept="image/*,application/pdf"
-                      style={{ display: "none" }}
-                      onChange={handleDispatchDocImage}
-                    />
-                  </Flex>
-                   {/* {errors.dispatchDocImage && ( <Text fontSize="11px" color="red.500" mt="2px">{errors.dispatchDocImage}</Text> )} */}
+                    <Text {...labelStyle} fontWeight="600">Dispatch Doc Image</Text>
+                    <Flex align="center" gap={2} mt={1}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        colorScheme="purple"
+                        fontSize="12px"
+                        onClick={() => dispatchDocRef.current?.click()}
+                      >
+                        Choose File
+                      </Button>
+                      <Text fontSize="11px" color="gray.500">
+                        {dispatchData.dispatchDocImageFile?.name || "No file chosen"}
+                      </Text>
+                      <input
+                        type="file"
+                        ref={dispatchDocRef}
+                        accept="image/*,application/pdf"
+                        style={{ display: "none" }}
+                        onChange={handleDispatchDocImage}
+                      />
+                    </Flex>
+                    {/* {errors.dispatchDocImage && ( <Text fontSize="11px" color="red.500" mt="2px">{errors.dispatchDocImage}</Text> )} */}
                   </FormControl>
                   {dispatchData.dispatchDocImage && (
                     <Box mt={2} border="1px solid #d0d7de" borderRadius="6px" overflow="hidden" maxW="200px">
@@ -1197,31 +1198,31 @@ const confirmRemoveItem = () => {
                 </Box>
                 <Box>
                   <FormControl isInvalid={!!errors.billTImage}>
-                  <Text {...labelStyle} fontWeight="600">Bill-T Image</Text>
-                  <Flex align="center" gap={2} mt={1}>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      colorScheme="purple"
-                      fontSize="12px"
-                      onClick={() => billTImageRef.current?.click()}
-                    >
-                      Choose File
-                    </Button>
-                    <Text fontSize="11px" color="gray.500">
-                      {dispatchData.billTImageFile?.name || "No file chosen"}
-                    </Text>
-                    <input
-                      type="file"
-                      ref={billTImageRef}
-                      accept="image/*,application/pdf"
-                      style={{ display: "none" }}
-                      onChange={handleBillTImage}
-                    />
-                  </Flex>
-                   {errors.billTImage && (
-    <Text fontSize="11px" color="red.500" mt="2px">{errors.billTImage}</Text>
-  )}
+                    <Text {...labelStyle} fontWeight="600">Bill-T Image</Text>
+                    <Flex align="center" gap={2} mt={1}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        colorScheme="purple"
+                        fontSize="12px"
+                        onClick={() => billTImageRef.current?.click()}
+                      >
+                        Choose File
+                      </Button>
+                      <Text fontSize="11px" color="gray.500">
+                        {dispatchData.billTImageFile?.name || "No file chosen"}
+                      </Text>
+                      <input
+                        type="file"
+                        ref={billTImageRef}
+                        accept="image/*,application/pdf"
+                        style={{ display: "none" }}
+                        onChange={handleBillTImage}
+                      />
+                    </Flex>
+                    {errors.billTImage && (
+                      <Text fontSize="11px" color="red.500" mt="2px">{errors.billTImage}</Text>
+                    )}
                   </FormControl>
                   {dispatchData.billTImage && (
                     <Box mt={2} border="1px solid #d0d7de" borderRadius="6px" overflow="hidden" maxW="200px">
@@ -1252,21 +1253,21 @@ const confirmRemoveItem = () => {
           </Box>
           <Box>
             <FormControl isInvalid={!!errors.salesLedgerId}>
-            <Text {...labelStyle}>Sales Ledger</Text>
-            <Select {...inputStyle} value={formData.salesLedgerId} 
-            onChange={(e) => {
-  setFormData((prev) => ({ ...prev, salesLedgerId: e.target.value }));
-  if (e.target.value) setErrors((prev) => ({ ...prev, salesLedgerId: undefined }));
-}}
->
-              <option value="">-- Please Select --</option>
-              {salesLedgerOptions.map((ledger) => (
-                <option key={ledger.id} value={ledger.id}>{ledger.ledger_name || ledger.name}</option>
-              ))}
-            </Select>
-             {errors.salesLedgerId && (
-    <Text fontSize="11px" color="red.500" mt="2px">{errors.salesLedgerId}</Text>
-  )}
+              <Text {...labelStyle}>Sales Ledger</Text>
+              <Select {...inputStyle} value={formData.salesLedgerId}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, salesLedgerId: e.target.value }));
+                  if (e.target.value) setErrors((prev) => ({ ...prev, salesLedgerId: undefined }));
+                }}
+              >
+                <option value="">-- Please Select --</option>
+                {salesLedgerOptions.map((ledger) => (
+                  <option key={ledger.id} value={ledger.id}>{ledger.ledger_name || ledger.name}</option>
+                ))}
+              </Select>
+              {errors.salesLedgerId && (
+                <Text fontSize="11px" color="red.500" mt="2px">{errors.salesLedgerId}</Text>
+              )}
             </FormControl>
           </Box>
         </Grid>
@@ -1379,17 +1380,17 @@ const confirmRemoveItem = () => {
                     textAlign="right" fontWeight="600" color="#1e4a2e" minW="100px"
                   />
                 </Td>
-              <Td {...tdStyle} textAlign="center">
-  <Button
-    size="xs"
-    variant="ghost"
-    colorScheme="red"
-    onClick={() => openRemoveItemModal(index)}
-    title="Remove item"
-  >
-    ✕
-  </Button>
-</Td>
+                <Td {...tdStyle} textAlign="center">
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    colorScheme="red"
+                    onClick={() => openRemoveItemModal(index)}
+                    title="Remove item"
+                  >
+                    ✕
+                  </Button>
+                </Td>
               </Tr>
             ))}
             {items.length === 0 && (
@@ -1618,66 +1619,66 @@ const confirmRemoveItem = () => {
       </Box>
 
       {/* ── Footer Actions ── */}
-     {/* ── Footer Actions ── */}
-<Flex justify="flex-end" alignItems="center" mt={2} gap={3}>
-  {canResubmit ? (
-    // ── RETURNED state: only Resubmit is available ──
-    <Button
-      bg="#237086"
-      fontWeight="500"
-      fontSize="14px"
-      color="white"
-      _hover={{ bg: "#1B5A6B" }}
-      px={10}
-      borderRadius="12px"
-      isLoading={submitting}
-      loadingText="Resubmitting..."
-      onClick={handleResubmit}
-      boxShadow="0 2px 8px rgba(45,90,61,0.4)"
-    >
-      Resubmit
-    </Button>
-  ) : (
-    // ── PENDING state: normal approve / reject / return ──
-    <>
-      <Button
-        variant="outline"
-        colorScheme="yellow"
-        size="sm"  px={6} height="38px" borderRadius="13px"
-        isDisabled={submitting}
-        onClick={() => setReturnModalOpen(true)}
-      >
-        Return
-      </Button>
-      <Button
-        variant="outline"
-        colorScheme="red" height="38px" borderRadius="13px"
-        size="sm"
-        px={6}
-        onClick={() => setRejectModalOpen(true)}
-        isDisabled={submitting}
-      >
-        Reject
-      </Button>
-      <Button
-        bg="#237086"
-        fontWeight="500"
-        fontSize="14px"
-        color="white"
-        _hover={{ bg: "#1B5A6B" }}
-        px={7}
-        borderRadius="12px"
-        isLoading={submitting}
-        loadingText="Saving..."
-        onClick={handleApprove}
-        // boxShadow="0 2px 8px rgba(45,90,61,0.4)"
-      >
-        Accept
-      </Button>
-      <Button color="white" bg="green.600" _hover={{bg: "green.700"}} fontSize="12px" fontWeight="500" borderRadius="13px"  onClick={() => setPreviewOpen(true)}>Download Bill</Button>
-    </>
-  )}
-</Flex>
+      {/* ── Footer Actions ── */}
+      <Flex justify="flex-end" alignItems="center" mt={2} gap={3}>
+        {canResubmit ? (
+          // ── RETURNED state: only Resubmit is available ──
+          <Button
+            bg="#237086"
+            fontWeight="500"
+            fontSize="14px"
+            color="white"
+            _hover={{ bg: "#1B5A6B" }}
+            px={10}
+            borderRadius="12px"
+            isLoading={submitting}
+            loadingText="Resubmitting..."
+            onClick={handleResubmit}
+            boxShadow="0 2px 8px rgba(45,90,61,0.4)"
+          >
+            Resubmit
+          </Button>
+        ) : (
+          // ── PENDING state: normal approve / reject / return ──
+          <>
+            <Button
+              variant="outline"
+              colorScheme="yellow"
+              size="sm" px={6} height="38px" borderRadius="13px"
+              isDisabled={submitting}
+              onClick={() => setReturnModalOpen(true)}
+            >
+              Return
+            </Button>
+            <Button
+              variant="outline"
+              colorScheme="red" height="38px" borderRadius="13px"
+              size="sm"
+              px={6}
+              onClick={() => setRejectModalOpen(true)}
+              isDisabled={submitting}
+            >
+              Reject
+            </Button>
+            <Button
+              bg="#237086"
+              fontWeight="500"
+              fontSize="14px"
+              color="white"
+              _hover={{ bg: "#1B5A6B" }}
+              px={7}
+              borderRadius="12px"
+              isLoading={submitting}
+              loadingText="Saving..."
+              onClick={handleApprove}
+            // boxShadow="0 2px 8px rgba(45,90,61,0.4)"
+            >
+              Accept
+            </Button>
+            <Button color="white" bg="green.600" _hover={{ bg: "green.700" }} fontSize="12px" fontWeight="500" borderRadius="13px" onClick={() => setPreviewOpen(true)}>Download Bill</Button>
+          </>
+        )}
+      </Flex>
 
       {/* ══ Godown / Batch Modal ══ */}
       {/*  NEW: No godown select inside modal — shows selected godown as readonly, only batch is chosen here */}
@@ -1819,7 +1820,7 @@ const confirmRemoveItem = () => {
         <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden">
           <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#e6210c" pl={3}>
             Reject Sales Order
-            <ModalCloseButton top={0} right={0}/>
+            <ModalCloseButton top={0} right={0} />
           </ModalHeader>
           <ModalBody p={4} bg="white">
             <FormControl>
@@ -1844,95 +1845,93 @@ const confirmRemoveItem = () => {
       </Modal>
 
       {/* ══ Return Modal ══ */}
-<Modal isOpen={returnModalOpen} onClose={() => { setReturnModalOpen(false); setReturnRemarks(""); setReturnImageFile(null); }} isCentered>
-  <ModalOverlay bg="blackAlpha.500" />
-  <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden">
-    <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#c57e14" pl={3}>
-      Return Sales Order
-      <ModalCloseButton top={0} right={0}/>
-    </ModalHeader>
-    <ModalBody p={4} bg="white">
-      <FormControl mb={4}>
-        <FormLabel fontSize="12px" fontWeight="600" color="#555">
-          Reason for return <Text as="span" color="red.500">*</Text>
-        </FormLabel>
-        <Textarea
-          value={returnRemarks}
-          onChange={(e) => setReturnRemarks(e.target.value)}
-          placeholder="Describe what needs to be corrected"
-          borderColor="#c8d0d8"
-          bg="white"
-          _focus={{ borderColor: "#d69e2e" }}
-          rows={4}
-        />
-      </FormControl>
+      <Modal isOpen={returnModalOpen} onClose={() => { setReturnModalOpen(false); setReturnRemarks(""); setReturnImageFile(null); }} isCentered>
+        <ModalOverlay bg="blackAlpha.500" />
+        <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden">
+          <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#c57e14" pl={3}>
+            Return Sales Order
+            <ModalCloseButton top={0} right={0} />
+          </ModalHeader>
+          <ModalBody p={4} bg="white">
+            <FormControl mb={4}>
+              <FormLabel fontSize="12px" fontWeight="600" color="#555">
+                Reason for return <Text as="span" color="red.500">*</Text>
+              </FormLabel>
+              <Textarea
+                value={returnRemarks}
+                onChange={(e) => setReturnRemarks(e.target.value)}
+                placeholder="Describe what needs to be corrected"
+                borderColor="#c8d0d8"
+                bg="white"
+                _focus={{ borderColor: "#d69e2e" }}
+                rows={4}
+              />
+            </FormControl>
 
-      <FormControl>
-        <FormLabel fontSize="12px" fontWeight="600" color="#555">
-          Attach Image <Text as="span" color="red.500">*</Text>
-        </FormLabel>
-        <Flex align="center" gap={2}>
-          <Button
-            size="sm"
-            variant="outline"
-            colorScheme="yellow"
-            fontSize="12px"
-            onClick={() => returnImageRef.current?.click()}
-          >
-            Choose File
-          </Button>
-          <Text fontSize="11px" color={returnImageFile ? "green.600" : "gray.400"}>
-            {returnImageFile ? returnImageFile.name : "No file chosen"}
-          </Text>
-          <input
-            type="file"
-            ref={returnImageRef}
-            accept="image/*,application/pdf"
-            style={{ display: "none" }}
-            onChange={(e) => {
-              const file = e.target.files[0];
-              if (file) setReturnImageFile(file);
-            }}
-          />
-        </Flex>
+            <FormControl>
+              <FormLabel fontSize="12px" fontWeight="600" color="#555">
+                Attach Image <Text as="span" color="red.500">*</Text>
+              </FormLabel>
+              <Flex align="center" gap={2}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  colorScheme="yellow"
+                  fontSize="12px"
+                  onClick={() => returnImageRef.current?.click()}
+                >
+                  Choose File
+                </Button>
+                <Text fontSize="11px" color={returnImageFile ? "green.600" : "gray.400"}>
+                  {returnImageFile ? returnImageFile.name : "No file chosen"}
+                </Text>
+                <input
+                  type="file"
+                  ref={returnImageRef}
+                  accept="image/*,application/pdf"
+                  style={{ display: "none" }}
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) setReturnImageFile(file);
+                  }}
+                />
+              </Flex>
 
-        {/* Preview if image */}
-        {returnImageFile && returnImageFile.type.startsWith("image/") && (
-          <Box mt={2} border="1px solid #d0d7de" borderRadius="6px" overflow="hidden" maxW="200px">
-            <img
-              src={URL.createObjectURL(returnImageFile)}
-              alt="Return attachment"
-              style={{ width: "100%", objectFit: "cover" }}
-            />
-          </Box>
-        )}
-      </FormControl>
-    </ModalBody>
-    <ModalFooter bg="#f7f9f8" borderTop="1px solid #e0e8e2">
-      <Flex gap={3}>
-        <Button
-          variant="ghost"
-          colorScheme="gray"
-          size="sm"
-          onClick={() => { setReturnModalOpen(false); setReturnRemarks(""); setReturnImageFile(null); }}
-        >
-          Cancel
-        </Button>
-        <Button
-          colorScheme="yellow"
-          size="sm"
-          px={6}
-          borderRadius="12px"
-          onClick={handleReturn}
-          isLoading={submitting}
-          loadingText="Returning..."
-        >
-          Return
-        </Button>
-      </Flex>
-    </ModalFooter>
-  </ModalContent>
-</Modal>
+              {/* Preview if image */}
+              {returnImageFile && returnImageFile.type.startsWith("image/") && (
+                <Box mt={2} border="1px solid #d0d7de" borderRadius="6px" overflow="hidden" maxW="200px">
+                  <img
+                    src={URL.createObjectURL(returnImageFile)}
+                    alt="Return attachment"
+                    style={{ width: "100%", objectFit: "cover" }}
+                  />
+                </Box>
+              )}
+            </FormControl>
+          </ModalBody>
+          <ModalFooter bg="#f7f9f8" borderTop="1px solid #e0e8e2">
+            <Flex gap={3}>
+              <Button
+                variant="ghost"
+                colorScheme="gray"
+                size="sm"
+                onClick={() => { setReturnModalOpen(false); setReturnRemarks(""); setReturnImageFile(null); }}>
+                Cancel
+              </Button>
+              <Button
+                colorScheme="yellow"
+                size="sm"
+                px={6}
+                borderRadius="12px"
+                onClick={handleReturn}
+                isLoading={submitting}
+                loadingText="Returning...">
+                Return
+              </Button>
+            </Flex>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       {/* ══ Dispatch / Bill-T Document Preview Modal ══ */}
       <Modal isOpen={dispatchPreview.isOpen} onClose={() => setDispatchPreview({ isOpen: false, url: "", title: "" })} size="4xl" isCentered>
@@ -1983,66 +1982,55 @@ const confirmRemoveItem = () => {
                 </Button>
               )}
               <Button size="sm" variant="outline" colorScheme="gray"
-                onClick={() => setDispatchPreview({ isOpen: false, url: "", title: "" })}>
-                Close
-              </Button>
+                onClick={() => setDispatchPreview({ isOpen: false, url: "", title: "" })}> Close </Button>
             </Flex>
           </ModalFooter>
         </ModalContent>
       </Modal>
       {/* ══ Remove Item Confirm Modal ══ */}
-<Modal
-  isOpen={removeItemModal.isOpen}
-  onClose={() => setRemoveItemModal({ isOpen: false, index: null, itemName: "" })}
-  isCentered
->
-  <ModalOverlay bg="blackAlpha.500" />
-  <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden">
-    <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#e6210c" pl={3}>
-      Remove Item
-      <ModalCloseButton top={0} right={0} />
-    </ModalHeader>
-    <ModalBody p={4} bg="white">
-      <Text fontSize="13px" color="#333">
-        Are you sure you want to remove <b>"{removeItemModal.itemName}"</b> from this order?
-      </Text>
-      <Text fontSize="12px" color="red.500" mt={2}>
-        This action can't be undone.
-      </Text>
-    </ModalBody>
-    <ModalFooter bg="#f7f9f8" borderTop="1px solid #e0e8e2">
-      <Flex gap={3}>
-        <Button
-          variant="ghost"
-          colorScheme="gray"
-          size="sm"
-          onClick={() => setRemoveItemModal({ isOpen: false, index: null, itemName: "" })}
-        >
-          Cancel
-        </Button>
-        <Button
-          colorScheme="red"
-          size="sm"
-          px={6}
-          borderRadius="12px"
-          onClick={confirmRemoveItem}
-        >
-          OK, Remove
-        </Button>
-      </Flex>
-    </ModalFooter>
-  </ModalContent>
-</Modal>
+      <Modal
+        isOpen={removeItemModal.isOpen}
+        onClose={() => setRemoveItemModal({ isOpen: false, index: null, itemName: "" })}
+        isCentered
+      >
+        <ModalOverlay bg="blackAlpha.500" />
+        <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden">
+          <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#e6210c" pl={3}>
+            Remove Item
+            <ModalCloseButton top={0} right={0} />
+          </ModalHeader>
+          <ModalBody p={4} bg="white">
+            <Text fontSize="13px" color="#333">
+              Are you sure you want to remove <b>"{removeItemModal.itemName}"</b> from this order?
+            </Text>
+            <Text fontSize="12px" color="red.500" mt={2}>
+              This action can't be undone.
+            </Text>
+          </ModalBody>
+          <ModalFooter bg="#f7f9f8" borderTop="1px solid #e0e8e2">
+            <Flex gap={3}>
+              <Button variant="ghost" colorScheme="gray" size="sm"
+                onClick={() => setRemoveItemModal({ isOpen: false, index: null, itemName: "" })}>
+                Cancel
+              </Button>
+              <Button colorScheme="red" size="sm" px={6} borderRadius="12px"
+                onClick={confirmRemoveItem}>
+                OK, Remove
+              </Button>
+            </Flex>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
-<SalesOrderPreviewModal
-  isOpen={previewOpen}
-  onClose={() => setPreviewOpen(false)}
-  approval={approval}
-  formData={formData}
-  items={items}
-  dispatchData={dispatchData}
-  extraLedgers={extraLedgers}
-/>
+      <SalesOrderPreviewModal
+        isOpen={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        approval={approval}
+        formData={formData}
+        items={items}
+        dispatchData={dispatchData}
+        extraLedgers={extraLedgers}
+      />
     </Box>
   );
 };

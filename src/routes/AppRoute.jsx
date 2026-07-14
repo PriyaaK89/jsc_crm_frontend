@@ -113,6 +113,8 @@ import CreateSalesLayout from "../components/layout/TransactionMasterLayout/Crea
 import DashboardLayout from "../components/layout/DashboardLayout";
 import VisitTargetAssignmentLayout from "../components/layout/BusinessDevelopment/AssignVisitTargetLayout";
 import ProgressHistory from "../pages/BusinessDevelopment/VisitProgressHistory";
+import OrderVoucherReceiptLayout from "../components/layout/ReceiptLayout";
+import Receipt from "../components/layout/OrderVoucher/Receipt";
 
 
 function App() {
@@ -202,8 +204,10 @@ function App() {
 
         <Route path="/order-vochor/payment" element={<PaymentLayout />} />
         <Route path="/order-vochor/purchase" element={<PurchaseLayout />} />
-        <Route path="/order-vochor/sales/:approvalId" element={<SalesLayout />} />
-        <Route path="/order-vochor/receipt" element={<ReceiptLayout />} />
+        <Route path="/order-voucher/sales/:approvalId" element={<SalesLayout />} />
+        <Route path="/order-voucher/receipt/:approvalId" element={<OrderVoucherReceiptLayout/>} />
+
+        <Route path="/order-voucher/receipt-request" element={<Receipt/>} />
         <Route path="/order-vochor/credit" element={<CreditLayout />} />
         <Route path="/order-vochor/debit" element={<DebitLayout />} />
         <Route path="/esign-success" element={<ESignSuccess />} />

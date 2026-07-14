@@ -6,7 +6,7 @@ import { API_ENDPOINTS } from "../../../services/endpoints";
 import { extractAfterKeyword, buildSalesOrderNumber, formatDate, getStatusColor, } from "../../common/notificationHelper";
 import { Link } from "react-router-dom";
 
-const SalesOrderModal = ({ isOpen, onClose, onViewOrder }) => {
+const ReceiptNotificationModal = ({ isOpen, onClose, onViewOrder }) => {
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -14,13 +14,13 @@ const SalesOrderModal = ({ isOpen, onClose, onViewOrder }) => {
   const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
-    if (isOpen) { fetchNotifications();}
+    if (isOpen) { fetchNotifications(); }
   }, [isOpen]);
 
   const fetchNotifications = async () => {
     setIsLoading(true);
     try {
-       const res = await API.get(`${API_ENDPOINTS.GET_ORDER_NOTIFICATIONS}?module_type=SALES&notification_category=APPROVAL`,);
+      const res = await API.get(`${API_ENDPOINTS.GET_ORDER_NOTIFICATIONS}?module_type=RECEIPT&notification_category=APPROVAL`,);
       setNotifications(res.data?.data || []);
     } catch (error) {
       console.log(error);
@@ -41,7 +41,7 @@ const SalesOrderModal = ({ isOpen, onClose, onViewOrder }) => {
           <ModalHeader bgGradient="linear(to-r, blue.600, blue.500)"
             color="white" py={4} px={6} borderBottom="1px solid" borderColor="blue.700" fontSize="lg"
             fontWeight="500" letterSpacing="0.3px" lineHeight="12px !important">
-            Sales Order Notifications
+            Receipt Notifications
           </ModalHeader>
 
           {/* Close Button */}
@@ -56,7 +56,7 @@ const SalesOrderModal = ({ isOpen, onClose, onViewOrder }) => {
             ) : notifications.length === 0 ? (
               <Center py={14}>
                 <Box textAlign="center">
-                  <Text fontWeight="600" color="gray.700"> No sales order notifications </Text>
+                  <Text fontWeight="600" color="gray.700"> No receipt notifications </Text>
                   <Text fontSize="sm" color="gray.500" mt={1}> New approval requests will appear here. </Text>
                 </Box>
               </Center>
@@ -64,7 +64,7 @@ const SalesOrderModal = ({ isOpen, onClose, onViewOrder }) => {
               <VStack spacing={4} align="stretch">
                 {notifications.map((item) => {
                   const employeeName = item?.generated_by_name;
-                  const soNumber = buildSalesOrderNumber( item.generated_by_id, item.order_no, );
+                  const receiptNumber = buildSalesOrderNumber( item.generated_by_id, item.order_no, );
                   const statusColor = getStatusColor(item.status);
                   const isUnread = !item.is_read;
                   const attachmentUrl = item.attachment_url || null;
@@ -142,12 +142,12 @@ const SalesOrderModal = ({ isOpen, onClose, onViewOrder }) => {
                               color: "green.700",
                               textDecoration: "underline",
                             }}>
-                            <Link to={`/order-voucher/sales/${item.approval_id}`}>
-                              {soNumber}
+                            <Link to={`/order-voucher/receipt/${item.approval_id}`}>
+                              {receiptNumber}
                             </Link>
                           </Text>{" "}
-                          ({formatDate(item.created_at)}) to review the sales
-                          order.
+                          ({formatDate(item.created_at)}) to review the receipt
+                          voucher.
                         </Text>
 
                         {/* Attachment thumbnail — only rendered when an attachment exists */}
@@ -252,4 +252,4 @@ const SalesOrderModal = ({ isOpen, onClose, onViewOrder }) => {
   );
 };
 
-export default SalesOrderModal;
+export default ReceiptNotificationModal;

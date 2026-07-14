@@ -37,7 +37,7 @@ const ReceiptTxnMasterLayout = () => {
                         </Breadcrumb>
                     </HStack>
 
-                    <Text className="action_heading" mb={6} textAlign="center"> Create Receipt </Text>
+                    <Text className="action_heading" mb={6} textAlign="center"> Create Receipt</Text>
 
                    <Receipt />
                 </Box>

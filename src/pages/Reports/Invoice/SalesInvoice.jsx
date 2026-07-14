@@ -345,7 +345,7 @@ console.log(location.pathname ,"pathname")
                       {parseFloat(item.rate).toFixed(2)}
                     </Td>
                     <Td textAlign="center">{item.unit_name || "-"}</Td>
-                    <Td textAlign="center">{item.case_bag || "-"}</Td>
+                    <Td textAlign="center">{item.calculated_bulk_unit || "-"}</Td>
                     <Td textAlign="right">
                       {parseFloat(item.amount).toFixed(2)}
                     </Td>

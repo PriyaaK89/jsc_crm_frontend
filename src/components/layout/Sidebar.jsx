@@ -197,7 +197,7 @@ const Newsidebar = () => {
           {label:"Payment",path:"/order-vochor/payment",icon:FiMapPin},
           {label:"Purchase",path:"/order-vochor/purchase",icon:BiPurchaseTagAlt},
           {label:"Sales",path:"/order-voucher/create-sales",icon:FaShoppingCart},
-          {label:"Receipt",path:"/order-vochor/receipt",icon:FaReceipt},
+          {label:"Receipt",path:"/order-voucher/receipt-request",icon:FaReceipt},
           {label:"Credit",path:"/order-vochor/credit",icon:BsCreditCard2Front},
           {label:"Debit",path:"/order-vochor/debit",icon:FaMoneyBillWave},
          ]

@@ -138,8 +138,8 @@ function BasicInfoTab({ ledger, onChange, errors, config }) {
                     </Field>
                     <Field label="Employee Under">
                         <Input
-                            value={val(ledger.employee_under)}
-                            onChange={(e) => onChange("employee_under", e.target.value)}
+                            value={val(ledger.employee_under_name)}
+                            onChange={(e) => onChange("employee_under_name", e.target.value)}
                             placeholder="Employee (optional)"
                             size="sm"
                             borderRadius="lg"
@@ -752,7 +752,7 @@ const EditLedger = () => {
     const [ledger, setLedger] = useState({
         ledger_name: "",
         group_id: "",
-        employee_under: "",
+        employee_under_name: "",
         opening_balance: 0,
         balance_type: "Dr",
         opening_date: "",
@@ -834,7 +834,7 @@ const EditLedger = () => {
             setLedger({
                 ledger_name: val(d.ledger_name),
                 group_id: val(d.group_id),
-                employee_under: val(d.employee_under),
+                employee_under_name: val(d.employee_under_name),
                 opening_balance: val(d.opening_balance, 0),
                 balance_type: val(d.balance_type, "Dr"),
                 opening_date: d.opening_date ? d.opening_date.slice(0, 10) : "",

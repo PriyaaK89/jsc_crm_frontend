@@ -4,6 +4,7 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import SalesOrderModal from "../models/transaction-flow/SalesOrderModal";
 import AlertTabModal from "../models/transaction-flow/AlertModal";
+import ReceiptNotificationModal from "../models/transaction-flow/ReceiptNotifications";
 
 const NotificationBtn = () => {
   const [counts, setCounts] = useState({
@@ -17,6 +18,7 @@ const NotificationBtn = () => {
   });
   const [salesModalOpen, setSalesModalOpen] = useState(false);
   const [alertModalOpen, setAlertModalOpen] = useState(false);
+  const [receiptModalOpen, setReceiptModalOpen] = useState(false);
   const EWAY_BILL_URL = "https://ewaybillgst.gov.in/";
 
   useEffect(() => {
@@ -124,6 +126,7 @@ const NotificationBtn = () => {
         isOpen={salesModalOpen}
         onClose={() => setSalesModalOpen(false)}
       />
+      <ReceiptNotificationModal isOpen={receiptModalOpen} onClose={()=> setReceiptModalOpen(false)}/>
 
       <AlertTabModal
         isOpen={alertModalOpen}
@@ -150,6 +153,7 @@ const NotificationBtn = () => {
             onClick={() => {
               if (btn.label === "Sale Order") { setSalesModalOpen(true); }
               if (btn.label === "Alert") { setAlertModalOpen(true); }
+              if (btn.label === "Receipt") { setReceiptModalOpen(true); }
               if (btn.label === "E-Way Bill") { window.open("https://ewaybillgst.gov.in/", "_blank"); }
               if (btn.label === "Open MailBox") { window.open("http://jamidaraseeds.com/webmail", "_blank"); }
               if (btn.label === "Whatsapp") { window.open("https://web.whatsapp.com/send", "_blank"); }

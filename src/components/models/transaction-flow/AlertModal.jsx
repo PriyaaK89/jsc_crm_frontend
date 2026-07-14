@@ -196,7 +196,7 @@ const AlertTabModal = ({ isOpen, onClose }) => {
                             color: "blue.700",
                             textDecoration: "underline",
                           }}>
-                          <Link to={`/order-vochor/sales/${item.approval_id}`}>
+                          <Link to={`/order-voucher/sales/${item.approval_id}`}>
                             Click here
                           </Link>
                         </Text>{" "}

@@ -1628,8 +1628,7 @@ const GenerateCreditNote = ({ salesLedger }) => {
                   cursor="pointer"
                   bg={selectedBatchNo === "NOT_APPLICABLE" ? "#d4edda" : "white"}
                   _hover={{ bg: "#f0f9f4" }}
-                  onClick={() => setSelectedBatchNo("NOT_APPLICABLE")}
-                >
+                  onClick={() => setSelectedBatchNo("NOT_APPLICABLE")} >
                   <Td colSpan={4}>
                     <Flex align="center" gap={2}>
                       <Box
@@ -1654,8 +1653,7 @@ const GenerateCreditNote = ({ salesLedger }) => {
                     cursor="pointer"
                     bg={selectedBatchNo === batch.batch_no ? "#d4edda" : "white"}
                     _hover={{ bg: "#f0f9f4" }}
-                    onClick={() => setSelectedBatchNo(batch.batch_no)}
-                  >
+                    onClick={() => setSelectedBatchNo(batch.batch_no)} >
                     <Td>
                       <Flex align="center" gap={2}>
                         <Box
@@ -1664,26 +1662,19 @@ const GenerateCreditNote = ({ salesLedger }) => {
                           borderRadius="50%"
                           border="2px solid #4f9190"
                           bg={selectedBatchNo === batch.batch_no ? "#4f9190" : "transparent"}
-                          flexShrink={0}
-                        />
+                          flexShrink={0} />
                         <Text fontSize="12px">{batch.batch_no}</Text>
                       </Flex>
                     </Td>
                     <Td isNumeric fontSize="12px">
                       {/* Hide qty when Not Applicable is selected */}
-                      {selectedBatchNo !== "NOT_APPLICABLE"
-                        ? Number(batch.qty || 0).toFixed(2)
-                        : "—"}
+                      {selectedBatchNo !== "NOT_APPLICABLE" ? Number(batch.qty || 0).toFixed(2) : "—"}
                     </Td>
                     <Td fontSize="12px">
-                      {batch.mfg_date
-                        ? new Date(batch.mfg_date).toLocaleDateString("en-IN")
-                        : "—"}
+                      {batch.mfg_date ? new Date(batch.mfg_date).toLocaleDateString("en-IN") : "—"}
                     </Td>
                     <Td fontSize="12px">
-                      {batch.expiry_date
-                        ? new Date(batch.expiry_date).toLocaleDateString("en-IN")
-                        : "—"}
+                      {batch.expiry_date ? new Date(batch.expiry_date).toLocaleDateString("en-IN") : "—"}
                     </Td>
                   </Tr>
                 ))}

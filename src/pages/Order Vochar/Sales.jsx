@@ -103,6 +103,7 @@ const Sales = () => {
   const [returnModalOpen, setReturnModalOpen] = useState(false);
   const [returnRemarks, setReturnRemarks] = useState("");
   const [returnImageFile, setReturnImageFile] = useState(null);
+   const [saleNo, setSaleNo] = useState("");
   const returnImageRef = useRef();
   const [errors, setErrors] = useState({});
 
@@ -180,6 +181,7 @@ const Sales = () => {
         loadLedgerDropdown(),
         loadSalesLedgerDropdown(),
         loadVoucherNo(),
+        loadSalesNo()
       ]);
     } finally {
       setLoading(false);
@@ -392,6 +394,19 @@ const Sales = () => {
   const handleRemoveItem = (index) => {
     setItems((prev) => prev.filter((_, i) => i !== index));
   };
+
+   const loadSalesNo = async () => {
+      try {
+        const res = await API.get(
+          `${API_ENDPOINTS.GET_NEXT_ORDER_NUMBER}?transaction_type=SALES`
+        );
+        if (res.data.success) {
+          setSaleNo(res.data.next_order_no);
+        }
+      } catch (err) {
+        console.error("Error fetching next receipt number", err);
+      }
+    };
 
   // ─── Item helpers ──────────────────────────────────────────────────────────
   const recalculateItem = (item) => {

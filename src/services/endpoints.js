@@ -247,25 +247,31 @@ export const API_ENDPOINTS = {
 
 
   GET_RECEIPT_ORDER_BY_ID: "get-order-approval",
-APPROVE_RECEIPT_REQUEST: "approve-receipt-order",
+  APPROVE_RECEIPT_REQUEST: "approve-receipt-order",
 
   RETURN_RECEIPT_REQUEST: "return-receipt-order",
   REJECT_RECEIPT_REQUEST: "reject-receipt-order",
   RESUBMIT_RECEIPT_REQUEST: "resubmit-receipt-order",
   GET_ASSIGNED_LEDGERS_LIST: "get-my-assigned-ledgers",
 
-GET_TEMPLATE_BY_ID: (id) => `visit-targets/templates/${id}`,
-UPDATE_TEMPLATE_BY_ID: (id) => `visit-targets/templates/${id}`,
-DELETE_TEMPLATE: (id) => `visit-targets/templates/${id}`,
+  CREATE_CREDIT_NOTE_APPROVAL_REQUEST: "create-credit-note-approval-request",
+  APPROVE_CREDIT_NOTE_REQUEST: "approve-credit-note-order",
+  RETURN_CREDIT_NOTE_REQUEST: "return-credit-note-order",
+  REJECT_CREDIT_NOTE_REQUEST: "reject-credit-note-order",
+  RESUBMIT_CREDIT_NOTE_REQUEST: "resubmit-credit-note-order",
 
-GET_ASSIGNMENT: (id) => `visit-targets/assignments/${id}`,
-GET_ASSIGNMENT_PROGRESS: (id) =>
-  `visit-targets/assignments/${id}/progress`,
-COMPLETE_ASSIGNMENT: (id) =>
-  `visit-targets/assignments/${id}/complete`,
-EXPIRE_ASSIGNMENT: (id) =>
-  `visit-targets/assignments/${id}/expire`,
-REACTIVATE_TEMPLATE: (id) => `visit-targets/templates/${id}/reactivate`,
+  GET_TEMPLATE_BY_ID: (id) => `visit-targets/templates/${id}`,
+  UPDATE_TEMPLATE_BY_ID: (id) => `visit-targets/templates/${id}`,
+  DELETE_TEMPLATE: (id) => `visit-targets/templates/${id}`,
+
+  GET_ASSIGNMENT: (id) => `visit-targets/assignments/${id}`,
+  GET_ASSIGNMENT_PROGRESS: (id) =>
+    `visit-targets/assignments/${id}/progress`,
+  COMPLETE_ASSIGNMENT: (id) =>
+    `visit-targets/assignments/${id}/complete`,
+  EXPIRE_ASSIGNMENT: (id) =>
+    `visit-targets/assignments/${id}/expire`,
+  REACTIVATE_TEMPLATE: (id) => `visit-targets/templates/${id}/reactivate`,
 
 
 

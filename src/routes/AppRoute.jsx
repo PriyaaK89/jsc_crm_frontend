@@ -115,6 +115,7 @@ import VisitTargetAssignmentLayout from "../components/layout/BusinessDevelopmen
 import ProgressHistory from "../pages/BusinessDevelopment/VisitProgressHistory";
 import OrderVoucherReceiptLayout from "../components/layout/ReceiptLayout";
 import Receipt from "../components/layout/OrderVoucher/Receipt";
+import CreditNoteApprovalLayout from "../components/layout/OrderVoucher/CreditNoteApprovalLayout";
 
 
 function App() {
@@ -206,6 +207,7 @@ function App() {
         <Route path="/order-vochor/purchase" element={<PurchaseLayout />} />
         <Route path="/order-voucher/sales/:approvalId" element={<SalesLayout />} />
         <Route path="/order-voucher/receipt/:approvalId" element={<OrderVoucherReceiptLayout/>} />
+        <Route path="/order-voucher/credit-note/:approvalId" element={<CreditNoteApprovalLayout/>} />
 
         <Route path="/order-voucher/receipt-request" element={<Receipt/>} />
         <Route path="/order-vochor/credit" element={<CreditLayout />} />

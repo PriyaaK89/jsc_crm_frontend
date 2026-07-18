@@ -760,6 +760,7 @@ const Sales = () => {
       });
 
       navigate(-1);
+      
     } catch (error) {
       console.error("APPROVE ERROR =>", error);
       toast({
@@ -889,7 +890,7 @@ const Sales = () => {
       {/* ── Section 1: Voucher Details ── */}
       <Box {...sectionStyle}>
         <Box {...sectionHeaderStyle}>
-          <Text fontWeight="500" fontSize="sm">Voucher Details</Text>
+          <Text fontWeight="500" fontSize="sm">Voucher Details 12345</Text>
         </Box>
         <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)" }} gap={4} p={4}>
           <GridItem>

@@ -3,7 +3,7 @@ import {
   Box, Grid, GridItem, Input, Select, Text, Button,
   Table, Thead, Tbody, Tr, Th, Td, Modal, ModalOverlay, ModalContent,
   ModalHeader, ModalCloseButton, ModalBody, ModalFooter, FormControl,
-  FormLabel, Textarea, useToast, Spinner, Center, Flex, Badge, Divider,
+  FormLabel, Textarea, useToast, Spinner, Center, Flex, Badge, Divider, HStack,
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../../services/api";
@@ -114,7 +114,7 @@ const CreditNoteApproval = () => {
     deliveryCharge: "0",
     uniqueNumber: "",
     transporter: "",
-    destination: "",
+
   });
   const dispatchDocRef = useRef();
   const billTImageRef = useRef();
@@ -141,12 +141,15 @@ const CreditNoteApproval = () => {
     ewayNumber: "",
     transporterGst: "",
     deliveryPlace: "",
+    destination: "",
     employeeUnder: "",
     salesReturnLedgerId: "",
     narration: "",
     isBillModified: "",
     billTImage: "",
     dispatchDocImage: "",
+    billTImagePath: "",       // ← add this
+    dispatchDocImagePath: "",
   });
 
   const isReturned = approval?.status === "RETURNED";
@@ -155,6 +158,8 @@ const CreditNoteApproval = () => {
   const isDispatcherOrSenior = approval
     ? DISPATCHER_LEVELS.includes(approval.approval_level)
     : false;
+
+  // console.log(formData.originalInvoiceNo, "originalInvoice NO12345")
 
   // ─── Init ────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -218,6 +223,7 @@ const CreditNoteApproval = () => {
         date: formatDateForInput(data.created_at),
         partyLedgerId: payload.customer_ledger_id || "",
         originalSaleId,
+        originalInvoiceNo: cleanQuoted(payload.originalInvoiceNo),
         isConsignee: payload.is_consignee === true || payload.is_consignee === "true" || payload.is_consignee === "1" ? "Yes" : "No",
         dealerName: cleanQuoted(payload.dealer_name),
         proprietorName: cleanQuoted(payload.proprietor_name),
@@ -229,14 +235,18 @@ const CreditNoteApproval = () => {
         ewayNumber: cleanQuoted(payload.eway_number),
         transporterGst: cleanQuoted(payload.transporter_gst),
         deliveryPlace: cleanQuoted(payload.delivery_place),
+        destination: cleanQuoted(payload.destination),
         salesReturnLedgerId: payload.sales_return_ledger_id || "",
         employeeUnder: payload.assign_employee_id || payload.employee_under_id || "",
         isBillModified: data.is_bill_modified ? "Yes" : "No",
         billTImage: payload.billTImageUrl || "",
         dispatchDocImage: payload.dispatchDocImageUrl || "",
+        billTImagePath: payload.bill_t_image || "",           // ← add this
+        dispatchDocImagePath: payload.dispatch_doc_image || "",
+
       }));
 
-      if (payload.dispatch_doc_no || payload.vehicle_no) {
+      if (payload.dispatch_doc_no || payload.vehicle_no || payload.billTImageUrl || payload.dispatchDocImageUrl) {
         setDispatchData((prev) => ({
           ...prev,
           dispatchDocNo: cleanQuoted(payload.dispatch_doc_no),
@@ -249,23 +259,24 @@ const CreditNoteApproval = () => {
           deliveryCharge: payload.delivery_charge ?? "0",
           uniqueNumber: cleanQuoted(payload.unique_number),
           transporter: cleanQuoted(payload.transporter),
-          destination: cleanQuoted(payload.destination),
+          billTImage: payload.billTImageUrl || "",
+          dispatchDocImage: payload.dispatchDocImageUrl || "",
         }));
       }
 
-      setItems(
-        parsedItems.map((item) => {
-          const amount = round2(item.amount ?? Number(item.return_qty || 0) * Number(item.rate || 0));
-          return {
-            ...item,
-            amount,
-            igst_amount: round2((amount * (item.igst_percent || 0)) / 100),
-            cgst_amount: round2((amount * (item.cgst_percent || 0)) / 100),
-            sgst_amount: round2((amount * (item.sgst_percent || 0)) / 100),
-            total_amount: item.total_amount ?? amount,
-          };
-        }),
-      );
+      const mappedItems = parsedItems.map((item) => {
+        const amount = round2(item.amount ?? Number(item.return_qty || 0) * Number(item.rate || 0));
+        return {
+          ...item,
+          amount,
+          igst_amount: round2((amount * (item.igst_percent || 0)) / 100),
+          cgst_amount: round2((amount * (item.cgst_percent || 0)) / 100),
+          sgst_amount: round2((amount * (item.sgst_percent || 0)) / 100),
+          total_amount: item.total_amount ?? amount,
+        };
+      });
+      const hydratedItems = await hydrateItemAvailability(mappedItems);
+      setItems(hydratedItems);
 
       const parsedBillRefs = safeParseJSON(payload.bill_references, []);
       setBillRefRows(
@@ -292,7 +303,7 @@ const CreditNoteApproval = () => {
 
         try {
           const billRefRes = await API.get(
-            `${API_ENDPOINTS.GET_SALES_BILL_REFERENCES}?sale_id=${originalSaleId}`
+            `${API_ENDPOINTS.GET_SALES_BILL_REFERENCES}?customer_ledger_id=${payload.customer_ledger_id}&sale_id=${originalSaleId}`
           );
           setAvailableBillRefs(billRefRes?.data?.data || []);
         } catch (e) {
@@ -308,6 +319,7 @@ const CreditNoteApproval = () => {
 
   useEffect(() => {
     if (!formData.partyLedgerId) return;
+
     const loadLedgerDetails = async () => {
       const details = await fetchLedgerDetailsByID(formData.partyLedgerId);
       if (details) {
@@ -347,6 +359,10 @@ const CreditNoteApproval = () => {
       sgstPercent: singlePercent(sgstPercents),
     };
   }, [items]);
+  const hasIGST = useMemo(
+    () => items.some((item) => Number(item.igst_percent || 0) > 0),
+    [items],
+  );
 
   const validate = () => {
     const newErrors = {};
@@ -385,6 +401,29 @@ const CreditNoteApproval = () => {
     });
   };
 
+  const hydrateItemAvailability = async (rawItems) => {
+    return Promise.all(
+      rawItems.map(async (item) => {
+        if (!item.godown_id) return item;
+        try {
+          const params = new URLSearchParams({
+            item_id: item.stock_item_id,
+            godown_id: item.godown_id,
+          });
+          if (item.batch_no && item.batch_no !== "Not Applicable" && item.batch_no !== "NOT_APPLICABLE") {
+            params.append("batch_no", item.batch_no);
+          }
+          const res = await API.get(`${API_ENDPOINTS.GET_AVAILABLE_STOCK_QTY}?${params.toString()}`);
+          const availableQty = res?.data?.data?.available_stock ?? 0;
+          return { ...item, available_qty: Number(availableQty) };
+        } catch (e) {
+          console.log("Error hydrating available qty for item", item.stock_item_id, e);
+          return item; // fail-safe: don't blank out existing value on error
+        }
+      }),
+    );
+  };
+
   const handleRowGodownSelect = async (index, godownId) => {
     if (!godownId) return;
     const selectedGodown = godownList.find((g) => String(g.id) === String(godownId));
@@ -417,18 +456,25 @@ const CreditNoteApproval = () => {
   };
 
   const handleConfirmGodown = async () => {
-    const { itemIndex, godownId, godownName, batchNo, selectedBatchQty } = godownModal;
+    const { itemIndex, godownId, godownName, batchNo } = godownModal;
     if (!godownId) {
       toast({ title: "Godown not selected", status: "warning", duration: 2500, isClosable: true });
       return;
     }
 
     let availableQty = 0;
-    if (batchNo && batchNo !== "Not Applicable" && batchNo !== "NOT_APPLICABLE" && selectedBatchQty != null) {
-      availableQty = selectedBatchQty;
-    } else {
-      const fetched = await fetchAvailableStock({ itemId: items[itemIndex].stock_item_id, godownId });
-      availableQty = fetched ?? 0;
+    try {
+      const params = new URLSearchParams({
+        item_id: items[itemIndex].stock_item_id,
+        godown_id: godownId,
+      });
+      if (batchNo && batchNo !== "Not Applicable" && batchNo !== "NOT_APPLICABLE") {
+        params.append("batch_no", batchNo);
+      }
+      const res = await API.get(`${API_ENDPOINTS.GET_AVAILABLE_STOCK_QTY}?${params.toString()}`);
+      availableQty = Number(res?.data?.data?.available_stock ?? 0);
+    } catch (e) {
+      console.log("Error fetching available qty", e);
     }
 
     setItems((prev) => {
@@ -444,6 +490,26 @@ const CreditNoteApproval = () => {
     });
 
     setGodownModal(emptyGodownModal);
+  };
+
+  const openGodownModalForEdit = async (index) => {
+    const item = items[index];
+    if (!item.godown_id) return;
+    const selectedGodown = godownList.find((g) => String(g.id) === String(item.godown_id));
+    const godownName = selectedGodown ? selectedGodown.godown_name || selectedGodown.name : item.godown_id;
+
+    setGodownModal({
+      ...emptyGodownModal,
+      isOpen: true,
+      itemIndex: index,
+      godownId: item.godown_id,
+      godownName,
+      batchNo: item.batch_no || "Not Applicable",
+      batches: [],
+    });
+
+    const batches = await fetchBatches(item.stock_item_id, item.godown_id);
+    setGodownModal((prev) => (prev.godownId === item.godown_id ? { ...prev, batches } : prev));
   };
 
   const openRemoveItemModal = (index) => {
@@ -486,7 +552,7 @@ const CreditNoteApproval = () => {
 
   // ─── Payload builder ────────────────────────────────────────────────────
   const buildUpdatedPayload = () => {
-    const hasIGST = items.some((item) => Number(item.igst_percent || 0) > 0);
+
     const validBillRefs = billRefRows.filter((r) => r.sales_bill_reference_id && Number(r.amount) > 0);
 
     const base = {
@@ -506,12 +572,15 @@ const CreditNoteApproval = () => {
       eway_number: formData.ewayNumber,
       transporter_gst: formData.transporterGst,
       delivery_place: formData.deliveryPlace,
+      destination: formData.destination,
       assign_employee_id: formData.employeeUnder || null,
       employee_under_id: formData.employeeUnder || null,
       sales_return_ledger_id: formData.salesReturnLedgerId,
       voucher_no: formData.creditNoteNo,
       voucher_type_id: voucherInfo.voucher_type_id,
       credit_note_date: formData.date,
+      bill_t_image: formData.billTImagePath || null,           // ← add this
+      dispatch_doc_image: formData.dispatchDocImagePath || null,
       tax_mode: hasIGST ? "IGST" : "CGST_SGST",
       items: JSON.stringify(items),
       bill_references: JSON.stringify(
@@ -533,7 +602,7 @@ const CreditNoteApproval = () => {
       base.delivery_charge = dispatchData.deliveryCharge;
       base.unique_number = dispatchData.uniqueNumber;
       base.transporter = dispatchData.transporter;
-      base.destination = dispatchData.destination;
+      // base.destination = dispatchData.destination;
     }
 
     return base;
@@ -654,6 +723,20 @@ const CreditNoteApproval = () => {
     toast({ title: "Coming soon", description: "PDF preview for Credit Note isn't built yet.", status: "info", duration: 3000, isClosable: true });
   };
 
+  const handleGstPercentChange = (index, value) => {
+    const totalPercent = Number(value) || 0;
+    const half = round2(totalPercent / 2);
+    setItems((prev) => {
+      const updated = [...prev];
+      updated[index] = recalculateItem({
+        ...updated[index],
+        cgst_percent: half,
+        sgst_percent: half,
+      });
+      return updated;
+    });
+  };
+
   if (loading) {
     return <Center h="60vh"><Spinner size="xl" color="#4f9190" /></Center>;
   }
@@ -699,7 +782,7 @@ const CreditNoteApproval = () => {
           </GridItem>
           <GridItem>
             <Text {...labelStyle} color="#c0392b">Original Invoice No.</Text>
-            <Input {...readonlyInputStyle} value={formData.originalInvoiceNo} readOnly />
+            <Input value={formData.originalInvoiceNo} onChange={(e) => setFormData((prev) => ({ ...prev, originalInvoiceNo: e.target.value }))} />
           </GridItem>
           <GridItem>
             <Text {...labelStyle}>Date <Text as="span" color="red.500">*</Text></Text>
@@ -727,6 +810,18 @@ const CreditNoteApproval = () => {
               ))}
             </Select>
           </GridItem>
+          <GridItem>
+            <Text {...labelStyle}>Is Consignee</Text>
+            <Select
+              {...inputStyle}
+              value={formData.isConsignee}
+              onChange={(e) => setFormData((prev) => ({ ...prev, isConsignee: e.target.value }))}
+            >
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </Select>
+          </GridItem>
+
           <GridItem>
             <FormControl isInvalid={!!errors.salesReturnLedgerId}>
               <Text {...labelStyle}>Sales Return Ledger <Text as="span" color="red.500">*</Text></Text>
@@ -824,9 +919,10 @@ const CreditNoteApproval = () => {
             <Text {...labelStyle}>Destination</Text>
             <Input
               {...inputStyle}
-              value={dispatchData.destination}
-              onChange={(e) => setDispatchData((prev) => ({ ...prev, destination: e.target.value }))}
+              value={formData.destination}
+              onChange={(e) => setFormData((prev) => ({ ...prev, destination: e.target.value }))}
             />
+
           </Box>
           <Box>
             <Text {...labelStyle}>Delivery Place</Text>
@@ -1022,7 +1118,7 @@ const CreditNoteApproval = () => {
               <Th {...thStyle} minW="80px">Rate</Th>
               <Th {...thStyle} minW="70px">Unit</Th>
               <Th {...thStyle} minW="90px">Amount</Th>
-              <Th {...thStyle} minW="60px">IGST %</Th>
+              <Th {...thStyle} minW="70px">{hasIGST ? "IGST %" : "CGST+SGST %"}</Th>
               <Th {...thStyle} minW="80px">Tax Amt.</Th>
               <Th {...thStyle} minW="90px">Total Amt.</Th>
               <Th {...thStyle} minW="50px" textAlign="center">Action</Th>
@@ -1047,9 +1143,18 @@ const CreditNoteApproval = () => {
                       <option key={g.id} value={g.id}>{g.godown_name || g.name}</option>
                     ))}
                   </Select>
-                  {item.batch_no && item.batch_no !== "Not Applicable" && (
-                    <Text fontSize="10px" color="purple.600" mt="1px" fontStyle="italic">Batch: {item.batch_no}</Text>
-                  )}
+                  <HStack alignItems="end">
+                    {item.batch_no && item.batch_no !== "Not Applicable" && (
+                      <Text fontSize="10px" color="purple.600" mt="1px" fontStyle="italic">Batch: {item.batch_no}</Text>
+                    )}
+                    {item.godown_id && (
+                      <Button mb="3px"
+                        size="xs" variant="link" colorScheme="orange" fontSize="10px" mt="2px"
+                        onClick={() => openGodownModalForEdit(index)}
+                      >
+                        Change Batch
+                      </Button>
+                    )}</HStack>
                 </Td>
                 <Td {...tdStyle}><Input {...readonlyInputStyle} value={item.available_qty ?? 0} readOnly textAlign="right" /></Td>
                 <Td {...tdStyle}>
@@ -1066,10 +1171,36 @@ const CreditNoteApproval = () => {
                 </Td>
                 <Td {...tdStyle}><Input {...readonlyInputStyle} value={item.unit_name} readOnly textAlign="center" /></Td>
                 <Td {...tdStyle}><Input {...readonlyInputStyle} value={item.amount ?? 0} readOnly textAlign="right" /></Td>
+             
                 <Td {...tdStyle}>
-                  <Input {...inputStyle} type="number" value={item.igst_percent ?? 0} onChange={(e) => handleItemChange(index, "igst_percent", e.target.value)} textAlign="right" />
+                  {hasIGST ? (
+                    <Input
+                      {...inputStyle} type="number" value={item.igst_percent ?? 0}
+                      onChange={(e) => handleItemChange(index, "igst_percent", e.target.value)}
+                      textAlign="right"
+                    />
+                  ) : (
+                    <>
+                      <Input
+                        {...inputStyle} type="number"
+                        value={round2(Number(item.cgst_percent || 0) + Number(item.sgst_percent || 0))}
+                        onChange={(e) => handleGstPercentChange(index, e.target.value)}
+                        textAlign="right"
+                      />
+                      <Text fontSize="9px" color="gray.500" mt="1px" textAlign="right">
+                        CGST {item.cgst_percent ?? 0}% + SGST {item.sgst_percent ?? 0}%
+                      </Text>
+                    </>
+                  )}
                 </Td>
-                <Td {...tdStyle}><Input {...readonlyInputStyle} value={item.igst_amount ?? 0} readOnly textAlign="right" /></Td>
+                <Td {...tdStyle}>
+                  <Input
+                    {...readonlyInputStyle}
+                    value={hasIGST ? (item.igst_amount ?? 0) : round2(Number(item.cgst_amount || 0) + Number(item.sgst_amount || 0))}
+                    readOnly
+                    textAlign="right"
+                  />
+                </Td>
                 <Td {...tdStyle}>
                   <Input
                     value={Number(item.total_amount || 0).toFixed(2)}
@@ -1261,9 +1392,9 @@ const CreditNoteApproval = () => {
             <Button bg="#237086" fontWeight="500" fontSize="14px" color="white" _hover={{ bg: "#1B5A6B" }} px={7} borderRadius="12px" isLoading={submitting} loadingText="Saving..." onClick={handleApprove}>
               Accept
             </Button>
-            <Button color="white" bg="green.600" _hover={{ bg: "green.700" }} fontSize="12px" fontWeight="500" borderRadius="13px" onClick={handleDownloadBill}>
+            {/* <Button color="white" bg="green.600" _hover={{ bg: "green.700" }} fontSize="12px" fontWeight="500" borderRadius="13px" onClick={handleDownloadBill}>
               Download Bill
-            </Button>
+            </Button> */}
           </>
         )}
       </Flex>

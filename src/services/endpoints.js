@@ -253,6 +253,7 @@ export const API_ENDPOINTS = {
   REJECT_RECEIPT_REQUEST: "reject-receipt-order",
   RESUBMIT_RECEIPT_REQUEST: "resubmit-receipt-order",
   GET_ASSIGNED_LEDGERS_LIST: "get-my-assigned-ledgers",
+  GET_AVAILABLE_STOCK_QTY: "/get-available-stock", 
 
   CREATE_CREDIT_NOTE_APPROVAL_REQUEST: "create-credit-note-approval-request",
   APPROVE_CREDIT_NOTE_REQUEST: "approve-credit-note-order",

@@ -693,12 +693,10 @@ const SalesCreate = () => {
 
       {/* Footer */}
       <Flex justify="flex-end" mt={2} mb={4}>
-        <Button
-          bg="#237086" color="white" _hover={{ bg: "#1B5A6B" }} px={10}
+        <Button bg="#237086" color="white" _hover={{ bg: "#1B5A6B" }} px={10}
           borderRadius="12px" isLoading={submitting} loadingText="Saving..."
           onClick={handleSave} boxShadow="0 2px 8px rgba(45,90,61,0.4)"
-          fontSize="14px" fontWeight="500"
-        >
+          fontSize="14px" fontWeight="500">
           SAVE
         </Button>
       </Flex>

@@ -116,6 +116,7 @@ import ProgressHistory from "../pages/BusinessDevelopment/VisitProgressHistory";
 import OrderVoucherReceiptLayout from "../components/layout/ReceiptLayout";
 import Receipt from "../components/layout/OrderVoucher/Receipt";
 import CreditNoteApprovalLayout from "../components/layout/OrderVoucher/CreditNoteApprovalLayout";
+import EmPaymentHoldLayout from "../components/layout/HRMaster/EmPaymentHoldLayout";
 
 
 function App() {
@@ -132,6 +133,7 @@ function App() {
         <Route path="/hr-mgmt/roles/add-job-role" element={<JobRoleLayout />} />
         <Route path="/hr-mgmt/view-employee-list" element={<EmployeeListLayout />} />
         <Route path="/hr-mgmt/upload-emp-salary" element={<UploadSalarySlipLayout />} />
+        <Route path="/hr-mgmt/emp-payment-hold" element={<EmPaymentHoldLayout/>}/>
         <Route path="/upload-documents" element={<UploadEmpDocumentsLayout />} />
         <Route path='/hr-mgmt/emp-salary-report' element={<EmployeeSalaryReportLayout />} />
 

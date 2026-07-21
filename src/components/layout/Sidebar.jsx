@@ -2,7 +2,7 @@ import {Box,VStack,Text,Button,Collapse,Icon, Image, useToast } from "@chakra-ui
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
-import { MdAssignmentInd, MdAttractions, MdOutlineAssignmentReturn, MdOutlineInventory2, MdOutlineTrackChanges, MdPayment } from "react-icons/md";
+import { MdAssignmentInd, MdAttractions, MdCardTravel, MdOutlineAssignmentReturn, MdOutlineInventory2, MdOutlinePayments, MdOutlineTour, MdOutlineTrackChanges, MdPayment, MdTour, MdTravelExplore } from "react-icons/md";
 import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
 import { FaExchangeAlt, FaListAlt, FaMoneyBill, FaTable, FaUserAlt, FaUserCheck, FaUserTie, FaWarehouse } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
@@ -121,6 +121,7 @@ const Newsidebar = () => {
         {label: "Create Job Role", path: "/hr-mgmt/roles/add-job-role",icon: HiUserGroup,},
         {label: "Create Department",path: "/hr-mgmt/dept/add-department",icon: MdAccountTree,},
         {label: "Upload Employee Expenses", path: "/hr-mgmt/upload-employee-expenses", icon: MdUploadFile },
+        {label: "Employee Payment Hold", path: "/hr-mgmt/emp-payment-hold", icon: MdOutlinePayments},
         {label:"Upload Salary Slip",path:'/hr-mgmt/upload-emp-salary',icon: RiFileList3Line,},
        {label:"Change Password", path:"/hr-mgmt/change-password", icon:FaKey}
 
@@ -134,7 +135,7 @@ const Newsidebar = () => {
         {label: "Create Team",path: "/business-development/create-team",icon: FaUserPlus, },
         {label: "Create Sub Team",path: "/business-development/create-sub-team",icon: HiUserGroup,},
         { label: "Assign Team Target", path: "/business-development/assign-target",  icon: MdAssignmentInd,},
-        { label: "Assign Visit Target", path: "/business-development/view-visit-target",  icon: MdAssignmentInd,},
+        { label: "Assign Visit Target", path: "/business-development/view-visit-target",  icon: MdCardTravel,},
         { label: "View Teams", path: "/business-development/view-teams",  icon: RiTeamFill ,},
         { label: "View Assigned Targets", path: "/business-development/view-assigned-targets",  icon: FiTarget  ,},
         { label: "View Employee Targets", path: "/business-development/view-employee-targets",  icon: FaUserAlt   ,},
@@ -223,7 +224,7 @@ const Newsidebar = () => {
             {label:"Employee Visit Report",path:"/report/emp-visit-report",icon:HiOutlineDocumentReport},
             {label:" Employee Expense Report",path:"/report/get-emp-expense-report",icon:Receipt},
             {label:"Daily Salary Report",path:"/report/emp-salary-report",icon:DollarSign},
-            {label:"Monthly Salary Report",path:"/report/emp-monthly-salary-report",icon:DollarSign},
+            {label:"Monthly Salary Report",path:"/report/emp-monthly-salary-report",icon:FaMoneyBill},
             {label:"Track Employee",path:"/report/track-employee",icon:FiMapPin},
             {label:"Party Ledger Report",path:"/report/party-ledger-report",icon:BookText},
             {label:"Party Transaction Report",path:"/report/party-transaction-report",icon:Handshake},

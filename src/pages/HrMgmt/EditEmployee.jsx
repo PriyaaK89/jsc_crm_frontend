@@ -59,6 +59,7 @@ const EditEmployee = () => {
 
         login_time: "",
         logout_time: "",
+        visit_upto: "",
         pf: "",
         esi: "",
         approver_name: "",
@@ -96,6 +97,7 @@ const EditEmployee = () => {
                     date_of_joining: formatDateForApi(data.date_of_joining),
                     login_time: data.login_time || "10:00",
                     logout_time: data.logout_time || "06:00",
+                    visit_upto: data.visit_upto,
                     week_off: data.week_off || "Sunday",
 
                 });
@@ -196,6 +198,7 @@ const EditEmployee = () => {
                 reporting_under: formData.reporting_under,
                 login_time: formData.login_time || "10:00",
                 logout_time: formData.logout_time || "06:00",
+                visit_upto: formData.visit_upto,
                 weak_off: formData.week_off || "Sunday",
                 salary: Number(formData.salary),
                 two_wheeler_travelling_allowance_per_km: Number(formData.two_wheeler_travelling_allowance_per_km),
@@ -593,6 +596,12 @@ const EditEmployee = () => {
                         <FormLabel>Logout Time</FormLabel>
                         <Input type="time" name="logout_time" value={formData?.logout_time || "06:00"} onChange={handleChange} />
                     </FormControl>
+
+                    <FormControl>
+              <FormLabel>Visit UpTo</FormLabel>
+              <Input type="time" name="visit_upto" value={formData.visit_upto} onChange={handleChange} />
+            </FormControl>
+
                     <FormControl>
                         <FormLabel {...labelStyles}>Authentication Amount</FormLabel>
                         <Input name="authentication_amount" value={formData.authentication_amount} onChange={handleChange} />

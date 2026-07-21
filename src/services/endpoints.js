@@ -261,6 +261,12 @@ export const API_ENDPOINTS = {
   REJECT_CREDIT_NOTE_REQUEST: "reject-credit-note-order",
   RESUBMIT_CREDIT_NOTE_REQUEST: "resubmit-credit-note-order",
 
+  PAYMENT_HOLD_SEARCH: "payment-hold/search",
+  PAYMENT_UPDATE_AMOUNT: "payment-hold/update-amount",
+  PAYMENT_HOLD_TOGGLE_STATUS: "payment-hold/toggle-status",
+  get_employee_expense_by_date: "/admin-expense-by-date",
+  
+
   GET_TEMPLATE_BY_ID: (id) => `visit-targets/templates/${id}`,
   UPDATE_TEMPLATE_BY_ID: (id) => `visit-targets/templates/${id}`,
   DELETE_TEMPLATE: (id) => `visit-targets/templates/${id}`,

@@ -133,6 +133,7 @@ const AddEmployee = () => {
     working_area: "",
     login_time: "",
     logout_time: "",
+    visit_upto: "",
     pf: "",
     esi: "",
     approver_id: "",
@@ -956,6 +957,11 @@ const AddEmployee = () => {
             <FormControl>
               <FormLabel {...lableStyles}>Logout Time</FormLabel>
               <Input type="time" name="logout_time" onChange={handleChange} value={formData.logout_time} />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel {...lableStyles}>Visit UpTo</FormLabel>
+              <Input type="time" name="visit_upto" onChange={handleChange} value={formData.visit_upto}/>
             </FormControl>
 
             <FormControl>

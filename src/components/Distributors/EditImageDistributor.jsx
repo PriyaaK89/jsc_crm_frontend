@@ -225,7 +225,7 @@ const UploadBox = ({ label, field, multiple = false }) => {
         />
       </Box>
 
-      {/* ✅ SINGLE FILE PREVIEW */}
+      {/*  SINGLE FILE PREVIEW */}
       {!multiple && file && preview && (
         <>
           {isPDF(file) ? (

@@ -323,7 +323,7 @@ const EmpSalaryReport = () => {
             colorScheme="blue"
             isLoading={loading}
             onClick={handleSearchClick}
-            w="full"
+            w="full" fontWeight="500" fontSize="14px"
             p={{ base: "2px", md: "1px" }}
           >
             View Report
@@ -344,7 +344,7 @@ const EmpSalaryReport = () => {
                 <Box textAlign="end" mr={5}>
                   <Button
                     rightIcon={<FiUpload />}
-                    colorScheme="green"
+                    colorScheme="green" 
                     onClick={downloadExcel}
 
                   >

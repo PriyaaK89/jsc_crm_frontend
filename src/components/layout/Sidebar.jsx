@@ -39,7 +39,7 @@ import { MdUploadFile } from "react-icons/md";
 import { FaKey } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa";
 import { RxComponent1 } from "react-icons/rx";
-import { IoBarChart, IoCreate, IoReceipt } from "react-icons/io5";
+import { IoBarChart, IoCreate, IoDocumentTextSharp, IoReceipt } from "react-icons/io5";
 import { IoMdPersonAdd } from "react-icons/io";
 import { LuPanelRightClose, LuPanelRightOpen } from "react-icons/lu";
 
@@ -254,6 +254,7 @@ const Newsidebar = () => {
           {label:"Define Retailer",path:"/misc/create-retailer",icon:IoMdPersonAdd   },      
           {label:"View Retailer",path:"/misc/view-retailers",icon:IoCreate  },      
           {label:"Transaction Approval",path:"/misc/transaction-approval",icon:FaUserCheck  },      
+          {label:"Transaction Documents",path:"/misc/transaction-documents",icon:IoDocumentTextSharp  },      
          ]
       },
       {

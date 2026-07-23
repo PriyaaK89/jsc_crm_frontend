@@ -14,7 +14,7 @@ const labelStyles = {
   color: "#444",
 };
 
-// ✅ All fields standardized
+//  All fields standardized
 const defaultBox = {
   for_amount_added: "",
   for_amount_deducted: "",
@@ -36,7 +36,7 @@ const CreateLedgerInterestParameter = () => {
     { ...defaultBox },
   ]);
 
-  // ✅ HANDLE CHANGE
+  //  HANDLE CHANGE
   const handleChange = (index, field, value) => {
     const updated = [...boxes];
 

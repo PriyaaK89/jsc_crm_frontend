@@ -30,7 +30,7 @@ const EmpCard = () => {
     total_working_days: 0,
   });
 
-  // ✅ Default month & year set
+  //  Default month & year set
   const [summaryFilter, setSummaryFilter] = useState({
     userId: "",
     month: 1,
@@ -60,7 +60,7 @@ const EmpCard = () => {
     return arr;
   }, []);
 
-  // ✅ API CALL
+  //  API CALL
   const FetchEmpAttendanceSummary = async () => {
     if (!summaryFilter.userId) return;
 
@@ -92,7 +92,7 @@ const EmpCard = () => {
     }
   };
 
-  // ✅ Trigger API when all selected
+  //  Trigger API when all selected
   useEffect(() => {
     if (
       summaryFilter.userId !== "" &&
@@ -180,11 +180,11 @@ const EmpCard = () => {
         </Flex>
       ) : (
         <SimpleGrid columns={{ base: 1, md: 3, lg:5 }} spacing={4}>
-          <Card><CardHeader bg="green.100" py={1}><Heading size="sm">Full Days</Heading></CardHeader><CardBody><Text fontSize="sm">{attendanceSummary.full_days}</Text></CardBody></Card>
-          <Card><CardHeader bg="blue.100" py={1}><Heading size="sm">Half Days</Heading></CardHeader><CardBody><Text fontSize="sm">{attendanceSummary.half_days}</Text></CardBody></Card>
-          <Card><CardHeader bg="orange.100" py={1}><Heading size="sm" >Absent</Heading></CardHeader><CardBody><Text fontSize="sm">{attendanceSummary.absent_days}</Text></CardBody></Card>
-          <Card><CardHeader bg="purple.100" py={1}><Heading size="sm" >Leave Days</Heading></CardHeader><CardBody><Text fontSize="sm">{attendanceSummary.leave_days}</Text></CardBody></Card>
-          <Card><CardHeader bg="yellow.100" py={1}><Heading size="sm" >Total Working Days</Heading></CardHeader><CardBody><Text fontSize="sm">{attendanceSummary.total_working_days}</Text></CardBody></Card>
+          <Card><CardHeader bg="green.100" py={1}><Heading fontSize="14px" color="gray.700">Full Days</Heading></CardHeader><CardBody><Text fontSize="14px">{attendanceSummary.full_days}</Text></CardBody></Card>
+          <Card><CardHeader bg="blue.100" py={1} ><Heading fontSize="14px" color="gray.700">Half Days</Heading></CardHeader><CardBody><Text fontSize="14px">{attendanceSummary.half_days}</Text></CardBody></Card>
+          <Card><CardHeader bg="orange.100" py={1}><Heading fontSize="14px" color="gray.700">Absent</Heading></CardHeader><CardBody><Text fontSize="14px">{attendanceSummary.absent_days}</Text></CardBody></Card>
+          <Card><CardHeader bg="purple.100" py={1}><Heading fontSize="14px" color="gray.700">Leave Days</Heading></CardHeader><CardBody><Text fontSize="14px">{attendanceSummary.leave_days}</Text></CardBody></Card>
+          <Card><CardHeader bg="yellow.100" py={1}><Heading fontSize="14px" color="gray.700">Total Working Days</Heading></CardHeader><CardBody><Text fontSize="14px">{attendanceSummary.total_working_days}</Text></CardBody></Card>
         </SimpleGrid>
       )}
     </Box>

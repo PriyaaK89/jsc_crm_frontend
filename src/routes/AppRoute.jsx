@@ -117,6 +117,7 @@ import OrderVoucherReceiptLayout from "../components/layout/ReceiptLayout";
 import Receipt from "../components/layout/OrderVoucher/Receipt";
 import CreditNoteApprovalLayout from "../components/layout/OrderVoucher/CreditNoteApprovalLayout";
 import EmPaymentHoldLayout from "../components/layout/HRMaster/EmPaymentHoldLayout";
+import TransactionDocuments from "../components/layout/MiscActions/TransactionDocuments";
 
 
 function App() {
@@ -251,6 +252,7 @@ function App() {
         <Route path="/misc/create-retailer" element={<CreateRetailerLayout />} />
         <Route path="/misc/view-retailers" element={<ViewRetailerLayout />} />
         <Route path="/misc/transaction-approval" element={<TransactionApprovalLayout/>}/>
+        <Route path="/misc/transaction-documents" element={<TransactionDocuments/>}/>
 
         <Route path="/transaction-master/purchase" element={<PurchaseTxnMasterLayout />} />
         <Route path="/transaction-master/payment" element={<PaymentTxnMasterLayout />} />

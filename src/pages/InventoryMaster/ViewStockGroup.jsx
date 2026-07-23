@@ -109,7 +109,7 @@ const ViewStockGroup = () => {
       <DeleteStockGroupModel
         isDeleteOpen={isDeleteOpen}
         onDeleteClose={onDeleteClose}
-        selectedId={selectedId}   // ✅ correct
+        selectedId={selectedId}   
         fetchStockGroups={fetchStockGroups}
 
       />

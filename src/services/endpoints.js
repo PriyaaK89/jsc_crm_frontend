@@ -265,8 +265,9 @@ export const API_ENDPOINTS = {
   PAYMENT_UPDATE_AMOUNT: "payment-hold/update-amount",
   PAYMENT_HOLD_TOGGLE_STATUS: "payment-hold/toggle-status",
   get_employee_expense_by_date: "/admin-expense-by-date",
-  
 
+  GET_TRANSACTION_REPORT_IMAGES: "get-transaction-documents",
+  
   GET_TEMPLATE_BY_ID: (id) => `visit-targets/templates/${id}`,
   UPDATE_TEMPLATE_BY_ID: (id) => `visit-targets/templates/${id}`,
   DELETE_TEMPLATE: (id) => `visit-targets/templates/${id}`,

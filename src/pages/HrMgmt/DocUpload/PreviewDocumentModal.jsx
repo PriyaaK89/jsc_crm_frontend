@@ -64,7 +64,7 @@ const PreviewDocument = ({ isOpen, onClose, image }) => {
           />
         </ModalBody>
 
-        {/* ✅ Footer with buttons */}
+        {/*  Footer with buttons */}
         <ModalFooter>
           <Button variant="ghost" border="1px solid #ccc" onClick={onClose} mr={2}>
             Cancel

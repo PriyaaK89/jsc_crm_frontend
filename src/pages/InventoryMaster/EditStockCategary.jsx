@@ -96,7 +96,7 @@ const EditStockCategory = () => {
     }));
   };
 
-  // ✅ SUBMIT UPDATE
+  //  SUBMIT UPDATE
   const handleSubmit = async (e) => {
     e.preventDefault();
 

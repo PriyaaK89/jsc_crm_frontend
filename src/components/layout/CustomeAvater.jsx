@@ -17,7 +17,7 @@ const CustomeAvater = React.forwardRef(({ name, src, size = "40px", ...props }, 
       display="flex"
       alignItems="center"
       justifyContent="center"
-      cursor="pointer"   // ✅ pointer add
+      cursor="pointer"   //  pointer add
       {...props}
     >
       {src ? (

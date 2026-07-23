@@ -317,3 +317,8 @@ height: 50px !important;
   font-family: serif;
   color: black;
 }
+
+.chakra-button{
+  /* font-size: 14px !important; */
+  font-weight: 500 !important;
+}

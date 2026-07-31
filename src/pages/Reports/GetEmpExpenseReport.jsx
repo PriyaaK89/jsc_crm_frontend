@@ -1,40 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import {
-  Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Select,
-  SimpleGrid,
-  Text,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  IconButton,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  Image,
-  HStack,
-  Flex,
-  Spinner,
-  Alert,
-  AlertIcon,
-  Badge,
-  useDisclosure,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, FormControl, FormLabel, Input, Select, SimpleGrid, Text, Table, Thead, Tbody, Tr, Th, Td, TableContainer, IconButton, Modal, ModalOverlay,
+  ModalContent, ModalHeader, ModalCloseButton, ModalBody, Image, HStack, Flex, Spinner, Alert, AlertIcon, Badge, useDisclosure, useToast, } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import { FiFileText } from "react-icons/fi";
 import { Link } from "react-router-dom";
@@ -667,10 +633,7 @@ function GetEmpExpenseReport() {
                       <Td>{typeLabel(entry.expense_type)}</Td>
                       <Td isNumeric>{Number(entry.amount).toFixed(2)}</Td>
                       <Td>
-                        <Badge
-                          colorScheme={
-                            entry.hold_status === "HOLD" ? "red" : "green"
-                          }
+                        <Badge colorScheme={ entry.hold_status === "HOLD" ? "red" : "green" }
                           mr={1}>
                           {entry.hold_status === "HOLD" ? "HOLD" : "UNHOLD"}
                         </Badge>
@@ -678,16 +641,11 @@ function GetEmpExpenseReport() {
                       </Td>
                       <Td>
                         {entry.bill_url ? (
-                          <IconButton
-                            aria-label="View document"
-                            icon={<FiFileText />}
-                            size="sm"
-                            onClick={() => openBillPreview(entry.bill_url)}
-                          />
+                          <IconButton aria-label="View document"
+                            icon={<FiFileText />} size="sm"
+                            onClick={() => openBillPreview(entry.bill_url)} />
                         ) : (
-                          <Text fontSize="sm" color="gray.400">
-                            —
-                          </Text>
+                          <Text fontSize="sm" color="gray.400">  — </Text>
                         )}
                       </Td>
                     </Tr>
@@ -705,8 +663,7 @@ function GetEmpExpenseReport() {
               totalItems={pagination.total}
               totalPages={pagination.total_pages}
               onPageChange={goToPage}
-              onLimitChange={setPageSize}
-            />
+              onLimitChange={setPageSize} />
           )}
         </Box>
       )}

@@ -82,20 +82,11 @@ const initialFormData = {
   },
 
 
-interest_configs: [
-  {
-    ...defaultInterestConfig,
-    slab_no: 1,
-  },
-  {
-    ...defaultInterestConfig,
-    slab_no: 2,
-  },
-  {
-    ...defaultInterestConfig,
-    slab_no: 3,
-  },
-],
+  interest_configs: [
+    { ...defaultInterestConfig, slab_no: 1, },
+    { ...defaultInterestConfig, slab_no: 2, },
+    { ...defaultInterestConfig, slab_no: 3, },
+  ],
 
   crm_details: {
     customer_name: "",
@@ -152,6 +143,7 @@ const CreateLedger = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(1000);
   const [mailingAreas, setMailingAreas] = useState([]);
+  const SLAB_TYPES = ["debit", "credit", "security"];
 
   useEffect(() => {
     fetchGroups();
@@ -315,28 +307,20 @@ const CreateLedger = () => {
       gst_no: currentConfig.showTax ? (f.gst_no || null) : null,
 
       // Bill-by-bill (only when section visible, else send neutral defaults)
-      maintain_bill_by_bill: currentConfig.showBillByBill
-        ? toBool(f.maintain_bill_by_bill) : 0,
-      default_credit_period: currentConfig.showBillByBill
-        ? Number(f.default_credit_period) || 0 : 0,
-      check_credit_days: currentConfig.showBillByBill
-        ? toBool(f.check_credit_days) : 0,
-      credit_limit: currentConfig.showBillByBill
-        ? Number(f.credit_limit) || 0 : 0,
+      maintain_bill_by_bill: currentConfig.showBillByBill ? toBool(f.maintain_bill_by_bill) : 0,
+      default_credit_period: currentConfig.showBillByBill ? Number(f.default_credit_period) || 0 : 0,
+      check_credit_days: currentConfig.showBillByBill ? toBool(f.check_credit_days) : 0,
+      credit_limit: currentConfig.showBillByBill ? Number(f.credit_limit) || 0 : 0,
 
       // Features
-      inventory_values_affected: currentConfig.showInventory
-        ? toBool(f.inventory_values_affected) : 0,
-      use_for_payroll: currentConfig.showPayroll
-        ? toBool(f.use_for_payroll) : 0,
+      inventory_values_affected: currentConfig.showInventory ? toBool(f.inventory_values_affected) : 0,
+      use_for_payroll: currentConfig.showPayroll ? toBool(f.use_for_payroll) : 0,
 
       // Interest
-      activate_interest_calculation: currentConfig.showInterest
-        ? toBool(f.activate_interest_calculation) : 0,
+      activate_interest_calculation: currentConfig.showInterest ? toBool(f.activate_interest_calculation) : 0,
 
       // OD limit
-      od_limit: currentConfig.showOdLimit
-        ? Number(f.od_limit) || 0 : 0,
+      od_limit: currentConfig.showOdLimit ? Number(f.od_limit) || 0 : 0,
 
       // Bank details object (undefined = not sent, backend skips insert)
       bank_details: hasBankSection
@@ -354,61 +338,37 @@ const CreateLedger = () => {
         : undefined,
 
       // Interest config object (only sent when activated)
-      interest_configs:
-  currentConfig.showInterest &&
-  f.activate_interest_calculation === "Yes"
-    ? f.interest_configs
-        .filter((cfg) => {
-          // only save slabs that contain some data
-          return (
-            cfg.rate ||
-            cfg.for_amount_added ||
-            cfg.for_amount_deduct ||
-            cfg.rate_per ||
-            cfg.rate_on ||
-            cfg.grace_period ||
-            cfg.security_amount
-          );
-        })
-        .map((cfg, index) => ({
-  slab_no: index + 1,
-          calculate_transaction_by_transaction:
-            toBool(f.txn_by_txn_interest),
-
-          interest_based_on:
-            f.interest_based_on || null,
-
-          amount_added:
-            toBool(cfg.for_amount_added),
-
-          amount_deducted:
-            toBool(cfg.for_amount_deduct),
-
-          rate:
-            Number(cfg.rate) || 0,
-
-          rate_per:
-            cfg.rate_per || null,
-
-          rate_on:
-            cfg.rate_on || null,
-
-          applicability:
-            cfg.applicability || null,
-
-          applicability_days:
-            Number(cfg.by_days) || 0,
-
-          grace_period:
-            Number(cfg.grace_period) || 0,
-
-          security_enabled:
-            toBool(cfg.security),
-
-          security_amount:
-            Number(cfg.security_amount) || 0,
+      interest_configs: currentConfig.showInterest && f.activate_interest_calculation === "Yes"
+  ? f.interest_configs
+      .map((cfg, originalIndex) => ({ cfg, originalIndex })) // capture true position BEFORE filtering
+      .filter(({ cfg }) => {
+        return (
+          cfg.rate ||
+          cfg.for_amount_added ||
+          cfg.for_amount_deduct ||
+          cfg.rate_per ||
+          cfg.rate_on ||
+          cfg.grace_period ||
+          cfg.security_amount
+        );
+      })
+        .map((cfg, originalIndex ) => ({
+          slab_no: originalIndex + 1,
+          slab_type: SLAB_TYPES[originalIndex] || null,
+          calculate_transaction_by_transaction: toBool(f.txn_by_txn_interest),
+          interest_based_on: f.interest_based_on || null,
+          amount_added: toBool(cfg.for_amount_added),
+          amount_deducted: toBool(cfg.for_amount_deduct),
+          rate: Number(cfg.rate) || 0,
+          rate_per: cfg.rate_per || null,
+          rate_on: cfg.rate_on || null,
+          applicability: cfg.applicability || null,
+          applicability_days: Number(cfg.by_days) || 0,
+          grace_period: Number(cfg.grace_period) || 0,
+          security_enabled: toBool(cfg.security),
+          security_amount: Number(cfg.security_amount) || 0,
         }))
-    : [],
+        : [],
 
       crm_details: {
         customer_name: crm.customer_name || null,
@@ -421,15 +381,8 @@ const CreateLedger = () => {
         firm_pan: crm.firm_pan || null,
         firm_aadhar: crm.firm_aadhar || null,
         firm_gstn_type: crm.firm_gstn_type || null,
-
-        firm_annual_turnover: crm.firm_annual_turnover
-          ? Number(crm.firm_annual_turnover)
-          : null,
-
-        expected_sale_per_year: crm.expected_sale_per_year
-          ? Number(crm.expected_sale_per_year)
-          : null,
-
+        firm_annual_turnover: crm.firm_annual_turnover ? Number(crm.firm_annual_turnover) : null,
+        expected_sale_per_year: crm.expected_sale_per_year ? Number(crm.expected_sale_per_year) : null,
         other_company_detail: crm.other_company_detail || null,
 
         address: crm.address || null,
@@ -441,15 +394,9 @@ const CreateLedger = () => {
 
         branch: crm.branch || null,
         contact: crm.contact || null,
-
-        responsible_person_name:
-          crm.responsible_person_name || null,
-
-        responsible_person_address:
-          crm.responsible_person_address || null,
-
-        responsible_person_contact:
-          crm.responsible_person_contact || null,
+        responsible_person_name: crm.responsible_person_name || null,
+        responsible_person_address: crm.responsible_person_address || null,
+        responsible_person_contact: crm.responsible_person_contact || null,
 
         seed_licence_no: crm.seed_licence_no || null,
         fert_licence_no: crm.fert_licence_no || null,
@@ -461,12 +408,8 @@ const CreateLedger = () => {
         bank_acc_number: crm.bank_acc_number || null,
         bank_ifsc: crm.bank_ifsc || null,
         bank_branch: crm.bank_branch || null,
-
-        security_cheque_no1:
-          crm.security_cheque_no1 || null,
-
-        security_cheque_no2:
-          crm.security_cheque_no2 || null,
+        security_cheque_no1: crm.security_cheque_no1 || null,
+        security_cheque_no2: crm.security_cheque_no2 || null,
       },
     };
 
@@ -506,7 +449,7 @@ const CreateLedger = () => {
         status: "success",
         duration: 3000,
         isClosable: true,
-        
+
       });
 
       // Reset form to initial state after successful submission
@@ -537,7 +480,7 @@ const CreateLedger = () => {
 
   return (
     <Box bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 4 }} borderRadius="lg" boxShadow="md">
-<HStack justifyContent="space-between">
+      <HStack justifyContent="space-between">
         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px" >
           <BreadcrumbItem>
             <BreadcrumbLink as={Link} to="/dashboard" >
@@ -1055,53 +998,10 @@ const CreateLedger = () => {
           </Box>
         )}
 
-        {/* ============================================================ */}
-        {/* 8. MAILING DETAILS                                            */}
-        {/* ============================================================ */}
-        {/* <Box className="ledger_box">
-              <Heading size="sm" className="ledger_heading">Mailing Details</Heading>
-              <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
-                <FormControl>
-                  <FormLabel>Name</FormLabel>
-                  <Input maxLength={100} name="mailing_name" value={formData.mailing_name} onChange={handleChange} />
-                </FormControl>
-                  <FormControl>
-                  <FormLabel>Pincode (Enter Pincode First)</FormLabel>
-                  <Input maxLength={40} name="pincode" value={formData.pincode} onChange={handleMailingPincodeChange} />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Location</FormLabel>
-                  <Select name="location" value={formData.location} onChange={handleChange} placeholder="Please Select">
-                    {mailingAreas.length > 0
-                      ? mailingAreas.map((area, i) => (
-                        <option key={i} value={area.officename}>
-                          {area.officename}
-                        </option>
-                      ))
-                      : locationNames.map((loc, i) => (
-                        <option key={i} value={loc.value ?? loc}>
-                          {loc.label ?? loc}
-                        </option>
-                      ))
-                    }
-                  </Select>
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Country</FormLabel>
-                  <Input maxLength={40} name="country" value={formData.country} onChange={handleChange}/>
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>State</FormLabel>
-                  <Input maxLength={40} name="state" value={formData.state} onChange={handleChange}/>
-                </FormControl>
-              </Grid>
-            </Box> */}
+       
 
         {/* ============================================================ */}
-        {/* 9. TAX REGISTRATION DETAILS                                   */}
+        {/* 8. TAX REGISTRATION DETAILS                                   */}
         {/* ============================================================ */}
         {currentConfig.showTax && (
           <Box className="ledger_box">

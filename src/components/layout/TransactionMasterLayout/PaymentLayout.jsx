@@ -41,7 +41,7 @@ const PaymentTxnMasterLayout = () => {
                     </HStack>
 
                     <Text className="action_heading" mb={6} textAlign="center">
-                        Create Payment
+                        Create Payment 
                     </Text>
                     <PaymentTransaction/>
 

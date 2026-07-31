@@ -1,21 +1,5 @@
-import {
-  Flex,
-  Text,
-  Avatar,
-  Spacer,
-  Button,
-  Box,
-  Portal,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverBody,
-  Divider,
-  useToast,
-  useDisclosure,
-  Image
-} from "@chakra-ui/react";
+import { Flex, Text, Avatar, Spacer, Button, Box, Portal, Popover, PopoverTrigger, PopoverContent, 
+  PopoverArrow, PopoverBody, Divider, useToast, useDisclosure, Image } from "@chakra-ui/react";
 import React, { useState, useContext } from "react";
 import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
 import { BellIcon } from "lucide-react";
@@ -77,14 +61,13 @@ const Topbar = ({ profileImage }) => {
         top="0"
         left="280px"
         w="calc(100% - 280px)"
-        h="75px"
+        h="72px"
         bg="white"
         align="center"
         px={6}
         zIndex="1000"
         border="1px solid #e5e7eb"
-        boxShadow="sm"
-      >
+        boxShadow="sm" >
    
 
         <Spacer />

@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
-    Box, Text, Grid, GridItem, FormControl, FormLabel, Input, Select,
-    Textarea, Table, Thead, Tbody, Tr, Th, Td, Button, Flex,
-    Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Badge, Spinner, useToast, HStack,} from "@chakra-ui/react";
+    Box, Text, Grid, GridItem, FormControl, FormLabel, Input, Select, Textarea, Table, Thead, Tbody, Tr, Th, Td, Button, Flex,
+    Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Badge, Spinner, useToast, HStack,
+} from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import useUsersapi from "../../Apis/GetUsersapi";
@@ -52,8 +52,8 @@ const Receipt = () => {
 
     const [submitting, setSubmitting] = useState(false);
     const [pendingBills, setPendingBills] = useState([]);
-    const {auth} = useContext(AuthContext)
-    console.log("userID: " ,auth?.user?.id)
+    const { auth } = useContext(AuthContext)
+    console.log("userID: ", auth?.user?.id)
     const userID = auth?.user?.id
 
     // ── boot ────────────────────────────────────────────────────────────────────
@@ -82,18 +82,18 @@ const Receipt = () => {
             );
             setVoucherTypeId(res.data.voucher_type_id);
             setFormData((prev) => ({ ...prev, voucher_no: res.data.voucher_no }));
-        }catch (err) {
-  console.log(err);
-  console.log(err.response);
+        } catch (err) {
+            console.log(err);
+            console.log(err.response);
 
-  toast({
-    title: "Error",
-    description: err.response?.data?.message || err.message,
-    status: "error",
-    duration: 3000,
-    isClosable: true,
-  });
-}
+            toast({
+                title: "Error",
+                description: err.response?.data?.message || err.message,
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+        }
     };
 
     const fetchBankGroupLedger = async () => {
@@ -133,34 +133,34 @@ const Receipt = () => {
     //     });
     // };
     const handleEntryChange = (index, field, value) => {
-    setFormData((prev) => {
-        const entries = [...prev.entries];
-        entries[index] = {
-            ...entries[index],
-            [field]: value,
-        };
+        setFormData((prev) => {
+            const entries = [...prev.entries];
+            entries[index] = {
+                ...entries[index],
+                [field]: value,
+            };
 
-        return { ...prev, entries };
-    });
+            return { ...prev, entries };
+        });
 
-    // Sync amount to bill modal
-    // if (
-    //     field === "amount" &&
-    //     selectedEntryIndex === index &&
-    //     billReferenceData.length > 0
-    // ) {
-    //     setBillReferenceData((prev) => {
-    //         const updated = [...prev];
+        // Sync amount to bill modal
+        // if (
+        //     field === "amount" &&
+        //     selectedEntryIndex === index &&
+        //     billReferenceData.length > 0
+        // ) {
+        //     setBillReferenceData((prev) => {
+        //         const updated = [...prev];
 
-    //         updated[0] = {
-    //             ...updated[0],
-    //             reference_amount: value,
-    //         };
+        //         updated[0] = {
+        //             ...updated[0],
+        //             reference_amount: value,
+        //         };
 
-    //         return updated;
-    //     });
-    // }
-};
+        //         return updated;
+        //     });
+        // }
+    };
 
     // ── account ledger select → fetch balance ────────────────────────────────────
 
@@ -273,35 +273,49 @@ const Receipt = () => {
 
                 const savedRefs = formData.entries[index]?.bill_references ?? [];
 
+                // if (savedRefs.length > 0) {
+                //     setBillReferenceData(
+                //         savedRefs.map((ref) => {
+                //             if (ref.reference_type === "AGST REF" && !ref.sales_bill_reference_id) {
+                //                 const matched = serverBills.find(
+                //                     (b) => b.reference_no === ref.reference_no
+                //                 );
+                //                 return matched
+                //                     ? { ...ref, sales_bill_reference_id: matched.id }
+                //                     : ref;
+                //             }
+                //             return ref;
+                //         })
+                //     );
+                // } else {
+                //     const entryAmount = formData.entries[index]?.amount || "";
+                //     setBillReferenceData([
+                //         {
+                //             reference_type: "AGST REF",
+                //             reference_no: "",
+                //             sales_bill_reference_id: null,
+                //             reference_amount: entryAmount,
+                //             due_date: "",
+                //             dr_cr: "Cr",
+                //         },
+                //     ]);
+
+                // }
+
                 if (savedRefs.length > 0) {
-                    // Re-open with previously saved references
-                    setBillReferenceData(
-                        savedRefs.map((ref) => {
-                            // Try to re-attach the pending bill id if it's an AGST REF
-                            if (ref.reference_type === "AGST REF" && !ref.sales_bill_reference_id) {
-                                const matched = serverBills.find(
-                                    (b) => b.reference_no === ref.reference_no
-                                );
-                                return matched
-                                    ? { ...ref, sales_bill_reference_id: matched.id }
-                                    : ref;
-                            }
-                            return ref;
-                        })
-                    );
+                    const rehydrated = savedRefs.map((ref) => {
+                        if (ref.reference_type === "AGST REF" && !ref.sales_bill_reference_id) {
+                            const matched = serverBills.find((b) => b.reference_no === ref.reference_no);
+                            return matched ? { ...ref, sales_bill_reference_id: matched.id } : ref;
+                        }
+                        return ref;
+                    });
+                    const entryAmount = formData.entries[index]?.amount || 0;
+                    setBillReferenceData(applyWaterfallAllocation(rehydrated, entryAmount, serverBills));
                 } else {
-                    const entryAmount = formData.entries[index]?.amount || "";
                     setBillReferenceData([
-                        {
-                            reference_type: "AGST REF",
-                            reference_no: "",
-                            sales_bill_reference_id: null,
-                            reference_amount: entryAmount,
-                            due_date: "",
-                            dr_cr: "Cr",
-                        },
+                        { reference_type: "AGST REF", reference_no: "", sales_bill_reference_id: null, reference_amount: 0, due_date: "", dr_cr: "Cr" },
                     ]);
-                    
                 }
             }
         } catch (err) {
@@ -319,110 +333,168 @@ const Receipt = () => {
         }
     };
 
+    // Recomputes reference_amount for every row, top to bottom, using the
+    // entry's OUTSIDE amount as the source of truth (never overwritten).
+    const applyWaterfallAllocation = (rows, outsideAmount, billsList = pendingBills) => {
+        let remaining = Number(outsideAmount || 0);
+
+        return rows.map((row) => {
+            if (row.reference_type === "AGST REF" && row.sales_bill_reference_id) {
+                const bill = billsList.find((b) => b.id === row.sales_bill_reference_id);
+                const pendingAmt = bill ? Number(bill.pending_amount) : 0;
+                const allocated = Math.max(0, Math.min(remaining, pendingAmt));
+                remaining -= allocated;
+                return { ...row, reference_amount: allocated };
+            }
+            // ON ACCOUNT / ADVANCE rows: keep the user-typed amount,
+            // but still deduct it from the pool so later AGST rows get the right remainder.
+            remaining -= Number(row.reference_amount || 0);
+            return row;
+        });
+    };
+
     // ── When AGST REF dropdown changes, auto-fill amount + store sales_bill_reference_id ──
+
+    // const handleAgstRefSelect = (rowIndex, selectedReferenceNo) => {
+    //     const matchedBill = pendingBills.find((b) => b.reference_no === selectedReferenceNo);
+
+    //     setBillReferenceData((prev) => {
+    //         const updated = [...prev];
+    //         updated[rowIndex] = {
+    //             ...updated[rowIndex],
+    //             reference_no: selectedReferenceNo,
+    //             sales_bill_reference_id: matchedBill ? matchedBill.id : null,
+    //             due_date: matchedBill?.due_date ?? updated[rowIndex].due_date,
+    //         };
+
+    //         // Sync total back to entry amount
+    //         const total = updated.reduce((sum, row) => sum + Number(row.reference_amount || 0), 0);
+    //         setFormData((prevForm) => {
+    //             const entries = [...prevForm.entries];
+    //             entries[selectedEntryIndex] = {
+    //                 ...entries[selectedEntryIndex],
+    //                 amount: total,
+    //             };
+    //             return { ...prevForm, entries };
+    //         });
+
+    //         return updated;
+    //     });
+    // };
 
     const handleAgstRefSelect = (rowIndex, selectedReferenceNo) => {
         const matchedBill = pendingBills.find((b) => b.reference_no === selectedReferenceNo);
+        const outsideAmount = formData.entries[selectedEntryIndex]?.amount || 0;
 
         setBillReferenceData((prev) => {
             const updated = [...prev];
             updated[rowIndex] = {
-    ...updated[rowIndex],
-    reference_no: selectedReferenceNo,
-    sales_bill_reference_id: matchedBill ? matchedBill.id : null,
-    due_date: matchedBill?.due_date ?? updated[rowIndex].due_date,
-};
-          
-            // Sync total back to entry amount
-            const total = updated.reduce((sum, row) => sum + Number(row.reference_amount || 0), 0);
-            setFormData((prevForm) => {
-                const entries = [...prevForm.entries];
-                entries[selectedEntryIndex] = {
-                    ...entries[selectedEntryIndex],
-                    amount: total,
-                };
-                return { ...prevForm, entries };
-            });
-
-            return updated;
+                ...updated[rowIndex],
+                reference_no: selectedReferenceNo,
+                sales_bill_reference_id: matchedBill ? matchedBill.id : null,
+                due_date: matchedBill?.due_date ?? updated[rowIndex].due_date,
+            };
+            return applyWaterfallAllocation(updated, outsideAmount);
+            // NOTE: the old "sync total back to entry amount" block is gone —
+            // that was the bug that overwrote your typed amount.
         });
     };
+
+    // const handleBillReferenceChange = (rowIndex, field, value) => {
+    //     setBillReferenceData((prev) => {
+    //         const updated = [...prev];
+    //         updated[rowIndex] = { ...updated[rowIndex], [field]: value };
+
+    //         // If amount changed, keep entry amount in sync
+    //         if (field === "reference_amount") {
+    //             const total = updated.reduce(
+    //                 (sum, row) => sum + Number(row.reference_amount || 0),
+    //                 0
+    //             );
+    //             setFormData((prevForm) => {
+    //                 const entries = [...prevForm.entries];
+    //                 entries[selectedEntryIndex] = {
+    //                     ...entries[selectedEntryIndex],
+    //                     amount: total,
+    //                 };
+    //                 return { ...prevForm, entries };
+    //             });
+    //         }
+
+    //         return updated;
+    //     });
+    // };
 
     const handleBillReferenceChange = (rowIndex, field, value) => {
+        const outsideAmount = formData.entries[selectedEntryIndex]?.amount || 0;
+
         setBillReferenceData((prev) => {
-            const updated = [...prev];
+            let updated = [...prev];
             updated[rowIndex] = { ...updated[rowIndex], [field]: value };
-
-            // If amount changed, keep entry amount in sync
-            if (field === "reference_amount") {
-                const total = updated.reduce(
-                    (sum, row) => sum + Number(row.reference_amount || 0),
-                    0
-                );
-                setFormData((prevForm) => {
-                    const entries = [...prevForm.entries];
-                    entries[selectedEntryIndex] = {
-                        ...entries[selectedEntryIndex],
-                        amount: total,
-                    };
-                    return { ...prevForm, entries };
-                });
+            if (field === "reference_type" || field === "reference_amount") {
+                updated = applyWaterfallAllocation(updated, outsideAmount);
             }
-
             return updated;
         });
     };
-
     const addBillRow = () => {
-        setBillReferenceData((prev) => [
-            ...prev,
-            {
-                reference_type: "NEW REF",
-                reference_no: "",
-                sales_bill_reference_id: null,
-                reference_amount: 0,
-                due_date: "",
-                dr_cr: "Cr",
-            },
-        ]);
+        const outsideAmount = formData.entries[selectedEntryIndex]?.amount || 0;
+        setBillReferenceData((prev) =>
+            applyWaterfallAllocation(
+                [...prev, { reference_type: "NEW REF", reference_no: "", sales_bill_reference_id: null, reference_amount: 0, due_date: "", dr_cr: "Cr" }],
+                outsideAmount
+            )
+        );
     };
 
+    // const removeBillRow = (rowIndex) => {
+    //     setBillReferenceData((prev) => {
+    //         const updated = prev.filter((_, i) => i !== rowIndex);
+
+    //         // Re-sync amount after removal
+    //         const total = updated.reduce((sum, row) => sum + Number(row.reference_amount || 0), 0);
+    //         setFormData((prevForm) => {
+    //             const entries = [...prevForm.entries];
+    //             entries[selectedEntryIndex] = { ...entries[selectedEntryIndex], amount: total, };
+    //             return { ...prevForm, entries };
+    //         });
+
+    //         return updated;
+    //     });
+    // };
     const removeBillRow = (rowIndex) => {
-        setBillReferenceData((prev) => {
-            const updated = prev.filter((_, i) => i !== rowIndex);
-
-            // Re-sync amount after removal
-            const total = updated.reduce((sum, row) => sum + Number(row.reference_amount || 0), 0);
-            setFormData((prevForm) => {
-                const entries = [...prevForm.entries];
-                entries[selectedEntryIndex] = {
-                    ...entries[selectedEntryIndex],
-                    amount: total,
-                };
-                return { ...prevForm, entries };
-            });
-
-            return updated;
-        });
+        const outsideAmount = formData.entries[selectedEntryIndex]?.amount || 0;
+        setBillReferenceData((prev) =>
+            applyWaterfallAllocation(prev.filter((_, i) => i !== rowIndex), outsideAmount)
+        );
     };
+    // const saveBillAllocation = () => {
+    //     // Strip internal-only helper keys before saving
+    //     const cleaned = billReferenceData.map( ({ _pending_amount, _bill_date, ...rest }) => rest );
+    //     const totalAllocated = cleaned.reduce( (sum, row) => sum + Number(row.reference_amount || 0), 0 );
+
+    //     setFormData((prev) => {
+    //         const entries = [...prev.entries];
+    //         entries[selectedEntryIndex] = {
+    //             ...entries[selectedEntryIndex],
+    //             amount: totalAllocated,
+    //             bill_references: cleaned,
+    //         };
+    //         return { ...prev, entries };
+    //     });
+
+    //     setBillModal(false);
+    // };
 
     const saveBillAllocation = () => {
-        // Strip internal-only helper keys before saving
-        const cleaned = billReferenceData.map(
-            ({ _pending_amount, _bill_date, ...rest }) => rest
-        );
-
-        const totalAllocated = cleaned.reduce(
-            (sum, row) => sum + Number(row.reference_amount || 0),
-            0
-        );
+        const cleaned = billReferenceData.map(({ _pending_amount, _bill_date, ...rest }) => rest);
 
         setFormData((prev) => {
             const entries = [...prev.entries];
             entries[selectedEntryIndex] = {
                 ...entries[selectedEntryIndex],
-                amount: totalAllocated,
                 bill_references: cleaned,
+                // amount is left untouched — it's the outside figure you typed
             };
             return { ...prev, entries };
         });
@@ -514,21 +586,21 @@ const Receipt = () => {
                 await loadVoucherNo();
             }
         } catch (err) {
-    console.log("FULL ERROR =>", err);
-    console.log("RESPONSE =>", err.response);
-    console.log("DATA =>", err.response?.data);
+            console.log("FULL ERROR =>", err);
+            console.log("RESPONSE =>", err.response);
+            console.log("DATA =>", err.response?.data);
 
-    toast({
-        title: "Error",
-        description:
-            err.response?.data?.message ||
-            err.message ||
-            "Something went wrong",
-        status: "error",
-        duration: 4000,
-        isClosable: true,
-    });
-} finally {
+            toast({
+                title: "Error",
+                description:
+                    err.response?.data?.message ||
+                    err.message ||
+                    "Something went wrong",
+                status: "error",
+                duration: 4000,
+                isClosable: true,
+            });
+        } finally {
             setSubmitting(false);
         }
     };
@@ -548,24 +620,35 @@ const Receipt = () => {
     // ── render ───────────────────────────────────────────────────────────────────
 
     const inputStyle = {
-    size: "sm",
-    borderRadius: "6px",
-    borderColor: "#c8d0d8",
-    bg: "white",
-    fontSize: "12px",
-    height: "40px",
-    _focus: { borderColor: "#3d7a52", boxShadow: "0 0 0 1px #3d7a52" },
-};
+        size: "sm",
+        borderRadius: "6px",
+        borderColor: "#c8d0d8",
+        bg: "white",
+        fontSize: "12px",
+        height: "40px",
+        _focus: { borderColor: "#3d7a52", boxShadow: "0 0 0 1px #3d7a52" },
+    };
 
-const readonlyInputStyle = { ...inputStyle, bg: "#f0f4f0", color: "#555" };
+    const readonlyInputStyle = { ...inputStyle, bg: "#f0f4f0", color: "#555" };
 
-const thStyle = {
-    borderColor: "#c8d8cc",
-    p: "6px 4px",
-    fontWeight: "700",
-    letterSpacing: "0.3px",
-    whiteSpace: "nowrap",
-};
+    const thStyle = {
+        borderColor: "#c8d8cc",
+        p: "6px 4px",
+        fontWeight: "700",
+        letterSpacing: "0.3px",
+        whiteSpace: "nowrap",
+    };
+
+    const hasBlankAgstRef = billReferenceData.some(
+        (row) => row.reference_type === "AGST REF" && !row.sales_bill_reference_id
+    );
+    const isAmountMismatched = Math.abs(billDiff) > 0.01;
+    const billModalError = hasBlankAgstRef
+        ? "Please select a bill for all Agst Ref rows."
+        : isAmountMismatched
+            ? "Allocated amount doesn't match entry amount."
+            : null;
+    const isSaveDisabled = billModalError !== null || billReferenceData.length === 0;
 
     return (
         <Box p={5}>
@@ -690,7 +773,7 @@ const thStyle = {
 
                                 {/* CURRENT BALANCE */}
                                 <Td isNumeric>
-                                    <Input 
+                                    <Input
                                         size="sm" {...readonlyInputStyle}
                                         value={Number(entry.current_balance).toFixed(2)}
                                         readOnly
@@ -707,9 +790,7 @@ const thStyle = {
                                         type="number"
                                         min={0}
                                         value={entry.amount}
-                                        onChange={(e) =>
-                                            handleEntryChange(index, "amount", e.target.value)
-                                        }
+                                        onChange={(e) => handleEntryChange(index, "amount", e.target.value)}
                                         w="90px"
                                     />
                                 </Td>
@@ -719,13 +800,10 @@ const thStyle = {
                                     <Select {...inputStyle}
                                         size="sm"
                                         value={entry.transaction_type}
-                                        onChange={(e) =>
-                                            handleTransactionTypeChange(index, e.target.value)
-                                        }
+                                        onChange={(e) => handleTransactionTypeChange(index, e.target.value)}
                                         minW="120px"
                                         isDisabled={!entry.ledger_id}
-                                        placeholder="Please select"
-                                    >
+                                        placeholder="Please select" >
                                         <option value="Cash">Cash</option>
                                         <option value="Cheque/DD">Cheque/DD</option>
                                         <option value="E-Fund Transfer">E-Fund Transfer</option>
@@ -735,31 +813,19 @@ const thStyle = {
 
                                 {/* TXN / CHEQUE NO */}
                                 <Td>
-                                    <Input {...inputStyle}
-                                        size="sm"
-                                        value={entry.transaction_no}
-                                        onChange={(e) =>
-                                            handleEntryChange(index, "transaction_no", e.target.value)
-                                        }
-                                        w="120px"
-                                    />
+                                    <Input {...inputStyle} size="sm" value={entry.transaction_no}
+                                        onChange={(e) => handleEntryChange(index, "transaction_no", e.target.value)}
+                                        w="120px" />
                                 </Td>
 
                                 {/* BANK NAME */}
                                 <Td>
-                                    <Select {...inputStyle}
-                                        size="sm"
-                                        value={entry.bank_name}
-                                        onChange={(e) =>
-                                            handleEntryChange(index, "bank_name", e.target.value)
-                                        }
+                                    <Select {...inputStyle} size="sm" value={entry.bank_name}
+                                        onChange={(e) => handleEntryChange(index, "bank_name", e.target.value)}
                                         placeholder="Select Bank"
-                                        w="180px"
-                                    >
+                                        w="180px" >
                                         {account.map((item) => (
-                                            <option key={item.id} value={item.ledger_name}>
-                                                {item.ledger_name}
-                                            </option>
+                                            <option key={item.id} value={item.ledger_name}> {item.ledger_name} </option>
                                         ))}
                                     </Select>
                                 </Td>
@@ -770,10 +836,7 @@ const thStyle = {
                                         <Badge
                                             colorScheme="green"
                                             cursor="pointer"
-                                            onClick={() =>
-                                                entry.ledger_id && openBillModal(index, entry.ledger_id)
-                                            }
-                                        >
+                                            onClick={() => entry.ledger_id && openBillModal(index, entry.ledger_id)}>
                                             {entry.bill_references.length} ref
                                             {entry.bill_references.length > 1 ? "s" : ""}
                                         </Badge>
@@ -781,13 +844,8 @@ const thStyle = {
                                         <Button
                                             size="xs"
                                             variant="outline"
-                                            isDisabled={
-                                                !entry.ledger_id || entry.maintain_bill_by_bill !== 1
-                                            }
-                                            onClick={() =>
-                                                entry.ledger_id && openBillModal(index, entry.ledger_id)
-                                            }
-                                        >
+                                            isDisabled={!entry.ledger_id || entry.maintain_bill_by_bill !== 1}
+                                            onClick={() => entry.ledger_id && openBillModal(index, entry.ledger_id)} >
                                             Bill
                                         </Button>
                                     )}
@@ -796,17 +854,9 @@ const thStyle = {
                                 {/* ADD / REMOVE */}
                                 <Td>
                                     <Flex gap={2}>
-                                        <Button size="sm" padding="0px" colorScheme="green" onClick={addEntryRow}>
-                                            +
-                                        </Button>
+                                        <Button size="sm" padding="0px" colorScheme="green" onClick={addEntryRow}> + </Button>
                                         {formData.entries.length > 1 && (
-                                            <Button padding={0}
-                                                size="sm"
-                                                colorScheme="red"
-                                                onClick={() => removeEntryRow(index)}
-                                            >
-                                                −
-                                            </Button>
+                                            <Button padding={0} size="sm" colorScheme="red" onClick={() => removeEntryRow(index)} > − </Button>
                                         )}
                                     </Flex>
                                 </Td>
@@ -820,35 +870,21 @@ const thStyle = {
             <Box mb={5}>
                 <FormControl>
                     <FormLabel>Upload Document</FormLabel>
-                    <Input {...inputStyle}
-                        type="file"
-                        accept=".pdf,.jpg,.jpeg,.png"
-                        onChange={handleFileChange}
-                        p={1}
-                    />
+                    <Input {...inputStyle} type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={handleFileChange} p={1} />
                 </FormControl>
             </Box>
 
             {/* ── TOTAL AMOUNT ── */}
             <FormControl mb={3}>
                 <FormLabel>Total Amount</FormLabel>
-                <Input {...readonlyInputStyle}
-                    value={formData.total_amount.toFixed(2)}
-                    readOnly
-                    bg="gray.50"
-                    fontWeight="semibold"
-                />
+                <Input {...readonlyInputStyle} value={formData.total_amount.toFixed(2)} readOnly bg="gray.50" fontWeight="semibold" />
             </FormControl>
 
             {/* ── NARRATION ── */}
             <Box mb={5}>
                 <FormControl>
                     <FormLabel>Narration</FormLabel>
-                    <Textarea
-                        name="narration"
-                        value={formData.narration}
-                        onChange={handleChange}
-                    />
+                    <Textarea name="narration" value={formData.narration} onChange={handleChange} />
                 </FormControl>
             </Box>
 
@@ -864,45 +900,28 @@ const thStyle = {
                     borderRadius="12px"
                     onClick={handleSave}
                     isLoading={submitting}
-                    loadingText="Saving…"
-                >
+                    loadingText="Saving…" >
                     Save Receipt
                 </Button>
             </Flex>
 
             {/* ── BILL WISE MODAL ── */}
-            <Modal
-                isOpen={billModal}
+            <Modal isOpen={billModal}
                 onClose={() => setBillModal(false)}
-                size="5xl"
-                scrollBehavior="inside"
-            >
+                size="5xl" scrollBehavior="inside" >
                 <ModalOverlay />
                 <ModalContent borderRadius="12px">
-                    <ModalHeader
-                        bg="#b0d1cf"
-                        borderRadius="12px 12px 0px 0px"
-                        padding="21px"
-                    >
+                    <ModalHeader bg="#b0d1cf" borderRadius="12px 12px 0px 0px" padding="21px" >
                         <HStack gap={0}>
                             <Text fontSize="16px">Bill Wise Details</Text>
                             {selectedEntryIndex !== null &&
                                 formData.entries[selectedEntryIndex]?.ledger_id && (
-                                    <Text
-                                        as="span"
-                                        fontWeight="normal"
-                                        fontSize="13px"
-                                        ml={2}
-                                        color="gray.600"
-                                    >
+                                    <Text as="span" fontWeight="normal" fontSize="13px" ml={2} color="gray.600" >
                                         —{" "}
                                         {
                                             ledger.find(
-                                                (l) =>
-                                                    String(l.id) ===
-                                                    String(
-                                                        formData.entries[selectedEntryIndex].ledger_id
-                                                    )
+                                                (l) => String(l.id) ===
+                                                    String(formData.entries[selectedEntryIndex].ledger_id)
                                             )?.ledger_name
                                         }
                                     </Text>
@@ -919,14 +938,7 @@ const thStyle = {
                         ) : (
                             <>
                                 {/* Summary bar */}
-                                <Flex
-                                    gap={6}
-                                    mb={4}
-                                    p={3}
-                                    bg="gray.50"
-                                    borderRadius="md"
-                                    fontSize="sm"
-                                >
+                                <Flex gap={6} mb={4} p={3} bg="gray.50" borderRadius="md" fontSize="sm" >
                                     <Box>
                                         <Text color="gray.500">Entry Amount</Text>
                                         <Text fontWeight="semibold">{entryAmount.toFixed(2)}</Text>
@@ -939,16 +951,8 @@ const thStyle = {
                                     </Box>
                                     <Box>
                                         <Text color="gray.500">Difference</Text>
-                                        <Text
-                                            fontWeight="semibold"
-                                            color={
-                                                billDiff === 0
-                                                    ? "green.600"
-                                                    : billDiff < 0
-                                                        ? "red.600"
-                                                        : "orange.600"
-                                            }
-                                        >
+                                        <Text fontWeight="semibold"
+                                            color={billDiff === 0 ? "green.600" : billDiff < 0 ? "red.600" : "orange.600"} >
                                             {billDiff.toFixed(2)}
                                         </Text>
                                     </Box>
@@ -972,17 +976,8 @@ const thStyle = {
                                                 <Tr key={rowIndex}>
                                                     {/* TYPE OF REF */}
                                                     <Td minW="130px">
-                                                        <Select
-                                                            size="sm"
-                                                            value={bill.reference_type}
-                                                            onChange={(e) =>
-                                                                handleBillReferenceChange(
-                                                                    rowIndex,
-                                                                    "reference_type",
-                                                                    e.target.value
-                                                                )
-                                                            }
-                                                        >
+                                                        <Select size="sm" value={bill.reference_type}
+                                                            onChange={(e) => handleBillReferenceChange(rowIndex, "reference_type", e.target.value)}>
                                                             <option value="AGST REF">Agst Ref</option>
                                                             <option value="ADVANCE">Advance</option>
                                                             {/* <option value="NEW REF">New Ref</option> */}
@@ -994,51 +989,21 @@ const thStyle = {
                                                     <Td minW="220px">
                                                         {bill.reference_type === "ON ACCOUNT" ||
                                                             bill.reference_type === "ADVANCE" ? (
-                                                            <Input
-                                                                size="sm"
-                                                                placeholder={
-                                                                    bill.reference_type === "ON ACCOUNT"
-                                                                        ? "On Account ref…"
-                                                                        : "Advance ref…"
-                                                                }
+                                                            <Input size="sm"
+                                                                placeholder={bill.reference_type === "ON ACCOUNT" ? "On Account ref…" : "Advance ref…"}
                                                                 value={bill.reference_no}
-                                                                onChange={(e) =>
-                                                                    handleBillReferenceChange(
-                                                                        rowIndex,
-                                                                        "reference_no",
-                                                                        e.target.value
-                                                                    )
-                                                                }
-                                                            />
+                                                                onChange={(e) => handleBillReferenceChange(rowIndex, "reference_no", e.target.value)} />
                                                         ) : bill.reference_type === "NEW REF" ? (
-                                                            <Input
-                                                                size="sm"
-                                                                placeholder="New reference no…"
-                                                                value={bill.reference_no}
-                                                                onChange={(e) =>
-                                                                    handleBillReferenceChange(
-                                                                        rowIndex,
-                                                                        "reference_no",
-                                                                        e.target.value
-                                                                    )
-                                                                }
-                                                            />
+                                                            <Input size="sm" placeholder="New reference no…" value={bill.reference_no}
+                                                                onChange={(e) => handleBillReferenceChange(rowIndex, "reference_no", e.target.value)} />
                                                         ) : (
                                                             /* AGST REF — dropdown of pending bills
                                                                On select: auto-fills amount + stores sales_bill_reference_id */
-                                                            <Select
-                                                                size="sm"
-                                                                value={bill.reference_no}
-                                                                onChange={(e) =>
-                                                                    handleAgstRefSelect(rowIndex, e.target.value)
-                                                                }
-                                                            >
+                                                            <Select size="sm" value={bill.reference_no}
+                                                                onChange={(e) => handleAgstRefSelect(rowIndex, e.target.value)} >
                                                                 <option value="">-- Select --</option>
                                                                 {pendingBills.map((pb) => (
-                                                                    <option
-                                                                        key={pb.id}
-                                                                        value={pb.reference_no}
-                                                                    >
+                                                                    <option key={pb.id} value={pb.reference_no} >
                                                                         {pb.reference_no} — {pb.pending_amount} Cr
                                                                     </option>
                                                                 ))}
@@ -1048,68 +1013,35 @@ const thStyle = {
 
                                                     {/* DUE DATE */}
                                                     <Td minW="140px">
-                                                        <Input
-                                                            size="sm"
-                                                            type="date"
-                                                            value={bill.due_date || ""}
-                                                            onChange={(e) =>
-                                                                handleBillReferenceChange(
-                                                                    rowIndex,
-                                                                    "due_date",
-                                                                    e.target.value
-                                                                )
-                                                            }
-                                                        />
+                                                        <Input size="sm" type="date" value={bill.due_date || ""}
+                                                            onChange={(e) => handleBillReferenceChange(rowIndex, "due_date", e.target.value)} />
                                                     </Td>
 
                                                     {/* AMOUNT */}
                                                     <Td>
-                                                        <Input
-                                                            size="sm"
-                                                            type="number"
-                                                            min={0}
-                                                            value={bill.reference_amount}
-                                                            onChange={(e) =>
-                                                                handleBillReferenceChange(
-                                                                    rowIndex,
-                                                                    "reference_amount",
-                                                                    e.target.value
-                                                                )
-                                                            }
-                                                            w="100px"
-                                                            textAlign="right"
-                                                        />
+                                                        {/* <Input size="sm" type="number" min={0} value={bill.reference_amount}
+                                                            onChange={(e) => handleBillReferenceChange(rowIndex, "reference_amount", e.target.value)}
+                                                            w="100px" textAlign="right" /> */}
+                                                        <Input size="sm" type="number" min={0} value={bill.reference_amount} isReadOnly={bill.reference_type === "AGST REF"}
+                                                            bg={bill.reference_type === "AGST REF" ? "gray.50" : "white"}
+                                                            onChange={(e) => handleBillReferenceChange(rowIndex, "reference_amount", e.target.value)}
+                                                            w="100px" textAlign="right" />
                                                     </Td>
 
                                                     {/* DR/CR — always Cr for receipts */}
                                                     <Td>
-                                                        <Input
-                                                            size="sm" {...readonlyInputStyle}
-                                                            value={bill.dr_cr || "Cr"}
-                                                            readOnly
-                                                            w="50px"
-                                                            bg="gray.50"
-                                                        />
+                                                        <Input size="sm" {...readonlyInputStyle} value={bill.dr_cr || "Cr"} readOnly w="50px" bg="gray.50" />
                                                     </Td>
 
                                                     {/* DELETE */}
                                                     <Td textAlign="center">
-                                                        <Button
-                                                            size="xs"
-                                                            colorScheme="red"
-                                                            variant="outline"
-                                                            onClick={() => removeBillRow(rowIndex)}
-                                                        >
-                                                            ✕
-                                                        </Button>
+                                                        <Button size="xs" colorScheme="red" variant="outline" onClick={() => removeBillRow(rowIndex)} > ✕ </Button>
                                                     </Td>
 
                                                     {/* ADD — only on last row */}
                                                     <Td textAlign="center">
                                                         {rowIndex === billReferenceData.length - 1 && (
-                                                            <Button size="xs" colorScheme="green" onClick={addBillRow}>
-                                                                +
-                                                            </Button>
+                                                            <Button size="xs" colorScheme="green" onClick={addBillRow}> + </Button>
                                                         )}
                                                     </Td>
                                                 </Tr>
@@ -1119,9 +1051,7 @@ const thStyle = {
                                                 <Tr>
                                                     <Td colSpan={7} textAlign="center" color="gray.400" py={6}>
                                                         No pending bills found.{" "}
-                                                        <Button size="xs" onClick={addBillRow} ml={2}>
-                                                            Add row
-                                                        </Button>
+                                                        <Button size="xs" onClick={addBillRow} ml={2}> Add row </Button>
                                                     </Td>
                                                 </Tr>
                                             )}
@@ -1132,13 +1062,13 @@ const thStyle = {
                         )}
                     </ModalBody>
 
-                    <ModalFooter gap={3}>
-                        <Button variant="outline" onClick={() => setBillModal(false)}>
-                            Cancel
-                        </Button>
-                        <Button colorScheme="blue" onClick={saveBillAllocation}>
-                            Save
-                        </Button>
+
+                    <ModalFooter gap={3} flexDirection="column" alignItems="stretch">
+                        {billModalError && (<Text color="red.500" fontSize="sm" mb={2} textAlign="right"> {billModalError} </Text>)}
+                        <Flex justify="flex-end" gap={3}>
+                            <Button variant="outline" onClick={() => setBillModal(false)}> Cancel </Button>
+                            <Button colorScheme="blue" onClick={saveBillAllocation} isDisabled={isSaveDisabled} > Save </Button>
+                        </Flex>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

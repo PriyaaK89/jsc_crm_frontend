@@ -244,7 +244,7 @@ const Journal = () => {
                     );
                     setBillReferenceData([
                         {
-                            reference_type: "AGAINST REF",
+                            reference_type: "AGST REF",
                             reference_no: "",
                             amount: entryAmount,
                             due_date: "",
@@ -264,7 +264,7 @@ const Journal = () => {
             });
             setBillReferenceData([
                 {
-                    reference_type: "AGAINST REF",
+                    reference_type: "AGST REF",
                     reference_no: "",
                     amount: 0,
                     due_date: "",
@@ -773,7 +773,7 @@ const Journal = () => {
                                                                 )
                                                             }
                                                         >
-                                                            <option value="AGAINST REF">Agst Ref</option>
+                                                            <option value="AGST REF">Agst Ref</option>
                                                             <option value="ADVANCE">Advance</option>
                                                             <option value="NEW REF">New Ref</option>
                                                             <option value="ON ACCOUNT">On Account</option>

@@ -557,7 +557,7 @@ function InterestTab({ slabs, onChange, onAdd, onRemove, interestEnabled }) {
                 </Box>
             ))}
 
-            <Button
+            {/* <Button
                 leftIcon={<Text>+</Text>}
                 onClick={onAdd}
                 variant="outline"
@@ -569,7 +569,7 @@ function InterestTab({ slabs, onChange, onAdd, onRemove, interestEnabled }) {
                 mt={2}
             >
                 Add Interest Slab
-            </Button>
+            </Button> */}
         </>
     );
 }

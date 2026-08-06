@@ -120,16 +120,13 @@ function ViewLedger() {
                 <BreadcrumbLink
                   isCurrentPage
                   color="#8B8D97"
-                  fontSize="13px"
-                >
+                  fontSize="13px" >
                   View Ledger
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
 
-            <Heading size="md" color="#1A202C" >
-              Ledger List
-            </Heading>
+            <Heading size="md" color="#1A202C" > Ledger List </Heading>
 
           </Box>
         </Flex>
@@ -171,6 +168,7 @@ function ViewLedger() {
                     <Th>Firm</Th>
                     <Th>Phone</Th>
                     <Th>Location</Th>
+                    {/* <Th>Landmark</Th> */}
                     <Th>Bank</Th>
                     <Th>GST No</Th>
                     <Th>Interest Rate</Th>
@@ -182,64 +180,31 @@ function ViewLedger() {
                 </Thead>
 
                 <Tbody>
+                  {ledgerList?.length > 0 ? ( ledgerList?.map((item, index) => (
 
-                  {ledgerList?.length > 0 ? (
-
-                    ledgerList?.map((item, index) => (
-
-                      <Tr
-                        key={item?.id}
-                        _hover={{
-                          bg: "gray.50",
-                        }}
-                      >
-
-                        <Td fontWeight="600">
-                          {(currentPage - 1) * perPage + index + 1}
-                        </Td>
+                      <Tr key={item?.id} _hover={{ bg: "gray.50", }} >
+                      <Td fontWeight="600"> {(currentPage - 1) * perPage + index + 1} </Td>
 
                         {/* Ledger */}
                         <Td minW="220px">
 
                           <Box>
-
-                            <Text
-                              fontWeight="700"
-                              color="#1A202C"
-                            >
-                              {item?.ledger_name || "-"}
-                            </Text>
-
-                            <Text
-                              fontSize="12px"
-                              color="gray.500"
-                            >
-                              ID : {item?.id}
-                            </Text>
-
+                            <Text fontWeight="700" color="#1A202C" > {item?.ledger_name || "-"} </Text>
+                            <Text fontSize="11px" color="gray.500" > ID : {item?.id} </Text>
                           </Box>
 
                         </Td>
 
                         {/* Group */}
                         <Td>
-
-                          <Badge colorScheme="blue" className="ledger_badge">
-                            {item?.group?.name || "-"}
-                          </Badge>
-
+                          <Badge colorScheme="blue" className="ledger_badge"> {item?.group?.name || "-"} </Badge>
                         </Td>
 
                         {/* Balance Type */}
                         <Td>
 
                           <Badge className="ledger_badge"
-                            colorScheme={
-                              item?.basic_details?.balance_type === "Dr"
-                                ? "green"
-                                : "red"
-                            }
-                          >
+                            colorScheme={ item?.basic_details?.balance_type === "Dr" ? "green" : "red" } >
                             {item?.basic_details?.balance_type || "-"}
                           </Badge>
 
@@ -255,8 +220,7 @@ function ViewLedger() {
                         <Td minW="180px">
                           <Box>
                             <Text fontWeight="600"> {item?.crm_details?.customer_name || "-"} </Text>
-                            <Text fontSize="12px" color="gray.500">
-                              DOB :{" "} {formatDate(item?.crm_details?.customer_dob )} </Text>
+                            <Text fontSize="11px" color="gray.500"> DOB :{" "} {formatDate(item?.crm_details?.customer_dob )} </Text>
                           </Box>
                         </Td>
 
@@ -264,50 +228,38 @@ function ViewLedger() {
                         <Td minW="220px">
                           <Box>
                             <Text fontWeight="600"> {item?.crm_details?.firm_details ?.firm_name || "-"} </Text>
-                            <Text fontSize="12px" color="gray.500" >
-                              {item?.crm_details?.firm_details ?.firm_email || "-"} </Text>
+                            <Text fontSize="11px" color="gray.500" > {item?.crm_details?.firm_details ?.firm_email || "-"} </Text>
                           </Box>
                         </Td>
 
 
-                        <Td> {item?.crm_details?.mobile_no || "-"} </Td>
+                        <Td> {item?.crm_details?.contact || "-"} </Td>
 
                         {/* Location */}
                         <Td minW="220px">
-
                           <Box>
-
-                            <Text>
-                              {item?.address_details?.location || "-"}
+                            <Text> {item?.crm_details?.address_details?.address || "-"} </Text>
+                            <Text fontSize="11px" color="gray.500" >
+                              {item?.crm_details?.address_details?.state || "-"},{" "}
+                              {item?.crm_details?.address_details?.district || "-"},{" "}
+                              {item?.crm_details?.address_details?.tehsil || "-"},{" "}
+                              {item?.crm_details?.address_details?.pincode || "-"}
                             </Text>
-
-                            <Text
-                              fontSize="12px"
-                              color="gray.500"
-                            >
-                              {item?.address_details?.state || "-"} -{" "}
-                              {item?.address_details?.pincode || "-"}
-                            </Text>
-
                           </Box>
-
                         </Td>
+                        {/* <Td><Text textTransform="capitalize">{item?.crm_details?.address_details?.landmark}</Text></Td> */}
 
                         {/* Bank */}
                         <Td minW="220px">
-
                           <Box>
-                            <Text fontWeight="600"> {item?.bank_details?.bank_name || "-"} </Text>
-                            <Text fontSize="12px" color="gray.500" > A/C :{" "}{item?.bank_details?.account_number || "-"} </Text>
-                            <Text fontSize="12px" color="gray.500" > IFSC :{" "} {item?.bank_details?.ifsc_code || "-"} </Text>
+                            <Text fontWeight="600"> {item?.crm_details?.bank_details?.bank_name || "-"} </Text>
+                            <Text fontSize="11px" color="gray.500" > A/C :{" "}{item?.crm_details?.bank_details?.bank_acc_number || "-"} </Text>
+                            <Text fontSize="11px" color="gray.500" > IFSC :{" "} {item?.crm_details?.bank_details?.bank_ifsc || "-"} </Text>
                           </Box>
-
                         </Td>
 
                         <Td> {item?.tax_details?.gst_no || "-"} </Td>
-                        <Td> 
-  {item?.interest_configs?.[0]?.rate ?? 0}%
-</Td> 
+                        <Td> {item?.interest_configs?.[0]?.rate ?? 0}%</Td> 
 
                         {/* Created Date */}
                         <Td>

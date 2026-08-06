@@ -275,6 +275,147 @@ const CreateLedger = () => {
   // Build API payload
   // Maps every frontend field to the exact backend field name and type.
   // -------------------------------------------------------------------------
+  // const buildPayload = () => {
+  //   const f = formData;
+  //   const crm = f.crm_details;
+  //   const hasBankSection =
+  //     currentConfig.showBankDetails || currentConfig.showBankConfig;
+
+  //   // Only the first slab is sent (backend stores 1 interest_config per ledger)
+
+
+  //   return {
+  //     // Basic
+  //     ledger_name: f.ledger_name.trim(),
+  //     group_id: Number(f.group_id),
+  //     employee_under: f.employee_under || null,
+
+  //     // Opening balance
+  //     opening_balance: f.opening_balance ? Number(f.opening_balance) : 0,
+  //     balance_type: f.balance_type || "Dr",
+  //     opening_date: f.opening_date || null,
+
+  //     // Mailing
+  //     mailing_name: f.mailing_name || null,
+  //     location: f.location || null,
+  //     country: f.country || null,
+  //     state: f.state || null,
+  //     pincode: f.pincode || null,
+
+  //     // Tax
+  //     pan_no: currentConfig.showPan ? (f.pan_no || null) : null,
+  //     gst_no: currentConfig.showTax ? (f.gst_no || null) : null,
+
+  //     // Bill-by-bill (only when section visible, else send neutral defaults)
+  //     maintain_bill_by_bill: currentConfig.showBillByBill ? toBool(f.maintain_bill_by_bill) : 0,
+  //     default_credit_period: currentConfig.showBillByBill ? Number(f.default_credit_period) || 0 : 0,
+  //     check_credit_days: currentConfig.showBillByBill ? toBool(f.check_credit_days) : 0,
+  //     credit_limit: currentConfig.showBillByBill ? Number(f.credit_limit) || 0 : 0,
+
+  //     // Features
+  //     inventory_values_affected: currentConfig.showInventory ? toBool(f.inventory_values_affected) : 0,
+  //     use_for_payroll: currentConfig.showPayroll ? toBool(f.use_for_payroll) : 0,
+
+  //     // Interest
+  //     activate_interest_calculation: currentConfig.showInterest ? toBool(f.activate_interest_calculation) : 0,
+
+  //     // OD limit
+  //     od_limit: currentConfig.showOdLimit ? Number(f.od_limit) || 0 : 0,
+
+  //     // Bank details object (undefined = not sent, backend skips insert)
+  //     bank_details: hasBankSection
+  //       ? {
+  //         account_holder_name: f.bank_details.account_holder_name || null,
+  //         account_number: f.bank_details.account_number || null,
+  //         ifsc_code: f.bank_details.ifsc_code || null,
+  //         bank_name: f.bank_details.bank_name || null,
+  //         branch_name: f.bank_details.branch_name || null,
+  //         cheque_book_enabled: currentConfig.showBankConfig
+  //           ? toBool(f.bank_details.cheque_book_enabled) : 0,
+  //         cheque_printing_enabled: currentConfig.showBankConfig
+  //           ? toBool(f.bank_details.cheque_printing_enabled) : 0,
+  //       }
+  //       : undefined,
+
+  //     // Interest config object (only sent when activated)
+  //     interest_configs: currentConfig.showInterest && f.activate_interest_calculation === "Yes"
+  // ? f.interest_configs
+  //     .map((cfg, originalIndex) => ({ cfg, originalIndex })) // capture true position BEFORE filtering
+  //     .filter(({ cfg }) => {
+  //       return (
+  //         cfg.rate ||
+  //         cfg.for_amount_added ||
+  //         cfg.for_amount_deduct ||
+  //         cfg.rate_per ||
+  //         cfg.rate_on ||
+  //         cfg.grace_period ||
+  //         cfg.security_amount
+  //       );
+  //     })
+  //       .map((cfg, originalIndex ) => ({
+  //         slab_no: originalIndex + 1,
+  //         slab_type: SLAB_TYPES[originalIndex] || null,
+  //         calculate_transaction_by_transaction: toBool(f.txn_by_txn_interest),
+  //         interest_based_on: f.interest_based_on || null,
+  //         amount_added: toBool(cfg.for_amount_added),
+  //         amount_deducted: toBool(cfg.for_amount_deduct),
+  //         rate: Number(cfg.rate) || 0,
+  //         rate_per: cfg.rate_per || null,
+  //         rate_on: cfg.rate_on || null,
+  //         applicability: cfg.applicability || null,
+  //         applicability_days: Number(cfg.by_days) || 0,
+  //         grace_period: Number(cfg.grace_period) || 0,
+  //         security_enabled: toBool(cfg.security),
+  //         security_amount: Number(cfg.security_amount) || 0,
+  //       }))
+  //       : [],
+
+  //     crm_details: {
+  //       customer_name: crm.customer_name || null,
+  //       customer_dob: crm.customer_dob || null,
+
+  //       firm_name: crm.firm_name || null,
+  //       firm_type: crm.firm_type || null,
+  //       firm_email: crm.firm_email || null,
+  //       firm_since: crm.firm_since || null,
+  //       firm_pan: crm.firm_pan || null,
+  //       firm_aadhar: crm.firm_aadhar || null,
+  //       firm_gstn_type: crm.firm_gstn_type || null,
+  //       firm_annual_turnover: crm.firm_annual_turnover ? Number(crm.firm_annual_turnover) : null,
+  //       expected_sale_per_year: crm.expected_sale_per_year ? Number(crm.expected_sale_per_year) : null,
+  //       other_company_detail: crm.other_company_detail || null,
+
+  //       address: crm.address || null,
+  //       state: crm.state || null,
+  //       district: crm.district || null,
+  //       tehsil: crm.tehsil || null,
+  //       pincode: crm.pincode || null,
+  //       landmark: crm.landmark || null,
+
+  //       branch: crm.branch || null,
+  //       contact: crm.contact || null,
+  //       responsible_person_name: crm.responsible_person_name || null,
+  //       responsible_person_address: crm.responsible_person_address || null,
+  //       responsible_person_contact: crm.responsible_person_contact || null,
+
+  //       seed_licence_no: crm.seed_licence_no || null,
+  //       fert_licence_no: crm.fert_licence_no || null,
+  //       pest_licence_no: crm.pest_licence_no || null,
+
+  //       transport_name: crm.transport_name || null,
+
+  //       bank_name: crm.bank_name || null,
+  //       bank_acc_number: crm.bank_acc_number || null,
+  //       bank_ifsc: crm.bank_ifsc || null,
+  //       bank_branch: crm.bank_branch || null,
+  //       security_cheque_no1: crm.security_cheque_no1 || null,
+  //       security_cheque_no2: crm.security_cheque_no2 || null,
+  //     },
+  //   };
+
+
+  // };
+
   const buildPayload = () => {
     const f = formData;
     const crm = f.crm_details;
@@ -339,35 +480,35 @@ const CreateLedger = () => {
 
       // Interest config object (only sent when activated)
       interest_configs: currentConfig.showInterest && f.activate_interest_calculation === "Yes"
-  ? f.interest_configs
-      .map((cfg, originalIndex) => ({ cfg, originalIndex })) // capture true position BEFORE filtering
-      .filter(({ cfg }) => {
-        return (
-          cfg.rate ||
-          cfg.for_amount_added ||
-          cfg.for_amount_deduct ||
-          cfg.rate_per ||
-          cfg.rate_on ||
-          cfg.grace_period ||
-          cfg.security_amount
-        );
-      })
-        .map((cfg, originalIndex ) => ({
-          slab_no: originalIndex + 1,
-          slab_type: SLAB_TYPES[originalIndex] || null,
-          calculate_transaction_by_transaction: toBool(f.txn_by_txn_interest),
-          interest_based_on: f.interest_based_on || null,
-          amount_added: toBool(cfg.for_amount_added),
-          amount_deducted: toBool(cfg.for_amount_deduct),
-          rate: Number(cfg.rate) || 0,
-          rate_per: cfg.rate_per || null,
-          rate_on: cfg.rate_on || null,
-          applicability: cfg.applicability || null,
-          applicability_days: Number(cfg.by_days) || 0,
-          grace_period: Number(cfg.grace_period) || 0,
-          security_enabled: toBool(cfg.security),
-          security_amount: Number(cfg.security_amount) || 0,
-        }))
+        ? f.interest_configs
+            .map((cfg, originalIndex) => ({ cfg, originalIndex })) // capture true position BEFORE filtering
+            .filter(({ cfg }) => {
+              return (
+                cfg.rate ||
+                cfg.for_amount_added ||
+                cfg.for_amount_deduct ||
+                cfg.rate_per ||
+                cfg.rate_on ||
+                cfg.grace_period ||
+                cfg.security_amount
+              );
+            })
+            .map(({ cfg, originalIndex }) => ({   //  FIX: destructure the wrapper here
+              slab_no: originalIndex + 1,
+              slab_type: SLAB_TYPES[originalIndex] || null,
+              calculate_transaction_by_transaction: toBool(f.txn_by_txn_interest),
+              interest_based_on: f.interest_based_on || null,
+              amount_added: toBool(cfg.for_amount_added),
+              amount_deducted: toBool(cfg.for_amount_deduct),
+              rate: Number(cfg.rate) || 0,
+              rate_per: cfg.rate_per || null,
+              rate_on: cfg.rate_on || null,
+              applicability: cfg.applicability || null,
+              applicability_days: Number(cfg.by_days) || 0,
+              grace_period: Number(cfg.grace_period) || 0,
+              security_enabled: toBool(cfg.security),
+              security_amount: Number(cfg.security_amount) || 0,
+            }))
         : [],
 
       crm_details: {
@@ -496,7 +637,7 @@ const CreateLedger = () => {
         </Breadcrumb>
       </HStack>
       <Heading size="md" mb={6}>
-        Create Ledger
+        Create Ledger 
       </Heading>
 
       <VStack spacing={6} align="stretch">
@@ -1148,8 +1289,7 @@ const CreateLedger = () => {
               <Input
                 name="firm_aadhar"
                 value={formData.crm_details.firm_aadhar}
-                onChange={handleCrmChange}
-              />
+                onChange={handleCrmChange} />
             </FormControl>
 
             <FormControl >
@@ -1159,8 +1299,7 @@ const CreateLedger = () => {
                 placeholder="Select GSTN Type"
                 name="firm_gstn_type"
                 value={formData.crm_details.firm_gstn_type || ""}
-                onChange={handleCrmChange}
-              >
+                onChange={handleCrmChange} >
                 <option value="Composition">Composition</option>
                 <option value="Consumer">Consumer</option>
                 <option value="Regular">Regular</option>
@@ -1277,13 +1416,8 @@ const CreateLedger = () => {
 
             <FormControl>
               <FormLabel>Security Cheque No 2</FormLabel>
-              <Input
-                name="security_cheque_no2"
-                value={formData.crm_details.security_cheque_no2}
-                onChange={handleCrmChange}
-              />
+              <Input name="security_cheque_no2" value={formData.crm_details.security_cheque_no2} onChange={handleCrmChange} />
             </FormControl>
-
           </Grid>
         </Box>
 
@@ -1293,15 +1427,12 @@ const CreateLedger = () => {
             fontWeight="500"
             fontSize="14px"
             color="white"
-            _hover={{
-              bg: "#1B5A6B",
-            }}
+            _hover={{ bg: "#1B5A6B", }}
             px={8}
             borderRadius="12px"
             onClick={handleSubmit}
             isLoading={loading}
-            loadingText="Creating..."
-          >
+            loadingText="Creating..." >
             Create Ledger
           </Button>
         </Flex>

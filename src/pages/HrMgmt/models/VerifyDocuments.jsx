@@ -40,9 +40,6 @@ const VerifyDocumentModel = ({ isVerifyModelOpen, onVerifyModalClose, selectedId
     const response = await API.get(
       `${API_ENDPOINTS.document_status}/${legID}`
     );
-    if (response?.data?.status === 1) {
-      getEmployeeDocs();
-    }
 
   } catch (error) {
     console.log("Document status error", error);

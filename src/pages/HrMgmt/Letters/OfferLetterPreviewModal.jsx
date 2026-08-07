@@ -249,7 +249,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                     <Text>As part of the employee’s role in the organization, the employee will be assigned annual and monthly performance targets aligned with the company’s business objectives.</Text>
                     <Text>The employee’s monthly salary payout will be linked to the percentage of the assigned monthly target achieved, and the payout will be determined as per the following performance criteria:</Text>
                     {/* <TableContainer borderTop="1px solid black" borderRight="1px solid black" borderLeft="1px solid black"> */}
-                    <Table variant="simple" className="performancePayoutTable" border="1px solid black">
+                    {/* <Table variant="simple" className="performancePayoutTable" border="1px solid black">
                       <Thead>
                         <Tr>
                           <Th style={{ borderRight: '1px solid black', borderBottom: "1px solid black" }}>Target Achievement</Th>
@@ -265,8 +265,34 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                           </Tr>
                         ))}
                       </Tbody>
-                    </Table>
+                    </Table> */}
                     {/* </TableContainer> */}
+                  <Box className="salaryPolicySection" mt={4}>
+    <Text
+        fontSize="15px"
+        lineHeight="1.8"
+        textAlign="justify"
+    >
+        Your monthly salary shall be determined based on the percentage of target achievement during the applicable evaluation period. The payout structure shall be as follows:
+    </Text>
+
+   <Text
+    fontSize="14px"
+    lineHeight="1.8"
+    textAlign="justify"
+>
+   In the event of target achievement below 60%, only the basic component of the salary shall be payable. For target achievement between 60% and 70%, the basic salary along with 20% of the applicable allowances shall be payable. For target achievement between 70% and 80%, the basic salary along with 30% of the applicable allowances shall be payable. For target achievement between 80% and 90%, the basic salary along with 40% of the applicable allowances shall be payable. Upon achieving between 90% and 100% of the assigned target, the employee shall be entitled to the full salary along with all applicable allowances.
+</Text>
+
+    <Text
+        fontSize="14px"
+        lineHeight="1.8"
+        textAlign="justify"
+        mt={3}
+    >
+        The above payout structure shall be applicable only after the assessment of individual performance and target achievement in accordance with the Company's performance evaluation policy.
+    </Text>
+</Box>
                   </VStack>
                  
 

@@ -269,7 +269,7 @@ function InterestTab({ slabs, onChange, interestEnabled }) {
                             <Input type="number" value={numVal(slab.grace_period)} onChange={(e) => onChange(idx, "grace_period", e.target.value)} size="sm" borderRadius="lg" bg="white" />
                         </Field>
                         <Field label="Security Amount">
-                            <Input type="number" value={numVal(slab.security_amount)} onChange={(e) => onChange(idx, "security_amount", e.target.value)} size="sm" borderRadius="lg" bg="white" bg={slab.security_enabled ? "white" : "gray.100"} isDisabled={!slab.security_enabled}/>
+                            <Input type="number" value={numVal(slab.security_amount)} onChange={(e) => onChange(idx, "security_amount", e.target.value)} size="sm" borderRadius="lg" bg={slab.security_enabled ? "white" : "gray.100"} isDisabled={!slab.security_enabled}/>
                         </Field>
                     </SimpleGrid>
 

@@ -45,7 +45,23 @@ const VerifyDocumentModel = ({ isVerifyModelOpen, onVerifyModalClose, selectedId
     console.log("Document status error", error);
   }
 };
+useEffect(() => {
+  if (!documents.length) return;
 
+  documents.forEach((doc) => {
+    const isLeegalityDoc =
+      doc.document_type === "offer_letter";
+
+    const isPending =
+      !["signed", "completed"].includes(doc.signing_status);
+
+      console.log(isPending, "pending1234")
+
+    if (isLeegalityDoc && isPending && doc.leegality_document_id) {
+      checkDocumentStatus(doc.leegality_document_id);
+    }
+  });
+}, [documents]);
   // -------get sattus color----
   const getStatusColor = (status) => {
     if (status === "signed") return "green";

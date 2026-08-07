@@ -101,6 +101,9 @@ const EditEmployee = () => {
                     week_off: data.week_off || "Sunday",
 
                 });
+                   if (data.department_id) {
+                fetchRoleList(data.department_id);
+            }
             }
         } catch (err) {
             toast({
@@ -174,6 +177,7 @@ const EditEmployee = () => {
             ...prev,
             department_id: deptId,
             job_role_id: "",
+             job_role_name: "",
         }));
 
         if (deptId) {

@@ -185,8 +185,8 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
 
                     <Text>
                       Further to your application and personal discussions with us, we are
-                      pleased to offer you employment with us as {employee?.job_role_name} in
-                      {" "}{employee?.department_name} department. You will be based at{" "}
+                      pleased to offer you employment with us as <u><b>{employee?.job_role_name}</b></u> in
+                      {" "}<u><b>{employee?.department_name}</b></u> department. You will be based at{" "}
                       {formData?.emp_state || employee?.state}.
                     </Text>
 

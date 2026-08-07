@@ -131,12 +131,25 @@ const EditEmployee = () => {
     };
 
     /* ---------------- FETCH ROLES ---------------- */
+ 
     const fetchRoleList = async (deptId) => {
+    try {
         const res = await API.get(
             `${API_ENDPOINTS.get_jobRole_list}/${deptId}`
         );
         setJobRole(res.data);
-    };
+
+        if (res.data?.length === 1) {
+            setFormData(prev => ({
+                ...prev,
+                job_role_id: res.data[0].id,
+                job_role_name: res.data[0].name,
+            }));
+        }
+    } catch (err) {
+        toast({ title: "Failed to load job roles", status: "error", duration: 3000 });
+    }
+};
 
     useEffect(() => {
         fetchEmployeeDetails();
@@ -195,7 +208,7 @@ const EditEmployee = () => {
                 department_id: Number(formData.department_id),
                 job_role_id: Number(formData.job_role_id),
                 approver_id: Number(formData.approver_id) || null,
-                reporting_under_id: Number(formData.reporting_under_id) || null,
+                reporting_under: Number(formData.reporting_under) || null,
                 date_of_birth: formatDateForApi(formData.date_of_birth),
                 date_of_joining: formatDateForApi(formData.date_of_joining),
                 approver_name: formData.approver_name,
@@ -457,9 +470,6 @@ const EditEmployee = () => {
                                 <option key={r.id} value={r.id} >{r.name}</option>
                             ))}
                         </Select>
-
-
-
                     </FormControl>
 
                     <CustomDatePicker

@@ -186,7 +186,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                     <Text>
                       Further to your application and personal discussions with us, we are
                       pleased to offer you employment with us as {employee?.job_role_name} in
-                      {employee?.department_name} department. You will be based at{" "}
+                      {" "}{employee?.department_name} department. You will be based at{" "}
                       {formData?.emp_state || employee?.state}.
                     </Text>
 
@@ -212,7 +212,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                       <Text>• &nbsp; Copy of PAN / Aadhaar / DL / Voter ID.</Text>
                       <Text>• &nbsp; Bank passbook copy.</Text>
                     </Box>
-                     <Text> After checking the above documents, we will return the originals to you. </Text>
+                    <Text> After checking the above documents, we will return the originals to you. </Text>
                   </VStack>
                 </Box>
               </Box>
@@ -242,10 +242,10 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                 <VStack align="flex-start" spacing={4} width="89%" marginLeft="4rem" className="letter-content">
                   <Image src={r_logo} alt="Round Logo" className="watermark_img1" />
                   <Text textAlign="center" mt="2rem" mb="2rem" width="89%">CONTD:-2</Text>
-                 
+
 
                   <VStack align="flex-start" width="100%">
-                    <Text fontSize="14px" textAlign="justify"><Text fontWeight="600" fontSize="18px">Performance Linked Compensation Policy:</Text></Text>
+                    <Text fontSize="14px" textAlign="justify"><Text fontWeight="600" fontSize="16px">Performance Linked Compensation Policy:</Text></Text>
                     <Text>As part of the employee’s role in the organization, the employee will be assigned annual and monthly performance targets aligned with the company’s business objectives.</Text>
                     <Text>The employee’s monthly salary payout will be linked to the percentage of the assigned monthly target achieved, and the payout will be determined as per the following performance criteria:</Text>
                     {/* <TableContainer borderTop="1px solid black" borderRight="1px solid black" borderLeft="1px solid black"> */}
@@ -267,44 +267,46 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                       </Tbody>
                     </Table> */}
                     {/* </TableContainer> */}
-                  <Box className="salaryPolicySection" mt={4}>
-    <Text
-        fontSize="15px"
-        lineHeight="1.8"
-        textAlign="justify"
-    >
-        Your monthly salary shall be determined based on the percentage of target achievement during the applicable evaluation period. The payout structure shall be as follows:
-    </Text>
+                    <Box className="salaryPolicySection" >
+                      <Text
+                        fontSize="14px"
+                        lineHeight="1.8"
+                        textAlign="justify"
+                      >
+                        Your monthly salary shall be determined based on the percentage of target achievement during the applicable evaluation period. The payout structure shall be as follows:
+                      </Text>
 
-   <Text
-    fontSize="14px"
-    lineHeight="1.8"
-    textAlign="justify"
->
-   In the event of target achievement below 60%, only the basic component of the salary shall be payable. For target achievement between 60% and 70%, the basic salary along with 20% of the applicable allowances shall be payable. For target achievement between 70% and 80%, the basic salary along with 30% of the applicable allowances shall be payable. For target achievement between 80% and 90%, the basic salary along with 40% of the applicable allowances shall be payable. Upon achieving between 90% and 100% of the assigned target, the employee shall be entitled to the full salary along with all applicable allowances.
-</Text>
+                      <Text
+                        fontSize="14px"
+                        lineHeight="1.8"
+                        textAlign="justify"
+                      >
+                        In the event of target achievement below 60%, only the basic component of the salary shall be payable. For target achievement between 60% and 70%, the basic salary along with 20% of the applicable allowances shall be payable. For target achievement between 70% and 80%, the basic salary along with 30% of the applicable allowances shall be payable. For target achievement between 80% and 90%, the basic salary along with 40% of the applicable allowances shall be payable. Upon achieving between 90% and 100% of the assigned target, the employee shall be entitled to the full salary along with all applicable allowances.
+                      </Text>
 
-    <Text
-        fontSize="14px"
-        lineHeight="1.8"
-        textAlign="justify"
-        mt={3}
-    >
-        The above payout structure shall be applicable only after the assessment of individual performance and target achievement in accordance with the Company's performance evaluation policy.
-    </Text>
-</Box>
+                      <Text
+                        fontSize="14px"
+                        lineHeight="1.8"
+                        textAlign="justify"
+                        mt={2}
+                      >
+                        The above payout structure shall be applicable only after the assessment of individual performance and target achievement in accordance with the Company's performance evaluation policy.
+                      </Text>
+                    </Box>
+                     <Text> We will issue a detailed appointment letter with the salary break up and other service's condition on your joining with us. Please send your acceptance to this offer by indicating your joining date on or before above mentioned date, failing which this offer will stand cancelled. </Text>
+                  <Text> Welcome to <strong>Jamidara Seeds Corporation</strong> and look forward to your association & contribution to achieve the organizational objectives.</Text>
                   </VStack>
-                 
 
-              
+
+
                   {/* Footer */}
-               
+
                 </VStack>
-               
+
               </Box>
             </Box>
 
-             <Box className="pdf-page page-break">
+            <Box className="pdf-page page-break">
               <Box className="pdf-inner">
                 {/* Decorative Images */}
                 <Image
@@ -326,19 +328,14 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                 <VStack align="flex-start" spacing={4} width="89%" marginLeft="4rem" className="letter-content">
                   <Image src={r_logo} alt="Round Logo" className="watermark_img1" />
                   <Text textAlign="center" mt="2rem" mb="2rem" width="89%">CONTD:-3</Text>
-              
 
-                  <VStack align="flex-start" width="100%">
-                   
 
-                   
-                  </VStack>
-                  <Text> We will issue a detailed appointment letter with the salary break up and other service's condition on your joining with us. Please send your acceptance to this offer by indicating your joining date on or before above mentioned date, failing which this offer will stand cancelled. </Text>
-                  <Text> Welcome to <strong>Jamidara Seeds Corporation</strong> and look forward to your association & contribution to achieve the organizational objectives.</Text>
+
+
                   <Text fontWeight="bold" mt="10px"> Other Terms </Text>
 
                   <Text>
-                    As per company norms your salary package is Rs. <strong style={{textDecoration: "underline"}}>{employee?.salary}</strong> per annum with incentives.
+                    As per company norms your salary package is Rs. <strong style={{ textDecoration: "underline" }}>{employee?.salary}</strong> per annum with incentives.
                   </Text>
 
                   <Text fontWeight="bold" textDecoration="underline">Incentive in case you achieve your targets i.e. your sale target is {formData?.yearly_collection}/ year. You will be responsible to add {formData?.first_new_channel_partner} new distributor in first month and {formData?.second_new_channel_partner} in second month and {formData?.third_new_channel_partner} in third month & minimum collection {formData?.monthly_collection} individual plus team per month deposit in company account from date of joining. </Text>
@@ -354,14 +351,14 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                   {/* Footer */}
                   <Box mt="50px">
                     <Text>Warm Regards,</Text>
-                     {formData.show_stamp && (
+                    {formData.show_stamp && (
                       <Image src={jsc_stamp} alt="Company Stamp" boxSize="84px" mt={4} />)}
                     <Text mt="10px" fontWeight="bold">
                       HR Department,
                       <br />
                       Jamidara Seeds Corporation
                     </Text>
-                   
+
                   </Box>
                 </VStack>
                 <VStack alignItems="flex-end" mt="10rem" spacing="4px" width="76%" position='absolute' right='0px'>

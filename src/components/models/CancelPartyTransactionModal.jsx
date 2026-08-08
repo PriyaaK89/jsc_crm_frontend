@@ -33,54 +33,54 @@ const CanclePartyTransactionModal = ({
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
-const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [wasApiCalled, setWasApiCalled] = useState(false);
-    const {auth} = useContext(AuthContext)
-      console.log("userID: " ,auth?.user?.id)
-      const userID = auth?.user?.id
+  const { auth } = useContext(AuthContext)
+  console.log("userID: ", auth?.user?.id)
+  const userID = auth?.user?.id
 
- const handleCancelPartyTransaction = async () => {
-  setIsDeleting(true);
+  const handleCancelPartyTransaction = async () => {
+    setIsDeleting(true);
 
-  try {
-    const res = await API.delete(
-      API_ENDPOINTS.DELETE_PARTY_TRANSACTION,
-      {
-        data: {
-          transaction_type: transactionType,
-          reference_id: referenceId,
-        },
+    try {
+      const res = await API.delete(
+        API_ENDPOINTS.DELETE_PARTY_TRANSACTION,
+        {
+          data: {
+            transaction_type: transactionType,
+            reference_id: referenceId,
+          },
+        }
+      );
+
+      if (res?.data?.success) {
+        onClose();
+        setWasApiCalled(true);
+        setShowSuccessModal(true);
       }
-    );
 
-    if (res?.data?.success) {
-      onClose();
-      setWasApiCalled(true);
-      setShowSuccessModal(true);
+    } catch (error) {
+      toast({
+        title: "Failed to cancel transaction",
+        description:
+          error?.response?.data?.message ||
+          "Something went wrong.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    } finally {
+      setIsDeleting(false);
     }
+  };
 
-  } catch (error) {
-    toast({
-      title: "Failed to cancel transaction",
-      description:
-        error?.response?.data?.message ||
-        "Something went wrong.",
-      status: "error",
-      duration: 4000,
-      isClosable: true,
-    });
-  } finally {
-    setIsDeleting(false);
-  }
-};
+  const handleSuccessClose = () => {
+    setShowSuccessModal(false); // correct state
 
- const handleSuccessClose = () => {
-  setShowSuccessModal(false); // correct state
-
-  if (wasApiCalled) {
-    onSuccess?.();
-  }
-};
+    if (wasApiCalled) {
+      onSuccess?.();
+    }
+  };
 
   return (
     <>
@@ -106,16 +106,16 @@ const [showSuccessModal, setShowSuccessModal] = useState(false);
             </AlertDialogBody>
 
             <AlertDialogFooter justifyContent="center" gap={3}>
-             <Button
-  ref={cancelRef}
-  onClick={() => {
-    onClose();
-    setShowCancelModal(true);
-  }}
-  variant="outline"
->
-  CANCEL
-</Button>
+              <Button
+                ref={cancelRef}
+                onClick={() => {
+                  onClose();
+                  setShowCancelModal(true);
+                }}
+                variant="outline"
+              >
+                CANCEL
+              </Button>
               <Button
                 colorScheme="red"
                 onClick={handleCancelPartyTransaction}
@@ -129,51 +129,51 @@ const [showSuccessModal, setShowSuccessModal] = useState(false);
       </AlertDialog>
 
       <Modal
-  isOpen={showCancelModal}
-  onClose={() => setShowCancelModal(false)}
-  isCentered
->
-  <ModalOverlay />
-  <ModalContent>
-    <ModalBody py={6}>
-      <Text textAlign="center">
-        Request Cancelled!
-      </Text>
-    </ModalBody>
-
-    <ModalFooter justifyContent="center">
-      <Button
-        onClick={() => setShowCancelModal(false)}
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        isCentered
       >
-        OK
-      </Button>
-    </ModalFooter>
-  </ModalContent>
-</Modal>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalBody py={6}>
+            <Text textAlign="center">
+              Request Cancelled!
+            </Text>
+          </ModalBody>
 
-<Modal
-  isOpen={showSuccessModal}
-  onClose={handleSuccessClose}
-  isCentered
->
-  <ModalOverlay />
-  <ModalContent>
-    <ModalBody py={6}>
-      <Text textAlign="center">
-        Transaction Cancelled Successfully!
-      </Text>
-    </ModalBody>
+          <ModalFooter justifyContent="center">
+            <Button
+              onClick={() => setShowCancelModal(false)}
+            >
+              OK
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
-    <ModalFooter justifyContent="center">
-      <Button
-        colorScheme="green"
-        onClick={handleSuccessClose}
+      <Modal
+        isOpen={showSuccessModal}
+        onClose={handleSuccessClose}
+        isCentered
       >
-        OK
-      </Button>
-    </ModalFooter>
-  </ModalContent>
-</Modal>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalBody py={6}>
+            <Text textAlign="center">
+              Transaction Cancelled Successfully!
+            </Text>
+          </ModalBody>
+
+          <ModalFooter justifyContent="center">
+            <Button
+              colorScheme="green"
+              onClick={handleSuccessClose}
+            >
+              OK
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

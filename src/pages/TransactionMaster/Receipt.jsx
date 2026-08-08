@@ -2,11 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import {
     Box, Text, Grid, GridItem, FormControl, FormLabel, Input, Select, Textarea, Table, Thead, Tbody, Tr, Th, Td, Button, Flex,
     Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Badge, Spinner, useToast, HStack,
+    useDisclosure,
 } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import useUsersapi from "../../Apis/GetUsersapi";
 import { AuthContext } from "../../context/AuthContext";
+import WhatsappMessageModal from "../../components/models/whatsappnotification/WhatsappMessageModal";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -49,6 +51,10 @@ const Receipt = () => {
     const [billLoading, setBillLoading] = useState(false);
     const [selectedEntryIndex, setSelectedEntryIndex] = useState(null);
     const [billReferenceData, setBillReferenceData] = useState([]);
+
+    const { isOpen: isWhatsappModalOpen, onOpen: onWhatsappModalOpen, onClose: onWhatsappModalClose, } = useDisclosure();
+    const [sendingWhatsapp, setSendingWhatsapp] = useState(false);
+    const [createdReceiptId, setCreatedReceiptId] = useState(null);
 
     const [submitting, setSubmitting] = useState(false);
     const [pendingBills, setPendingBills] = useState([]);
@@ -582,6 +588,9 @@ const Receipt = () => {
                     duration: 4000,
                     isClosable: true,
                 });
+
+                setCreatedReceiptId(res.data.receipt_id); // <-- capture id
+            onWhatsappModalOpen();
                 setFormData(emptyForm());
                 await loadVoucherNo();
             }
@@ -604,6 +613,32 @@ const Receipt = () => {
             setSubmitting(false);
         }
     };
+
+    const handleSendReceiptWhatsapp = async () => {
+    if (!createdReceiptId) return;
+    try {
+        setSendingWhatsapp(true);
+        await API.post(API_ENDPOINTS.send_receipt_whatsapp(createdReceiptId));
+        toast({
+            title: "WhatsApp message sent",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+        });
+    } catch (error) {
+        console.error("Send WhatsApp error:", error);
+        toast({
+            title: error?.response?.data?.message || "Failed to send WhatsApp message",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+        });
+    } finally {
+        setSendingWhatsapp(false);
+        onWhatsappModalClose();
+        setCreatedReceiptId(null);
+    }
+};
 
     // ── derived ──────────────────────────────────────────────────────────────────
 
@@ -651,11 +686,17 @@ const Receipt = () => {
     const isSaveDisabled = billModalError !== null || billReferenceData.length === 0;
 
     return (
+        <>
+        <WhatsappMessageModal
+  isWhatsappModalOpen={isWhatsappModalOpen}
+  onWhatsappModalClose={() => {
+    onWhatsappModalClose();
+    setCreatedReceiptId(null);
+  }}
+  onConfirm={handleSendReceiptWhatsapp}
+  isSending={sendingWhatsapp}
+/>
         <Box p={5}>
-            {/* ── PAGE TITLE ── */}
-            {/* <Text fontSize="xl" fontWeight="bold" mb={5} color="#2d2d2d">
-                Receipt Voucher
-            </Text> */}
 
             {/* ── TOP FORM ── */}
             <Grid templateColumns="repeat(2, 1fr)" gap={5} mb={6}>
@@ -1019,9 +1060,7 @@ const Receipt = () => {
 
                                                     {/* AMOUNT */}
                                                     <Td>
-                                                        {/* <Input size="sm" type="number" min={0} value={bill.reference_amount}
-                                                            onChange={(e) => handleBillReferenceChange(rowIndex, "reference_amount", e.target.value)}
-                                                            w="100px" textAlign="right" /> */}
+
                                                         <Input size="sm" type="number" min={0} value={bill.reference_amount} isReadOnly={bill.reference_type === "AGST REF"}
                                                             bg={bill.reference_type === "AGST REF" ? "gray.50" : "white"}
                                                             onChange={(e) => handleBillReferenceChange(rowIndex, "reference_amount", e.target.value)}
@@ -1073,6 +1112,7 @@ const Receipt = () => {
                 </ModalContent>
             </Modal>
         </Box>
+        </>
     );
 };
 

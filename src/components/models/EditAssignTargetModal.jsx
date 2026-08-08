@@ -203,29 +203,24 @@ const EditAssignTargetForm = ({
 
   return (
     <>
-      <Modal
-        isOpen={isEditModalOpen}
-        onClose={handleClose}
-        isCentered
-        size="md"
-      >
+      <Modal isOpen={isEditModalOpen} onClose={handleClose} isCentered size="md" >
         <ModalOverlay />
 
         <ModalContent borderRadius="14px">
 
           {/* HEADER */}
 
-            <Box bg="#c3dae0" px={6} py={6} borderBottom="1px solid" borderColor="gray.100" borderRadius="14px 14px 0px 0px" >
-                                 <ModalHeader p={0}>
-                                     <VStack spacing={2} align="start" >
-                                         <HStack>
-                                             <Text fontSize="16px" fontWeight="600" color="gray.700" > Edit Assigned Target </Text>
-                                    
-                                         </HStack>
-                                     </VStack>
-                                 </ModalHeader>
-                                 <ModalCloseButton top="10px" right="10px" />
-                             </Box>
+          <Box bg="#c3dae0" px={6} py={6} borderBottom="1px solid" borderColor="gray.100" borderRadius="14px 14px 0px 0px" >
+            <ModalHeader p={0}>
+              <VStack spacing={2} align="start" >
+                <HStack>
+                  <Text fontSize="16px" fontWeight="600" color="gray.700" > Edit Assigned Target </Text>
+
+                </HStack>
+              </VStack>
+            </ModalHeader>
+            <ModalCloseButton top="10px" right="10px" />
+          </Box>
 
           <Divider />
 
@@ -358,9 +353,9 @@ const EditAssignTargetForm = ({
 
                   <Button
                     bg="#237086" color="white"
-                        _hover={{ bg: "#1B5A6B" }} fontWeight="500"
-                        borderRadius="12px"
-                        minW="160px" fontSize="14px"
+                    _hover={{ bg: "#1B5A6B" }} fontWeight="500"
+                    borderRadius="12px"
+                    minW="160px" fontSize="14px"
                     onClick={handleEditTarget}
                     isLoading={submitLoading}
                   >

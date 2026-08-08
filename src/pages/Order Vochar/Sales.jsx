@@ -4,6 +4,7 @@ import {
   Tr, Th, Td, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton,
   ModalBody, ModalFooter, FormControl, FormLabel, Textarea, useToast, Spinner,
   Center, Flex, Badge, Divider,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../../services/api";
@@ -14,6 +15,7 @@ import {
   fetchAvailableStock, fetchBatches, fetchLedgerDetailsByID,
 } from "../../Apis/commanApi";
 import SalesOrderPreviewModal from "./modals/SalesOrderPreview";
+import WhatsappMessageModal from "../../components/models/whatsappnotification/WhatsappMessageModal";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const round2 = (num) => Math.round((Number(num || 0) + Number.EPSILON) * 100) / 100;
@@ -108,6 +110,13 @@ const Sales = () => {
   const [errors, setErrors] = useState({});
 
   const [previewOpen, setPreviewOpen] = useState(false);
+  const {
+  isOpen: isWhatsappModalOpen,
+  onOpen: onWhatsappModalOpen,
+  onClose: onWhatsappModalClose,
+} = useDisclosure();
+const [sendingWhatsapp, setSendingWhatsapp] = useState(false);
+const [approvedLevel, setApprovedLevel] = useState(null);
 
   // Dispatcher/Senior extra fields
   const [dispatchData, setDispatchData] = useState({
@@ -245,7 +254,7 @@ const Sales = () => {
       }));
 
       // Pre-fill dispatcher fields if payload already has them (re-submission case)
-      if (payload.dispatch_doc_no || payload.vehicle_no) {
+      if (payload.dispatch_doc_no || payload.vehicle_no || payload.bill_t_no) {
         setDispatchData((prev) => ({
           ...prev,
           dispatchDocNo: cleanQuoted(payload.dispatch_doc_no),
@@ -256,6 +265,8 @@ const Sales = () => {
           loadFreight: payload.load_freight ?? "0",
           unloadFreight: payload.unload_freight ?? "0",
           destination: cleanQuoted(payload.destination),
+          dispatchDocImage: payload.dispatchDocImageUrl || "",
+    billTImage: payload.billTImageUrl || "",
         }));
       }
 
@@ -721,6 +732,7 @@ const Sales = () => {
 
     setErrors({});
     setSubmitting(true);
+    const approvedLevel = approval?.approval_level; // capture before state changes
 
     try {
       const payload = buildUpdatedPayload();
@@ -759,7 +771,13 @@ const Sales = () => {
         isClosable: true,
       });
 
-      navigate(-1);
+
+    if (["JUNIOR", "DISPATCHER"].includes(approval?.approval_level)) {
+  setApprovedLevel(approval.approval_level);
+  onWhatsappModalOpen();
+} else {
+  navigate(-1);
+}
       
     } catch (error) {
       console.error("APPROVE ERROR =>", error);
@@ -774,6 +792,38 @@ const Sales = () => {
       setSubmitting(false);
     }
   };
+
+const handleSendSalesWhatsapp = async () => {
+  try {
+    setSendingWhatsapp(true);
+    await API.post(API_ENDPOINTS.send_sale_order_whatsapp(approvalId), {
+      level: approval?.approval_level, // JUNIOR | DISPATCHER — captured before approve changed it
+    });
+    toast({
+      title: "WhatsApp message sent",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+  } catch (error) {
+    console.error("Send WhatsApp error:", error);
+    toast({
+      title: error?.response?.data?.message || "Failed to send WhatsApp message",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
+  } finally {
+    setSendingWhatsapp(false);
+    onWhatsappModalClose();
+    navigate(-1);
+  }
+};
+
+const handleSkipWhatsapp = () => {
+  onWhatsappModalClose();
+  navigate(-1);
+};
 
   const handleReject = async () => {
     if (!rejectRemarks.trim()) {
@@ -852,10 +902,16 @@ const Sales = () => {
     return <Center h="60vh"><Spinner size="xl" color="#4f9190" /></Center>;
   }
 
-
-
   // ─── Render ────────────────────────────────────────────────────────────────
   return (
+    <>
+    <WhatsappMessageModal
+  isWhatsappModalOpen={isWhatsappModalOpen}
+  onWhatsappModalClose={handleSkipWhatsapp}
+  onConfirm={handleSendSalesWhatsapp}
+  isSending={sendingWhatsapp}
+  ledgerName={formData.partyLedgerName}
+/>
     <Box>
       {/* Status bar */}
       {approval && (
@@ -875,15 +931,10 @@ const Sales = () => {
             colorScheme={
               approval.status === "RETURNED" ? "yellow"
                 : approval.approval_level === "DISPATCHER" ? "orange"
-                  : approval.approval_level === "SENIOR" ? "purple"
-                    : "teal"
-            }
+                : approval.approval_level === "SENIOR" ? "purple" : "teal" }
             fontSize="10px"
-            px={2}
-          >
-            {approval.status === "RETURNED"
-              ? `RETURNED → fix & resubmit`
-              : approval.approval_level?.replace("_", " ")}
+            px={2} >
+            {approval.status === "RETURNED" ? `RETURNED → fix & resubmit` : approval.approval_level?.replace("_", " ")}
           </Badge>
         </Flex>
       )}
@@ -908,8 +959,7 @@ const Sales = () => {
               {...inputStyle}
               value={formData.reference_no}
               onChange={(e) => setFormData((prev) => ({ ...prev, reference_no: e.target.value }))}
-              placeholder="Enter reference no."
-            />
+              placeholder="Enter reference no." />
           </GridItem>
           <GridItem>
             <Text {...labelStyle}>Date <Text as="span" color="red.500">*</Text></Text>
@@ -917,8 +967,7 @@ const Sales = () => {
               {...inputStyle}
               type="date"
               value={formData.date}
-              onChange={(e) => setFormData((prev) => ({ ...prev, date: e.target.value }))}
-            />
+              onChange={(e) => setFormData((prev) => ({ ...prev, date: e.target.value }))} />
           </GridItem>
           <GridItem>
             <Text {...labelStyle}>Party A/c Name</Text>
@@ -1689,7 +1738,7 @@ const Sales = () => {
               onClick={handleApprove}
             // boxShadow="0 2px 8px rgba(45,90,61,0.4)"
             >
-              Accept
+              Accept 
             </Button>
             <Button color="white" bg="green.600" _hover={{ bg: "green.700" }} fontSize="12px" fontWeight="500" borderRadius="13px" onClick={() => setPreviewOpen(true)}>Download Bill</Button>
           </>
@@ -2048,6 +2097,7 @@ const Sales = () => {
         extraLedgers={extraLedgers}
       />
     </Box>
+    </>
   );
 };
 

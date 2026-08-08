@@ -267,21 +267,20 @@ export const API_ENDPOINTS = {
   get_employee_expense_by_date: "/admin-expense-by-date",
 
   GET_TRANSACTION_REPORT_IMAGES: "get-transaction-documents",
+ 
+  send_ledger_whatsapp: (ledgerId) => `/${ledgerId}/send-whatsapp`,
+  send_sale_order_whatsapp: (approvalId) => `/${approvalId}/send-whatsapp-confirmation`,
+  send_receipt_whatsapp: (id) => `/${id}/send-receipt-whatsapp`,
   
   GET_TEMPLATE_BY_ID: (id) => `visit-targets/templates/${id}`,
   UPDATE_TEMPLATE_BY_ID: (id) => `visit-targets/templates/${id}`,
   DELETE_TEMPLATE: (id) => `visit-targets/templates/${id}`,
 
   GET_ASSIGNMENT: (id) => `visit-targets/assignments/${id}`,
-  GET_ASSIGNMENT_PROGRESS: (id) =>
-    `visit-targets/assignments/${id}/progress`,
-  COMPLETE_ASSIGNMENT: (id) =>
-    `visit-targets/assignments/${id}/complete`,
-  EXPIRE_ASSIGNMENT: (id) =>
-    `visit-targets/assignments/${id}/expire`,
+  GET_ASSIGNMENT_PROGRESS: (id) => `visit-targets/assignments/${id}/progress`,
+  COMPLETE_ASSIGNMENT: (id) => `visit-targets/assignments/${id}/complete`,
+  EXPIRE_ASSIGNMENT: (id) => `visit-targets/assignments/${id}/expire`,
   REACTIVATE_TEMPLATE: (id) => `visit-targets/templates/${id}/reactivate`,
-
-
 
 };
 // 

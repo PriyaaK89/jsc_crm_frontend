@@ -5,12 +5,14 @@ import {
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton,
   ModalBody, ModalFooter, Badge, Spinner, useToast, HStack, Image,
   Tag,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import useUsersapi from "../../Apis/GetUsersapi";
 import { AuthContext } from "../../context/AuthContext";
+import WhatsappMessageModal from "../../components/models/whatsappnotification/WhatsappMessageModal";
 
 const ReceiptApproval = () => {
   const { approvalId } = useParams();
@@ -41,6 +43,14 @@ const ReceiptApproval = () => {
   const [reason, setReason] = useState("");
   const [returnImage, setReturnImage] = useState(null);
   const [remarks, setRemarks] = useState("");
+
+  const {
+    isOpen: isWhatsappModalOpen,
+    onOpen: onWhatsappModalOpen,
+    onClose: onWhatsappModalClose,
+  } = useDisclosure();
+  const [sendingWhatsapp, setSendingWhatsapp] = useState(false);
+  const [approvedReceiptId, setApprovedReceiptId] = useState(null);
 
   // ── boot ─────────────────────────────────────────────────────────────────
 
@@ -112,7 +122,7 @@ const ReceiptApproval = () => {
           receipt_no: getDisplayVoucherNo(data.order_no),
           account_ledger_id: payload.account_ledger_id || "",
           current_balance: 0,
-          employee_under_id: payload.employee_under_id || "",
+          employee_under_id: payload.employee_under_id || null,
           receipt_date: payload.receipt_date || "",
           narration: payload.narration || "",
           total_amount: Number(payload.total_amount || 0),
@@ -205,23 +215,23 @@ const ReceiptApproval = () => {
     }
   };
 
- const loadVoucherNo = async () => {
-  try {
-    const res = await API.get(`${API_ENDPOINTS.GET_NEXTVOUCHER_NO}?voucher_type=RECEIPT`);
-    setVoucherTypeId(res.data.voucher_type_id);
-    setVoucherNo(res.data.voucher_no);
-  } catch (err) {
-    console.log(err);
-    console.log(err.response);
-    toast({
-      title: "Error",
-      description: err.response?.data?.message || err.message,
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-  }
-};
+  const loadVoucherNo = async () => {
+    try {
+      const res = await API.get(`${API_ENDPOINTS.GET_NEXTVOUCHER_NO}?voucher_type=RECEIPT`);
+      setVoucherTypeId(res.data.voucher_type_id);
+      setVoucherNo(res.data.voucher_no);
+    } catch (err) {
+      console.log(err);
+      console.log(err.response);
+      toast({
+        title: "Error",
+        description: err.response?.data?.message || err.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   // ── field edit helpers ────────────────────────────────────────────────────
 
@@ -413,6 +423,7 @@ const ReceiptApproval = () => {
 
   const handleApprove = async () => {
     setActionLoading(true);
+    const wasSenior = approval?.approval_level === "SENIOR";
     try {
       const res = await API.post(
         `${API_ENDPOINTS.APPROVE_RECEIPT_REQUEST}/${approvalId}`,
@@ -423,7 +434,12 @@ const ReceiptApproval = () => {
       );
       if (res.data.success) {
         toast({ title: "Approved successfully", status: "success", duration: 3000 });
-        navigate(-1);
+        if (wasSenior && res.data.receipt_id) {
+          setApprovedReceiptId(res.data.receipt_id);
+          onWhatsappModalOpen();
+        } else {
+          navigate(-1);
+        }
       }
     } catch (err) {
       toast({
@@ -435,6 +451,54 @@ const ReceiptApproval = () => {
     } finally {
       setActionLoading(false);
     }
+  };
+
+const handleSendReceiptWhatsapp = async () => {
+  if (!approvedReceiptId) return;
+  try {
+    setSendingWhatsapp(true);
+    const res = await API.post(API_ENDPOINTS.send_receipt_whatsapp(approvedReceiptId));
+
+    const results = res.data.data || [];
+    const failed = results.filter((r) => !r.sent);
+
+    if (failed.length === 0) {
+      toast({ title: "WhatsApp message sent", status: "success", duration: 3000, isClosable: true });
+    } else if (failed.length < results.length) {
+      toast({
+        title: "Some WhatsApp messages could not be sent",
+        description: failed.map((f) => f.reason).join(", "),
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "WhatsApp message not sent",
+        description: failed[0]?.reason || "Unknown error",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+  } catch (error) {
+    console.error("Send WhatsApp error:", error);
+    toast({
+      title: error?.response?.data?.message || "Failed to send WhatsApp message",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
+  } finally {
+    setSendingWhatsapp(false);
+    onWhatsappModalClose();
+    navigate(-1);
+  }
+};
+
+  const handleSkipWhatsapp = () => {
+    onWhatsappModalClose();
+    navigate(-1);
   };
 
   const handleReject = async () => {
@@ -530,493 +594,501 @@ const ReceiptApproval = () => {
   }
 
   return (
-    <Box p={5}>
-      <Flex justify="space-between" align="center" mb={5} width="100%">
-        <Text className="action_heading" mb={4}>
-          Receipt Approval Request
-        </Text>
-        <Tag colorScheme={approval.approval_level === "SENIOR" ? "purple" : "blue"} fontSize='10px' px={3} py={1} width="125px !important">
-          Pending at {approval.approval_level}
-        </Tag>
-      </Flex>
+    <>
+      <WhatsappMessageModal
+        isWhatsappModalOpen={isWhatsappModalOpen}
+        onWhatsappModalClose={handleSkipWhatsapp}
+        onConfirm={handleSendReceiptWhatsapp}
+        isSending={sendingWhatsapp}
+      />
+      <Box p={5}>
+        <Flex justify="space-between" align="center" mb={5} width="100%">
+          <Text className="action_heading" mb={4}>
+            Receipt Approval Request
+          </Text>
+          <Tag colorScheme={approval.approval_level === "SENIOR" ? "purple" : "blue"} fontSize='10px' px={3} py={1} width="125px !important">
+            Pending at {approval.approval_level}
+          </Tag>
+        </Flex>
 
-      {/* ── TOP FORM ── */}
-      <Grid templateColumns="repeat(2, 1fr)" gap={5} mb={6}>
-      <GridItem>
-  <FormControl>
-    <FormLabel>Receipt Voucher No.</FormLabel>
-    <Input
-      {...readonlyInputStyle}
-      value={voucherNo || ""}
-      readOnly
-      bg="gray.50"
-      fontWeight="semibold"
-    />
-  </FormControl>
-</GridItem>
-        <GridItem>
-          <FormControl>
-            <FormLabel>Receipt No.</FormLabel>
-            <Input
-              {...readonlyInputStyle}
-              value={formData.receipt_no || ""}
-              readOnly
-              bg="gray.50"
-              fontWeight="semibold"
-            />
-          </FormControl>
-        </GridItem>
+        {/* ── TOP FORM ── */}
+        <Grid templateColumns="repeat(2, 1fr)" gap={5} mb={6}>
+          <GridItem>
+            <FormControl>
+              <FormLabel>Receipt Voucher No.</FormLabel>
+              <Input
+                {...readonlyInputStyle}
+                value={voucherNo || ""}
+                readOnly
+                bg="gray.50"
+                fontWeight="semibold"
+              />
+            </FormControl>
+          </GridItem>
+          <GridItem>
+            <FormControl>
+              <FormLabel>Receipt No.</FormLabel>
+              <Input
+                {...readonlyInputStyle}
+                value={formData.receipt_no || ""}
+                readOnly
+                bg="gray.50"
+                fontWeight="semibold"
+              />
+            </FormControl>
+          </GridItem>
 
-        <GridItem>
-          <FormControl isRequired>
-            <FormLabel>Date</FormLabel>
-            <Input
-              {...inputStyle}
-              type="date"
-              value={formData.receipt_date}
-              onChange={(e) => handleFieldChange("receipt_date", e.target.value)}
-            />
-          </FormControl>
-        </GridItem>
+          <GridItem>
+            <FormControl isRequired>
+              <FormLabel>Date</FormLabel>
+              <Input
+                {...inputStyle}
+                type="date"
+                value={formData.receipt_date}
+                onChange={(e) => handleFieldChange("receipt_date", e.target.value)}
+              />
+            </FormControl>
+          </GridItem>
 
-        <GridItem>
-          <FormControl isRequired>
-            <FormLabel>Account</FormLabel>
-            <Select
-              {...inputStyle}
-              value={formData.account_ledger_id}
-              onChange={(e) => handleAccountSelect(e.target.value)}
-              placeholder="Select Account"
-            >
-              {account.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.ledger_name}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-        </GridItem>
+          <GridItem>
+            <FormControl isRequired>
+              <FormLabel>Account</FormLabel>
+              <Select
+                {...inputStyle}
+                value={formData.account_ledger_id}
+                onChange={(e) => handleAccountSelect(e.target.value)}
+                placeholder="Select Account"
+              >
+                {account.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.ledger_name}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+          </GridItem>
 
-        <GridItem>
-          <FormControl>
-            <FormLabel>Employee Under</FormLabel>
-            <Select
-              {...inputStyle}
-              value={formData.employee_under_id}
-              onChange={(e) => handleFieldChange("employee_under_id", e.target.value)}
-              placeholder="--Please Select--"
-            >
-              {users?.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-        </GridItem>
+          <GridItem>
+            <FormControl>
+              <FormLabel>Employee Under</FormLabel>
+              <Select
+                {...inputStyle}
+                value={formData.employee_under_id}
+                onChange={(e) => handleFieldChange("employee_under_id", e.target.value)}
+                placeholder="--Please Select--"
+              >
+                {users?.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+          </GridItem>
 
-        <GridItem>
-          <FormControl>
-            <FormLabel>Current Balance</FormLabel>
-            <Input
-              {...readonlyInputStyle}
-              value={Number(formData.current_balance || 0).toFixed(2)}
-              readOnly
-              bg="gray.50"
-              fontWeight="semibold"
-            />
-          </FormControl>
-        </GridItem>
-      </Grid>
+          <GridItem>
+            <FormControl>
+              <FormLabel>Current Balance</FormLabel>
+              <Input
+                {...readonlyInputStyle}
+                value={Number(formData.current_balance || 0).toFixed(2)}
+                readOnly
+                bg="gray.50"
+                fontWeight="semibold"
+              />
+            </FormControl>
+          </GridItem>
+        </Grid>
 
-      {/* ── ENTRIES TABLE ── */}
-      <Box borderWidth="1px" borderRadius="md" overflowX="auto" mb={5}>
-        <Table
-          variant="simple"
-          size="sm"
-          style={{ borderCollapse: "separate", borderSpacing: 0 }}
-        >
-          <Thead bg="gray.100">
-            <Tr>
-              <Th {...thStyle}>Particulars (Ledger)</Th>
-              <Th {...thStyle} isNumeric>Current Balance</Th>
-              <Th {...thStyle} isNumeric>Amount</Th>
-              <Th {...thStyle}>Transaction Type</Th>
-              <Th {...thStyle}>Txn/Cheque No.</Th>
-              <Th {...thStyle}>Bank Name</Th>
-              <Th {...thStyle}>Bill Refs</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {formData.entries.map((entry, index) => (
-              <Tr key={index}>
-                <Td minW="170px">
-                  <Select
-                    {...inputStyle}
-                    value={entry.ledger_id}
-                    onChange={(e) => handleEntryLedgerChange(index, e.target.value)}
-                  >
-                    {ledger.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.ledger_name}
-                      </option>
-                    ))}
-                  </Select>
-                </Td>
-
-                <Td isNumeric>
-                  <Input
-                    {...readonlyInputStyle}
-                    value={Number(entry.current_balance || 0).toFixed(2)}
-                    readOnly
-                    w="90px"
-                    textAlign="right"
-                  />
-                </Td>
-
-                <Td>
-                  <Input
-                    {...inputStyle}
-                    type="number"
-                    value={entry.amount}
-                    onChange={(e) => handleEntryChange(index, "amount", e.target.value)}
-                    w="100px"
-                  />
-                </Td>
-
-                <Td minW="150px">
-                  <Select
-                    {...inputStyle}
-                    value={entry.transaction_type}
-                    onChange={(e) => handleTransactionTypeChange(index, e.target.value)}
-                  >
-                    <option value="Cash">Cash</option>
-                    <option value="Cheque/DD">Cheque/DD</option>
-                    <option value="E-Fund Transfer">E-Fund Transfer</option>
-                    <option value="Others">Others</option>
-                  </Select>
-                </Td>
-
-                <Td>
-                  <Input
-                    {...inputStyle}
-                    value={entry.transaction_no}
-                    onChange={(e) =>
-                      handleEntryChange(index, "transaction_no", e.target.value)
-                    }
-                    w="120px"
-                  />
-                </Td>
-
-                <Td>
-                  <Select
-                    {...inputStyle}
-                    value={entry.bank_name}
-                    onChange={(e) => handleEntryChange(index, "bank_name", e.target.value)}
-                    w="160px"
-                  >
-                    {account.map((item) => (
-                      <option key={item.id} value={item.ledger_name}>
-                        {item.ledger_name}
-                      </option>
-                    ))}
-                  </Select>
-                </Td>
-
-                <Td textAlign="center">
-                  {entry.bill_references?.length > 0 ? (
-                    <Badge
-                      colorScheme="green"
-                      cursor="pointer"
-                      onClick={() => openBillModal(index, entry.ledger_id)}
-                    >
-                      {entry.bill_references.length} ref
-                      {entry.bill_references.length > 1 ? "s" : ""}
-                    </Badge>
-                  ) : (
-                    <Button
-                      size="xs"
-                      variant="outline"
-                      isDisabled={!entry.ledger_id || entry.maintain_bill_by_bill !== 1}
-                      onClick={() => openBillModal(index, entry.ledger_id)}
-                    >
-                      Bill
-                    </Button>
-                  )}
-                </Td>
+        {/* ── ENTRIES TABLE ── */}
+        <Box borderWidth="1px" borderRadius="md" overflowX="auto" mb={5}>
+          <Table
+            variant="simple"
+            size="sm"
+            style={{ borderCollapse: "separate", borderSpacing: 0 }}
+          >
+            <Thead bg="gray.100">
+              <Tr>
+                <Th {...thStyle}>Particulars (Ledger)</Th>
+                <Th {...thStyle} isNumeric>Current Balance</Th>
+                <Th {...thStyle} isNumeric>Amount</Th>
+                <Th {...thStyle}>Transaction Type</Th>
+                <Th {...thStyle}>Txn/Cheque No.</Th>
+                <Th {...thStyle}>Bank Name</Th>
+                <Th {...thStyle}>Bill Refs</Th>
               </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </Box>
+            </Thead>
+            <Tbody>
+              {formData.entries.map((entry, index) => (
+                <Tr key={index}>
+                  <Td minW="170px">
+                    <Select
+                      {...inputStyle}
+                      value={entry.ledger_id}
+                      onChange={(e) => handleEntryLedgerChange(index, e.target.value)}
+                    >
+                      {ledger.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.ledger_name}
+                        </option>
+                      ))}
+                    </Select>
+                  </Td>
 
-      {/* ── ATTACHMENT PREVIEW ── */}
-      {formData.attachmentUrl && (
-        <Box mb={5}>
-          <FormLabel>Uploaded Document</FormLabel>
-          <Image
-            src={formData.attachmentUrl}
-            alt="Receipt attachment"
-            maxH="200px"
-            borderRadius="8px"
-            border="1px solid #ddd"
-          />
+                  <Td isNumeric>
+                    <Input
+                      {...readonlyInputStyle}
+                      value={Number(entry.current_balance || 0).toFixed(2)}
+                      readOnly
+                      w="90px"
+                      textAlign="right"
+                    />
+                  </Td>
+
+                  <Td>
+                    <Input
+                      {...inputStyle}
+                      type="number"
+                      value={entry.amount}
+                      onChange={(e) => handleEntryChange(index, "amount", e.target.value)}
+                      w="100px"
+                    />
+                  </Td>
+
+                  <Td minW="150px">
+                    <Select
+                      {...inputStyle}
+                      value={entry.transaction_type}
+                      onChange={(e) => handleTransactionTypeChange(index, e.target.value)}
+                    >
+                      <option value="Cash">Cash</option>
+                      <option value="Cheque/DD">Cheque/DD</option>
+                      <option value="E-Fund Transfer">E-Fund Transfer</option>
+                      <option value="Others">Others</option>
+                    </Select>
+                  </Td>
+
+                  <Td>
+                    <Input
+                      {...inputStyle}
+                      value={entry.transaction_no}
+                      onChange={(e) =>
+                        handleEntryChange(index, "transaction_no", e.target.value)
+                      }
+                      w="120px"
+                    />
+                  </Td>
+
+                  <Td>
+                    <Select
+                      {...inputStyle}
+                      value={entry.bank_name}
+                      onChange={(e) => handleEntryChange(index, "bank_name", e.target.value)}
+                      w="160px"
+                    >
+                      {account.map((item) => (
+                        <option key={item.id} value={item.ledger_name}>
+                          {item.ledger_name}
+                        </option>
+                      ))}
+                    </Select>
+                  </Td>
+
+                  <Td textAlign="center">
+                    {entry.bill_references?.length > 0 ? (
+                      <Badge
+                        colorScheme="green"
+                        cursor="pointer"
+                        onClick={() => openBillModal(index, entry.ledger_id)}
+                      >
+                        {entry.bill_references.length} ref
+                        {entry.bill_references.length > 1 ? "s" : ""}
+                      </Badge>
+                    ) : (
+                      <Button
+                        size="xs"
+                        variant="outline"
+                        isDisabled={!entry.ledger_id || entry.maintain_bill_by_bill !== 1}
+                        onClick={() => openBillModal(index, entry.ledger_id)}
+                      >
+                        Bill
+                      </Button>
+                    )}
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
         </Box>
-      )}
 
-      <FormControl mb={3}>
-        <FormLabel>Total Amount</FormLabel>
-        <Input
-          {...readonlyInputStyle}
-          value={Number(formData.total_amount).toFixed(2)}
-          readOnly
-        />
-      </FormControl>
+        {/* ── ATTACHMENT PREVIEW ── */}
+        {formData.attachmentUrl && (
+          <Box mb={5}>
+            <FormLabel>Uploaded Document</FormLabel>
+            <Image
+              src={formData.attachmentUrl}
+              alt="Receipt attachment"
+              maxH="200px"
+              borderRadius="8px"
+              border="1px solid #ddd"
+            />
+          </Box>
+        )}
 
-      <Box mb={5}>
-        <FormControl>
-          <FormLabel>Narration</FormLabel>
-          <Textarea
-            value={formData.narration}
-            onChange={(e) => handleFieldChange("narration", e.target.value)}
+        <FormControl mb={3}>
+          <FormLabel>Total Amount</FormLabel>
+          <Input
+            {...readonlyInputStyle}
+            value={Number(formData.total_amount).toFixed(2)}
+            readOnly
           />
         </FormControl>
-      </Box>
 
-{approval.remarks && (
-  <Box mb={5}>
-    <FormLabel>Previous Remarks</FormLabel>
-    <Box
-      p={3}
-      borderRadius="6px"
-      bg="#f0f4f0"
-      border="1px solid #c8d0d8"
-      fontSize="14px"
-      color="#333"
-    >
-      {approval.remarks}
-    </Box>
-  </Box>
-)}
+        <Box mb={5}>
+          <FormControl>
+            <FormLabel>Narration</FormLabel>
+            <Textarea
+              value={formData.narration}
+              onChange={(e) => handleFieldChange("narration", e.target.value)}
+            />
+          </FormControl>
+        </Box>
 
-<Box mb={5}>
-  <FormControl>
-    <FormLabel>Approval Remarks (optional)</FormLabel>
-    <Textarea value={remarks} onChange={(e) => setRemarks(e.target.value)} />
-  </FormControl>
-</Box>
+        {approval.remarks && (
+          <Box mb={5}>
+            <FormLabel>Previous Remarks</FormLabel>
+            <Box
+              p={3}
+              borderRadius="6px"
+              bg="#f0f4f0"
+              border="1px solid #c8d0d8"
+              fontSize="14px"
+              color="#333"
+            >
+              {approval.remarks}
+            </Box>
+          </Box>
+        )}
 
-      {/* ── ACTIONS ── */}
-      <Flex justify="flex-end" gap={3} mt={6}>
-        <Button
-          colorScheme="red"
-          variant="outline"
-          onClick={() => setReasonModal("REJECT")}
-          isDisabled={actionLoading}
-        >
-          Reject
-        </Button>
-        <Button
-          colorScheme="orange"
-          variant="outline"
-          onClick={() => setReasonModal("RETURN")}
-          isDisabled={actionLoading}
-        >
-          Return
-        </Button>
-        <Button
-          bg="#237086"
-          color="white"
-          _hover={{ bg: "#1B5A6B" }}
-          borderRadius="12px"
-          px={8}
-          onClick={handleApprove}
-          isLoading={actionLoading}
-          loadingText="Approving…"
-        >
-          Approve
-        </Button>
-      </Flex>
+        <Box mb={5}>
+          <FormControl>
+            <FormLabel>Approval Remarks (optional)</FormLabel>
+            <Textarea value={remarks} onChange={(e) => setRemarks(e.target.value)} />
+          </FormControl>
+        </Box>
 
-      {/* ── BILL MODAL ── */}
-      <Modal isOpen={billModal} onClose={() => setBillModal(false)} size="5xl" scrollBehavior="inside">
-        <ModalOverlay />
-        <ModalContent borderRadius="12px">
-          <ModalHeader bg="#b0d1cf" borderRadius="12px 12px 0px 0px" padding="21px">
-            <HStack gap={0}>
-              <Text fontSize="16px">Bill Wise Details</Text>
-              {selectedEntryIndex !== null &&
-                formData.entries[selectedEntryIndex]?.ledger_id && (
-                  <Text as="span" fontWeight="normal" fontSize="13px" ml={2} color="gray.600">
-                    —{" "}
-                    {
-                      ledger.find(
-                        (l) =>
-                          String(l.id) ===
-                          String(formData.entries[selectedEntryIndex].ledger_id)
-                      )?.ledger_name
-                    }
-                  </Text>
-                )}
-            </HStack>
-            <ModalCloseButton />
-          </ModalHeader>
-          <ModalBody>
-            {billLoading ? (
-              <Flex justify="center" py={8}>
-                <Spinner size="lg" />
-              </Flex>
-            ) : (
-              <Table size="sm" variant="simple">
-                <Thead bg="gray.100">
-                  <Tr>
-                    <Th {...thStyle}>Type of Ref</Th>
-                    <Th {...thStyle}>Reference No</Th>
-                    <Th {...thStyle}>Due Date</Th>
-                    <Th {...thStyle} isNumeric>Amount</Th>
-                    <Th {...thStyle}>Dr/Cr</Th>
-                    <Th {...thStyle}>Delete</Th>
-                    <Th {...thStyle}>Add</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {billReferenceData.map((bill, rowIndex) => (
-                    <Tr key={rowIndex}>
-                      <Td minW="130px">
-                        <Select
-                          size="sm"
-                          value={bill.reference_type}
-                          onChange={(e) =>
-                            handleBillReferenceChange(rowIndex, "reference_type", e.target.value)
-                          }
-                        >
-                          <option value="AGST REF">Agst Ref</option>
-                          <option value="ADVANCE">Advance</option>
-                          <option value="ON ACCOUNT">On Account</option>
-                        </Select>
-                      </Td>
-                      <Td minW="200px">
-                        {bill.reference_type === "AGST REF" ? (
+        {/* ── ACTIONS ── */}
+        <Flex justify="flex-end" gap={3} mt={6}>
+          <Button
+            colorScheme="red"
+            variant="outline"
+            onClick={() => setReasonModal("REJECT")}
+            isDisabled={actionLoading}
+          >
+            Reject
+          </Button>
+          <Button
+            colorScheme="orange"
+            variant="outline"
+            onClick={() => setReasonModal("RETURN")}
+            isDisabled={actionLoading}
+          >
+            Return
+          </Button>
+          <Button
+            bg="#237086"
+            color="white"
+            _hover={{ bg: "#1B5A6B" }}
+            borderRadius="12px"
+            px={8}
+            onClick={handleApprove}
+            isLoading={actionLoading}
+            loadingText="Approving…"
+          >
+            Approve
+          </Button>
+        </Flex>
+
+        {/* ── BILL MODAL ── */}
+        <Modal isOpen={billModal} onClose={() => setBillModal(false)} size="5xl" scrollBehavior="inside">
+          <ModalOverlay />
+          <ModalContent borderRadius="12px">
+            <ModalHeader bg="#b0d1cf" borderRadius="12px 12px 0px 0px" padding="21px">
+              <HStack gap={0}>
+                <Text fontSize="16px">Bill Wise Details</Text>
+                {selectedEntryIndex !== null &&
+                  formData.entries[selectedEntryIndex]?.ledger_id && (
+                    <Text as="span" fontWeight="normal" fontSize="13px" ml={2} color="gray.600">
+                      —{" "}
+                      {
+                        ledger.find(
+                          (l) =>
+                            String(l.id) ===
+                            String(formData.entries[selectedEntryIndex].ledger_id)
+                        )?.ledger_name
+                      }
+                    </Text>
+                  )}
+              </HStack>
+              <ModalCloseButton />
+            </ModalHeader>
+            <ModalBody>
+              {billLoading ? (
+                <Flex justify="center" py={8}>
+                  <Spinner size="lg" />
+                </Flex>
+              ) : (
+                <Table size="sm" variant="simple">
+                  <Thead bg="gray.100">
+                    <Tr>
+                      <Th {...thStyle}>Type of Ref</Th>
+                      <Th {...thStyle}>Reference No</Th>
+                      <Th {...thStyle}>Due Date</Th>
+                      <Th {...thStyle} isNumeric>Amount</Th>
+                      <Th {...thStyle}>Dr/Cr</Th>
+                      <Th {...thStyle}>Delete</Th>
+                      <Th {...thStyle}>Add</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {billReferenceData.map((bill, rowIndex) => (
+                      <Tr key={rowIndex}>
+                        <Td minW="130px">
                           <Select
                             size="sm"
-                            value={bill.reference_no}
-                            onChange={(e) => handleAgstRefSelect(rowIndex, e.target.value)}
+                            value={bill.reference_type}
+                            onChange={(e) =>
+                              handleBillReferenceChange(rowIndex, "reference_type", e.target.value)
+                            }
                           >
-                            <option value="">-- Select --</option>
-                            {pendingBills.map((pb) => (
-                              <option key={pb.id} value={pb.reference_no}>
-                                {pb.reference_no} — {pb.pending_amount} Cr
-                              </option>
-                            ))}
+                            <option value="AGST REF">Agst Ref</option>
+                            <option value="ADVANCE">Advance</option>
+                            <option value="ON ACCOUNT">On Account</option>
                           </Select>
-                        ) : (
+                        </Td>
+                        <Td minW="200px">
+                          {bill.reference_type === "AGST REF" ? (
+                            <Select
+                              size="sm"
+                              value={bill.reference_no}
+                              onChange={(e) => handleAgstRefSelect(rowIndex, e.target.value)}
+                            >
+                              <option value="">-- Select --</option>
+                              {pendingBills.map((pb) => (
+                                <option key={pb.id} value={pb.reference_no}>
+                                  {pb.reference_no} — {pb.pending_amount} Cr
+                                </option>
+                              ))}
+                            </Select>
+                          ) : (
+                            <Input
+                              size="sm"
+                              value={bill.reference_no}
+                              onChange={(e) =>
+                                handleBillReferenceChange(rowIndex, "reference_no", e.target.value)
+                              }
+                            />
+                          )}
+                        </Td>
+                        <Td>
                           <Input
                             size="sm"
-                            value={bill.reference_no}
+                            type="date"
+                            value={bill.due_date || ""}
                             onChange={(e) =>
-                              handleBillReferenceChange(rowIndex, "reference_no", e.target.value)
+                              handleBillReferenceChange(rowIndex, "due_date", e.target.value)
                             }
                           />
-                        )}
-                      </Td>
-                      <Td>
-                        <Input
-                          size="sm"
-                          type="date"
-                          value={bill.due_date || ""}
-                          onChange={(e) =>
-                            handleBillReferenceChange(rowIndex, "due_date", e.target.value)
-                          }
-                        />
-                      </Td>
-                      <Td>
-                        <Input
-                          size="sm"
-                          type="number"
-                          value={bill.reference_amount}
-                          onChange={(e) =>
-                            handleBillReferenceChange(rowIndex, "reference_amount", e.target.value)
-                          }
-                          w="100px"
-                        />
-                      </Td>
-                      <Td>
-                        <Input size="sm" {...readonlyInputStyle} value={bill.dr_cr || "Cr"} readOnly w="50px" />
-                      </Td>
-                      <Td textAlign="center">
-                        <Button size="xs" colorScheme="red" onClick={() => removeBillRow(rowIndex)}>
-                          ✕
-                        </Button>
-                      </Td>
-                      <Td textAlign="center">
-                        {rowIndex === billReferenceData.length - 1 && (
-                          <Button size="xs" colorScheme="green" onClick={addBillRow}>
-                            +
+                        </Td>
+                        <Td>
+                          <Input
+                            size="sm"
+                            type="number"
+                            value={bill.reference_amount}
+                            onChange={(e) =>
+                              handleBillReferenceChange(rowIndex, "reference_amount", e.target.value)
+                            }
+                            w="100px"
+                          />
+                        </Td>
+                        <Td>
+                          <Input size="sm" {...readonlyInputStyle} value={bill.dr_cr || "Cr"} readOnly w="50px" />
+                        </Td>
+                        <Td textAlign="center">
+                          <Button size="xs" colorScheme="red" onClick={() => removeBillRow(rowIndex)}>
+                            ✕
                           </Button>
-                        )}
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            )}
-          </ModalBody>
-          <ModalFooter gap={3}>
-            <Button variant="outline" onClick={() => setBillModal(false)}>
-              Cancel
-            </Button>
-            <Button colorScheme="blue" onClick={saveBillAllocation}>
-              Save
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+                        </Td>
+                        <Td textAlign="center">
+                          {rowIndex === billReferenceData.length - 1 && (
+                            <Button size="xs" colorScheme="green" onClick={addBillRow}>
+                              +
+                            </Button>
+                          )}
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              )}
+            </ModalBody>
+            <ModalFooter gap={3}>
+              <Button variant="outline" onClick={() => setBillModal(false)}>
+                Cancel
+              </Button>
+              <Button colorScheme="blue" onClick={saveBillAllocation}>
+                Save
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
 
-      {/* ── REJECT / RETURN REASON MODAL ── */}
-      <Modal isOpen={!!reasonModal} onClose={() => setReasonModal(null)}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#c57e14" pl={3}>
-            {reasonModal === "REJECT" ? "Reject Receipt Request" : "Return Receipt Request"}
-          </ModalHeader>
-          <ModalCloseButton top={0} right={0} />
-          <ModalBody>
-            <FormControl mb={4} isRequired>
-              <FormLabel>Reason</FormLabel>
-              <Textarea value={reason} onChange={(e) => setReason(e.target.value)} />
-            </FormControl>
-
-            {reasonModal === "RETURN" && (
-              <FormControl isRequired>
-                <FormLabel>Return Image</FormLabel>
-                <Input
-                  type="file"
-                  accept=".jpg,.jpeg,.png,.pdf"
-                  onChange={(e) => setReturnImage(e.target.files[0] || null)}
-                />
+        {/* ── REJECT / RETURN REASON MODAL ── */}
+        <Modal isOpen={!!reasonModal} onClose={() => setReasonModal(null)}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#c57e14" pl={3}>
+              {reasonModal === "REJECT" ? "Reject Receipt Request" : "Return Receipt Request"}
+            </ModalHeader>
+            <ModalCloseButton top={0} right={0} />
+            <ModalBody>
+              <FormControl mb={4} isRequired>
+                <FormLabel>Reason</FormLabel>
+                <Textarea value={reason} onChange={(e) => setReason(e.target.value)} />
               </FormControl>
-            )}
-          </ModalBody>
-          <ModalFooter gap={3}>
-            <Button variant="ghost"
-              colorScheme="gray"
-              size="sm" border="1px solid grey" onClick={() => setReasonModal(null)}>
-              Cancel
-            </Button>
-            <Button variant="outline"
-           height="38px" borderRadius="13px"
-              size="sm"
-              px={6}
-              colorScheme={reasonModal === "REJECT" ? "red" : "orange"}
-              onClick={reasonModal === "REJECT" ? handleReject : handleReturn}
-              isLoading={actionLoading}
-            >
-              Confirm {reasonModal === "REJECT" ? "Reject" : "Return"}
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </Box>
+
+              {reasonModal === "RETURN" && (
+                <FormControl isRequired>
+                  <FormLabel>Return Image</FormLabel>
+                  <Input
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    onChange={(e) => setReturnImage(e.target.files[0] || null)}
+                  />
+                </FormControl>
+              )}
+            </ModalBody>
+            <ModalFooter gap={3}>
+              <Button variant="ghost"
+                colorScheme="gray"
+                size="sm" border="1px solid grey" onClick={() => setReasonModal(null)}>
+                Cancel
+              </Button>
+              <Button variant="outline"
+                height="38px" borderRadius="13px"
+                size="sm"
+                px={6}
+                colorScheme={reasonModal === "REJECT" ? "red" : "orange"}
+                onClick={reasonModal === "REJECT" ? handleReject : handleReturn}
+                isLoading={actionLoading}
+              >
+                Confirm {reasonModal === "REJECT" ? "Reject" : "Return"}
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </Box>
+    </>
   );
 };
 

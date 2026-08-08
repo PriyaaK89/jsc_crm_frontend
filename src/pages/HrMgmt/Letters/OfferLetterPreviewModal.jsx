@@ -135,7 +135,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="5xl">
       <ModalOverlay />
-      <ModalContent maxW="791px">
+      <ModalContent maxW="793px">
         <ModalBody p="0">
           <Box id="offer-letter-preview" fontFamily="serif">
 
@@ -143,9 +143,9 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
             <Box className="pdf-page" >
               <Box className="pdf-inner">
 
-                <Image src={top_ele1} position="absolute" top="0" right="0" width="250px" />
+                <Image src={top_ele1} position="absolute" top="-3px" right="-2px" width="250px" />
 
-                <Image src={bottom_ele1} position="absolute" bottom="0" left="0" width="250px" />
+                <Image src={bottom_ele1} position="absolute" bottom="0" left="-2px" width="250px" />
 
                 {/* Header */}
                 <VStack spacing={0} align="center" ml="1rem">
@@ -226,8 +226,8 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                 <Image
                   src={top_ele1}
                   position="absolute"
-                  top="0"
-                  right="0"
+                  top="-3px"
+                  right="-2px"
                   width="250px"
                 />
 
@@ -235,7 +235,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                   src={bottom_ele1}
                   position="absolute"
                   bottom="0"
-                  left="0"
+                  left="-2px"
                   width="250px"
                 />
 
@@ -273,7 +273,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                         lineHeight="1.8"
                         textAlign="justify"
                       >
-                        Your monthly salary shall be determined based on the percentage of target achievement during the applicable evaluation period. The payout structure shall be as follows:
+                        The Employee shall receive the monthly fixed pay as specified. Any performance-linked pay shall be determined based on the Employee's target achievement during the applicable evaluation period. Please refer to Salary Annexure A for the applicable compensation structure and payout criteria.
                       </Text>
 
                       <Text
@@ -312,8 +312,8 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                 <Image
                   src={top_ele1}
                   position="absolute"
-                  top="0"
-                  right="0"
+                  top="-3px"
+                  right="-2px"
                   width="250px"
                 />
 
@@ -321,7 +321,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
                   src={bottom_ele1}
                   position="absolute"
                   bottom="0"
-                  left="0"
+                  left="-2px"
                   width="250px"
                 />
 
@@ -361,7 +361,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData, }) => {
 
                   </Box>
                 </VStack>
-                <VStack alignItems="flex-end" mt="10rem" spacing="4px" width="76%" position='absolute' right='0px'>
+                <VStack alignItems="flex-end" bottom="81px" spacing="4px" width="76%" position='absolute' right='0px'>
                   <Divider borderColor="green.600" borderWidth="1px" w="100%" mt="1rem" />
                   <Divider borderColor="green.300" borderWidth="2px" w="90%" mt="0px" />
                   <Flex mr="1rem" gap="1rem" mt="2px">

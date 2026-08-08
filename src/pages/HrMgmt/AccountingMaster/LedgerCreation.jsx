@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Box, Button, Card, CardBody, Divider, Flex, FormControl, FormLabel, Grid, GridItem, Heading, Input, Select, VStack, Switch, useToast, Breadcrumb, HStack, BreadcrumbItem, BreadcrumbLink, } from "@chakra-ui/react";
+import { Box, Button, Card, CardBody, Divider, Flex, FormControl, FormLabel, Grid, GridItem, Heading, Input, Select, VStack, Switch, useToast, Breadcrumb, HStack, BreadcrumbItem, BreadcrumbLink, useDisclosure, } from "@chakra-ui/react";
 import { GROUP_CONFIG } from "../AccountingMaster/LedgerGroupConfig";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import { Link } from "react-router-dom";
 import { GoHomeFill } from "react-icons/go";
-
+import WhatsappMessageModal from "../../../components/models/whatsappnotification/WhatsappMessageModal";
 
 const toBool = (value) => (value === "Yes" ? 1 : 0);
 
@@ -89,46 +89,18 @@ const initialFormData = {
   ],
 
   crm_details: {
-    customer_name: "",
-    customer_dob: "",
-    firm_name: "",
-    firm_type: "",
-    firm_email: "",
-    firm_since: "",
-    firm_pan: "",
-    firm_aadhar: "",
-    firm_gstn_type: "",
-    firm_annual_turnover: "",
-    expected_sale_per_year: "",
-    other_company_detail: "",
+    customer_name: "", customer_dob: "",
+    firm_name: "", firm_type: "", firm_email: "", firm_since: "", firm_pan: "",
+    firm_aadhar: "", firm_gstn_type: "", firm_annual_turnover: "",
+    expected_sale_per_year: "", other_company_detail: "",
 
-    address: "",
-    state: "",
-    district: "",
-    tehsil: "",
-    pincode: "",
-    landmark: "",
-
-    branch: "",
-    contact: "",
-
-    responsible_person_name: "",
-    responsible_person_address: "",
-    responsible_person_contact: "",
-
-    seed_licence_no: "",
-    fert_licence_no: "",
-    pest_licence_no: "",
-
+    address: "", state: "", district: "", tehsil: "", pincode: "", landmark: "",
+    branch: "", contact: "",
+    responsible_person_name: "", responsible_person_address: "", responsible_person_contact: "",
+    seed_licence_no: "", fert_licence_no: "", pest_licence_no: "",
     transport_name: "",
-
-    bank_name: "",
-    bank_acc_number: "",
-    bank_ifsc: "",
-    bank_branch: "",
-
-    security_cheque_no1: "",
-    security_cheque_no2: "",
+    bank_name: "", bank_acc_number: "", bank_ifsc: "", bank_branch: "",
+    security_cheque_no1: "", security_cheque_no2: "",
   },
 
 };
@@ -144,6 +116,10 @@ const CreateLedger = () => {
   const [limit, setLimit] = useState(1000);
   const [mailingAreas, setMailingAreas] = useState([]);
   const SLAB_TYPES = ["debit", "credit", "security"];
+
+  const [createdLedgerId, setCreatedLedgerId] = useState(null);
+  const [sendingWhatsapp, setSendingWhatsapp] = useState(false);
+  const { isOpen: isWhatsappModalOpen, onOpen: onWhatsappModalOpen, onClose: onWhatsappModalClose,} = useDisclosure();
 
   useEffect(() => {
     fetchGroups();
@@ -583,7 +559,8 @@ const CreateLedger = () => {
     try {
       setLoading(true);
       const payload = buildPayload();
-      await API.post(API_ENDPOINTS.create_ledger, payload);
+      // await API.post(API_ENDPOINTS.create_ledger, payload);
+       const res = await API.post(API_ENDPOINTS.create_ledger, payload);
 
       toast({
         title: "Ledger created successfully",
@@ -592,7 +569,8 @@ const CreateLedger = () => {
         isClosable: true,
 
       });
-
+setCreatedLedgerId(res.data.ledger_id);
+      onWhatsappModalOpen();          // <-- open confirmation modal now
       // Reset form to initial state after successful submission
       setFormData(initialFormData);
 
@@ -609,6 +587,25 @@ const CreateLedger = () => {
     }
   };
 
+  const handleSendWhatsapp = async () => {
+  if (!createdLedgerId) return;
+  try {
+    setSendingWhatsapp(true);
+    await API.post(API_ENDPOINTS.send_ledger_whatsapp(createdLedgerId)); // see note below
+    toast({ title: "WhatsApp message sent", status: "success", duration: 3000, isClosable: true });
+  } catch (error) {
+    console.error("Send WhatsApp error:", error);
+    toast({
+      title: error.response?.data?.message || "Failed to send WhatsApp message",
+      status: "error", duration: 3000, isClosable: true,
+    });
+  } finally {
+    setSendingWhatsapp(false);
+    onWhatsappModalClose();
+    setCreatedLedgerId(null);
+  }
+};
+
 
   const yesNoOptions = (
     <>
@@ -620,6 +617,16 @@ const CreateLedger = () => {
 
 
   return (
+    <>
+    <WhatsappMessageModal
+  isWhatsappModalOpen={isWhatsappModalOpen}
+  onWhatsappModalClose={() => {
+    onWhatsappModalClose();
+    setCreatedLedgerId(null);
+  }}
+  onConfirm={handleSendWhatsapp}
+  isSending={sendingWhatsapp}
+/>
     <Box bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 4 }} borderRadius="lg" boxShadow="md">
       <HStack justifyContent="space-between">
         <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px" >
@@ -637,7 +644,7 @@ const CreateLedger = () => {
         </Breadcrumb>
       </HStack>
       <Heading size="md" mb={6}>
-        Create Ledger 
+        Create Ledger
       </Heading>
 
       <VStack spacing={6} align="stretch">
@@ -706,8 +713,7 @@ const CreateLedger = () => {
                 <Select
                   name="maintain_bill_by_bill"
                   value={formData.maintain_bill_by_bill}
-                  onChange={handleChange}
-                >
+                  onChange={handleChange} >
                   {yesNoOptions}
                 </Select>
               </FormControl>
@@ -718,8 +724,7 @@ const CreateLedger = () => {
                   type="number"
                   name="default_credit_period"
                   value={formData.default_credit_period}
-                  onChange={handleChange}
-                />
+                  onChange={handleChange} />
               </FormControl>
 
               {/* check_credit_days (was credit_day_during_voucher) */}
@@ -880,10 +885,7 @@ const CreateLedger = () => {
                         <FormLabel>For amount added</FormLabel>
                         <Select
                           value={cfg.for_amount_added}
-                          onChange={(e) =>
-                            handleInterestConfigChange(index, "for_amount_added", e.target.value)
-                          }
-                        >
+                          onChange={(e) => handleInterestConfigChange(index, "for_amount_added", e.target.value) } >
                           <option value="">Select Any One</option>
                           <option value="Yes">Yes</option>
                           <option value="No">No</option>
@@ -893,12 +895,8 @@ const CreateLedger = () => {
                       {/* for_amount_deduct → amount_deducted (0/1) */}
                       <FormControl>
                         <FormLabel>For amount deducted</FormLabel>
-                        <Select
-                          value={cfg.for_amount_deduct}
-                          onChange={(e) =>
-                            handleInterestConfigChange(index, "for_amount_deduct", e.target.value)
-                          }
-                        >
+                        <Select value={cfg.for_amount_deduct}
+                          onChange={(e) => handleInterestConfigChange(index, "for_amount_deduct", e.target.value)} >
                           <option value="">Select Any One</option>
                           <option value="Yes">Yes</option>
                           <option value="No">No</option>
@@ -1003,10 +1001,7 @@ const CreateLedger = () => {
                         <FormLabel>Security</FormLabel>
                         <Select
                           value={cfg.security}
-                          onChange={(e) =>
-                            handleInterestConfigChange(index, "security", e.target.value)
-                          }
-                        >
+                          onChange={(e) => handleInterestConfigChange(index, "security", e.target.value) } >
                           <option value="No">No</option>
                           <option value="Yes">Yes</option>
                         </Select>
@@ -1017,10 +1012,7 @@ const CreateLedger = () => {
                         <Input
                           type="number"
                           value={cfg.security_amount}
-                          onChange={(e) =>
-                            handleInterestConfigChange(index, "security_amount", e.target.value)
-                          }
-                        />
+                          onChange={(e) => handleInterestConfigChange(index, "security_amount", e.target.value) } />
                       </FormControl>
 
                     </Grid>
@@ -1113,8 +1105,7 @@ const CreateLedger = () => {
                 <Select
                   name="cheque_book_enabled"
                   value={formData.bank_details.cheque_book_enabled}
-                  onChange={handleBankChange}
-                >
+                  onChange={handleBankChange}>
                   <option value="">Select Any One</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
@@ -1127,8 +1118,7 @@ const CreateLedger = () => {
                 <Select
                   name="cheque_printing_enabled"
                   value={formData.bank_details.cheque_printing_enabled}
-                  onChange={handleBankChange}
-                >
+                  onChange={handleBankChange}>
                   <option value="">Select Any One</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
@@ -1154,24 +1144,16 @@ const CreateLedger = () => {
               {currentConfig.showPan && (
                 <FormControl>
                   <FormLabel>PAN/IT No.</FormLabel>
-                  <Input
-                    maxLength={40}
-                    name="pan_no"
-                    value={formData.pan_no}
-                    onChange={handleChange}
-                  />
+                  <Input maxLength={40} name="pan_no"
+                    value={formData.pan_no} onChange={handleChange} />
                 </FormControl>
               )}
 
               {/* gst_no – top-level field (was wrongly inside ledgerBankAccount) */}
               <FormControl>
                 <FormLabel>GSTIN/UN</FormLabel>
-                <Input
-                  maxLength={40}
-                  name="gst_no"
-                  value={formData.gst_no}
-                  onChange={handleChange}
-                />
+                <Input maxLength={40} name="gst_no"
+                  value={formData.gst_no} onChange={handleChange} />
               </FormControl>
 
             </Grid>
@@ -1186,32 +1168,20 @@ const CreateLedger = () => {
 
             <FormControl>
               <FormLabel>Date</FormLabel>
-              <Input
-                type="date"
-                name="opening_date"
-                value={formData.opening_date}
-                onChange={handleChange}
-              />
+              <Input type="date" name="opening_date"
+                value={formData.opening_date} onChange={handleChange} />
             </FormControl>
 
             <FormControl>
               <FormLabel>Current balance</FormLabel>
-              <Input
-                type="number"
-                name="opening_balance"
-                value={formData.opening_balance}
-                onChange={handleChange}
-              />
+              <Input type="number" name="opening_balance"
+                value={formData.opening_balance} onChange={handleChange} />
             </FormControl>
 
             {/* balance_type (was cr_dr – renamed to match backend) */}
             <FormControl>
               <FormLabel>CR / DR</FormLabel>
-              <Select
-                name="balance_type"
-                value={formData.balance_type}
-                onChange={handleChange}
-              >
+              <Select name="balance_type" value={formData.balance_type} onChange={handleChange} >
                 <option value="Cr">Cr</option>
                 <option value="Dr">Dr</option>
               </Select>
@@ -1221,49 +1191,29 @@ const CreateLedger = () => {
         </Box>
 
         <Box className="ledger_box">
-          <Heading size="sm" className="ledger_heading">
-            Party Details
-          </Heading>
+          <Heading size="sm" className="ledger_heading"> Party Details </Heading>
 
           <Grid templateColumns="repeat(2, 1fr)" gap={4} p={6}>
 
             <FormControl>
               <FormLabel>Customer Name</FormLabel>
-              <Input
-                name="customer_name"
-                value={formData.crm_details.customer_name}
-                onChange={handleCrmChange}
-              />
+              <Input name="customer_name" value={formData.crm_details.customer_name} onChange={handleCrmChange} />
             </FormControl>
 
             <FormControl>
               <FormLabel>Customer DOB</FormLabel>
-              <Input
-                type="date"
-                name="customer_dob"
-                value={formData.crm_details.customer_dob}
-                onChange={handleCrmChange}
-              />
+              <Input type="date" name="customer_dob" value={formData.crm_details.customer_dob} onChange={handleCrmChange} />
             </FormControl>
 
             <FormControl>
               <FormLabel>Firm Name</FormLabel>
-              <Input
-                name="firm_name"
-                value={formData.crm_details.firm_name}
-                onChange={handleCrmChange}
-              />
+              <Input name="firm_name" value={formData.crm_details.firm_name} onChange={handleCrmChange} />
             </FormControl>
 
             <FormControl>
               <FormLabel>Firm Type</FormLabel>
-
-              <Select
-                placeholder="Select Firm Type"
-                name="firm_type"
-                value={formData.crm_details.firm_type || ""}
-                onChange={handleCrmChange}
-              >
+              <Select placeholder="Select Firm Type" name="firm_type" 
+              value={formData.crm_details.firm_type || ""} onChange={handleCrmChange}>
                 <option value="proprietor">Proprietor</option>
                 <option value="partner">Partner</option>
               </Select>
@@ -1286,20 +1236,14 @@ const CreateLedger = () => {
 
             <FormControl>
               <FormLabel>Firm Aadhar</FormLabel>
-              <Input
-                name="firm_aadhar"
-                value={formData.crm_details.firm_aadhar}
-                onChange={handleCrmChange} />
+              <Input name="firm_aadhar" value={formData.crm_details.firm_aadhar} onChange={handleCrmChange} />
             </FormControl>
 
             <FormControl >
               <FormLabel>GSTN Type</FormLabel>
 
-              <Select
-                placeholder="Select GSTN Type"
-                name="firm_gstn_type"
-                value={formData.crm_details.firm_gstn_type || ""}
-                onChange={handleCrmChange} >
+              <Select placeholder="Select GSTN Type" name="firm_gstn_type"
+                value={formData.crm_details.firm_gstn_type || ""} onChange={handleCrmChange} >
                 <option value="Composition">Composition</option>
                 <option value="Consumer">Consumer</option>
                 <option value="Regular">Regular</option>
@@ -1422,17 +1366,9 @@ const CreateLedger = () => {
         </Box>
 
         <Flex justify="end">
-          <Button
-            bg="#237086"
-            fontWeight="500"
-            fontSize="14px"
-            color="white"
-            _hover={{ bg: "#1B5A6B", }}
-            px={8}
-            borderRadius="12px"
-            onClick={handleSubmit}
-            isLoading={loading}
-            loadingText="Creating..." >
+          <Button bg="#237086" fontWeight="500" fontSize="14px" color="white"
+            _hover={{ bg: "#1B5A6B", }} px={8} borderRadius="12px"
+             onClick={handleSubmit} isLoading={loading} loadingText="Creating..." >
             Create Ledger
           </Button>
         </Flex>
@@ -1440,6 +1376,7 @@ const CreateLedger = () => {
       </VStack>
 
     </Box>
+    </>
   );
 };
 

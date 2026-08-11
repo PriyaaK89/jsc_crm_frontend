@@ -110,7 +110,7 @@ body,
 .pdf-page {
   width: 210mm;
   height: 296mm;
-  padding: 15mm;
+  padding: 11mm 15mm;
   box-sizing: border-box;
   background: white;
   position: relative;

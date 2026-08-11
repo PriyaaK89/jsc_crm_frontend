@@ -483,7 +483,7 @@ const EmployeeList = () => {
                               </Button>
                             </Tooltip>
 
-                            <Tooltip label="Generate Agreement">
+                            {/* <Tooltip label="Generate Agreement">
                               <Button
                                 size="xs"
                                 colorScheme="purple"
@@ -493,7 +493,7 @@ const EmployeeList = () => {
                               >
                                 Agreement
                               </Button>
-                            </Tooltip>
+                            </Tooltip> */}
 
                             <Tooltip label="Verify Documents">
                               <Button

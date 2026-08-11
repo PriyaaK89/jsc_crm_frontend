@@ -8,7 +8,7 @@ import {
   fillTemplate,
   paginateTemplate,
   buildTemplateData,
-} from "./agreementContent";
+} from "./AgreementContent";
 
 /**
  * PlainDocumentPages

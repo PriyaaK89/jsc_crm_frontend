@@ -212,7 +212,7 @@ const EditEmployee = () => {
                 date_of_birth: formatDateForApi(formData.date_of_birth),
                 date_of_joining: formatDateForApi(formData.date_of_joining),
                 approver_name: formData.approver_name,
-                reporting_under: formData.reporting_under,
+                // reporting_under: formData.reporting_under,
                 login_time: formData.login_time || "10:00",
                 logout_time: formData.logout_time || "06:00",
                 visit_upto: formData.visit_upto,

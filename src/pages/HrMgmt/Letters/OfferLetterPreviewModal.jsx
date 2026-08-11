@@ -75,6 +75,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
       formDataObj.append("document_type", "offer_letter");
       formDataObj.append("email", employee?.email);
       formDataObj.append("phone", employee?.contact_no);
+    formDataObj.append("reference_no", formData.offer_ref_no);
 
       if (pdfBlob.size > 5 * 1024 * 1024) {
         toast({
@@ -282,7 +283,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
                     </Text>
 
                     <Text fontWeight="600" fontSize="13px" lineHeight="21px" mt={3}>2. Performance & Target Commitment</Text>
-                    <Text fontSize="13px" lineHeight="21px" mt={1}><b>Annual / Seasonal Sales Commitment: ₹ </b><u>{formData?.annual_sales_commitment}</u></Text>
+                    <Text fontSize="13px" lineHeight="21px" mt={1}><b>Annual / Monthly / Seasonal Sales Commitment: ₹ </b><u>{formData?.annual_sales_commitment}</u></Text>
                     <Text fontSize="13px" lineHeight="21px"><b>Collection Commitment: ₹ </b><u>{formData?.collection_commitment}</u></Text>
                     <Text fontSize="13px" lineHeight="21px"><b>New Dealer / Distributor Commitment: </b><u>{formData?.new_dealer_commitment}</u></Text>
                     <Text fontSize="13px" lineHeight="21px"><b>Other Key Performance Commitment:</b> <u>{formData?.other_kpi_commitment}</u></Text>
@@ -509,7 +510,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
                       </Thead>
                       <Tbody>
                         <Tr>
-                          <Td fontSize="12px">Authorized Signatory: Girdhari Lal</Td>
+                          <Td fontSize="12px">Authorized Signatory: {formData?.authorised_signatory}</Td>
                           <Td fontSize="12px">Name: {employee?.name}</Td>
                         </Tr>
                         <Tr>

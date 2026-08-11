@@ -267,6 +267,7 @@ export const API_ENDPOINTS = {
   get_employee_expense_by_date: "/admin-expense-by-date",
 
   GET_TRANSACTION_REPORT_IMAGES: "get-transaction-documents",
+  get_next_offer_reference: "/offer-letter/next-offer-reference",
  
   send_ledger_whatsapp: (ledgerId) => `/${ledgerId}/send-whatsapp`,
   send_sale_order_whatsapp: (approvalId) => `/${approvalId}/send-whatsapp-confirmation`,

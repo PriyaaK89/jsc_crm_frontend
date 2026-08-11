@@ -128,6 +128,7 @@ const OfferLetterPage = () => {
     // Offer acceptance
     acceptance_deadline: "",
     salary_norms1: "",
+    authorised_signatory: "",
 
     show_stamp: false,
   });
@@ -161,6 +162,31 @@ const OfferLetterPage = () => {
 
     fetchEmployee();
   }, [id]);
+
+const fetchReference = async () => {
+  try {
+    const res = await API.get(
+      API_ENDPOINTS.get_next_offer_reference,
+      {
+        params: {
+          employee_id: employee.id,
+        },
+      }
+    );
+
+    setFormData((prev) => ({
+      ...prev,
+      offer_ref_no: res.data.referenceNo,
+    }));
+  } catch (err) {
+    console.log(err);
+  }
+};
+useEffect(() => {
+    if (employee?.id) {
+        fetchReference();
+    }
+}, [employee]);
 
   // Generic top-level field updater
   const setField = (field, value) =>
@@ -269,8 +295,9 @@ const OfferLetterPage = () => {
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
             <FormControl>
               <FormLabel fontSize="13px" fontWeight="600" color="gray.600">Offer Ref. No.</FormLabel>
-              <Input borderRadius="8px" placeholder="Enter Offer Ref. No." value={formData.offer_ref_no}
-                onChange={(e) => setField("offer_ref_no", e.target.value)} />
+              {/* <Input borderRadius="8px" placeholder="Enter Offer Ref. No." value={formData.offer_ref_no}
+                onChange={(e) => setField("offer_ref_no", e.target.value)} /> */}
+                <Input value={formData.offer_ref_no} isReadOnly bg="gray.50"/>
             </FormControl>
 
             <CustomDatePicker
@@ -307,6 +334,11 @@ const OfferLetterPage = () => {
               <FormLabel fontSize="13px" fontWeight="600" color="gray.600">Reporting Manager</FormLabel>
               <Input borderRadius="8px" placeholder="Enter Reporting Manager" value={formData.reporting_officer_name}
                 onChange={(e) => setField("reporting_officer_name", e.target.value)} />
+            </FormControl>
+             <FormControl>
+              <FormLabel fontSize="13px" fontWeight="600" color="gray.600">Authorized Signatory</FormLabel>
+              <Input borderRadius="8px" placeholder="Enter Autohrized Signatory Name" value={formData.authorised_signatory}
+                onChange={(e) => setField("authorised_signatory", e.target.value)} />
             </FormControl>
 
             <FormControl>
@@ -358,8 +390,8 @@ const OfferLetterPage = () => {
           <SectionHeading icon={FiTarget} title="Performance & Target Commitment" subtitle="Overall commitments for the role" />
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
             <FormControl>
-              <FormLabel fontSize="13px" fontWeight="600" color="gray.600">Annual / Seasonal Sales Commitment (₹)</FormLabel>
-              <Input borderRadius="8px" placeholder="Enter Annual / Seasonal Sales Commitment" value={formData.annual_sales_commitment}
+              <FormLabel fontSize="13px" fontWeight="600" color="gray.600">Annual / Monthly / Seasonal Sales Commitment (₹)</FormLabel>
+              <Input borderRadius="8px" placeholder="Enter Annual / Monthly / Seasonal Sales Commitment" value={formData.annual_sales_commitment}
                 onChange={(e) => setField("annual_sales_commitment", e.target.value)} />
             </FormControl>
 

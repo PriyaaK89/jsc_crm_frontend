@@ -1,21 +1,51 @@
-import { Box, Button, HStack, Image, Modal, ModalBody, ModalContent, ModalOverlay, Text, VStack, Divider, Flex, TableContainer, Table, Thead, Tr, Th, Tbody, Td, } from "@chakra-ui/react";
+import { Box, Button, HStack, Image, Modal, ModalBody, ModalContent, ModalOverlay, Text, VStack, Divider, Flex, CloseButton, useToast } from "@chakra-ui/react";
 import React from "react";
-import top_ele from "../../../assets/images/top_left_ele.png";
-import bottom_ele from "../../../assets/images/bottom_right_ele.png";
 import top_ele1 from "../../../assets/images/pdf_logo__1.png";
 import bottom_ele1 from "../../../assets/images/pdf_logo__2.png";
 import company_logo from "../../../assets/images/jsc_logo_.png";
 import r_logo from "../../../assets/images/jamidara_logo.png";
 import emailIcon from "../../../assets/images/email_pdf.png";
 import webIcon from "../../../assets/images/web_pdf.png";
+import jsc_stamp from "../../../assets/images/stamp_jsc.png";
 import { formatDate, formatTime } from "../../../components/common/helper";
-import jsc_stamp from "../../../assets/images/stamp_jsc.png"
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
-import { CloseButton } from "@chakra-ui/react";
 import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
-import { useToast } from "@chakra-ui/react";
+import PlainDocumentPages from "./PlainDocumentPages";
+
+/* ==========================================================================
+   Small helper: renders a blank underscore line when a variable is empty,
+   the same way the Word doc shows unfilled fields.
+   ========================================================================== */
+const g = (v) => (v === undefined || v === null || v === "" ? "__________" : v);
+
+/* ==========================================================================
+   Branded two-column key/value table used for "APPOINTMENT PARTICULARS"
+   on page 1 - same black-border look already used elsewhere in this design,
+   just reused here so the table styling stays consistent with the rest of
+   the branded document.
+   ========================================================================== */
+const ParticularsTable = ({ rows }) => (
+  <Box border="1px solid black" width="100%" overflow="hidden" mb="10px">
+    {rows.map(([label, value], i) => (
+      <Flex key={i} borderBottom={i === rows.length - 1 ? "none" : "1px solid black"}>
+        <Box flex="1" p="4px 0px 4px 5px" borderRight="1px solid black" fontWeight="700" fontSize="12px" >
+        <Text>  {label} </Text>
+        </Box>
+        <Box flex="1.3" p="4px 0px 4px 5px" fontSize="12px">
+         <Text> {g(value)}</Text>
+        </Box>
+      </Flex>
+    ))}
+  </Box>
+);
+
+const SectionHeading = ({ children }) => (
+  <Text fontWeight="600" fontSize="16px" color="#333333" mt="0px">
+    {children}
+  </Text>
+);
 
 const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
@@ -34,32 +64,12 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
   const annualGross = monthlyGross * 12;
 
-  const petrolRate = Number(formData?.petrol_per_km) || 0;
-  const maxKm = Number(formData?.max_km) || 0;
-  const minKm = Number(formData?.min_km) || 0;
+  const totalMonthlyEarning = formData?.total_monthly_earning || monthlyGross;
+  const totalAnnualEarning = formData?.total_annual_earning || annualGross;
 
-  const salaryPolicy = [
-    {
-      target: "Below 60% Target Achievement",
-      payout: "Only the basic component of the salary will be payable",
-    },
-    {
-      target: "60% – 70% Target Achievement",
-      payout: "Basic salary plus 20% of applicable allowances will be payable",
-    },
-    {
-      target: "70% – 80% Target Achievement",
-      payout: "Basic salary plus 30% of applicable allowances will be payable",
-    },
-    {
-      target: "80% – 90% Target Achievement",
-      payout: "Basic salary plus 40% of applicable allowances will be payable",
-    },
-    {
-      target: "90% – 100% Target Achievement",
-      payout: "Full salary payout along with applicable allowances will be payable",
-    },
-  ];
+  const employmentStartingDateTime = `${formatDate(employee?.date_of_joining) || "__________"}${
+    formData?.employment_start_time ? `, ${formData.employment_start_time}` : ""
+  }`;
 
   const toast = useToast();
   const handleDownloadJoiningPDF = async () => {
@@ -119,7 +129,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
       formDataObj.append("email", employee?.email);
       formDataObj.append("phone", employee?.contact_no);
 
-      if (pdfBlob.size > 5 * 1024 * 1024) {
+      if (pdfBlob.size > 6 * 1024 * 1024) {
         toast({
           description: "PDF too large. Please reduce content.",
           status: "error",
@@ -161,33 +171,30 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
       });
     }
   };
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="5xl">
         <ModalOverlay />
         <ModalContent maxW="794px">
           <ModalBody p="0">
-            <Flex justifyContent="flex-end" m={2} ><CloseButton bg="#d3d2d2" p={5} onClick={handleClose} /></Flex>
+            <Flex justifyContent="flex-end" m={2}><CloseButton bg="#d3d2d2" p={5} onClick={handleClose} /></Flex>
             <Box id="joining-letter-preview" fontFamily="serif" borderTop="1px" borderColor="gray.300">
-              <Box className="pdf-page">
-                {/* Decorative Images */}
-                <Image src={top_ele1} position="absolute" top="0" right="0" width="250px" />
-                <Image src={bottom_ele1} position="absolute" bottom="0" left="0" width="250px" />
 
-                {/* Header */}
+              {/* ================= PAGE 1 : HEADER + APPOINTMENT PARTICULARS ================= */}
+              <Box className="pdf-page">
+                <Image src={top_ele1} position="absolute" top="0" right="0" width="230px" />
+                <Image src={bottom_ele1} position="absolute" bottom="-5px" left="0" width="230px" />
+
                 <VStack spacing={0} align="center" ml="1rem">
-                  <HStack spacing={4} alignItems="center" mb="4px">
-                    <Image src={company_logo} width="260px" />
-                    <Image src={r_logo} width="120px" />
+                  <HStack spacing={4} alignItems="center" mb="0px">
+                    <Image src={company_logo} width="230px" />
+                    <Image src={r_logo} width="100px" />
                   </HStack>
 
-                  <VStack
-                    justifyContent="flex-start"
-                    alignItems="flex-start"
-                    gap="0px"
-                    mt="14px">
-                    <Text fontSize="18px" color="blue.700" fontWeight="bold">
-                      Seeds Production & Marketing Company
+                  <VStack justifyContent="flex-start" alignItems="flex-start" gap="0px" mt="12px">
+                    <Text fontSize="16px" color="blue.700" fontWeight="bold">
+                      Seeds Production &amp; Marketing Company
                     </Text>
                     <Text fontSize="11px" color="green.800">
                       North zone Office Add.-73 GANESH NAGAR-2, MURLIPURA
@@ -195,531 +202,283 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     </Text>
                   </VStack>
 
-                  <Divider
-                    borderColor="blue.600"
-                    borderWidth="2px"
-                    w="92%"
-                    mt="10px"
-                  />
+                  <Divider borderColor="blue.600" borderWidth="1.5px" w="100%" mt="8px" />
                 </VStack>
 
-                <Box width="83%" marginLeft="2.75rem" className="letter-content">
+                <Box width="93%" marginLeft="1.5rem" className="letter-content">
                   <Image src={r_logo} alt="Round Logo" className="watermark_img" />
-                  {/* Title */}
-                  <Text textAlign="center"
-                    fontSize="22px" fontWeight="bold"
-                    color="#1A365D" mt="24px" mb="24px">
+
+                  <Text textAlign="center" fontSize="16px" fontWeight="bold" color="#2b2b2c" mt="12px" mb="12px">
                     JOB JOINING LETTER
                   </Text>
 
-                  {/* To Section */}
-                  <Box mb="20px">
-                    <HStack justifyContent="space-between">
+                  <HStack justifyContent="end" fontSize="13px" mb="0px" gap="2.5rem">
+                    <Text><strong>Date:</strong> {g(formData?.date_of_issue)}</Text>
+                    <Text><strong>Ref. No.:</strong> {g(formData?.ref_no)}</Text>
+                  </HStack>
 
-                      <Text>{employee?.name}</Text>
-                      <Text fontSize="14px">{formData?.date_of_issue}</Text>
-                    </HStack>
-                    <Text textTransform="capitalize">
-                      {employee?.address_line1}
-                    </Text>
+                  <VStack align="flex-start" spacing="2px" fontSize="13px" mb="12px">
+                    <Text><strong>Employee Name:</strong> {" "}{g(employee?.name)}</Text>
+                    <Text><strong>Father/Mother/Spouse Name:</strong> {" "} {g(formData?.father_spouse_name)}</Text>
                     <Text>
-                      {employee?.city}, {employee?.state}, {employee?.pincode}
+                    <strong>  Residential Address:</strong> {" "}{g(employee?.address_line1)}
+                      {employee?.city ? `, ${employee.city}` : ""}
+                      {employee?.state ? `, ${employee.state}` : ""}
+                      {employee?.pincode ? `, ${employee.pincode}` : ""}
                     </Text>
-                    <Text>{employee?.contact_no}</Text>
-                  </Box>
-
-                  {/* Body */}
-                  <VStack align="flex-start" spacing={3}>
-                    <Text>Dear {employee?.name},</Text>
-                    <Text >
-                      Further to the interview you had with us and subsequent to
-                      your joining the company we have pleasure in offering you
-                      appointment as {" "}
-                      {employee?.job_role_name} in {" "}
-                      {employee?.department_name} department in our organization.
-                    </Text>
-                    <Text>As per requirements of our organization, your appointment will be on the terms and conditions mentioned below.</Text>
-                    <Text>Your appointment is effective from {formatDate(employee?.date_of_joining)} {formatTime(employee?.login_time)} based at H.Q.- {employee?.headquarter} ({employee?.state}), AREA - {formData?.working_area}.</Text>
-
-                    <HStack>
-                      <Text> <Text fontWeight="600" fontSize="18px">Salary:</Text> You will receive salary and benefits as detailed in the Annexure. </Text>
-                    </HStack>
-                    <HStack>
-                      <Text>  <Text fontWeight="600" fontSize="18px">Probationary Period:</Text> Your appointment is subject to confirmation on satisfactory completion of probationary period. The duration is normally six months but may be reduced or increased at the discretion of the company. During the probationary period your engagement will be subject to termination at any time by without notice or salary.</Text>
-                    </HStack>
-
-                    {/* During Employment Section */}
-
+                    <Text><strong>Mobile No.:</strong> {" "}{g(employee?.contact_no)}</Text>
+                    <Text><strong>Email ID:</strong>{" "} {g(employee?.email)}</Text>
                   </VStack>
+
+                  <VStack align="flex-start"  fontSize="13px" spacing={0}>
+                    <Text>Dear Mr./Ms. <strong>{g(employee?.name)}</strong>,</Text>
+                    <Text textAlign="justify">
+                      Further to the Provisional Offer Letter dated {g(formData?.date_of_issue)} and your joining with the Company, we
+                      are pleased to record your probationary appointment with JAMIDARA SEEDS CORPORATION on the terms stated in this
+                      Joining Letter, the Employment Agreement and the applicable Annexures executed by you.
+                    </Text>
+                  </VStack>
+
+                  <Text fontSize="16px" mt="4px" fontWeight="bold" color="#2b2b2c" textDecoration="underline" >Appointment Particulars</Text>
+
+                  <ParticularsTable 
+                    rows={[
+                      ["Employee ID", formData?.employee_id],
+                      ["Employment Starting Date & Time", employmentStartingDateTime],
+                      ["Designation", formData?.job_role_name],
+                      ["Department / Function", formData?.department_name],
+                      ["Reporting Manager", `${g(formData?.reporting_manager_name)} (${g(formData?.reporting_manager_designation)})`],
+                      ["Headquarter", employee?.headquarter],
+                      ["Territory / Area", formData?.territory_area],
+                      ["Place of Posting", formData?.place_of_posting],
+                      ["State of Posting", formData?.appointer_state],
+                      ["Nature of Appointment", "PROBATIONARY EMPLOYMENT"],
+                      ["Probation Period", "SIX (6) MONTHS"],
+                      ["Maximum Probation Extension", "UP TO THREE (3) ADDITIONAL MONTHS BY WRITTEN COMMUNICATION"],
+                      ["Initial Sales Validation (Sales/Marketing roles)", "FIRST THIRTY (30) DAYS"],
+                      [
+                        "Applicable Confirmed Notice Period",
+                        formData?.notice_period_confirmed_days
+                          ? `${formData.notice_period_confirmed_days} DAYS`
+                          : "AS PER EMPLOYMENT AGREEMENT",
+                      ],
+                    ]}
+                  />
                 </Box>
               </Box>
 
-              {/* ================= PAGE 2 ================= */}
+              {/* ================= PAGE 2 : SALARY + PROBATION + DURING EMPLOYMENT ================= */}
               <Box className="pdf-page page-break">
-                {/* Decorative Images */}
-                <Image
-                  src={top_ele1}
-                  position="absolute"
-                  top="0"
-                  right="0"
-                  width="250px"
-                />
+                <Image src={top_ele1} position="absolute" top="0" right="0" width="230px" />
+                <Image src={bottom_ele1} position="absolute" bottom="-5px" left="0" width="230px" />
 
-                <Image
-                  src={bottom_ele1}
-                  position="absolute"
-                  bottom="0"
-                  left="0"
-                  width="250px"
-                />
+                <VStack align="flex-start" spacing={4} width="92%" marginLeft="1.5rem" className="letter-content">
+                  <Image src={r_logo} alt="Round Logo" className="watermark_img1" />
+                  <Text textAlign="center" mt="1rem" mb="12px" ml="1.5rem" width="84%">CONTD:-2</Text>
 
-                <VStack
-                  align="flex-start"
-                  spacing={4}
-                  width="83%"
-                  marginLeft="3.8rem"
-                  className="letter-content">
-                  <Image
-                    src={r_logo}
-                    alt="Round Logo"
-                    className="watermark_img1"
-                  />
-                  <Text textAlign="center" mt="2rem" mb="2rem" width="84%">
-                    CONTD:-2
-                  </Text>
-
-                  <VStack align="flex-start" spacing={3}>
-                    <Text fontWeight="600" fontSize="18px">
-                      During Employment with us:
+                  <VStack align="flex-start" spacing={0.5} mt="8px" width="100%">
+                    <SectionHeading>Salary / Compensation</SectionHeading>
+                    <Text fontSize="13px" textAlign="justify">
+                      Your monthly and annual earning opportunity, Guaranteed Fixed Pay, Performance-Linked Variable Pay, additional
+                      incentive eligibility, statutory deductions and reimbursement terms shall be governed by the separately executed
+                      Salary &amp; Compensation Annexure (Annexure A).
                     </Text>
-
-                    <HStack align="flex-start">
-                      <Text fontWeight="bold">a.</Text>
-                      <Text fontSize="14px" textAlign="justify">
-                        Your services may be transferred to other divisions / locations or associates
-                        of our company, existing or to be formed in future or to any of our group
-                        companies and you will abide by the company’s rules and regulations that may
-                        be in force at the time of your appointment and also those that may be
-                        promulgated from time to time thereafter.
-                      </Text>
-                    </HStack>
+                    <Text fontSize="13px" fontWeight="600">
+                      Total Monthly Earning Opportunity: ₹ {g(totalMonthlyEarning)} &nbsp;&nbsp; Total Annual Earning Opportunity: ₹ {g(totalAnnualEarning)}
+                    </Text>
                   </VStack>
 
-
-
-                  <HStack align="flex-start">
-                    <Text fontWeight="bold">b.</Text>
-                    <Text fontSize="14px" textAlign="justify">
-                      You shall not engage yourself directly or indirectly, with or without
-                      remuneration, on whole time or part time basis in any trade, occupation,
-                      employment or calling other than that of the company. You shall not undertake
-                      any activities which are contrary to or inconsistent either with the
-                      company’s or with your duties and obligations as an employee of our
-                      organization. You shall devote your whole time and attention to your duties
-                      to promote the interest of the organization.
+                  <VStack align="flex-start" spacing={0.5} mt="8px" width="100%">
+                    <SectionHeading>Probation and Initial 30-Day Sales Validation</SectionHeading>
+                    <Text fontSize="13px" textAlign="justify">
+                      Your confirmation is not automatic and shall be effective only upon a written confirmation communication issued by
+                      an authorised representative of the Company. For Sales/Marketing roles, the first thirty (30) days shall constitute
+                      an Initial Sales Validation Period. Performance may be reviewed on or around the 7th, 15th, 22nd and 30th day in
+                      accordance with Annexure B and the Employment Agreement.
                     </Text>
-                  </HStack>
-
-                  {/* Point C */}
-                  <HStack align="flex-start">
-                    <Text fontWeight="bold">c.</Text>
-                    <Text fontSize="14px" textAlign="justify">
-                      You should inform us of any changes in your residential address and qualifications.
+                    <Text fontSize="13px" textAlign="justify">
+                      During probation, the contractual notice period shall ordinarily be seven (7) days or salary in lieu of the unserved
+                      portion, subject always to mandatory Applicable Law. Where a State law provides a different mandatory employer-side
+                      termination, notice, inquiry or employee-side notice/recovery rule, that mandatory rule shall prevail.
                     </Text>
-                  </HStack>
+                  </VStack>
 
-                  {/* Point D */}
-                  <HStack align="flex-start">
-                    <Text fontWeight="bold">d.</Text>
-                    <Text fontSize="14px" textAlign="justify">
-                      Your salary increment will depend upon your performance during the year and
-                      shall not be automatic. You may earn higher increment through outstanding
-                      performance and no increment may be given in the case of unsatisfactory
-                      performance.
-                    </Text>
-                  </HStack>
-
-                  {/* Point E */}
-                  <HStack align="flex-start">
-                    <Text fontWeight="bold">e.</Text>
-                    <Text fontSize="14px" textAlign="justify">
-                      After your confirmation your service may be terminated at any time by giving
-                      one month’s notice in writing by either side. You shall not proceed on leave
-                      during the notice period.
-                    </Text>
-                  </HStack>
-
-                  {/* Additional Paragraphs */}
-                  <Text fontSize="14px" textAlign="justify">
-                    In case you resign from the services of the company by giving one month’s
-                    notice, the company shall have the right to accept the notice forthwith and
-                    relieve you from service without payment for the unexpired period of notice.
-                  </Text>
-
-                  <Text fontSize="14px" textAlign="justify">
-                    No notice of resignation will be effective if it is given during the leave
-                    period and you shall not be entitled to proceed on leave during the notice period.
-                  </Text>
+                  <VStack align="flex-start" spacing={0.5} mt="8px" width="100%">
+                    <SectionHeading>During Employment with Us</SectionHeading>
+                    <VStack  spacing={0} >
+                    {[
+                      "You shall devote your full working time and attention to authorised Company duties and shall comply with the Employment Agreement, lawful instructions, SOPs and acknowledged Company Policies.",
+                      "Your reporting line, headquarter, territory, place of posting, role or responsibilities may be reasonably changed for business requirements in accordance with the Employment Agreement and Applicable Law.",
+                      "You shall not undertake conflicting employment, consultancy, agency, distributorship, dealership or competing business activity without prior written approval where required.",
+                      "You shall maintain accurate attendance, CRM entries, field-visit records, GPS/geofence records, sales, collection, expense and other business records where such systems are applicable to your role.",
+                      "You shall protect Company Confidential Information, dealer/distributor/farmer data, pricing, business plans, passwords, CRM data, documents, stock, samples, cash and Company Property.",
+                      "You shall not make unauthorised credit, discount, warranty, scheme, collection or commercial commitments on behalf of the Company.",
+                      "You shall immediately notify the Company of any material change in your residential address, mobile number, email, qualification, licence or other employment-related particulars.",
+                    ].map((line, i) => (
+                      <Text key={i} fontSize="13px" textAlign="justify">• {line}</Text>
+                    ))}</VStack>
+                  </VStack>
                 </VStack>
               </Box>
 
+              {/* ================= PAGE 3 : NOTICE PAY + STATE OVERRIDE + PERFORMANCE ================= */}
               <Box className="pdf-page page-break">
-                {/* Decorative Images */}
-                <Image src={top_ele1} position="absolute" top="0" right="0" width="250px" />
-                <Image src={bottom_ele1} position="absolute" bottom="0" left="0" width="250px" />
+                <Image src={top_ele1} position="absolute" top="0" right="0" width="230px" />
+                <Image src={bottom_ele1} position="absolute" bottom="-5px" left="0" width="230px" />
 
-                <VStack
-                  align="flex-start"
-                  spacing={4}
-                  width="83%"
-                  marginLeft="3.8rem"
-                  className="letter-content">
-                  <Image
-                    src={r_logo}
-                    alt="Round Logo"
-                    className="watermark_img1"
-                  />
-                  <Text textAlign="center" mt="2rem" mb="2rem" width="84%">
-                    CONTD:-3
-                  </Text>
+                <VStack align="flex-start" spacing={4} width="92%" marginLeft="1.5rem" className="letter-content">
+                  <Image src={r_logo} alt="Round Logo" className="watermark_img1" />
+                  <Text textAlign="center" mt="1rem" mb="12px" ml="1.5rem" width="84%">CONTD:-3</Text>
 
-                  <VStack>
-                    <Text fontSize="14px" textAlign="justify">
-                      While leaving the service, you shall hand over charge to a person nominated
-                      by the company. Settlement of your account will be made upon your duly handing
-                      over such charge.
+                  <VStack align="flex-start" spacing={0.5} mt="8px" width="100%">
+                    <SectionHeading>Notice Period, Resignation and Notice-Pay Shortfall</SectionHeading>
+                    <Text fontSize="13px" textAlign="justify" lineHeight="21px">
+                      After written confirmation, the applicable notice period shall be determined according to the designation/role and
+                      the Employment Agreement. The Company policy ordinarily provides thirty (30) days for FA/SO/TSM and equivalent
+                      junior sales roles, sixty (60) days for ASM/RSM/ZSM and equivalent managerial sales roles, and up to ninety (90) days
+                      only for specifically designated critical/key roles, subject to Applicable Law and the applicable
+                      appointment/confirmation terms.
                     </Text>
-
-                    <Text fontSize="14px" textAlign="justify">
-                      If at any time you are found guilty of dishonesty, disobedience, negligence,
-                      absence from duty without permission, or any misconduct considered detrimental
-                      to our interest or violation of one or more terms of this letter, your services
-                      may be terminated in accordance with law.
+                    <Text fontSize="13px" textAlign="justify" lineHeight="21px">
+                      If you resign, abandon employment or otherwise leave without serving the whole or any part of the applicable notice
+                      period, the Company may, to the extent permitted by Applicable Law, adjust or recover salary in lieu of the unserved
+                      portion. The contractual notice-pay amount shall be calculated on the Notice Pay Base stated in Annexure A. Any
+                      statutory cap on deduction/forfeiture from unpaid wages shall prevail, and any separately recoverable contractual
+                      balance may be pursued only through lawful means.
                     </Text>
-                    <Text fontSize="14px" textAlign="justify">
-                      You will also be subject at all times to the service rules and regulations of
-                      the company applicable to employees of your status as are in force at present
-                      or shall come into force from time to time.
+                    <Text fontSize="13px" textAlign="justify" lineHeight="21px">
+                      The Company may waive or reduce all or part of the notice period or notice-pay claim based on proper handover,
+                      dealer/distributor reconciliation, territory transition, business continuity and operational requirements. Earned
+                      wages, statutory dues and approved business expenses shall not be automatically forfeited merely because the full
+                      notice period was not served.
                     </Text>
-
-                    <Text fontSize="14px" textAlign="justify">
-                      You are forbidden to make any unauthorized disclosure of any official
-                      information pertaining to the company’s operations or its employees while in
-                      service or even thereafter. You shall have to sign a confidentiality agreement
-                      to this effect after joining the company.
-                    </Text>
-
-                    <Text>Your date of birth as confirmed by you is {formatDate(employee?.date_of_birth)} and
-                      you will retire on attaining the age of 58 years. The company, however, reserves the right
-                      to modify and amend the retirement policy and age.</Text>
                   </VStack>
 
-                  <HStack align="flex-start">
-
-                    <Text fontSize="14px" textAlign="justify">   <Text fontWeight="600" fontSize="18px">Other Terms and Conditions: </Text>
-                      It should be understood that all information pertaining
-                      to hour pay roll is strictly confidential and  as such , you are requested not to
-                      disclose or discuss any information relating to your /others salary or perks either
-                      with your colleagues or any other person directly or indirectly connected with the
-                      company .
+                  <VStack align="flex-start" spacing={0.5} mt="8px" width="100%">
+                    <SectionHeading>State-Specific Statutory Override</SectionHeading>
+                    <Text fontSize="13px" textAlign="justify" lineHeight="21px">
+                      The employment shall be subject to the mandatory Central and State labour/employment law applicable at the
+                      Employee's actual place of employment. Where any mandatory provision relating to probation, notice period,
+                      termination, resignation, wages, deductions, working hours, leave, settlement or another employment condition
+                      differs from or overrides a contractual term, the mandatory statutory provision shall prevail to the extent of the
+                      inconsistency. If the Employee is transferred from one State to another, the mandatory law applicable at the
+                      legally relevant place of employment shall apply.
                     </Text>
-                  </HStack>
-                  <Text>You will be responsible for the safe custody of all company property, keeping and returning it in good condition, and maintaining it properly at all times. <br />
-                    You have indicated your interest in working for a long time with our company, and we welcome you on the basis of such long-term interest. I assure you of full support from the management in pursuing the objectives of the company sincerely and constructively. <br />
-                  </Text>
-
-                </VStack>
-
-              </Box>
-              <Box className="pdf-page page-break">
-                {/* Decorative Images */}
-                <Image src={top_ele1} position="absolute" top="0" right="0" width="250px" />
-                <Image src={bottom_ele1} position="absolute" bottom="0" left="0" width="250px" />
-
-                <VStack
-                  align="flex-start"
-                  spacing={4}
-                  width="83%"
-                  marginLeft="3.8rem"
-                  className="letter-content">
-                  <Image
-                    src={r_logo}
-                    alt="Round Logo"
-                    className="watermark_img1"
-                  />
-                  <Text textAlign="center" mt="2rem" mb="2rem" width="84%">
-                    CONTD:-4
-                  </Text>
-
-                  <HStack align="flex-start">
-                    <Text fontSize="14px" textAlign="justify"><Text fontWeight="600" fontSize="18px">Other Allowances:</Text>
-                      No other allowances will be applicable other than your salary Anx. For travelling expenses you will be informed separately as per the norms of the company.
-                    </Text>
-                  </HStack>
-
-                  {/* ////////////////////////////////////////////////////////////////// */}
-                  <VStack align="flex-start" width="100%">
-                    <Text fontSize="14px" textAlign="justify"><Text fontWeight="600" fontSize="18px">Performance Linked Compensation Policy:</Text></Text>
-                    <Text>As part of the employee’s role in the organization, the employee will be assigned annual and monthly performance targets aligned with the company’s business objectives.</Text>
-                    <Text>The employee’s monthly salary payout will be linked to the percentage of the assigned monthly target achieved, and the payout will be determined as per the following performance criteria:</Text>
-                    <TableContainer borderTop="1px solid black" borderRight="1px solid black" borderLeft="1px solid black" borderBottom="1px solid black">
-                      <Table variant="simple" className="performancePayoutTable">
-                        <Thead>
-                          <Tr>
-                            <Th style={{borderRight: '1px solid black', borderBottom: "1px solid black"}}>Target Achievement</Th>
-                            <Th style={{borderBottom: "1px solid black"}}>Salary Payout</Th>
-                          </Tr>
-                        </Thead>
-
-                        <Tbody>
-                          {salaryPolicy.map((item, index) => (
-                            <Tr key={index}>
-                              <Td style={{borderBottom: "1px solid black", borderRight: '1px solid black'}} whiteSpace="normal" wordBreak="break-word">{item.target}</Td>
-                              <Td style={{borderBottom: "1px solid black"}} whiteSpace="normal" wordBreak="break-word">{item.payout}</Td>
-                            </Tr>
-                          ))}
-                        </Tbody>
-                      </Table>
-                    </TableContainer>
                   </VStack>
 
+                  <VStack align="flex-start" spacing={0.5} mt="8px" width="100%">
+                    <SectionHeading>Performance, Increment and Continuation</SectionHeading>
+                    <Text fontSize="13px" textAlign="justify">
+                      Performance targets, KPI weightages, review rules, Initial 30-Day Sales Validation standards and target
+                      acknowledgement shall be governed by Annexure B. Salary revision, increment or promotion is not automatic and shall
+                      depend on the applicable written performance standard, conduct, collection quality, business conditions and written
+                      approval of the Company.
+                    </Text>
+                  </VStack>
+                    <VStack align="flex-start" spacing={0.5} mt="8px" width="100%">
+                    <SectionHeading>Cash, Collection, Stock and Company Property</SectionHeading>
+                    <Text fontSize="13px" textAlign="justify">
+                      Any suspected non-deposit, diversion, unauthorised retention or misappropriation of Company/customer cash, cheque,
+                      stock, instruments or property may lead to suspension of collection/asset authority, reconciliation, show-cause,
+                      audit, disciplinary proceedings and civil/criminal remedies as permitted by law. Proven actual loss may be recovered
+                      through lawful means after applicable process. Earned wages and statutory dues shall not be automatically forfeited.
+                    </Text>
+                  </VStack>
                 </VStack>
               </Box>
 
+              {/* ================= PAGE 4 : CASH/EXIT/DOC INTEGRATION/eSIGN + SIGNATURES ================= */}
               <Box className="pdf-page page-break">
-                {/* Decorative Images */}
-                <Image src={top_ele1} position="absolute" top="0" right="0" width="250px" />
-                <Image src={bottom_ele1} position="absolute" bottom="0" left="0" width="250px" />
+                <Image src={top_ele1} position="absolute" top="0" right="0" width="230px" />
+                <Image src={bottom_ele1} position="absolute" bottom="-5px" left="0" width="230px" />
 
-                <VStack
-                  align="flex-start"
-                  spacing={4}
-                  width="83%"
-                  marginLeft="3.8rem"
-                  className="letter-content">
-                  <Image
-                    src={r_logo}
-                    alt="Round Logo"
-                    className="watermark_img1"
-                  />
-                  <Text textAlign="center" mt="2rem" mb="2rem" width="84%">
-                    CONTD:-5
-                  </Text>
+                <VStack align="flex-start" spacing={4} width="92%" marginLeft="1.5rem" className="letter-content">
+                  <Image src={r_logo} alt="Round Logo" className="watermark_img1" />
+                  <Text textAlign="center" mt="1.5rem" mb="12px" width="84%" ml="1.5rem">CONTD:-4</Text>
 
-                  <VStack>
-                      <VStack align="flex-start">
-                    <Text>This appointment is offered on the basis of the information furnished by you. If at any time it is found that the employment has been obtained by furnishing misleading or insufficient information, or by withholding material information, the company will be free to terminate your services at any time without any notice. <br />
-                      If any cash payment is received by you from any distributor and such payment is not deposited into the company’s account, the company will take legal action against you. Your entire salary payment will be stopped in such a case.</Text>
-                  </VStack>
-                  <VStack align="flex-start">
-                    <Text>
-                      Please acknowledge and return us the duplicate copy of this letter in token of your acceptance of the above terms and condition of employment. <br />
-                      I wish you a successful tenure in the company and advise you to be devoted and sincere in your duties.
-                    </Text>
-                    <Text mt="30px" fontWeight="bold">
-                      HR Department,
-                      <br />
-                      Jamidara Seeds Corporation
-                    </Text>
-
-                    <VStack spacing={0} alignItems="flex-start">
-                      <Text>{formData?.appoint_under_name}</Text>
-                      <Text>{formData?.job_role_name},{formData?.appointer_state}</Text>
-                    </VStack>
-
-                  </VStack>
-                 
-                  <Box>
-                  </Box>
-                 
-                  </VStack>
-                  <Box mt="2rem">
-
-             
                 
-                  </Box>
-                </VStack>
-               
-              </Box>
 
-              {/* ///////////////// */}
-
-
-               <Box className="pdf-page page-break">
-                {/* Decorative Images */}
-                <Image src={top_ele1} position="absolute" top="0" right="0" width="250px" />
-                <Image src={bottom_ele1} position="absolute" bottom="0" left="0" width="250px" />
-
-                <VStack
-                  align="flex-start"
-                  spacing={4}
-                  width="83%"
-                  marginLeft="3.8rem"
-                  className="letter-content">
-                  <Image
-                    src={r_logo}
-                    alt="Round Logo"
-                    className="watermark_img1"
-                  />
-                  <Text textAlign="center" mt="1.5rem" mb="1.5rem" width="84%">
-                    CONTD:-6
-                  </Text>
-
-                  <VStack width="100%">
-                 
-                
-                  <Box mt="0rem" width="100%">
-                    <Text fontSize="20px" fontWeight="bold" textAlign="center" mb="12px"> Salary Annexure </Text>
-                    <Text mb="10px"> Fixed Annual Compensation For - <b>{employee?.name}</b> </Text>
-
-                    <Box border="1px solid black" overflow="hidden">
-
-                      {/* Header Row */}
-                      <Flex borderBottom="1px solid black">
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          <b>Particulars</b>
-                        </Box>
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          <b>Monthly (₹)</b>
-                        </Box>
-                        <Box flex="1" p="10px">
-                          <b>Annual (₹)</b>
-                        </Box>
-                      </Flex>
-
-                      {/* Basic */}
-                      <Flex borderBottom="1px solid black">
-                        <Box flex="1" p="10px" borderRight="1px solid black" fontSize="13px">
-                          Basic 
-                        </Box>
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          {basic}/-
-                        </Box>
-                        <Box flex="1" p="10px">
-                          {basic * 12}/-
-                        </Box>
-                      </Flex>
-
-                      {/* House Rent */}
-                      <Flex borderBottom="1px solid black">
-                        <Box flex="1" p="10px" borderRight="1px solid black" fontSize="13px">
-                          House Rent 
-                        </Box>
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          {houseRent}/-
-                        </Box>
-                        <Box flex="1" p="10px">
-                          {houseRent * 12}/-
-                        </Box>
-                      </Flex>
-
-                      {/* Medical */}
-                      <Flex borderBottom="1px solid black">
-                        <Box flex="1" p="10px" borderRight="1px solid black" fontSize="13px">
-                          Medical Allowance 
-                        </Box>
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          {medical}/-
-                        </Box>
-                        <Box flex="1" p="10px">
-                          {medical * 12}/-
-                        </Box>
-                      </Flex>
-
-                      {/* Dearness Allowance */}
-                      <Flex borderBottom="1px solid black">
-                        <Box flex="1" p="10px" borderRight="1px solid black" fontSize="13px">
-                          Daily Allowance 
-                        </Box>
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          {dearnessAllowance}/-
-                        </Box>
-                        <Box flex="1" p="10px">
-                          {dearnessAllowance * 12}/-
-                        </Box>
-                      </Flex>
-
-                      {/* Other Allowance */}
-                      <Flex borderBottom="1px solid black" fontSize="13px" overflow="hidden">
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          Travelling Allowance 
-                        </Box>
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          {otherAllowance}/-
-                        </Box>
-                        <Box flex="1" p="10px">
-                          {otherAllowance * 12}/-
-                        </Box>
-                      </Flex>
-
-                      {/* Gross Total */}
-                      <Flex>
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          <b>Gross Total</b>
-                        </Box>
-                        <Box flex="1" p="10px" borderRight="1px solid black">
-                          <b>{monthlyGross}/-</b>
-                        </Box>
-                        <Box flex="1" p="10px">
-                          <b>{annualGross}/-</b>
-                        </Box>
-                      </Flex>
-
-                    </Box>
-
-                  </Box>
-                  <Box>
-                  </Box>
-                  {/* <Flex border="1px solid black" width="100%" overflow="hidden">
-                    <Box flex="1" p="6px" borderRight="1px solid black" fontWeight="bold" textAlign='center'>
-                      PETROL PER / K.M.
-                    </Box>
-
-                    <Box flex="1" p="6px" borderRight="1px solid black" textAlign='center'>
-                      ₹ {petrolRate} or Public Transport
-                    </Box>
-                    <Box flex="1" p="6px" borderRight="1px solid black" textAlign='center'>
-                      {minKm} K.M. MIN.
-                    </Box>
-                    <Box flex="1" p="6px" borderRight="1px solid black" textAlign='center'>
-                      {maxKm} K.M. MAX.
-                    </Box>
-                  </Flex> */}
+                  <VStack align="flex-start" spacing={0.5} mt="8px" width="100%">
+                    <SectionHeading>Exit Clearance, Handover and Full &amp; Final Settlement</SectionHeading>
+                    <Text fontSize="13px" textAlign="justify">
+                      On separation you shall complete proper handover, dealer/distributor NOC and reconciliation where applicable, return
+                      Company Property, cash, stock, samples, records, devices, SIM, credentials and data, and complete the Exit Clearance
+                      requirements under the Employment Agreement. Disputed and undisputed amounts shall be dealt with separately in
+                      accordance with Applicable Law.
+                    </Text>
                   </VStack>
-                  <Box mt="1.5rem">
 
-                    <Text fontWeight="bold" textDecoration="underline" mb="1rem"> Note: </Text>
+                  <VStack align="flex-start" spacing={0.5} mt="8px" width="100%">
+                    <SectionHeading>Document Integration and Priority</SectionHeading>
+                    <Text fontSize="13px" textAlign="justify">
+                      This Joining Letter shall be read together with the Provisional Offer Letter, Employment Agreement, Annexure A -
+                      Salary &amp; Compensation, Annexure B - KPI / Target &amp; Performance Schedule, and Annexure C - Company Policy
+                      Acknowledgement. In case of inconsistency, mandatory Applicable Law shall prevail; thereafter the signed Employment
+                      Agreement, subject-specific signed Annexures, this Joining Letter and the Provisional Offer Letter shall apply,
+                      unless a later written document expressly amends an earlier term.
+                    </Text>
+                  </VStack>
 
-                    <VStack align="flex-start" spacing={2} pl="1rem">
+                  <VStack align="flex-start" spacing={0.5} mt="8px" width="100%">
+                    <SectionHeading>Electronic Execution / Aadhaar eSign</SectionHeading>
+                    <Text fontSize="14px" textAlign="justify">
+                      This Joining Letter and the related employment documents may be issued, accepted and executed electronically. Where
+                      the Employee elects to use Aadhaar-based eSign or another legally recognised electronic-signature service, the
+                      electronic signature affixed through an authorised Certifying Authority/eSign service under the Information
+                      Technology Act, 2000 and applicable rules shall, to the extent permitted by law, have the same binding effect as a
+                      handwritten signature. Aadhaar e-KYC or OTP authentication by itself, without affixing a legally valid electronic
+                      signature through an authorised eSign process, shall not by itself constitute execution of this document.
+                    </Text>
+                    <Text fontSize="14px" textAlign="justify">
+                      The Employee acknowledges that he/she has read, understood or had explained the above terms and has received or been
+                      given access to the Employment Agreement and applicable Annexures/Policies.
+                    </Text>
+                  </VStack>
 
-                      <Text>  1):- In case of boarding (FOOD) Bill are required. Shall be paid up to maximum limits specified. </Text>
-                      <Text> 2):- In case of LODGING (Hotel) claims are settled at actual (or) up to limits specified,{" "}
-                        <Text as="span" textDecoration="underline" fontWeight="bold">  which ever is less. </Text>{" "}
-                        Claims shall not be settled without bills.</Text>
-                      <Text>
-                        3):- In case of TRAVLE claims are settled{" "} <Text as="span" textDecoration="underline" fontWeight="bold">
-                          only on submission of counter foils of TRAIN / BUS TICKETS. </Text>
-                      </Text>
-
-                    </VStack>
-                    <VStack alignItems="end">
+                  <HStack width="100%" align="flex-start" spacing={6} mt="14px">
+                    <VStack align="flex-start" flex="1" spacing="2px" fontSize="13px">
+                      <Text fontWeight="bold">FOR JAMIDARA SEEDS CORPORATION</Text>
+                      <Text>Authorized Signatory: GIRDHARI LAL</Text>
+                      <Text>Designation: PARTNER / AUTHORIZED SIGNATORY</Text>
+                      <Text>Signature / eSign: __________________________</Text>
+                      <Text>Date: ____ / ____ / ______ &nbsp; Place: JAIPUR</Text>
                       {formData.show_stamp && (
-                        <Image src={jsc_stamp} alt="Company Stamp" boxSize="94px" />)}
+                        <Image src={jsc_stamp} alt="Company Stamp" boxSize="80px" mt="6px" />
+                      )}
                     </VStack>
-                  </Box>
+                    <VStack align="flex-start" flex="1" spacing="2px" fontSize="13px">
+                      <Text fontWeight="bold">EMPLOYEE</Text>
+                      <Text>Name: {g(employee?.name)}</Text>
+                      <Text>Designation: {g(formData?.job_role_name)}</Text>
+                      <Text>Signature / Aadhaar eSign: __________________</Text>
+                      <Text>Date: ____ / ____ / ______ &nbsp; Place: __________</Text>
+                    </VStack>
+                  </HStack>
                 </VStack>
-                <VStack alignItems="flex-end" mt="10rem" spacing="4px" width="76%" position='absolute' right='0px'>
-                                 <Divider borderColor="green.600" borderWidth="1px" w="100%" mt="1rem" />
-                                 <Divider borderColor="green.300" borderWidth="2px" w="90%" mt="0px" />
-                                 <Flex mr="1rem" gap="1rem" mt="2px">
-                                   <Flex alignItems="center" gap="8px" ><Image src={emailIcon} width="24px" mt="12px" /><Text fontSize="14px">jamidaraseedscorporation@gmail.com</Text></Flex>
-                                   <Flex alignItems="center" gap="8px"><Image src={webIcon} width="24px" mt="12px" /><Text fontSize="14px">www.jamidaraseeds.com</Text></Flex>
-                                 </Flex>
-                               </VStack>
+
+                <VStack alignItems="flex-end" mt="6rem" spacing="4px" width="76%" position="absolute" right="0px" bottom="1rem">
+                  <Divider borderColor="green.600" borderWidth="1px" w="100%" mt="1rem" />
+                  <Divider borderColor="green.300" borderWidth="2px" w="90%" mt="0px" />
+                  <Flex mr="1rem" gap="1rem" mt="2px">
+                    <Flex alignItems="center" gap="8px"><Image src={emailIcon} width="24px" mt="12px" /><Text fontSize="13px">jamidaraseedscorporation@gmail.com</Text></Flex>
+                    <Flex alignItems="center" gap="8px"><Image src={webIcon} width="24px" mt="12px" /><Text fontSize="13px">www.jamidaraseeds.com</Text></Flex>
+                  </Flex>
+                </VStack>
               </Box>
+
+              {/* =========================================================
+                  PLAIN-DESIGN PAGES: Probationary Employment Agreement +
+                  Annexure A (Salary) + Annexure B (KPI/Target) +
+                  Annexure C (Policy Acknowledgement) + Schedules C-1..C-6.
+                  These reuse the same .pdf-page capture mechanism above but
+                  intentionally carry no logos / colour / watermark, per the
+                  "plain design for the agreement" requirement. Numbering
+                  continues from CONTD:-4 used above.
+                  ========================================================= */}
+              <PlainDocumentPages employee={employee} formData={formData} startContdAt={4} />
             </Box>
             <Flex p={1} justifyContent="center" borderTop="1px" borderColor="#bdbcbc">
-              <Button colorScheme="gray" onClick={handleClose} >Close</Button>
+              <Button colorScheme="gray" onClick={handleClose}>Close</Button>
               <Button colorScheme="blue" onClick={handleDownloadJoiningPDF} ml={5}>Download Joining Letter</Button>
             </Flex>
           </ModalBody>

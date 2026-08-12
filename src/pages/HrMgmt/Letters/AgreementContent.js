@@ -255,8 +255,6 @@ Mr./Ms. %%{{employee_name}}%%, son/daughter/spouse of %%{{father_spouse_name}}%%
 
 WHEREAS, the Employee has represented that all information and documents submitted for employment are true, complete and authentic, and the Company has agreed to appoint the Employee as a probationer on the terms and conditions set out below;
 
-
-
 [[PAGE]]
 
 NOW, THEREFORE, in consideration of the mutual covenants and agreements contained herein, the Parties agree as follows:
@@ -327,11 +325,11 @@ TABLE:appointmentParticulars
 
 5.3 Promotion, redesignation, role enlargement or reassignment shall be documented in writing. Demotion or salary reduction for misconduct or persistent performance deficiency shall be subject to Applicable Law and a fair process.
 
-[[PAGE]]
-
 ### 6. WORKING HOURS, ATTENDANCE, FIELD DUTY AND OVERTIME
 
 6.1 Ordinary office hours shall be 9:30 a.m. to 6:30 p.m., including a one-hour rest/meal break, ordinarily from Monday to Saturday. Sunday shall ordinarily be the weekly off, unless a lawful roster, field requirement, season, event or approved business necessity requires otherwise.
+
+[[PAGE]]
 
 6.2 The Company may prescribe shifts, seasonal schedules, field-tour timings, weekly-off rosters and flexible reporting hours, provided statutory limits relating to working hours, rest intervals, spread-over, weekly holiday and overtime are observed.
 
@@ -349,211 +347,413 @@ TABLE:appointmentParticulars
 
 7.2 The Employee's monthly earning opportunity shall comprise a Guaranteed Fixed Monthly Pay and a Performance-Linked Variable Pay, as specified in the Salary Annexure.
 
-[[PAGE]]
-
 7.3 The Guaranteed Fixed Monthly Pay shall be payable for the period actually worked, subject to attendance, authorised leave, applicable minimum wages and lawful deductions.
 
 7.4 The Performance-Linked Variable Pay shall not be guaranteed. It shall be earned only upon achievement of the applicable sales, collection, booking, dealer-development, market-activity, reporting and compliance parameters specified in the Performance Annexure.
 
-7.5 Where the Employee's verified Overall Performance Score is below sixty per cent (60%), no Performance-Linked Variable Pay shall become payable for that review period. Non-achievement of targets shall not result in retrospective forfeiture of Guaranteed Fixed Pay already earned. The detailed payout slabs, including full salary eligibility at eighty per cent (80%) or above, shall be governed by Annexure A.
+[[PAGE]]
+
+####* 7.5 Where the Employee's verified Overall Performance Score is below sixty per cent (60%), no Performance-Linked Variable Pay shall become payable for that review period. Non-achievement of targets shall not result in retrospective forfeiture of Guaranteed Fixed Pay already earned. The detailed payout slabs, including full salary eligibility at eighty per cent (80%) or above, shall be governed by Annexure A.
 
 7.6 Variable pay, incentive, commission, performance-linked components, reimbursement and ex gratia payments are governed by the applicable written scheme and become payable only upon satisfaction and verification of the stated eligibility conditions. Earned statutory wages cannot be converted into discretionary incentive.
 
 7.7 The Company may deduct income tax, provident fund, employee state insurance, professional tax, lawful notice pay, authorized recoveries and other statutory amounts where applicable. Any deduction for loss or damage shall be based on evidence, opportunity to explain and Applicable Law.
 
-7.8 Reasonable and pre-approved business expenses shall be reimbursed upon timely submission of genuine bills, tour reports and supporting documents under the applicable Company Travel / TA-DA Policy acknowledged under Annexure C. False or inflated claims may result in rejection, recovery and disciplinary action.
+####* 7.8 Reasonable and pre-approved business expenses shall be reimbursed upon timely submission of genuine bills, tour reports and supporting documents under the applicable Company Travel / TA-DA Policy acknowledged under Annexure C. False or inflated claims may result in rejection, recovery and disciplinary action.
 
 7.9 Salary revision is not automatic and depends on business conditions, performance, conduct, affordability and written approval. Statutory minimum wages and mandatory benefits shall always be observed where applicable.
 
-
-
 ### 8. LEAVE, HOLIDAYS AND ABSENCE
 
-8.1 Leave, weekly holidays, public holidays, maternity benefits and leave with wages shall be governed by Applicable Law and the applicable Company Leave / Attendance Policy acknowledged under Annexure C.
+####* 8.1 Leave, weekly holidays, public holidays, maternity benefits and leave
+with wages shall be governed by Applicable Law and the applicable
+Company Leave / Attendance Policy acknowledged under Annexure C.
+Where Company policy is more beneficial than the legal minimum, the
+more beneficial term shall apply unless law permits otherwise.
+
+8.2 Except in an emergency, leave must be applied for and approved in advance
+through the prescribed system. Intimation does not by itself amount to approval.
+Emergency absence must be reported to the Reporting Manager and HR at the
+earliest reasonable opportunity.
+
+8.3 Medical evidence may be required for illness exceeding three consecutive
+working days or where repeated/exceptional absence reasonably requires
+verification. Medical and personal information shall be handled confidentially.
+
 [[PAGE]]
-8.2 Except in an emergency, leave must be applied for and approved in advance through the prescribed system. Intimation does not by itself amount to approval.
 
-8.3 Medical evidence may be required for illness exceeding three consecutive working days or where repeated/exceptional absence reasonably requires verification.
-
-8.4 Unauthorized absence may be treated as leave without pay and misconduct after due notice. Extended unexplained absence shall be handled under Clause 19 and the disciplinary policy.
+8.4  Unauthorized absence may be treated as leave without pay and misconduct after
+due notice. Extended unexplained absence shall be handled under Clause 19 and
+the disciplinary policy, rather than assumed resignation without communication.
 
 ### 9. EXCLUSIVITY, CONFLICT OF INTEREST AND OUTSIDE ACTIVITY
 
-9.1 During employment, the Employee shall not accept another full-time or part-time employment, consultancy, agency, distributorship, dealership or business activity that conflicts with duties, competes with the Company, uses Company time/resources, or creates a conflict of interest, without prior written approval.
+9.1 During employment, the Employee shall not accept another full-time or parttime employment, consultancy, agency, distributorship, dealership or business
+activity that conflicts with duties, competes with the Company, uses Company
+time/resources, or creates a conflict of interest, without prior written approval.
 
-9.2 Passive investments that do not create control, influence or conflict may be permitted, subject to disclosure where relevant.
+9.2 Passive investments that do not create control, influence or conflict may be
+permitted, subject to disclosure where relevant. The Employee shall disclose any
+personal or family interest in a dealer, distributor, vendor, competitor, customer
+or transaction connected with the Company.
 
-9.3 Breach may lead to disciplinary action and recovery of proven actual loss, but salary already earned shall not be automatically forfeited merely because an outside activity occurred.
+9.3 Breach may lead to disciplinary action and recovery of proven actual loss, but
+salary already earned shall not be automatically forfeited merely because an
+outside activity occurred.
+
 
 ### 10. CODE OF CONDUCT, ANTI-FRAUD AND LEGAL COMPLIANCE
 
-10.1 The Employee shall act honestly, respectfully and lawfully and shall not engage in theft, fraud, bribery, kickbacks, document falsification, misrepresentation, intimidation, discrimination, harassment, retaliation, violence, substance abuse at work or any act that materially damages the Company or its stakeholders.
+10.1 The Employee shall act honestly, respectfully and lawfully and shall not engage
+in theft, fraud, bribery, kickbacks, document falsification, misrepresentation,
+intimidation, discrimination, harassment, retaliation, violence, substance abuse at
+work or any act that materially damages the Company or its stakeholders.
 
-10.2 The Employee shall not accept personal cash, gifts, commissions, benefits or favours in connection with Company business except nominal customary items expressly permitted by policy and disclosed where required.
+10.2 The Employee shall not accept personal cash, gifts, commissions, benefits or
+favours in connection with Company business except nominal customary items
+expressly permitted by policy and disclosed where required.
 
-10.3 Any suspected fraud, safety incident, harassment, data breach, cash/stock discrepancy or unlawful instruction shall be promptly reported through the Reporting Manager, HR, Partner or designated grievance channel. Good-faith reporting shall not attract retaliation.
+10.3 Any suspected fraud, safety incident, harassment, data breach, cash/stock
+discrepancy or unlawful instruction shall be promptly reported through the
+Reporting Manager, HR, Partner or designated grievance channel. Good-faith
+reporting shall not attract retaliation.
+
+####* 10.4 Detailed conduct standards and disciplinary procedures shall be
+governed by this Agreement and the applicable Company Conduct /
+Disciplinary Policies acknowledged under Annexure C.
 
 [[PAGE]]
-
-10.4 Detailed conduct standards and disciplinary procedures shall be governed by this Agreement and the applicable Company Conduct / Disciplinary Policies acknowledged under Annexure C.
 
 ### 11. DEALER/DISTRIBUTOR CASH, GOODS, STOCK AND COLLECTION RESPONSIBILITY
 
-11.1 The Employee shall not collect cash, cheque, goods, returns, samples, documents or instruments from any dealer, distributor, farmer or third party unless specifically authorized and supported by an official receipt, collection entry, challan or approved process.
+11.1 The Employee shall not collect cash, cheque, goods, returns, samples,
+documents or instruments from any dealer, distributor, farmer or third party
+unless specifically authorized and supported by an official receipt, collection entry,
+challan or approved process.
 
-11.2 All cash, cheques and instruments collected on behalf of the Company shall be deposited or handed over within the period prescribed by the Company, ordinarily on the same working day or the next banking day, and correctly credited to the concerned party ledger.
+11.2 All cash, cheques and instruments collected on behalf of the Company shall be
+deposited or handed over within the period prescribed by the Company, ordinarily
+on the same working day or the next banking day, and correctly credited to the
+concerned party ledger.
 
-11.3 The Employee shall reconcile collections, returns, stock, schemes, credit notes and party balances and shall not divert, retain, adjust, set off, lend or use Company or customer funds/property for personal or unauthorized purposes.
+11.3 The Employee shall reconcile collections, returns, stock, schemes, credit notes
+and party balances and shall not divert, retain, adjust, set off, lend or use Company
+or customer funds/property for personal or unauthorized purposes.
 
-11.4 In case of discrepancy, the Company may conduct an audit and issue a written show-cause notice. Upon proof of misappropriation, fraud, wilful loss or unauthorized retention, the Company may recover actual loss through lawful deductions, settlement, civil proceedings, criminal complaint or other remedies permitted by law.
-
-
+11.4 In case of discrepancy, the Company may conduct an audit and issue a written
+show-cause notice. Upon proof of misappropriation, fraud, wilful loss or
+unauthorized retention, the Company may recover actual loss through lawful
+deductions, settlement, civil proceedings, criminal complaint or other remedies
+permitted by law. No blank/security cheque shall be filled or used arbitrarily.
 
 ### 12. CRM, MOBILE, GPS, GEOFENCE AND DATA MONITORING
 
-12.1 Use of the Company's CRM, attendance system, official mobile application, email, SIM, device, dashboards and reporting tools is mandatory where assigned. The Employee shall maintain accurate and timely records and shall not share passwords, disable required controls or manipulate information.
+12.1 Use of the Company’s CRM, attendance system, official mobile application,
+email, SIM, device, dashboards and reporting tools is mandatory where assigned.
+The Employee shall maintain accurate and timely records and shall not share
+passwords, disable required controls or manipulate information.
 
-12.2 For legitimate purposes including attendance, field-force safety, route/visit verification, customer service, fraud prevention, compliance and asset security, the Company may collect and process work-related location, geofence, device, login, call-metadata, CRM, attendance and usage data, subject to Applicable Law and the applicable IT / CRM / GPS / Data Policy acknowledged under Annexure C.
+####* 12.2 For legitimate purposes including attendance, field-force safety,
+route/visit verification, customer service, fraud prevention,
+compliance and asset security, the Company may collect and process
+work-related location, geofence, device, login, call-metadata, CRM,
+attendance and usage data, subject to Applicable Law and the
+applicable IT / CRM / GPS / Data Policy acknowledged under Annexure
+C.
+
+12.3 Continuous personal surveillance outside duty hours is not intended. Location
+monitoring shall, as far as practicable, be limited to duty hours, approved tours,
+active field assignments or Company-owned devices, except where a lawful
+investigation or asset-security need reasonably requires otherwise.
+
 [[PAGE]]
-12.3 Continuous personal surveillance outside duty hours is not intended. Location monitoring shall, as far as practicable, be limited to duty hours, approved tours, active field assignments or Company-owned devices, except where a lawful investigation or asset-security need reasonably requires otherwise.
 
-12.4 Fake location applications, GPS spoofing, deletion of business records, unauthorized export of dealer/farmer data, personal cloud backups of Company data, or use of unofficial systems to bypass controls are material misconduct.
+12.4 Fake location applications, GPS spoofing, deletion of business records,
+unauthorized export of dealer/farmer data, personal cloud backups of Company
+data, or use of unofficial systems to bypass controls are material misconduct.
 
-12.5 The Company may retain employment and business records for lawful operational, audit, tax, compliance, defence and statutory purposes and shall restrict access according to role and need.
+12.5 The Company may retain employment and business records for lawful
+operational, audit, tax, compliance, defence and statutory purposes and shall
+restrict access according to role and need.
 
 ### 13. CONFIDENTIALITY, PRIVACY AND RECORDS
 
-13.1 The Employee shall use Confidential Information only for authorized Company work and shall protect it using reasonable security. Disclosure to any unauthorized person, competitor, personal account, social-media platform or external device is prohibited.
+13.1 The Employee shall use Confidential Information only for authorized Company
+work and shall protect it using reasonable security. Disclosure to any unauthorized
+person, competitor, personal account, social-media platform or external device is
+prohibited.
 
-13.2 The confidentiality obligation does not prohibit information that is lawfully public, independently developed without Company information, rightfully received from an authorized third party, disclosed with written approval, or required by a court, regulator or law, provided lawful notice is given where permitted.
+13.2 The confidentiality obligation does not prohibit information that is lawfully
+public, independently developed without Company information, rightfully
+received from an authorized third party, disclosed with written approval, or
+required by a court, regulator or law, provided lawful notice is given where
+permitted.
 
-13.3 Trade secrets and information that remains confidential shall be protected for so long as it retains that character. Other confidential business information shall remain protected after termination for the maximum period enforceable under law.
+13.3 Trade secrets and information that remains confidential shall be protected for
+so long as it retains that character. Other confidential business information shall
+remain protected after termination for the maximum period enforceable under
+law.
 
-13.4 Nothing in this Agreement prevents a lawful complaint, protected disclosure, testimony or cooperation with a competent authority.
+13.4 Nothing in this Agreement prevents a lawful complaint, protected disclosure,
+testimony or cooperation with a competent authority. The Employee shall,
+however, avoid unnecessary disclosure beyond what is legally required.
 
 ### 14. INTELLECTUAL PROPERTY AND WORK PRODUCT
 
 14.1 To the extent permitted by law, work product, inventions, designs, databases, documents, reports, content, software, source code, processes, research, crop-trial data and other intellectual property created by the Employee within assigned duties, using substantial Company resources, or specifically commissioned for the Company shall belong to the Company upon creation.
 
 14.2 The Employee shall execute reasonable documents required to record or protect such ownership. Moral rights shall be dealt with according to Applicable Law.
-[[PAGE]]
+
 14.3 Pre-existing intellectual property disclosed in writing before use and personal work created entirely outside employment duties without Company resources or Confidential Information shall remain with the Employee, unless separately assigned in writing.
 
-
+[[PAGE]]
 
 ### 15. COMPANY PROPERTY, DOCUMENTS AND ACCESS
 
-15.1 Company Property shall be used carefully, only for authorized purposes and in compliance with security, inventory and acceptable-use rules. The Employee shall immediately report loss, theft, damage, compromise or unauthorized access.
+15.1 Company Property shall be used carefully, only for authorized purposes and in
+compliance with security, inventory and acceptable-use rules. The Employee shall
+immediately report loss, theft, damage, compromise or unauthorized access.
 
-15.2 The Employee shall not create a lien over Company Property or retain it as security for any claim. Upon demand, transfer, suspension or termination, all property, documents, data, access credentials, samples, cash and stock shall be returned and all required access/handover completed under the applicable Exit / Handover Policy acknowledged under Annexure C.
+####* 15.2 The Employee shall not create a lien over Company Property or
+retain it as security for any claim. Upon demand, transfer, suspension
+or termination, all property, documents, data, access credentials,
+samples, cash and stock shall be returned and all required
+access/handover completed under the applicable Exit / Handover
+Policy acknowledged under Annexure C.
 
-15.3 Actual loss caused by proven fraud, wilful misconduct or gross negligence may be recovered in accordance with Applicable Law after giving an opportunity to respond. Normal wear and tear and ordinary business risk shall not be charged to the Employee.
+15.3 Actual loss caused by proven fraud, wilful misconduct or gross negligence may
+be recovered in accordance with Applicable Law after giving an opportunity to
+respond. Normal wear and tear and ordinary business risk shall not be charged to
+the Employee.
 
 ### 16. PREVENTION OF SEXUAL HARASSMENT AND RESPECTFUL WORKPLACE
 
-16.1 The Company maintains zero tolerance for sexual harassment, discrimination, bullying, retaliation and workplace violence. The Employee shall comply with the Sexual Harassment of Women at Workplace (Prevention, Prohibition and Redressal) Act, 2013, applicable rules, Company policy and lawful directions of the Internal Committee/Local Committee or competent authority.
+16.1 The Company maintains zero tolerance for sexual harassment, discrimination,
+bullying, retaliation and workplace violence. The Employee shall comply with the
+Sexual Harassment of Women at Workplace (Prevention, Prohibition and
+Redressal) Act, 2013, applicable rules, Company policy and lawful directions of the
+Internal Committee/Local Committee or competent authority.
 
-16.2 Complaints shall be handled confidentially, fairly and without retaliation. Interim measures, inquiry and disciplinary action shall follow Applicable Law and the applicable POSH / Respectful Workplace Policy acknowledged under Annexure C. The Company does not disclaim statutory duties merely because misconduct is committed by an individual.
+####* 16.2 Complaints shall be handled confidentially, fairly and without
+retaliation. Interim measures, inquiry and disciplinary action shall
+follow Applicable Law and the applicable POSH / Respectful
+Workplace Policy acknowledged under Annexure C. The Company
+does not disclaim statutory duties merely because misconduct is
+committed by an individual.
 
-16.3 Knowingly false evidence may be dealt with according to law; inability to prove a complaint shall not by itself make the complaint false or malicious.
-[[PAGE]]
+16.3 Knowingly false evidence may be dealt with according to law; inability to prove
+a complaint shall not by itself make the complaint false or malicious.
+
 ### 17. PERFORMANCE REVIEW, CORRECTIVE ACTION AND DISCIPLINE
 
-17.1 The Company may conduct periodic performance reviews and may issue coaching, counselling, written expectations, a performance improvement plan, warning, role adjustment or other lawful corrective action.
+17.1 The Company may conduct periodic performance reviews and may issue
+coaching, counselling, written expectations, a performance improvement plan,
+warning, role adjustment or other lawful corrective action.
 
-17.2 Misconduct allegations may be investigated through show-cause notice, explanation, document review, inquiry and an opportunity of hearing where required. The level of process shall reflect the seriousness of the allegation and Applicable Law.
+17.2 Misconduct allegations may be investigated through show-cause notice,
+explanation, document review, inquiry and an opportunity of hearing where
+required. The level of process shall reflect the seriousness of the allegation and
+Applicable Law.
 
-17.3 The Company may place the Employee under suspension pending inquiry where reasonably necessary, on terms required by Applicable Law and policy.
+[[PAGE]]
+
+17.3 The Company may place the Employee under suspension pending inquiry
+where reasonably necessary, on terms required by Applicable Law and policy.
 
 ### 18. REMEDIES FOR MATERIAL BREACH
 
-18.1 If the Employee materially breaches the obligations relating to fraud, exclusivity, cash/stock, confidentiality, data, intellectual property, non-solicitation or Company Property, the Company may discontinue future discretionary or conditional payments not yet earned, terminate employment in accordance with law, seek recovery of proven loss, injunction, specific relief, damages, costs and any other remedy available under Applicable Law.
+18.1 If the Employee materially breaches the obligations relating to fraud,
+exclusivity, cash/stock, confidentiality, data, intellectual property, non-solicitation
+or Company Property, the Company may discontinue future discretionary or conditional payments not yet earned, terminate employment in accordance with
+law, seek recovery of proven loss, injunction, specific relief, damages, costs and
+any other remedy available under Applicable Law.
 
-18.2 For clarity, this clause does not authorize forfeiture of earned wages, statutory dues or approved expenses that must be paid under Applicable Law. The Company's rights are cumulative and shall be exercised through lawful process.
-
-
+18.2 For clarity, this clause does not authorize forfeiture of earned wages, statutory
+dues or approved expenses that must be paid under Applicable Law. The
+Company’s rights are cumulative and shall be exercised through lawful process.
 
 ### 19. TERMINATION, RESIGNATION, NOTICE AND UNAUTHORISED ABSENCE
 
-19.1 During probation, Clause 3.3 applies. After written confirmation, the applicable notice period shall be determined according to the Employee's designation/role as follows:
+19.1 During probation, Clause 3.3 applies. After written confirmation, the applicable
+notice period shall be determined according to the Employee’s designation/role as
+follows:
 
-(a) Field Assistant (FA), Sales Officer (SO), Territory Sales Manager (TSM), Junior Sales/Marketing staff and equivalent roles: thirty (30) days.
+(a) Field Assistant (FA), Sales Officer (SO), Territory Sales Manager (TSM),
+Junior Sales/Marketing staff and equivalent roles: thirty (30) days.
 
-(b) Area Sales Manager (ASM), Regional Sales Manager (RSM), Zonal Sales Manager (ZSM) and equivalent managerial sales roles: sixty (60) days.
+(b) Area Sales Manager (ASM), Regional Sales Manager (RSM), Zonal Sales
+Manager (ZSM) and equivalent managerial sales roles: sixty (60) days.
+
+(c) Critical or key positions specifically designated in writing by the Company,
+including senior management, key R&D, highly confidential or business-critical
+roles: up to ninety (90) days, as expressly stated in the applicable appointment,
+confirmation or role-specific letter.
+
+(d) Either Party may terminate employment by serving the applicable notice
+period. Where permitted by Applicable Law and the governing employment
+terms, salary in lieu of the unserved portion of notice may be paid, adjusted or
+recovered. The Company may, based on business continuity, handover,
+customer/territory transition and operational requirements, waive or reduce all or
+part of the notice period, or require the Employee to serve all or part of it. Any
+notice-pay adjustment or recovery shall be limited to the amount lawfully
+recoverable and shall not authorize unlawful withholding of earned wages,
+statutory dues or approved expenses.
+
 [[PAGE]]
-(c) Critical or key positions specifically designated in writing by the Company, including senior management, key R&D, highly confidential or business-critical roles: up to ninety (90) days, as expressly stated in the applicable appointment, confirmation or role-specific letter.
 
-(d) Either Party may terminate employment by serving the applicable notice period. Where permitted by Applicable Law and the governing employment terms, salary in lieu of the unserved portion of notice may be paid, adjusted or recovered. The Company may, based on business continuity, handover, customer/territory transition and operational requirements, waive or reduce all or part of the notice period, or require the Employee to serve all or part of it. Any notice-pay adjustment or recovery shall be limited to the amount lawfully recoverable and shall not authorize unlawful withholding of earned wages, statutory dues or approved expenses. This Employee's applicable confirmed notice period is {{notice_period_confirmed_days}} days.
+19.2 The Company may terminate employment for proven misconduct, fraud, theft,
+misappropriation, material falsification, serious insubordination, violence, harassment, data theft, wilful damage, bribery, repeated unauthorized absence,
+material breach or other lawful cause, with or without notice as permitted by
+Applicable Law and after required procedure.
 
-19.2 The Company may terminate employment for proven misconduct, fraud, theft, misappropriation, material falsification, serious insubordination, violence, harassment, data theft, wilful damage, bribery, repeated unauthorized absence, material breach or other lawful cause, with or without notice as permitted by Applicable Law and after required procedure.
+19.3 Termination without misconduct shall be made with applicable notice or pay in
+lieu and statutory dues. Death or permanent incapacity shall end employment on
+the date recognized by law, and lawful dues shall be paid to the Employee or
+nominee/legal representative, as applicable.
 
-19.3 Termination without misconduct shall be made with applicable notice or pay in lieu and statutory dues. Death or permanent incapacity shall end employment on the date recognized by law, and lawful dues shall be paid to the Employee or nominee/legal representative, as applicable.
+19.4 An Employee absent without authorization for three consecutive working days
+shall be contacted and may receive a direction to report or explain. Continued
+failure to respond or report after reasonable notices may be treated as
+abandonment/unauthorized absence in accordance with Applicable Law; it shall
+not erase earned or statutory dues.
 
-19.4 An Employee absent without authorization for three consecutive working days shall be contacted and may receive a direction to report or explain. Continued failure to respond or report after reasonable notices may be treated as abandonment/unauthorized absence in accordance with Applicable Law; it shall not erase earned or statutory dues.
+19.5 Resignation shall be submitted through the official email/HR system or signed
+written notice. Verbal statements, social-media messages or communication to an
+unauthorized person do not constitute final acceptance unless acknowledged by an
+authorized representative.
 
-19.5 Resignation shall be submitted through the official email/HR system or signed written notice. Verbal statements, social-media messages or communication to an unauthorized person do not constitute final acceptance unless acknowledged by an authorized representative.
-[[PAGE]]
 ### 20. EXIT CLEARANCE, DEALER/DISTRIBUTOR NOC, HANDOVER AND FULL & FINAL SETTLEMENT
 
-20.1 Before release, the Employee shall complete a proper handover and submit all applicable dealer/distributor NOCs, party-wise balance confirmations, collection details, stock/sample statements, pending-order status, Company Property, documents, credentials, expense claims and other applicable exit-clearance items under the Company Exit / Handover Policy acknowledged under Annexure C.
+####* 20.1 Before release, the Employee shall complete a proper handover and
+submit all applicable dealer/distributor NOCs, party-wise balance
+confirmations, collection details, stock/sample statements, pendingorder status, Company Property, documents, credentials, expense
+claims and other applicable exit-clearance items under the Company
+Exit / Handover Policy acknowledged under Annexure C.
 
-20.2 Dealer/distributor NOC and reconciliation are material exit obligations, especially for sales, collection, territory and stock-handling roles. Failure to submit them may delay clearance, relieving documentation and settlement of disputed/reconcilable amounts, and may lead to audit, notice and lawful recovery proceedings.
+20.2 Dealer/distributor NOC and reconciliation are material exit obligations,
+especially for sales, collection, territory and stock-handling roles. Failure to submit
+them may delay clearance, relieving documentation and settlement of
+disputed/reconcilable amounts, and may lead to audit, notice and lawful recovery
+proceedings.
 
-20.3 The Company shall identify discrepancies in writing and provide the Employee a reasonable opportunity to respond. Proven cash, stock, notice-pay, asset or other lawful recoveries may be adjusted to the extent permitted by law. Undisputed earned salary and statutory dues shall not be withheld indefinitely merely because an NOC is pending.
+20.3 The Company shall identify discrepancies in writing and provide the Employee
+a reasonable opportunity to respond. Proven cash, stock, notice-pay, asset or other
+lawful recoveries may be adjusted to the extent permitted by law. Undisputed
+earned salary and statutory dues shall not be withheld indefinitely merely because
+an NOC is pending.
 
-20.4 Full and final settlement shall be processed after separation and completion of available reconciliation within the timeline prescribed by Applicable Law.
+[[PAGE]]
 
-20.5 Relieving and experience letters may record factual employment details and may be issued after exit formalities, without prejudice to the Employee's statutory rights or the Company's recovery rights.
+20.4 Full and final settlement shall be processed after separation and completion of
+available reconciliation within the timeline prescribed by Applicable Law. Where
+an item remains genuinely disputed, the undisputed portion shall be processed
+and the disputed portion handled separately according to law.
 
+20.5 Relieving and experience letters may record factual employment details and
+may be issued after exit formalities, without prejudice to the Employee’s statutory
+rights or the Company’s recovery rights.
 
 
 ### 21. POST-EMPLOYMENT OBLIGATIONS AND NON-SOLICITATION
 
-21.1 Nothing in this Agreement prohibits the Employee from lawfully pursuing a profession, trade or employment after separation. Any restriction shall be interpreted consistently with Section 27 of the Indian Contract Act, 1872 and other Applicable Law.
+21.1 Nothing in this Agreement prohibits the Employee from lawfully pursuing a
+profession, trade or employment after separation. Any restriction shall be
+interpreted consistently with Section 27 of the Indian Contract Act, 1872 and other
+Applicable Law.
 
-21.2 For twelve (12) months after separation, and only to the maximum extent legally enforceable, the Employee shall not use Confidential Information to directly solicit for a competing purpose those dealers, distributors, institutional customers or employees with whom the Employee had material dealings during the final twelve months of employment.
-[[PAGE]]
-21.3 General advertising, responding to an unsolicited approach, ordinary professional networking, or employment without misuse of Confidential Information shall not by itself constitute prohibited solicitation.
+21.2 For twelve (12) months after separation, and only to the maximum extent
+legally enforceable, the Employee shall not use Confidential Information to
+directly solicit for a competing purpose those dealers, distributors, institutional
+customers or employees with whom the Employee had material dealings during
+the final twelve months of employment.
 
-21.4 The Employee shall not falsely represent continued association with the Company, retain Company data or interfere with existing contracts through deception, misuse of information or unlawful inducement.
+21.3 General advertising, responding to an unsolicited approach, ordinary
+professional networking, or employment without misuse of Confidential
+Information shall not by itself constitute prohibited solicitation.
+
+21.4 The Employee shall not falsely represent continued association with the
+Company, retain Company data or interfere with existing contracts through
+deception, misuse of information or unlawful inducement.
 
 ### 22. LIMITED INDEMNITY AND RECOVERY OF LOSS
 
-22.1 The Employee shall indemnify the Company only for direct and proven loss, liability, penalty or reasonable legal cost arising from the Employee's fraud, wilful misconduct, criminal breach of trust, unauthorized commitment, deliberate data/confidentiality breach or gross negligence, to the extent permitted by law.
+22.1 The Employee shall indemnify the Company only for direct and proven loss,
+liability, penalty or reasonable legal cost arising from the Employee’s fraud, wilful
+misconduct, criminal breach of trust, unauthorized commitment, deliberate
+data/confidentiality breach or gross negligence, to the extent permitted by law.
 
-22.2 The Employee shall not be liable for ordinary business losses, market conditions, approved management decisions, normal wear and tear, or acts performed in good faith within authority. Recovery shall follow notice, evidence, opportunity to respond and Applicable Law.
+22.2 The Employee shall not be liable for ordinary business losses, market
+conditions, approved management decisions, normal wear and tear, or acts
+performed in good faith within authority. Recovery shall follow notice, evidence,
+opportunity to respond and Applicable Law.
+
+[[PAGE]]
 
 ### 23. NOTICES AND OFFICIAL COMMUNICATION
 
-23.1 Notices may be delivered personally, by registered/speed post, courier, official email, HR portal or another traceable mode to the addresses recorded below. Electronic communication shall be valid where delivery can reasonably be evidenced.
+23.1 Notices may be delivered personally, by registered/speed post, courier, official
+email, HR portal or another traceable mode to the addresses recorded below.
+Electronic communication shall be valid where delivery can reasonably be
+evidenced.
 
 TABLE:noticeDetails
 
-23.2 Each Party shall promptly communicate any change in contact details. A notice sent to the last recorded contact shall be treated according to Applicable Law and the evidence of delivery available.
-[[PAGE]]
+23.2 Each Party shall promptly communicate any change in contact details. A notice
+sent to the last recorded contact shall be treated according to Applicable Law and
+the evidence of delivery available.
+
 ### 24. GOVERNING LAW, LABOUR AUTHORITY AND JURISDICTION
 
-24.1 This Agreement shall be governed by the laws of India and the mandatory employment and labour laws applicable at the Employee's actual place of employment/posting, including the applicable State Shops and Commercial Establishments law and other statutes applicable to the establishment and Employee category. Where the Employee is transferred to another State, the mandatory law applicable at the legally relevant place of employment shall prevail to the extent required by law.
+####* 24.1 This Agreement shall be governed by the laws of India and the
+mandatory employment and labour laws applicable at the Employee’s
+actual place of employment/posting, including the applicable State Shops and Commercial Establishments law and other statutes
+applicable to the establishment and Employee category. Where the
+Employee is transferred to another State, the mandatory law
+applicable at the legally relevant place of employment shall prevail to
+the extent required by law.
 
-24.2 Nothing in this Agreement excludes or limits the jurisdiction of a competent Labour Authority, Inspector-cum-Facilitator, Conciliation Officer, Internal Committee, Local Committee, Commissioner, Tribunal, Court or other statutory authority that has mandatory jurisdiction under Applicable Law.
+24.2 Nothing in this Agreement excludes or limits the jurisdiction of a competent
+Labour Authority, Inspector-cum-Facilitator, Conciliation Officer, Internal
+Committee, Local Committee, Commissioner, Tribunal, Court or other statutory
+authority that has mandatory jurisdiction under Applicable Law.
 
-24.3 Subject to Clause 24.2 and where legally permissible, all civil and contractual disputes arising out of or in connection with this Agreement shall be subject exclusively to the competent courts at Alwar, Rajasthan or Jaipur, Rajasthan, provided the selected court otherwise possesses jurisdiction under Applicable Law. Mandatory jurisdiction arising from the place of employment or statutory law shall prevail.
+24.3 Subject to Clause 24.2 and where legally permissible, all civil and contractual
+disputes arising out of or in connection with this Agreement shall be subject
+exclusively to the competent courts at Alwar, Rajasthan or Jaipur, Rajasthan,
+provided the selected court otherwise possesses jurisdiction under Applicable Law.
+Mandatory jurisdiction arising from the place of employment or statutory law shall
+prevail.
 
-24.4 The Parties should first attempt good-faith internal resolution through HR/authorized management, without delaying any statutory limitation period or urgent legal remedy.
+24.4 The Parties should first attempt good-faith internal resolution through
+HR/authorized management, without delaying any statutory limitation period or
+urgent legal remedy.
 
-
+[[PAGE]]
 
 ### 25. GENERAL PROVISIONS
 
-25.1 This Agreement, its annexures, appointment/compensation letters and acknowledged Company Policies constitute the employment terms. In case of conflict, mandatory law prevails, followed by this Agreement, role-specific written terms and policies, unless a later document expressly amends an earlier one.
+25.1 This Agreement, its annexures, appointment/compensation letters and
+acknowledged Company Policies constitute the employment terms. In case of
+conflict, mandatory law prevails, followed by this Agreement, role-specific written
+terms and policies, unless a later document expressly amends an earlier one.
 
-25.2 Any amendment must be in writing and authorized by the Company and acknowledged by the Employee, except reasonable policy/SOP updates that do not reduce mandatory statutory rights and are lawfully communicated.
+25.2 Any amendment must be in writing and authorized by the Company and
+acknowledged by the Employee, except reasonable policy/SOP updates that do not
+reduce mandatory statutory rights and are lawfully communicated.
 
-25.3 If a provision is invalid or unenforceable, it shall be severed or read down and the remaining provisions shall continue. No delay in enforcing a right is a waiver.
+25.3 If a provision is invalid or unenforceable, it shall be severed or read down and
+the remaining provisions shall continue. No delay in enforcing a right is a waiver.
+
+25.4 The Employee may not assign employment rights or duties. The Company may
+transfer this Agreement to a lawful successor or restructured employer, subject to
+continuity of mandatory rights.
+
+25.5 This Agreement may be signed in counterparts or through a legally valid
+electronic signature. The Employee confirms having read or had explained the
+Agreement in a language understood by the Employee and having received an
+opportunity to seek independent advice before signing.
+
 [[PAGE]]
-25.4 The Employee may not assign employment rights or duties. The Company may transfer this Agreement to a lawful successor or restructured employer, subject to continuity of mandatory rights.
-
-25.5 This Agreement may be signed in counterparts or through a legally valid electronic signature. The Employee confirms having read or had explained the Agreement in a language understood by the Employee and having received an opportunity to seek independent advice before signing.
 
 ### 26. ACCEPTANCE AND SIGNATURES
 
@@ -562,27 +762,40 @@ IN WITNESS WHEREOF, the Parties sign this Agreement on the date stated above and
 TABLE:agreementSignatures
 
 TABLE:witnessSignatures
+
 `;
 
 // ============================================================================
 // ANNEXURE A - SALARY & COMPENSATION
 // ============================================================================
 export const ANNEXURE_A_TEMPLATE = `
-## ANNEXURE A - SALARY & COMPENSATION
+
+###$ JAMIDARA SEEDS CORPORATION
+
+#$ Registered Office: 105, Nemi Chand Market, Alwar, Rajasthan
+
+#$ Corporate Office: S-19, Aggression Tower, Vidhyadhar Nagar, Jaipur - 302039, Rajasthan
+
+**________________________________________________________________________________________________**
+
+##$ ANNEXURE A - SALARY & COMPENSATION
 
 This Annexure forms an integral part of the Employee's Joining Letter and Employment Agreement. All employee-specific monetary fields must be completed before execution.
 
 TABLE:employeePayrollDetails
 
 TABLE:monthlyCompensation
-[[PAGE]]
-### NOTICE PAY BASE
+
+###* NOTICE PAY BASE
 
 TABLE:noticePayBase
 
-If the Employee does not serve the whole or any part of the applicable notice period, the contractual notice-pay shortfall may be calculated using the Notice Pay Base above for the number of unserved notice days. Any adjustment from unpaid wages/F&F and any separate recovery shall be limited by Applicable Law, including any applicable State statutory cap or recovery procedure.
+If the Employee does not serve the whole or any part of the applicable notice period, the contractual notice-pay
+shortfall may be calculated using the Notice Pay Base above for the number of unserved notice days. Any
+adjustment from unpaid wages/F&F and any separate recovery shall be limited by Applicable Law, including any
+applicable State statutory cap or recovery procedure.
 
-
+[[PAGE]]
 
 ### TA / DA & APPROVED BUSINESS EXPENSES - SEPARATE FROM SALARY
 
@@ -594,11 +807,19 @@ TA/DA, hotel, mileage and genuine approved business-expense reimbursements are s
 
 TABLE:payoutMatrix
 
-Full Salary Eligibility Threshold: A verified Overall Performance Score of eighty per cent (80%) or above shall make the Employee eligible to earn one hundred per cent (100%) of the Total Monthly Earning Opportunity for that review period, subject to this Annexure and Applicable Law.
+[[PAGE]]
 
-Below sixty per cent (60%), no Performance-Linked Variable Pay shall be earned for that review period; the Employee remains entitled to Guaranteed Fixed Pay earned for the period actually worked, subject to attendance, authorised leave, leave without pay and lawful deductions.
+Full Salary Eligibility Threshold: A verified Overall Performance Score of eighty per cent (80%) or above shall make
+the Employee eligible to earn one hundred per cent (100%) of the Total Monthly Earning Opportunity for that review
+period, subject to this Annexure and Applicable Law.
 
-Additional Performance Incentive shall be payable over and above the Total Monthly Earning Opportunity only after verification of net sales/business, realised collection, approved dealer/distributor activation, compliance and applicable exclusions for returns, cancellations, credit notes and unauthorised discounts.
+Below sixty per cent (60%), no Performance-Linked Variable Pay shall be earned for that review period; the
+Employee remains entitled to Guaranteed Fixed Pay earned for the period actually worked, subject to attendance,
+authorised leave, leave without pay and lawful deductions.
+
+Additional Performance Incentive shall be payable over and above the Total Monthly Earning Opportunity only after
+verification of net sales/business, realised collection, approved dealer/distributor activation, compliance and
+applicable exclusions for returns, cancellations, credit notes and unauthorised discounts.
 
 ### SALARY REVISION / INCREMENT
 
@@ -606,7 +827,14 @@ After completion of {{salary_revision_after_months}} months, the Employee may be
 
 ### STATUTORY INTERPRETATION
 
-The component labels in this Annexure are for payroll administration. Minimum wages, statutory wages, provident fund, ESI, bonus, gratuity, tax and other statutory calculations, where applicable, shall be determined according to Applicable Law regardless of the label used.
+The component labels in this Annexure are for payroll administration. Minimum wages, statutory wages, provident
+fund, ESI, bonus, gratuity, tax and other statutory calculations, where applicable, shall be determined according to
+Applicable Law regardless of the label used. Mandatory law shall prevail over any inconsistent term.
+
+### ACCEPTANCE & SIGNATURES
+
+The Employee confirms that the compensation structure, notice-pay base, performance thresholds and incentive
+framework have been read and understood and accepts this Annexure as part of the employment terms.
 
 TABLE:annexureASignatures
 `;
@@ -627,25 +855,41 @@ TABLE:businessTargetCommitment
 
 TABLE:performanceWeightage
 
+[[PAGE]]
+
 ### INITIAL 30-DAY SALES VALIDATION
 
 TABLE:initialValidation
 
-[[PAGE]]
-
 ### PERFORMANCE MEASUREMENT RULES
 
-- No target shall be applied retrospectively. The applicable target, review period, weightage and measurement basis must be communicated before or at the beginning of the review period.
-- Sales/business achievement shall ordinarily be measured net of approved returns, cancellations, credit notes and unauthorised discounts.
-- Collection shall ordinarily be counted only on actual realisation in the Company bank account or authorised ledger.
-- Fake orders, fake parties, fake visits, GPS spoofing, manipulated CRM, artificial billing, unauthorised credit or stock dumping shall not count toward target achievement and may constitute misconduct.
-- Material Company-side constraints such as non-availability of stock, Company-directed dispatch hold, territory change, product withdrawal or regulatory restriction shall be reasonably reviewed before final score calculation.
-- An Overall Performance Score of 80% or above qualifies for 100% Total Monthly Earning Opportunity under Annexure A, subject to all eligibility conditions.
-- Achievement of 80% for monthly salary payout does not by itself equal achievement of the full 100% business target for increment, promotion, annual appraisal or other performance benefits unless expressly stated in writing.
+• No target shall be applied retrospectively. The applicable target, review period, weightage and measurement basis must
+be communicated before or at the beginning of the review period.
+
+• Sales/business achievement shall ordinarily be measured net of approved returns, cancellations, credit notes and
+unauthorised discounts.
+
+• Collection shall ordinarily be counted only on actual realisation in the Company bank account or authorised ledger.
+
+• Fake orders, fake parties, fake visits, GPS spoofing, manipulated CRM, artificial billing, unauthorised credit or stock
+dumping shall not count toward target achievement and may constitute misconduct.
+
+• Material Company-side constraints such as non-availability of stock, Company-directed dispatch hold, territory change,
+product withdrawal or regulatory restriction shall be reasonably reviewed before final score calculation.
+
+• An Overall Performance Score of 80% or above qualifies for 100% Total Monthly Earning Opportunity under Annexure A,
+subject to all eligibility conditions. Additional incentive above 80% is governed by Annexure A.
+
+• Achievement of 80% for monthly salary payout does not by itself equal achievement of the full 100% business target for
+increment, promotion, annual appraisal or other performance benefits unless expressly stated in writing.
+
+[[PAGE]]
 
 ### ACKNOWLEDGEMENT
 
-I acknowledge that the above targets/KPIs and measurement rules have been explained to me and that my Performance-Linked Variable Pay and probationary suitability may be evaluated in accordance with this Annexure, the Salary Annexure and the Employment Agreement.
+I acknowledge that the above targets/KPIs and measurement rules have been explained to me and that my
+Performance-Linked Variable Pay and probationary suitability may be evaluated in accordance with this Annexure,
+the Salary Annexure and the Employment Agreement.
 
 TABLE:annexureBSignatures
 `;
@@ -662,13 +906,34 @@ TABLE:employeeDetailsC
 
 TABLE:policyAcknowledgementTable
 
-Schedules C-1 to C-6 appearing after this Annexure form an integral part of this Policy Acknowledgement and are covered by the consolidated execution / Aadhaar eSign provisions below.
+Schedules C-1 to C-6 appearing immediately after this Annexure form an integral part of this Policy Acknowledgement and are
+covered by the consolidated execution / Aadhaar eSign provisions below.
+
+[[PAGE]]
 
 ### EMPLOYEE DECLARATION
 
-I confirm that I have received, read, understood and/or had explained to me the documents, policies and terms listed above. I acknowledge them and agree to comply with them as lawfully applicable and communicated, subject always to Applicable Law.
+I confirm that I have received, read, understood and/or had explained to me the documents, policies and terms listed
+above. I acknowledge them and agree to comply with them as lawfully applicable and communicated, subject always
+to Applicable Law. Mandatory statutory rights shall prevail over any inconsistent policy or contractual term.
 
-By affixing my handwritten signature or legally valid electronic signature / Aadhaar-based eSign to this Annexure, I confirm my acknowledgement of ALL items listed in this Annexure.
+By affixing my handwritten signature or legally valid electronic signature / Aadhaar-based eSign to this Annexure, I
+confirm my acknowledgement of ALL items listed in this Annexure and agree that such signature / eSign applies to
+this Annexure in its entirety. Separate handwritten initials against each policy item are not required where this
+Annexure is executed through a legally valid electronic-signature process.
+
+Where this Annexure forms part of a single consolidated employment document containing the JOB JOINING
+LETTER, PROBATIONARY EMPLOYMENT AGREEMENT, ANNEXURE A - SALARY & COMPENSATION,
+ANNEXURE B - KPI / TARGET & PERFORMANCE SCHEDULE and this ANNEXURE C - COMPANY POLICY
+ACKNOWLEDGEMENT, the Employee agrees that a legally valid electronic signature / Aadhaar-based eSign affixed
+to the final consolidated electronic file is intended to execute and acknowledge the consolidated document in its
+entirety, provided the signed file and electronic audit trail identify the document and the file is not altered after
+execution.
+
+For electronic execution, the eSign provider / authorised electronic-signature process may maintain the transaction
+ID, consent record, authentication details, time stamp and audit trail. Aadhaar e-KYC / OTP authentication by itself,
+without affixing a legally valid electronic signature through the authorised eSign process, shall not by itself constitute
+execution of this Annexure.
 
 TABLE:annexureCSignatures
 
@@ -678,37 +943,94 @@ TABLE:annexureCSignatures
 
 TABLE:scheduleIndex
 
-Statutory Override: Every Schedule is subject to Applicable Law. Where a mandatory Central or State law provides a different or more beneficial employee entitlement or imposes a mandatory procedure, that provision shall prevail to the extent of inconsistency.
+Statutory Override: Every Schedule is subject to Applicable Law. Where a mandatory Central or State law provides a different or
+more beneficial employee entitlement or imposes a mandatory procedure, that provision shall prevail to the extent of
+inconsistency.
 
-### SCHEDULE C-1: WORKING HOURS, ATTENDANCE, LEAVE AND HOLIDAY POLICY
+Electronic Execution: Where this Master Employment & Joining Document is executed through a legally valid electronic signature /
+Aadhaar-based eSign, the consolidated signature is intended to cover these Schedules together with the other constituent
+documents, subject to the final signed file and audit trail.
+
+### SCHEDULE C-1: 
+
+##& WORKING HOURS, ATTENDANCE, LEAVE AND HOLIDAY POLICY
+
+This policy applies subject to statutory entitlements and any more beneficial written term.
 
 TABLE:scheduleC1
 
-- Leave must be applied through the prescribed system and approved by the authorized manager/HR.
-- Emergency leave must be intimated promptly by call/message/email and regularized on return.
-- Late arrival, early departure and missed attendance must be regularized with evidence; repeated non-compliance may attract counselling or discipline.
-- Field employees must start/end duty and record visits using the prescribed app/system during duty hours.
-- Overtime/compensatory off is available only where legally applicable and properly authorized.
+● Leave must be applied through the prescribed system and approved by the authorized
+manager/HR.
+
+● Emergency leave must be intimated promptly by call/message/email and regularized on
+return.
 
 [[PAGE]]
 
-### SCHEDULE C-2: CODE OF CONDUCT, ANTI-FRAUD, CASH, STOCK AND CUSTOMER DEALING POLICY
+● Absence immediately before or after a holiday may be examined under the applicable
+sandwich/attendance rule only if lawfully notified and not contrary to statutory leave rights.
+
+● Late arrival, early departure and missed attendance must be regularized with evidence;
+repeated non-compliance may attract counselling or discipline.
+
+● Field employees must start/end duty and record visits using the prescribed app/system
+during duty hours.
+
+● Overtime/compensatory off is available only where legally applicable and properly
+authorized.
+
+● Leave balances and policy may be administered on a calendar-year or employment-year basis
+as communicated by HR.
+
+
+### SCHEDULE C-2: 
+
+##& CODE OF CONDUCT, ANTI-FRAUD, CASH, STOCK AND CUSTOMER DEALING POLICY
 
 The Employee shall:
 
-- Maintain honesty, professional behaviour, respectful communication and accurate documentation.
-- Never collect unreceipted cash, issue unofficial commitments, alter invoices, create fake parties/orders/visits or manipulate schemes/returns.
-- Deposit collections through authorized channels and preserve receipt and bank/ERP proof.
-- Avoid personal financial dealings with dealers, distributors, farmers, vendors or subordinates that create conflict or pressure.
-- Not receive kickbacks, commissions, costly gifts or benefits connected with Company decisions.
-- Not sell, divert, exchange, pledge or retain Company stock, samples, promotional items or customer returns without authority.
-- Immediately report short delivery, damage, shortage, suspected counterfeit product, complaint or adverse event.
-- Cooperate with audits, reconciliation, investigations and lawful authorities.
-- Preserve records and never destroy, backdate, overwrite or conceal evidence.
+● Maintain honesty, professional behaviour, respectful communication and accurate
+documentation.
 
-Recovery Rule: Only direct and proven loss caused by fraud, wilful misconduct, criminal breach of trust, unauthorized retention or gross negligence may be pursued, after notice and lawful process.
+● Never collect unreceipted cash, issue unofficial commitments, alter invoices, create fake
+parties/orders/visits or manipulate schemes/returns.
 
-### SCHEDULE C-3: PREVENTION OF SEXUAL HARASSMENT AND RESPECTFUL WORKPLACE POLICY SUMMARY
+● Deposit collections through authorized channels and preserve receipt and bank/ERP proof.
+
+● Avoid personal financial dealings with dealers, distributors, farmers, vendors or
+subordinates that create conflict or pressure.
+
+● Not receive kickbacks, commissions, costly gifts or benefits connected with Company
+decisions.
+
+
+● Not sell, divert, exchange, pledge or retain Company stock, samples, promotional items or
+customer returns without authority.
+
+● Immediately report short delivery, damage, shortage, suspected counterfeit product,
+complaint or adverse event.
+
+● Use only approved claims and labels for seeds, pesticides, fertilizers and agricultural
+products.
+
+● Cooperate with audits, reconciliation, investigations and lawful authorities.
+
+● Preserve records and never destroy, backdate, overwrite or conceal evidence.
+
+______________________________________________________________________________________
+
+Recovery Rule: Only direct and proven loss caused by fraud, wilful misconduct, criminal
+breach of trust, unauthorized retention or gross negligence may be pursued, after notice and
+lawful process. Blank/security cheques are not a substitute for audit, evidence and due
+process.
+
+______________________________________________________________________________________
+
+[[PAGE]]
+
+### SCHEDULE C-3: 
+
+##& PREVENTION OF SEXUAL HARASSMENT AND RESPECTFUL WORKPLACE POLICY SUMMARY
 
 Jamidara Seeds Corporation prohibits sexual harassment and maintains a respectful workplace. This summary does not replace the statutory policy or procedure where a separate detailed policy is required.
 
@@ -721,48 +1043,96 @@ Prohibited conduct includes unwelcome physical contact or advances, demands or r
 
 TABLE:complaintChannels
 
+
+### SCHEDULE C-4:
+
+IT, CRM, MOBILE, GPS, GEOFENCE, DATA AND PRIVACY POLICY
+
+The Company may provide or authorize CRM, mobile applications, SIM cards, devices, email,
+cloud accounts and dashboards for business use. The following rules apply:
+
+● Use assigned credentials personally; never share passwords or OTPs and enable required
+security controls.
+
+● Record attendance, visits, orders, collection, expenses and market information accurately
+and on time.
+
+● Do not install fake-location, cloning, unauthorized remote-access, data-scraping or securitybypass tools on a work device.
+
+● Do not transfer Company data to personal email, messaging groups, cloud storage, pen
+drives or third-party applications without approval.
+
+● Permit work-related GPS/geofence and device telemetry during duty hours, tours and active
+assignments for attendance, safety, route/visit verification, customer service, fraud
+prevention and asset protection.
+
+● The Company should limit collection to legitimate purposes, role-based access and
+reasonable retention and should avoid unnecessary personal surveillance.
+
 [[PAGE]]
 
-### SCHEDULE C-4: IT, CRM, MOBILE, GPS, GEOFENCE, DATA AND PRIVACY POLICY
+● Report lost devices, suspected compromise, phishing, password exposure or data breach
+immediately.
 
-The Company may provide or authorize CRM, mobile applications, SIM cards, devices, email, cloud accounts and dashboards for business use. The following rules apply:
+● On transfer or exit, return devices and ensure Company data is preserved and removed from
+personal devices under supervision where applicable.
 
-- Use assigned credentials personally; never share passwords or OTPs and enable required security controls.
-- Record attendance, visits, orders, collection, expenses and market information accurately and on time.
-- Do not install fake-location, cloning, unauthorized remote-access, data-scraping or security-bypass tools on a work device.
-- Do not transfer Company data to personal email, messaging groups, cloud storage, pen drives or third-party applications without approval.
-- Permit work-related GPS/geofence and device telemetry during duty hours, tours and active assignments for attendance, safety, route/visit verification, customer service, fraud prevention and asset protection.
-- The Company should limit collection to legitimate purposes, role-based access and reasonable retention and should avoid unnecessary personal surveillance.
-- Report lost devices, suspected compromise, phishing, password exposure or data breach immediately.
-- On transfer or exit, return devices and ensure Company data is preserved and removed from personal devices under supervision where applicable.
-- Business communications and data on Company systems may be audited or monitored for legitimate compliance, security and operational purposes.
+● Business communications and data on Company systems may be audited or monitored for
+legitimate compliance, security and operational purposes.
 
-Employee Consent and Acknowledgement: I understand the work-related data practices described above and consent to lawful processing necessary for employment and business administration. Covered by the consolidated acknowledgement and signature under Annexure C.
+Employee Consent and Acknowledgement: I understand the work-related data practices
+described above and consent to lawful processing necessary for employment and business
+administration.
 
-### SCHEDULE C-5: TRAVEL, DAILY ALLOWANCE AND EXPENSE REIMBURSEMENT POLICY
+### Employee Acknowledgement: Covered by the consolidated acknowledgement and
+handwritten signature / legally valid electronic signature / Aadhaar-based eSign under
+Annexure C.
+
+### SCHEDULE C-5: 
+
+##& TRAVEL, DAILY ALLOWANCE AND EXPENSE REIMBURSEMENT POLICY
 
 TABLE:scheduleC5
 
-- Tour plan or travel must be approved except genuine emergency assignments.
-- Claims require accurate route, date, purpose, customer/visit details and genuine bills where applicable.
-- Mileage must reflect actual authorized travel; fake or inflated claims are misconduct.
-- Personal detours, traffic fines, alcohol, tobacco, entertainment and unapproved upgrades are not reimbursable.
-- Hotel reimbursement is limited to actual reasonable expense or the approved cap, whichever is lower, unless exceptional approval is recorded.
-- The Company may verify claims through CRM, GPS, bills, customer confirmation and other lawful records.
-- Tax invoice requirements, if any, must be followed.
+
+● Tour plan or travel must be approved except genuine emergency assignments.
+
+● Claims require accurate route, date, purpose, customer/visit details and genuine bills where
+applicable.
+
+● Mileage must reflect actual authorized travel; fake or inflated claims are misconduct.
+
+● Personal detours, traffic fines, alcohol, tobacco, entertainment and unapproved upgrades are
+not reimbursable.
+
+● Hotel reimbursement is limited to actual reasonable expense or the approved cap, whichever
+is lower, unless exceptional approval is recorded.
+
+● The Company may verify claims through CRM, GPS, bills, customer confirmation and other
+lawful records.
+
+● Tax invoice requirements, if any, must be followed.
 
 [[PAGE]]
 
-### SCHEDULE C-6: DISCIPLINARY PROCEDURE, EXIT CLEARANCE, NOC, HANDOVER AND PROPERTY RETURN
+### SCHEDULE C-6: 
+
+##& DISCIPLINARY PROCEDURE, EXIT CLEARANCE, NOC, HANDOVER AND PROPERTY RETURN
 
 A. Indicative disciplinary process
 
-- Preliminary review of the complaint, record or discrepancy.
-- Written show-cause notice or charge communication where appropriate.
-- Reasonable time and opportunity for the Employee to respond and submit evidence.
-- Inquiry/hearing where required by law, seriousness or disputed facts.
-- Reasoned decision and proportionate action, which may include counselling, warning, recovery, suspension, transfer, demotion or termination as lawfully permitted.
-- Right to use internal grievance or appeal channel, if provided.
+● Preliminary review of the complaint, record or discrepancy.
+
+● Written show-cause notice or charge communication where appropriate.
+
+● Reasonable time and opportunity for the Employee to respond and submit evidence.
+
+● Inquiry/hearing where required by law, seriousness or disputed facts.
+
+● Reasoned decision and proportionate action, which may include counselling, warning,
+recovery, suspension, transfer, demotion or termination as lawfully permitted.
+
+● Right to use internal grievance or appeal channel, if provided.
 
 B. Mandatory exit-clearance checklist
 
@@ -771,4 +1141,5 @@ TABLE:exitChecklist
 Settlement Rule: NOC and handover are mandatory obligations, but disputed and undisputed amounts should be separated. Proven lawful recoveries may be adjusted.
 
 END OF CONSOLIDATED EMPLOYMENT DOCUMENT
+
 `;

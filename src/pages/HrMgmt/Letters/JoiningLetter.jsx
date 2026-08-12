@@ -19,8 +19,24 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
+  Icon,
+  Badge,
+  Divider,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
+import {
+  FiUser,
+  FiFileText,
+  FiDollarSign,
+  FiTruck,
+  FiAward,
+  FiTarget,
+  FiShield,
+  FiMail,
+  FiPhone,
+  FiMapPin,
+  FiCalendar,
+} from "react-icons/fi";
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -266,12 +282,41 @@ const EmpJoiningLetter = () => {
     onChange: (e) => setFormData((prev) => ({ ...prev, [field]: e.target.value })),
   });
 
+  /* ================= SHARED UI TOKENS ================= */
+
+  const inputFocus = {
+    borderColor: "gray.300",
+    _hover: { borderColor: "blue.300" },
+    _focus: { borderColor: "blue.500", boxShadow: "0 0 0 1px #3182CE" },
+    bg: "white",
+  };
+
+  const sectionHeader = (icon, label, colorScheme = "blue") => (
+    <HStack flex="1" spacing={3}>
+      <Flex
+        align="center"
+        justify="center"
+        w="32px"
+        h="32px"
+        borderRadius="8px"
+        bg={`${colorScheme}.50`}
+        color={`${colorScheme}.500`}
+      >
+        <Icon as={icon} boxSize="16px" />
+      </Flex>
+      <Text fontWeight="600" fontSize={{ base: "13px", md: "15px" }} color="gray.700">
+        {label}
+      </Text>
+    </HStack>
+  );
+
   /* ================= LOADING ================= */
 
   if (loading || !employee) {
     return (
-      <Flex h="60vh" justify="center" align="center">
-        <Spinner size="lg" />
+      <Flex h="60vh" justify="center" align="center" direction="column" gap={3}>
+        <Spinner size="lg" thickness="3px" color="blue.500" />
+        <Text color="gray.500" fontSize="14px">Loading employee details…</Text>
       </Flex>
     );
   }
@@ -279,477 +324,556 @@ const EmpJoiningLetter = () => {
   /* ================= UI ================= */
 
   return (
-    <Box bg="white" p={6} borderRadius="12px">
-       <HStack justifyContent='space-between'>
-                            <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
-                              <BreadcrumbItem>
-                                <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
-                              </BreadcrumbItem>
-                               <BreadcrumbItem>
-                                <BreadcrumbLink as={Link} to="/hr-mgmt/view-employee-list"   fontSize='13px'>Employee List</BreadcrumbLink>
-                              </BreadcrumbItem>
-                  
-                              <BreadcrumbItem>
-                                <BreadcrumbLink isCurrentPage fontSize='13px'>Create Joining letter</BreadcrumbLink>
-                              </BreadcrumbItem>
-                  
-                            </Breadcrumb>
-                         
-                  
-                          </HStack>
+    <Box >
 
-      <Heading size="md" mb={4}>
-        Generate Joining Letter &amp; Employment Agreement
-      </Heading>
+      <Box bg="white" p={{ base: 4, md: 6 }} borderRadius="14px" boxShadow="sm" border="1px solid" borderColor="gray.100">
 
-      {/* ================= EMPLOYEE INFO ================= */}
+        <HStack justifyContent='space-between'>
+          <Breadcrumb color="#8B8D97" padding='10px 0px 1rem 0px' >
+            <BreadcrumbItem>
+              <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
+            </BreadcrumbItem>
+             <BreadcrumbItem>
+              <BreadcrumbLink as={Link} to="/hr-mgmt/view-employee-list"   fontSize='13px'>Employee List</BreadcrumbLink>
+            </BreadcrumbItem>
 
-      <Box
-        p={5}
-        bg="gray.50"
-        borderRadius="lg"
-        border="1px solid"
-        borderColor="gray.300"
-        mb={8}
-      >
+            <BreadcrumbItem>
+              <BreadcrumbLink isCurrentPage fontSize='13px'>Create Joining letter</BreadcrumbLink>
+            </BreadcrumbItem>
 
-        <Heading size="sm" mb={4} color="gray.600">
-          Employee Information
-        </Heading>
+          </Breadcrumb>
 
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+        </HStack>
 
-  <Text fontSize={{base:"13px",md:"16px"}}><b>Name:</b> {employee?.name}</Text>
-  <Text fontSize={{base:"13px",md:"16px"}}><b>Email:</b> {employee?.email}</Text>
-  <Text fontSize={{base:"13px",md:"16px"}}><b>Contact:</b> {employee?.contact_no}</Text>
+        <Box mb={6}>
+          <Heading size="md" color="gray.800">
+            Generate Joining Letter &amp; Employment Agreement
+          </Heading>
+          <Text fontSize="13px" color="gray.500" mt={1}>
+            Fill in the appointment, salary and policy details to generate the letter.
+          </Text>
+        </Box>
 
-  <Text fontSize={{base:"13px",md:"16px"}}><b>Department:</b> {employee?.department_name}</Text>
-  <Text fontSize={{base:"13px",md:"16px"}} ><b>Role:</b> {employee?.job_role_name}</Text>
+        {/* ================= EMPLOYEE INFO ================= */}
 
-  <Text fontSize={{base:"13px",md:"16px"}}>
-    <b>DOJ:</b>{" "}
-    {employee?.date_of_joining
-      ? new Date(employee.date_of_joining).toLocaleDateString()
-      : ""}
-  </Text>
+        <Box
+          p={5}
+          bgGradient="linear(to-r, blue.50, white)"
+          borderRadius="12px"
+          border="1px solid"
+          borderColor="blue.100"
+          mb={8}
+        >
 
-  <Text fontSize={{base:"13px",md:"16px"}} gridColumn={{ md: "span 2", lg: "span 3" }}>
-    <b>Address:</b> {employee?.address_line1}
-  </Text>
+          <HStack mb={4} spacing={2}>
+            <Icon as={FiUser} color="blue.500" boxSize="18px" />
+            <Heading size="sm" color="gray.700">
+              Employee Information
+            </Heading>
+          </HStack>
 
-</SimpleGrid>  
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacingX={6} spacingY={3}>
 
-      </Box>
+            <HStack fontSize={{base:"13px",md:"15px"}} color="gray.700" spacing={2}>
+              <Icon as={FiUser} color="gray.400" boxSize="14px" />
+              <Text><b>Name:</b> {employee?.name}</Text>
+            </HStack>
 
-      {/* ================= JOINING LETTER FORM ================= */}
+            <HStack fontSize={{base:"13px",md:"15px"}} color="gray.700" spacing={2}>
+              <Icon as={FiMail} color="gray.400" boxSize="14px" />
+              <Text><b>Email:</b> {employee?.email}</Text>
+            </HStack>
 
-      <VStack spacing={6} align="stretch">
+            <HStack fontSize={{base:"13px",md:"15px"}} color="gray.700" spacing={2}>
+              <Icon as={FiPhone} color="gray.400" boxSize="14px" />
+              <Text><b>Contact:</b> {employee?.contact_no}</Text>
+            </HStack>
 
-        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+            <HStack fontSize={{base:"13px",md:"15px"}} color="gray.700" spacing={2}>
+              <Icon as={FiFileText} color="gray.400" boxSize="14px" />
+              <Text><b>Department:</b> {employee?.department_name}</Text>
+            </HStack>
 
-          <FormControl>
-            <FormLabel>Working Area</FormLabel>
-            <Input
-              value={formData.working_area}
-              onChange={(e) =>
-                setFormData({ ...formData, working_area: e.target.value })
+            <HStack fontSize={{base:"13px",md:"15px"}} color="gray.700" spacing={2}>
+              <Icon as={FiAward} color="gray.400" boxSize="14px" />
+              <Text><b>Role:</b> {employee?.job_role_name}</Text>
+            </HStack>
+
+            <HStack fontSize={{base:"13px",md:"15px"}} color="gray.700" spacing={2}>
+              <Icon as={FiCalendar} color="gray.400" boxSize="14px" />
+              <Text>
+                <b>DOJ:</b>{" "}
+                {employee?.date_of_joining
+                  ? new Date(employee.date_of_joining).toLocaleDateString()
+                  : ""}
+              </Text>
+            </HStack>
+
+            <HStack fontSize={{base:"13px",md:"15px"}} color="gray.700" spacing={2} gridColumn={{ md: "span 2", lg: "span 3" }}>
+              <Icon as={FiMapPin} color="gray.400" boxSize="14px" />
+              <Text><b>Address:</b> {employee?.address_line1}</Text>
+            </HStack>
+
+          </SimpleGrid>  
+
+        </Box>
+
+        {/* ================= JOINING LETTER FORM ================= */}
+
+        <Box mb={2}>
+          {sectionHeader(FiFileText, "Joining Letter Details", "blue")}
+        </Box>
+        <Divider mb={5} />
+
+        <VStack spacing={6} align="stretch">
+
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={5}>
+
+            <FormControl>
+              <FormLabel fontSize="13px" color="gray.600">Working Area</FormLabel>
+              <Input
+                {...inputFocus}
+                value={formData.working_area}
+                onChange={(e) =>
+                  setFormData({ ...formData, working_area: e.target.value })
+                }
+              />
+            </FormControl>
+
+            {/* ================= APPOINTER SELECT ================= */}
+
+            <FormControl>
+              <FormLabel fontSize="13px" color="gray.600">Select Appointer</FormLabel>
+
+              <Select
+                {...inputFocus}
+                placeholder="Select Appointer"
+                value={formData.appoint_under || ""}
+                onChange={(e) => {
+
+                  const selectedId = e.target.value;
+
+                  const selectedEmp = empList.find(
+                    (emp) => String(emp.id) === selectedId
+                  );
+
+                  setFormData((prev) => ({
+                    ...prev,
+                    appoint_under: selectedId,
+                    appoint_under_name: selectedEmp?.name || ""
+                  }));
+
+                  fetchEmployeeDetails(selectedId);
+
+                }}
+              >
+
+                {empList?.map((emp) => (
+                  <option key={emp.id} value={String(emp.id)}>
+                    {emp.name}
+                  </option>
+                ))}
+
+              </Select>
+
+            </FormControl>
+
+            <FormControl>
+              <FormLabel fontSize="13px" color="gray.600">Department</FormLabel>
+              <Input {...inputFocus} value={formData.department_name}  onChange={(e) =>
+                  setFormData({ ...formData, department_name: e.target.value })
+                } />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel fontSize="13px" color="gray.600">Job Role</FormLabel>
+              <Input {...inputFocus} value={formData.job_role_name}  onChange={(e) =>
+                  setFormData({ ...formData, job_role_name: e.target.value })
+                } />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel fontSize="13px" color="gray.600">State of Posting</FormLabel>
+              <Input
+                {...inputFocus}
+                value={formData.appointer_state}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    appointer_state: e.target.value
+                  })
+                }
+              />
+            </FormControl>
+
+            <CustomDatePicker
+              label="Date of Issue"
+              value={formData.date_of_issue}
+              onChange={(date) =>
+                setFormData({ ...formData, date_of_issue: date })
               }
             />
-          </FormControl>
 
-          {/* ================= APPOINTER SELECT ================= */}
+            {/* ================= SALARY ================= */}
 
-          <FormControl>
-            <FormLabel>Select Appointer</FormLabel>
+            <FormControl>
+              <FormLabel fontSize="13px" color="gray.600">Monthly Gross Salary</FormLabel>
+              <Input
+                {...inputFocus}
+                value={formData.salary}
+                 onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                     salary: e.target.value
+                  })
+                }
+              />
+            
+            </FormControl>
 
-            <Select
-              placeholder="Select Appointer"
-              value={formData.appoint_under || ""}
-              onChange={(e) => {
+            <FormControl>
+              <FormLabel fontSize="13px" color="gray.600">Basic (50%)</FormLabel>
+              <Input
+                {...inputFocus}
+                type="number"
+                value={formData.basic}
+                onChange={(e) =>
+                  setFormData({ ...formData, basic: e.target.value })
+                }
+              />
+            </FormControl>
 
-                const selectedId = e.target.value;
+            <FormControl>
+              <FormLabel fontSize="13px" color="gray.600">House Rent (20%)</FormLabel>
+              <Input
+                {...inputFocus}
+                type="number"
+                value={formData.house_rent}
+                onChange={(e) =>
+                  setFormData({ ...formData, house_rent: e.target.value })
+                }
+              />
+            </FormControl>
 
-                const selectedEmp = empList.find(
-                  (emp) => String(emp.id) === selectedId
-                );
+            <FormControl>
+              <FormLabel fontSize="13px" color="gray.600">Medical (10%)</FormLabel>
+              <Input
+                {...inputFocus}
+                type="number"
+                value={formData.medical}
+                onChange={(e) =>
+                  setFormData({ ...formData, medical: e.target.value })
+                }
+              />
+            </FormControl>
 
-                setFormData((prev) => ({
-                  ...prev,
-                  appoint_under: selectedId,
-                  appoint_under_name: selectedEmp?.name || ""
-                }));
+            <FormControl>
+              <FormLabel fontSize="13px" color="gray.600">Dearness Allowance</FormLabel>
+              <Input
+                {...inputFocus}
+                type="number"
+                value={formData.dearness_allowance}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    dearness_allowance: e.target.value
+                  })
+                }
+              />
+            </FormControl>
 
-                fetchEmployeeDetails(selectedId);
+            <FormControl>
+              <FormLabel fontSize="13px" color="gray.600">Other Allowance</FormLabel>
+              <Input
+                {...inputFocus}
+                type="number"
+                value={formData.other_allowance}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    other_allowance: e.target.value
+                  })
+                }
+              />
+            </FormControl>
 
-              }}
-            >
+            {/* ================= PETROL (also used as Bike Reimbursement in TA/DA) ================= */}
 
-              {empList?.map((emp) => (
-                <option key={emp.id} value={String(emp.id)}>
-                  {emp.name}
-                </option>
-              ))}
+            <FormControl>
+              <FormLabel fontSize="13px" color="gray.600">Petrol / Bike Reimbursement Per KM</FormLabel>
+              <Input
+                {...inputFocus}
+                type="number"
+                value={formData.petrol_per_km}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    petrol_per_km: e.target.value
+                  })
+                }
+              />
+            </FormControl>
 
-            </Select>
+            <FormControl>
+              <FormLabel fontSize="13px" color="gray.600">Max KM</FormLabel>
+              <Input
+                {...inputFocus}
+                type="number"
+                value={formData.max_km}
+                onChange={(e) =>
+                  setFormData({ ...formData, max_km: e.target.value })
+                }
+              />
+            </FormControl>
 
-          </FormControl>
+            <FormControl>
+              <FormLabel fontSize="13px" color="gray.600">Min KM</FormLabel>
+              <Input
+                {...inputFocus}
+                type="number"
+                value={formData.min_km}
+                onChange={(e) =>
+                  setFormData({ ...formData, min_km: e.target.value })
+                }
+              />
+            </FormControl>
 
-          <FormControl>
-            <FormLabel>Department</FormLabel>
-            <Input value={formData.department_name}  onChange={(e) =>
-                setFormData({ ...formData, department_name: e.target.value })
-              } />
-          </FormControl>
+            {/* ================= STAMP ================= */}
 
-          <FormControl>
-            <FormLabel>Job Role</FormLabel>
-            <Input value={formData.job_role_name}  onChange={(e) =>
-                setFormData({ ...formData, job_role_name: e.target.value })
-              } />
-          </FormControl>
+            <FormControl>
 
-          <FormControl>
-            <FormLabel>State of Posting</FormLabel>
-            <Input
-              value={formData.appointer_state}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  appointer_state: e.target.value
-                })
-              }
-            />
-          </FormControl>
+              <Box
+                border="1px dashed"
+                borderColor={formData.show_stamp ? "blue.300" : "gray.300"}
+                bg={formData.show_stamp ? "blue.50" : "gray.50"}
+                borderRadius="10px"
+                p={3}
+                transition="all 0.15s ease"
+              >
+                <Checkbox
+                  isChecked={formData.show_stamp}
+                  colorScheme="blue"
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      show_stamp: e.target.checked
+                    })
+                  }
+                >
+                  <Text fontSize="14px" fontWeight="500">Show Company Stamp</Text>
+                </Checkbox>
+                <Image src={jsc_stamp} width="97px" mt={2} opacity={formData.show_stamp ? 1 : 0.4} transition="opacity 0.15s ease" />
+              </Box>
 
-          <CustomDatePicker
-            label="Date of Issue"
-            value={formData.date_of_issue}
-            onChange={(date) =>
-              setFormData({ ...formData, date_of_issue: date })
-            }
-          />
+            </FormControl>
 
-          {/* ================= SALARY ================= */}
+          </SimpleGrid>
 
-          <FormControl>
-            <FormLabel>Monthly Gross Salary</FormLabel>
-            <Input
-              value={formData.salary}
-               onChange={(e) =>
-                setFormData({
-                  ...formData,
-                   salary: e.target.value
-                })
-              }
-            />
-          
-          </FormControl>
+        </VStack>
 
-          <FormControl>
-            <FormLabel>Basic (50%)</FormLabel>
-            <Input
-              type="number"
-              value={formData.basic}
-              onChange={(e) =>
-                setFormData({ ...formData, basic: e.target.value })
-              }
-            />
-          </FormControl>
+        {/* ================= EMPLOYMENT AGREEMENT & ANNEXURES ================= */}
 
-          <FormControl>
-            <FormLabel>House Rent (20%)</FormLabel>
-            <Input
-              type="number"
-              value={formData.house_rent}
-              onChange={(e) =>
-                setFormData({ ...formData, house_rent: e.target.value })
-              }
-            />
-          </FormControl>
+        <Box mt={10} mb={2}>
+          <HStack spacing={3} mb={1}>
+            <Heading size="md" color="gray.800">
+              Employment Agreement &amp; Annexure Details
+            </Heading>
+            <Badge colorScheme="blue" borderRadius="full" px={2} fontSize="10px">6 sections</Badge>
+          </HStack>
+          <Text fontSize="13px" color="gray.500">
+            Expand each section below to fill in agreement and annexure specific details.
+          </Text>
+        </Box>
 
-          <FormControl>
-            <FormLabel>Medical (10%)</FormLabel>
-            <Input
-              type="number"
-              value={formData.medical}
-              onChange={(e) =>
-                setFormData({ ...formData, medical: e.target.value })
-              }
-            />
-          </FormControl>
+        <Accordion allowMultiple defaultIndex={[0]} mt={4}>
 
-          <FormControl>
-            <FormLabel>Dearness Allowance</FormLabel>
-            <Input
-              type="number"
-              value={formData.dearness_allowance}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  dearness_allowance: e.target.value
-                })
-              }
-            />
-          </FormControl>
+          {/* ---- Appointment particulars ---- */}
+          <AccordionItem border="1px solid" borderColor="gray.200" borderRadius="10px" mb={3} overflow="hidden">
+            <AccordionButton _hover={{ bg: "gray.50" }} py={4} px={4}>
+              {sectionHeader(FiFileText, "Appointment Particulars", "blue")}
+              <AccordionIcon />
+            </AccordionButton>
+            <AccordionPanel bg="gray.50" pt={5} pb={6} px={5}>
+              <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Ref. No.</FormLabel><Input {...inputFocus} {...bind("ref_no")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Employee ID</FormLabel><Input {...inputFocus} {...bind("employee_id")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Father / Mother / Spouse Name</FormLabel><Input {...inputFocus} {...bind("father_spouse_name")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Aadhaar (last 4 digits) / ID Reference</FormLabel><Input {...inputFocus} {...bind("aadhaar_last4")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Employment Start Time</FormLabel><Input {...inputFocus} placeholder="e.g. 9:30 AM" {...bind("employment_start_time")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Reporting Manager Name</FormLabel><Input {...inputFocus} {...bind("reporting_manager_name")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Reporting Manager Designation</FormLabel><Input {...inputFocus} {...bind("reporting_manager_designation")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Territory / Area</FormLabel><Input {...inputFocus} {...bind("territory_area")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Place of Posting</FormLabel><Input {...inputFocus} {...bind("place_of_posting")} /></FormControl>
+                <FormControl>
+                  <FormLabel fontSize="13px" color="gray.600">Applicable Confirmed Notice Period (days)</FormLabel>
+                  <Select {...inputFocus} {...bind("notice_period_confirmed_days")}>
+                    <option value="">Select</option>
+                    <option value="30">30 (FA / SO / TSM & equivalent)</option>
+                    <option value="60">60 (ASM / RSM / ZSM & equivalent)</option>
+                    <option value="90">90 (Critical / key role)</option>
+                  </Select>
+                </FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">HR / Employer Official Email</FormLabel><Input {...inputFocus} type="email" {...bind("hr_email")} /></FormControl>
+              </SimpleGrid>
+            </AccordionPanel>
+          </AccordionItem>
 
-          <FormControl>
-            <FormLabel>Other Allowance</FormLabel>
-            <Input
-              type="number"
-              value={formData.other_allowance}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  other_allowance: e.target.value
-                })
-              }
-            />
-          </FormControl>
+          {/* ---- Salary / notice pay / revision ---- */}
+          <AccordionItem border="1px solid" borderColor="gray.200" borderRadius="10px" mb={3} overflow="hidden">
+            <AccordionButton _hover={{ bg: "gray.50" }} py={4} px={4}>
+              {sectionHeader(FiDollarSign, "Salary, Notice Pay & Revision (Annexure A)", "green")}
+              <AccordionIcon />
+            </AccordionButton>
+            <AccordionPanel bg="gray.50" pt={5} pb={6} px={5}>
+              <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+                <FormControl>
+                  <FormLabel fontSize="13px" color="gray.600">Performance-Linked Variable Pay - Up To (₹ / month)</FormLabel>
+                  <Input {...inputFocus} type="number" {...bind("variable_pay_upto")} />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontSize="13px" color="gray.600">Total Monthly Earning Opportunity (₹)</FormLabel>
+                  <Input {...inputFocus} type="number" {...bind("total_monthly_earning")} />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontSize="13px" color="gray.600">Total Annual Earning Opportunity (₹)</FormLabel>
+                  <Input {...inputFocus} type="number" {...bind("total_annual_earning")} />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontSize="13px" color="gray.600">Notice Pay Base (₹ / month)</FormLabel>
+                  <Input {...inputFocus} type="number" placeholder="Defaults to Basic Pay" {...bind("notice_pay_base_amount")} />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontSize="13px" color="gray.600">Salary Revision Eligible After (months)</FormLabel>
+                  <Input {...inputFocus} type="number" {...bind("salary_revision_after_months")} />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontSize="13px" color="gray.600">Salary Revision Up To (%)</FormLabel>
+                  <Input {...inputFocus} type="number" {...bind("salary_revision_percent")} />
+                </FormControl>
+              </SimpleGrid>
+            </AccordionPanel>
+          </AccordionItem>
 
-          {/* ================= PETROL (also used as Bike Reimbursement in TA/DA) ================= */}
+          {/* ---- TA/DA & expenses ---- */}
+          <AccordionItem border="1px solid" borderColor="gray.200" borderRadius="10px" mb={3} overflow="hidden">
+            <AccordionButton _hover={{ bg: "gray.50" }} py={4} px={4}>
+              {sectionHeader(FiTruck, "TA / DA & Expense Policy (Annexure A + Schedule C-5)", "orange")}
+              <AccordionIcon />
+            </AccordionButton>
+            <AccordionPanel bg="gray.50" pt={5} pb={6} px={5}>
+              <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+                <FormControl>
+                  <FormLabel fontSize="13px" color="gray.600">Approved Mode of Travel</FormLabel>
+                  <Select {...inputFocus} {...bind("approved_mode_of_travel")}>
+                    <option value="">Select</option>
+                    <option value="BIKE">Bike</option>
+                    <option value="CAR">Car</option>
+                    <option value="PUBLIC TRANSPORT">Public Transport</option>
+                    <option value="OTHER">Other</option>
+                  </Select>
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontSize="13px" color="gray.600">Car Reimbursement (₹ / KM)</FormLabel>
+                  <Input {...inputFocus} type="number" {...bind("car_rate_per_km")} />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontSize="13px" color="gray.600">Hotel / Lodging Limit (₹ / night)</FormLabel>
+                  <Input {...inputFocus} type="number" {...bind("hotel_limit_per_night")} />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontSize="13px" color="gray.600">Daily Allowance (₹ / eligible day)</FormLabel>
+                  <Input {...inputFocus} type="number" {...bind("ta_daily_allowance")} />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontSize="13px" color="gray.600">Expense Submission Deadline (days)</FormLabel>
+                  <Input {...inputFocus} type="number" {...bind("expense_submission_days")} />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontSize="13px" color="gray.600">Expense Approval Authority</FormLabel>
+                  <Input {...inputFocus} {...bind("expense_approval_authority")} />
+                </FormControl>
+              </SimpleGrid>
+            </AccordionPanel>
+          </AccordionItem>
 
-          <FormControl>
-            <FormLabel>Petrol / Bike Reimbursement Per KM</FormLabel>
-            <Input
-              type="number"
-              value={formData.petrol_per_km}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  petrol_per_km: e.target.value
-                })
-              }
-            />
-          </FormControl>
+          {/* ---- Performance incentive matrix ---- */}
+          <AccordionItem border="1px solid" borderColor="gray.200" borderRadius="10px" mb={3} overflow="hidden">
+            <AccordionButton _hover={{ bg: "gray.50" }} py={4} px={4}>
+              {sectionHeader(FiAward, "Performance-Linked Incentive Matrix (Annexure A)", "purple")}
+              <AccordionIcon />
+            </AccordionButton>
+            <AccordionPanel bg="gray.50" pt={5} pb={6} px={5}>
+              <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4}>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Level 1 (80–89.99%) %</FormLabel><Input {...inputFocus} type="number" {...bind("incentive_level1_percent")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Level 1 Amount (₹)</FormLabel><Input {...inputFocus} type="number" {...bind("incentive_level1_amount")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Level 2 (90–99.99%) %</FormLabel><Input {...inputFocus} type="number" {...bind("incentive_level2_percent")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Level 2 Amount (₹)</FormLabel><Input {...inputFocus} type="number" {...bind("incentive_level2_amount")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Level 3 (100–109.99%) %</FormLabel><Input {...inputFocus} type="number" {...bind("incentive_level3_percent")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Level 3 Amount (₹)</FormLabel><Input {...inputFocus} type="number" {...bind("incentive_level3_amount")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Accelerator (110–119.99%) %</FormLabel><Input {...inputFocus} type="number" {...bind("incentive_accelerator_percent")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Accelerator Amount (₹)</FormLabel><Input {...inputFocus} type="number" {...bind("incentive_accelerator_amount")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Super Accelerator (120%+) %</FormLabel><Input {...inputFocus} type="number" {...bind("incentive_super_accelerator_percent")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Super Accelerator Amount (₹)</FormLabel><Input {...inputFocus} type="number" {...bind("incentive_super_accelerator_amount")} /></FormControl>
+              </SimpleGrid>
+            </AccordionPanel>
+          </AccordionItem>
 
-          <FormControl>
-            <FormLabel>Max KM</FormLabel>
-            <Input
-              type="number"
-              value={formData.max_km}
-              onChange={(e) =>
-                setFormData({ ...formData, max_km: e.target.value })
-              }
-            />
-          </FormControl>
+          {/* ---- KPI / Target (Annexure B) ---- */}
+          <AccordionItem border="1px solid" borderColor="gray.200" borderRadius="10px" mb={3} overflow="hidden">
+            <AccordionButton _hover={{ bg: "gray.50" }} py={4} px={4}>
+              {sectionHeader(FiTarget, "KPI / Target Commitment (Annexure B)", "teal")}
+              <AccordionIcon />
+            </AccordionButton>
+            <AccordionPanel bg="gray.50" pt={5} pb={6} px={5}>
+              <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Review Month / Season</FormLabel><Input {...inputFocus} {...bind("review_month_season")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Annual / Seasonal Sales Commitment</FormLabel><Input {...inputFocus} {...bind("annual_sales_commitment")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Monthly Sales Target</FormLabel><Input {...inputFocus} {...bind("monthly_sales_target")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Collection / Realisation Target</FormLabel><Input {...inputFocus} {...bind("collection_target")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">New Active Dealer / Distributor Target</FormLabel><Input {...inputFocus} {...bind("new_dealer_target")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Product / ABS Booking Target</FormLabel><Input {...inputFocus} {...bind("product_booking_target")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Market / Field Visit Standard</FormLabel><Input {...inputFocus} {...bind("field_visit_standard")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Team Target (managerial roles)</FormLabel><Input {...inputFocus} {...bind("team_target")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Other Role KPI</FormLabel><Input {...inputFocus} {...bind("other_kpi_name")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Other KPI Measurement Source</FormLabel><Input {...inputFocus} {...bind("other_kpi_measurement")} /></FormControl>
+              </SimpleGrid>
+            </AccordionPanel>
+          </AccordionItem>
 
-          <FormControl>
-            <FormLabel>Min KM</FormLabel>
-            <Input
-              type="number"
-              value={formData.min_km}
-              onChange={(e) =>
-                setFormData({ ...formData, min_km: e.target.value })
-              }
-            />
-          </FormControl>
+          {/* ---- Policy contacts ---- */}
+          <AccordionItem border="1px solid" borderColor="gray.200" borderRadius="10px" mb={3} overflow="hidden">
+            <AccordionButton _hover={{ bg: "gray.50" }} py={4} px={4}>
+              {sectionHeader(FiShield, "Policy Contacts (Schedule C-3)", "red")}
+              <AccordionIcon />
+            </AccordionButton>
+            <AccordionPanel bg="gray.50" pt={5} pb={6} px={5}>
+              <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Internal Committee Chairperson</FormLabel><Input {...inputFocus} {...bind("ic_chairperson_name")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">IC Contact Email</FormLabel><Input {...inputFocus} type="email" {...bind("ic_contact_email")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">HR / Alternate Complaint Contact</FormLabel><Input {...inputFocus} {...bind("hr_alternate_contact")} /></FormControl>
+              </SimpleGrid>
+            </AccordionPanel>
+          </AccordionItem>
 
-          {/* ================= STAMP ================= */}
-
-          <FormControl>
-
-            <Checkbox
-              isChecked={formData.show_stamp}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  show_stamp: e.target.checked
-                })
-              }
-            >
-              <Text fontSize="14px">Show Company Stamp</Text>
-              <Image src={jsc_stamp} width="97px" />
-            </Checkbox>
-
-          </FormControl>
-
-        </SimpleGrid>
-
-      </VStack>
-
-      {/* ================= EMPLOYMENT AGREEMENT & ANNEXURES ================= */}
-
-      <Heading size="md" mt={10} mb={4}>
-        Employment Agreement &amp; Annexure Details
-      </Heading>
-
-      <Accordion allowMultiple defaultIndex={[0]}>
-
-        {/* ---- Appointment particulars ---- */}
-        <AccordionItem>
-          <AccordionButton>
-            <Box flex="1" textAlign="left" fontWeight="600">Appointment Particulars</Box>
-            <AccordionIcon />
-          </AccordionButton>
-          <AccordionPanel>
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-              <FormControl><FormLabel>Ref. No.</FormLabel><Input {...bind("ref_no")} /></FormControl>
-              <FormControl><FormLabel>Employee ID</FormLabel><Input {...bind("employee_id")} /></FormControl>
-              <FormControl><FormLabel>Father / Mother / Spouse Name</FormLabel><Input {...bind("father_spouse_name")} /></FormControl>
-              <FormControl><FormLabel>Aadhaar (last 4 digits) / ID Reference</FormLabel><Input {...bind("aadhaar_last4")} /></FormControl>
-              <FormControl><FormLabel>Employment Start Time</FormLabel><Input placeholder="e.g. 9:30 AM" {...bind("employment_start_time")} /></FormControl>
-              <FormControl><FormLabel>Reporting Manager Name</FormLabel><Input {...bind("reporting_manager_name")} /></FormControl>
-              <FormControl><FormLabel>Reporting Manager Designation</FormLabel><Input {...bind("reporting_manager_designation")} /></FormControl>
-              <FormControl><FormLabel>Territory / Area</FormLabel><Input {...bind("territory_area")} /></FormControl>
-              <FormControl><FormLabel>Place of Posting</FormLabel><Input {...bind("place_of_posting")} /></FormControl>
-              <FormControl>
-                <FormLabel>Applicable Confirmed Notice Period (days)</FormLabel>
-                <Select {...bind("notice_period_confirmed_days")}>
-                  <option value="">Select</option>
-                  <option value="30">30 (FA / SO / TSM & equivalent)</option>
-                  <option value="60">60 (ASM / RSM / ZSM & equivalent)</option>
-                  <option value="90">90 (Critical / key role)</option>
-                </Select>
-              </FormControl>
-              <FormControl><FormLabel>HR / Employer Official Email</FormLabel><Input type="email" {...bind("hr_email")} /></FormControl>
-            </SimpleGrid>
-          </AccordionPanel>
-        </AccordionItem>
-
-        {/* ---- Salary / notice pay / revision ---- */}
-        <AccordionItem>
-          <AccordionButton>
-            <Box flex="1" textAlign="left" fontWeight="600">Salary, Notice Pay &amp; Revision (Annexure A)</Box>
-            <AccordionIcon />
-          </AccordionButton>
-          <AccordionPanel>
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-              <FormControl>
-                <FormLabel>Performance-Linked Variable Pay - Up To (₹ / month)</FormLabel>
-                <Input type="number" {...bind("variable_pay_upto")} />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Total Monthly Earning Opportunity (₹)</FormLabel>
-                <Input type="number" {...bind("total_monthly_earning")} />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Total Annual Earning Opportunity (₹)</FormLabel>
-                <Input type="number" {...bind("total_annual_earning")} />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Notice Pay Base (₹ / month)</FormLabel>
-                <Input type="number" placeholder="Defaults to Basic Pay" {...bind("notice_pay_base_amount")} />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Salary Revision Eligible After (months)</FormLabel>
-                <Input type="number" {...bind("salary_revision_after_months")} />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Salary Revision Up To (%)</FormLabel>
-                <Input type="number" {...bind("salary_revision_percent")} />
-              </FormControl>
-            </SimpleGrid>
-          </AccordionPanel>
-        </AccordionItem>
-
-        {/* ---- TA/DA & expenses ---- */}
-        <AccordionItem>
-          <AccordionButton>
-            <Box flex="1" textAlign="left" fontWeight="600">TA / DA &amp; Expense Policy (Annexure A + Schedule C-5)</Box>
-            <AccordionIcon />
-          </AccordionButton>
-          <AccordionPanel>
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-              <FormControl>
-                <FormLabel>Approved Mode of Travel</FormLabel>
-                <Select {...bind("approved_mode_of_travel")}>
-                  <option value="">Select</option>
-                  <option value="BIKE">Bike</option>
-                  <option value="CAR">Car</option>
-                  <option value="PUBLIC TRANSPORT">Public Transport</option>
-                  <option value="OTHER">Other</option>
-                </Select>
-              </FormControl>
-              <FormControl>
-                <FormLabel>Car Reimbursement (₹ / KM)</FormLabel>
-                <Input type="number" {...bind("car_rate_per_km")} />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Hotel / Lodging Limit (₹ / night)</FormLabel>
-                <Input type="number" {...bind("hotel_limit_per_night")} />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Daily Allowance (₹ / eligible day)</FormLabel>
-                <Input type="number" {...bind("ta_daily_allowance")} />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Expense Submission Deadline (days)</FormLabel>
-                <Input type="number" {...bind("expense_submission_days")} />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Expense Approval Authority</FormLabel>
-                <Input {...bind("expense_approval_authority")} />
-              </FormControl>
-            </SimpleGrid>
-          </AccordionPanel>
-        </AccordionItem>
-
-        {/* ---- Performance incentive matrix ---- */}
-        <AccordionItem>
-          <AccordionButton>
-            <Box flex="1" textAlign="left" fontWeight="600">Performance-Linked Incentive Matrix (Annexure A)</Box>
-            <AccordionIcon />
-          </AccordionButton>
-          <AccordionPanel>
-            <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4}>
-              <FormControl><FormLabel>Level 1 (80–89.99%) %</FormLabel><Input type="number" {...bind("incentive_level1_percent")} /></FormControl>
-              <FormControl><FormLabel>Level 1 Amount (₹)</FormLabel><Input type="number" {...bind("incentive_level1_amount")} /></FormControl>
-              <FormControl><FormLabel>Level 2 (90–99.99%) %</FormLabel><Input type="number" {...bind("incentive_level2_percent")} /></FormControl>
-              <FormControl><FormLabel>Level 2 Amount (₹)</FormLabel><Input type="number" {...bind("incentive_level2_amount")} /></FormControl>
-              <FormControl><FormLabel>Level 3 (100–109.99%) %</FormLabel><Input type="number" {...bind("incentive_level3_percent")} /></FormControl>
-              <FormControl><FormLabel>Level 3 Amount (₹)</FormLabel><Input type="number" {...bind("incentive_level3_amount")} /></FormControl>
-              <FormControl><FormLabel>Accelerator (110–119.99%) %</FormLabel><Input type="number" {...bind("incentive_accelerator_percent")} /></FormControl>
-              <FormControl><FormLabel>Accelerator Amount (₹)</FormLabel><Input type="number" {...bind("incentive_accelerator_amount")} /></FormControl>
-              <FormControl><FormLabel>Super Accelerator (120%+) %</FormLabel><Input type="number" {...bind("incentive_super_accelerator_percent")} /></FormControl>
-              <FormControl><FormLabel>Super Accelerator Amount (₹)</FormLabel><Input type="number" {...bind("incentive_super_accelerator_amount")} /></FormControl>
-            </SimpleGrid>
-          </AccordionPanel>
-        </AccordionItem>
-
-        {/* ---- KPI / Target (Annexure B) ---- */}
-        <AccordionItem>
-          <AccordionButton>
-            <Box flex="1" textAlign="left" fontWeight="600">KPI / Target Commitment (Annexure B)</Box>
-            <AccordionIcon />
-          </AccordionButton>
-          <AccordionPanel>
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-              <FormControl><FormLabel>Review Month / Season</FormLabel><Input {...bind("review_month_season")} /></FormControl>
-              <FormControl><FormLabel>Annual / Seasonal Sales Commitment</FormLabel><Input {...bind("annual_sales_commitment")} /></FormControl>
-              <FormControl><FormLabel>Monthly Sales Target</FormLabel><Input {...bind("monthly_sales_target")} /></FormControl>
-              <FormControl><FormLabel>Collection / Realisation Target</FormLabel><Input {...bind("collection_target")} /></FormControl>
-              <FormControl><FormLabel>New Active Dealer / Distributor Target</FormLabel><Input {...bind("new_dealer_target")} /></FormControl>
-              <FormControl><FormLabel>Product / ABS Booking Target</FormLabel><Input {...bind("product_booking_target")} /></FormControl>
-              <FormControl><FormLabel>Market / Field Visit Standard</FormLabel><Input {...bind("field_visit_standard")} /></FormControl>
-              <FormControl><FormLabel>Team Target (managerial roles)</FormLabel><Input {...bind("team_target")} /></FormControl>
-              <FormControl><FormLabel>Other Role KPI</FormLabel><Input {...bind("other_kpi_name")} /></FormControl>
-              <FormControl><FormLabel>Other KPI Measurement Source</FormLabel><Input {...bind("other_kpi_measurement")} /></FormControl>
-            </SimpleGrid>
-          </AccordionPanel>
-        </AccordionItem>
-
-        {/* ---- Policy contacts ---- */}
-        <AccordionItem>
-          <AccordionButton>
-            <Box flex="1" textAlign="left" fontWeight="600">Policy Contacts (Schedule C-3)</Box>
-            <AccordionIcon />
-          </AccordionButton>
-          <AccordionPanel>
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-              <FormControl><FormLabel>Internal Committee Chairperson</FormLabel><Input {...bind("ic_chairperson_name")} /></FormControl>
-              <FormControl><FormLabel>IC Contact Email</FormLabel><Input type="email" {...bind("ic_contact_email")} /></FormControl>
-              <FormControl><FormLabel>HR / Alternate Complaint Contact</FormLabel><Input {...bind("hr_alternate_contact")} /></FormControl>
-            </SimpleGrid>
-          </AccordionPanel>
-        </AccordionItem>
-
-      </Accordion>
-
-      <VStack mt={6}>
-        <Button colorScheme="blue" onClick={onOpen}>
+        </Accordion>
+<HStack justifyContent="center">
+  <Button colorScheme="blue"
+          bg="#5570F1" fontSize="14px"
+          _hover={{ bg: "#4560E0" }}
+          size="lg" height="38px"
+          px={10}
+          borderRadius="10px" onClick={onOpen}
+          leftIcon={<FiFileText />} >
           Show Preview
         </Button>
-      </VStack>
+        </HStack>
+      </Box>
+
+      {/* ================= STICKY ACTION BAR ================= */}
+
+
+      
+     
 
       <EmpJoiningLetterPreview
         isOpen={isOpen}

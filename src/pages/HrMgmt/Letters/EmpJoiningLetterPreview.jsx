@@ -1,5 +1,5 @@
 import { Box, Button, HStack, Image, Modal, ModalBody, ModalContent, ModalOverlay, Text, VStack, Divider, Flex, CloseButton, useToast } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 import top_ele1 from "../../../assets/images/pdf_logo__1.png";
 import bottom_ele1 from "../../../assets/images/pdf_logo__2.png";
 import company_logo from "../../../assets/images/jsc_logo_.png";
@@ -31,10 +31,10 @@ const ParticularsTable = ({ rows }) => (
     {rows.map(([label, value], i) => (
       <Flex key={i} borderBottom={i === rows.length - 1 ? "none" : "1px solid black"}>
         <Box flex="1" p="4px 0px 4px 5px" borderRight="1px solid black" fontWeight="700" fontSize="12px" >
-        <Text>  {label} </Text>
+          <Text>  {label} </Text>
         </Box>
         <Box flex="1.3" p="4px 0px 4px 5px" fontSize="12px">
-         <Text> {g(value)}</Text>
+          <Text> {g(value)}</Text>
         </Box>
       </Flex>
     ))}
@@ -47,7 +47,23 @@ const SectionHeading = ({ children }) => (
   </Text>
 );
 
+const PageNumber = ({ children }) => (
+  <Text
+    position="absolute"
+    bottom="2rem"
+    left="0"
+    right="0"
+    textAlign="center"
+    fontSize="12px"
+    color="#a8b9d2"
+  >
+    {children}
+  </Text>
+);
+
 const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
+
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleClose = () => {
     onClose(true);
@@ -67,12 +83,12 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
   const totalMonthlyEarning = formData?.total_monthly_earning || monthlyGross;
   const totalAnnualEarning = formData?.total_annual_earning || annualGross;
 
-  const employmentStartingDateTime = `${formatDate(employee?.date_of_joining) || "__________"}${
-    formData?.employment_start_time ? `, ${formData.employment_start_time}` : ""
-  }`;
+  const employmentStartingDateTime = `${formatDate(employee?.date_of_joining) || "__________"}${formData?.employment_start_time ? `, ${formData.employment_start_time}` : ""
+    }`;
 
   const toast = useToast();
   const handleDownloadJoiningPDF = async () => {
+    setIsDownloading(true)
     try {
       const pages = document.querySelectorAll(".pdf-page");
       const pdf = new jsPDF("p", "mm", "a4");
@@ -129,7 +145,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
       formDataObj.append("email", employee?.email);
       formDataObj.append("phone", employee?.contact_no);
 
-      if (pdfBlob.size > 6 * 1024 * 1024) {
+      if (pdfBlob.size > 8 * 1024 * 1024) {
         toast({
           description: "PDF too large. Please reduce content.",
           status: "error",
@@ -169,6 +185,8 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
         isClosable: true,
         position: "top-right"
       });
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -182,7 +200,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
             <Box id="joining-letter-preview" fontFamily="serif" borderTop="1px" borderColor="gray.300">
 
               {/* ================= PAGE 1 : HEADER + APPOINTMENT PARTICULARS ================= */}
-              <Box className="pdf-page">
+              <Box className="pdf-page" position="relative">
                 <Image src={top_ele1} position="absolute" top="0" right="0" width="230px" />
                 <Image src={bottom_ele1} position="absolute" bottom="-5px" left="0" width="230px" />
 
@@ -221,7 +239,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     <Text><strong>Employee Name:</strong> {" "}{g(employee?.name)}</Text>
                     <Text><strong>Father/Mother/Spouse Name:</strong> {" "} {g(formData?.father_spouse_name)}</Text>
                     <Text>
-                    <strong>  Residential Address:</strong> {" "}{g(employee?.address_line1)}
+                      <strong>  Residential Address:</strong> {" "}{g(employee?.address_line1)}
                       {employee?.city ? `, ${employee.city}` : ""}
                       {employee?.state ? `, ${employee.state}` : ""}
                       {employee?.pincode ? `, ${employee.pincode}` : ""}
@@ -230,7 +248,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     <Text><strong>Email ID:</strong>{" "} {g(employee?.email)}</Text>
                   </VStack>
 
-                  <VStack align="flex-start"  fontSize="13px" spacing={0}>
+                  <VStack align="flex-start" fontSize="13px" spacing={0}>
                     <Text>Dear Mr./Ms. <strong>{g(employee?.name)}</strong>,</Text>
                     <Text textAlign="justify">
                       Further to the Provisional Offer Letter dated {g(formData?.date_of_issue)} and your joining with the Company, we
@@ -241,7 +259,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
                   <Text fontSize="16px" mt="4px" fontWeight="bold" color="#2b2b2c" textDecoration="underline" >Appointment Particulars</Text>
 
-                  <ParticularsTable 
+                  <ParticularsTable
                     rows={[
                       ["Employee ID", formData?.employee_id],
                       ["Employment Starting Date & Time", employmentStartingDateTime],
@@ -265,10 +283,11 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     ]}
                   />
                 </Box>
+                {/* <PageNumber>1</PageNumber> */}
               </Box>
 
               {/* ================= PAGE 2 : SALARY + PROBATION + DURING EMPLOYMENT ================= */}
-              <Box className="pdf-page page-break">
+              <Box className="pdf-page page-break" position="relative">
                 <Image src={top_ele1} position="absolute" top="0" right="0" width="230px" />
                 <Image src={bottom_ele1} position="absolute" bottom="-5px" left="0" width="230px" />
 
@@ -305,24 +324,25 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
                   <VStack align="flex-start" spacing={0.5} mt="8px" width="100%">
                     <SectionHeading>During Employment with Us</SectionHeading>
-                    <VStack  spacing={0} >
-                    {[
-                      "You shall devote your full working time and attention to authorised Company duties and shall comply with the Employment Agreement, lawful instructions, SOPs and acknowledged Company Policies.",
-                      "Your reporting line, headquarter, territory, place of posting, role or responsibilities may be reasonably changed for business requirements in accordance with the Employment Agreement and Applicable Law.",
-                      "You shall not undertake conflicting employment, consultancy, agency, distributorship, dealership or competing business activity without prior written approval where required.",
-                      "You shall maintain accurate attendance, CRM entries, field-visit records, GPS/geofence records, sales, collection, expense and other business records where such systems are applicable to your role.",
-                      "You shall protect Company Confidential Information, dealer/distributor/farmer data, pricing, business plans, passwords, CRM data, documents, stock, samples, cash and Company Property.",
-                      "You shall not make unauthorised credit, discount, warranty, scheme, collection or commercial commitments on behalf of the Company.",
-                      "You shall immediately notify the Company of any material change in your residential address, mobile number, email, qualification, licence or other employment-related particulars.",
-                    ].map((line, i) => (
-                      <Text key={i} fontSize="13px" textAlign="justify">• {line}</Text>
-                    ))}</VStack>
+                    <VStack spacing={0} >
+                      {[
+                        "You shall devote your full working time and attention to authorised Company duties and shall comply with the Employment Agreement, lawful instructions, SOPs and acknowledged Company Policies.",
+                        "Your reporting line, headquarter, territory, place of posting, role or responsibilities may be reasonably changed for business requirements in accordance with the Employment Agreement and Applicable Law.",
+                        "You shall not undertake conflicting employment, consultancy, agency, distributorship, dealership or competing business activity without prior written approval where required.",
+                        "You shall maintain accurate attendance, CRM entries, field-visit records, GPS/geofence records, sales, collection, expense and other business records where such systems are applicable to your role.",
+                        "You shall protect Company Confidential Information, dealer/distributor/farmer data, pricing, business plans, passwords, CRM data, documents, stock, samples, cash and Company Property.",
+                        "You shall not make unauthorised credit, discount, warranty, scheme, collection or commercial commitments on behalf of the Company.",
+                        "You shall immediately notify the Company of any material change in your residential address, mobile number, email, qualification, licence or other employment-related particulars.",
+                      ].map((line, i) => (
+                        <Text key={i} fontSize="13px" textAlign="justify">• {line}</Text>
+                      ))}</VStack>
                   </VStack>
                 </VStack>
+                {/* <PageNumber>2</PageNumber> */}
               </Box>
 
               {/* ================= PAGE 3 : NOTICE PAY + STATE OVERRIDE + PERFORMANCE ================= */}
-              <Box className="pdf-page page-break">
+              <Box className="pdf-page page-break" position="relative">
                 <Image src={top_ele1} position="absolute" top="0" right="0" width="230px" />
                 <Image src={bottom_ele1} position="absolute" bottom="-5px" left="0" width="230px" />
 
@@ -375,7 +395,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                       approval of the Company.
                     </Text>
                   </VStack>
-                    <VStack align="flex-start" spacing={0.5} mt="8px" width="100%">
+                  <VStack align="flex-start" spacing={0.5} mt="8px" width="100%">
                     <SectionHeading>Cash, Collection, Stock and Company Property</SectionHeading>
                     <Text fontSize="13px" textAlign="justify">
                       Any suspected non-deposit, diversion, unauthorised retention or misappropriation of Company/customer cash, cheque,
@@ -385,10 +405,11 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     </Text>
                   </VStack>
                 </VStack>
+                {/* <PageNumber>3</PageNumber> */}
               </Box>
 
               {/* ================= PAGE 4 : CASH/EXIT/DOC INTEGRATION/eSIGN + SIGNATURES ================= */}
-              <Box className="pdf-page page-break">
+              <Box className="pdf-page page-break" position="relative">
                 <Image src={top_ele1} position="absolute" top="0" right="0" width="230px" />
                 <Image src={bottom_ele1} position="absolute" bottom="-5px" left="0" width="230px" />
 
@@ -396,7 +417,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                   <Image src={r_logo} alt="Round Logo" className="watermark_img1" />
                   <Text textAlign="center" mt="1.5rem" mb="12px" width="84%" ml="1.5rem">CONTD:-4</Text>
 
-                
+
 
                   <VStack align="flex-start" spacing={0.5} mt="8px" width="100%">
                     <SectionHeading>Exit Clearance, Handover and Full &amp; Final Settlement</SectionHeading>
@@ -464,6 +485,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
                     <Flex alignItems="center" gap="8px"><Image src={webIcon} width="24px" mt="12px" /><Text fontSize="13px">www.jamidaraseeds.com</Text></Flex>
                   </Flex>
                 </VStack>
+                {/* <PageNumber>4</PageNumber> */}
               </Box>
 
               {/* =========================================================
@@ -478,8 +500,16 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
               <PlainDocumentPages employee={employee} formData={formData} startContdAt={4} />
             </Box>
             <Flex p={1} justifyContent="center" borderTop="1px" borderColor="#bdbcbc">
-              <Button colorScheme="gray" onClick={handleClose}>Close</Button>
-              <Button colorScheme="blue" onClick={handleDownloadJoiningPDF} ml={5}>Download Joining Letter</Button>
+              <Button colorScheme="gray" onClick={handleClose} isDisabled={isDownloading}>Close</Button>
+              <Button
+                colorScheme="blue"
+                onClick={handleDownloadJoiningPDF}
+                ml={5}
+                isLoading={isDownloading}
+                loadingText="Downloading..."
+              >
+                Download Joining Letter
+              </Button>
             </Flex>
           </ModalBody>
         </ModalContent>

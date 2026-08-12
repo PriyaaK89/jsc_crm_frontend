@@ -14,10 +14,9 @@ import {
  * PlainDocumentPages
  * ---------------------------------------------------------------------------
  * Same content/template pipeline as before. UI now matches
- * EmpAgreementLetterPreview.jsx: Georgia font, justified body copy,
- * numbered-clause heading sizes, black-bordered Chakra <Table/> for
- * key/value + grid data, and a small light-blue page number centered
- * at the bottom of every page.
+ * EmpAgreementLetterPreview.jsx: justified body copy, numbered-clause
+ * heading sizes, black-bordered Chakra <Table/> for key/value + grid data,
+ * and a small light-blue page number centered at the bottom of every page.
  *
  * TYPOGRAPHY UPDATE (matches JSC_MASTER_EMPLOYMENT_JOINING_DOCUMENT.docx):
  *  - "## " titles / "### " section headings -> bold + underline
@@ -28,7 +27,15 @@ import {
  *  - Underscore-only lines -> rendered as a real horizontal rule
  *  - Inline markers inside template strings: %%text%% = bold+underline,
  *    **text** = bold, __text__ = underline, *text* = italic
- * Nothing about data flow, pagination, table building, or props changed.
+ *
+ * FONT/SIZE UPDATE:
+ *  - The Agreement section renders at 16px body text, Georgia (unchanged).
+ *  - Annexure A, B and C render at 14px body text, Arial.
+ *  - This is driven by a `bodyFontSize` + `fontFamily` pair computed once
+ *    per section in PlainDocumentPages and threaded down into renderBlock,
+ *    renderParagraphContent, renderInline, and the table/signature
+ *    components. Nothing about data flow, pagination, or table building
+ *    logic changed.
  * ---------------------------------------------------------------------------
  */
 
@@ -43,21 +50,21 @@ const money = (v) => (v === undefined || v === null || v === "" ? "__________" :
 //   *text*    -> italic
 const INLINE_REGEX = /(%%[^%]+%%|\*\*[^*]+\*\*|__[^_]+__|\*[^*]+\*)/g;
 
-function renderInline(text) {
+function renderInline(text, fontFamily = "Georgia") {
   if (typeof text !== "string" || text === "") return text;
   const parts = text.split(INLINE_REGEX);
   return parts.map((part, idx) => {
     if (!part) return null;
     if (part.startsWith("%%") && part.endsWith("%%")) {
       return (
-        <span key={idx} style={{ fontWeight: "bold", textDecoration: "underline", fontFamily:"Georgia", }}>
+        <span key={idx} style={{ fontWeight: "bold", textDecoration: "underline", fontFamily }}>
           {part.slice(2, -2)}
         </span>
       );
     }
     if (part.startsWith("//") && part.endsWith("//")) {
       return (
-        <span key={idx} style={{ fontWeight: "bold", fontFamily:"Georgia", }}>
+        <span key={idx} style={{ fontWeight: "bold", fontFamily }}>
           {part.slice(2, -2)}
         </span>
       );
@@ -86,12 +93,19 @@ function renderInline(text) {
     }
     if (part.startsWith("*") && part.endsWith("*")) {
       return (
-        <span key={idx} style={{ fontFamily:"Georgia", fontStyle: "italic" }}>
+        <span key={idx} style={{ fontFamily, fontStyle: "italic" }}>
           {part.slice(1, -1)}
         </span>
       );
     }
-  
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <span key={idx} style={{ fontWeight: "bold" }}>
+          {part.slice(1, -1)}
+        </span>
+      );
+    }
+
     return part;
   });
 }
@@ -102,7 +116,7 @@ function renderInline(text) {
 const CLAUSE_NUM_REGEX = /^(\d{1,2}\.\d{1,2})(\s+)/;
 const RECITAL_REGEX = /^(WHEREAS,|NOW, THEREFORE,)(\s*)/;
 
-function renderParagraphContent(block) {
+function renderParagraphContent(block, fontFamily = "Georgia") {
   const clauseMatch = block.match(CLAUSE_NUM_REGEX);
   const recitalMatch = !clauseMatch && block.match(RECITAL_REGEX);
 
@@ -110,8 +124,8 @@ function renderParagraphContent(block) {
     const rest = block.slice(clauseMatch[0].length);
     return (
       <>
-        <span style={{ fontWeight: "bold", fontSize: "14px", fontFamily: "Georgia" }}>{clauseMatch[1]}&nbsp;</span>
-        {renderInline(rest)}
+        <span style={{ fontWeight: "bold", fontSize: "14px", fontFamily }}>{clauseMatch[1]}&nbsp;</span>
+        {renderInline(rest, fontFamily)}
       </>
     );
   }
@@ -119,27 +133,27 @@ function renderParagraphContent(block) {
     const rest = block.slice(recitalMatch[0].length);
     return (
       <>
-        <span style={{ fontWeight: "bold", fontFamily: "Georgia" }}>{recitalMatch[1]}</span>{" "}
-        {renderInline(rest)}
+        <span style={{ fontWeight: "bold", fontFamily }}>{recitalMatch[1]}</span>{" "}
+        {renderInline(rest, fontFamily)}
       </>
     );
   }
-  return renderInline(block);
+  return renderInline(block, fontFamily);
 }
 
 /* ============================== page shell ============================== */
 
-const PlainPage = ({ children, pageNumber }) => (
-  <Box className="pdf-page page-break" fontFamily="Georgia" bg="white">
+const PlainPage = ({ children, pageNumber, fontFamily = "Georgia" }) => (
+  <Box className="pdf-page page-break" fontFamily={fontFamily} bg="white" position="relative">
     <VStack width="90%" margin="auto" gap="1rem" align="stretch">
-      <Box mt="3.5rem">
+      <Box mt="3.5rem" pb="3.5rem">
         <VStack align="flex-start" spacing={0} width="100%">
           {children}
         </VStack>
       </Box>
     </VStack>
-    <Box>
-      <Text textAlign="center" fontSize="12px" color="#a8b9d2" mt="3.5rem">
+    <Box position="absolute" bottom="2rem" left="0" right="0">
+      <Text textAlign="center" fontSize="12px" color="#a8b9d2">
         {pageNumber}
       </Text>
     </Box>
@@ -148,8 +162,8 @@ const PlainPage = ({ children, pageNumber }) => (
 
 /* ============================== tables ============================== */
 // Key/value table (label | value), same visual language as the salary-policy
-// table in EmpAgreementLetterPreview.jsx: black border, Georgia, 14px cells.
-const KV = ({ rows }) => (
+// table in EmpAgreementLetterPreview.jsx: black border, 14px cells.
+const KV = ({ rows, fontFamily = "Georgia" }) => (
   <Table variant="simple" border="1px solid black" mb="10px" w="100%">
     <Tbody>
       {rows.map(([label, value], i) => (
@@ -158,9 +172,9 @@ const KV = ({ rows }) => (
             style={{ borderRight: "1px solid black", borderBottom: i === rows.length - 1 ? "none" : "1px solid black" }}
             fontWeight="600"
             fontSize="13px"
-            fontFamily="Georgia"
+            fontFamily={fontFamily}
             // bg="gray.50"
-            padding="8px 2px 8px 4px"
+            padding="4px 2px 4px 4px"
             whiteSpace="normal"
             wordBreak="break-word"
           >
@@ -168,10 +182,10 @@ const KV = ({ rows }) => (
           </Td>
           <Td
             style={{ borderBottom: i === rows.length - 1 ? "none" : "1px solid black" }}
-            fontSize="13px"
-            fontWeight="600"
-            fontFamily="Georgia"
-            padding="8px 10px"
+            fontSize="12px"
+            fontWeight="500"
+            fontFamily={fontFamily}
+            padding="4px 8px"
             whiteSpace="normal"
             wordBreak="break-word"
           >
@@ -185,7 +199,7 @@ const KV = ({ rows }) => (
 
 // Multi-column data table (headers + rows), styled exactly like the
 // "Target Achievement / Salary Payout" table on the agreement cover.
-const GridTable = ({ headers, rows }) => (
+const GridTable = ({ headers, rows, fontFamily = "Georgia" }) => (
   <Table variant="simple" border="1px solid black" mb="10px" w="100%">
     <Thead>
       <Tr>
@@ -196,10 +210,10 @@ const GridTable = ({ headers, rows }) => (
               borderRight: i === headers.length - 1 ? "none" : "1px solid black",
               borderBottom: "1px solid black",
             }}
-            fontSize="13px"
-            fontFamily="Georgia"
+            fontSize="12px"
+            fontFamily={fontFamily}
             textTransform="none"
-            padding="8px 10px"
+            padding="6px 6px"
           >
             {h}
           </Th>
@@ -216,9 +230,9 @@ const GridTable = ({ headers, rows }) => (
                 borderRight: ci === row.length - 1 ? "none" : "1px solid black",
                 borderBottom: ri === rows.length - 1 ? "none" : "1px solid black",
               }}
-              fontSize="13px"
-              fontFamily="Georgia"
-              padding="8px 10px"
+              fontSize="12px"
+              fontFamily={fontFamily}
+              padding="4px 2px 4px 6px"
               whiteSpace="normal"
               wordBreak="break-word"
             >
@@ -233,21 +247,23 @@ const GridTable = ({ headers, rows }) => (
 
 /* ============================== signatures ============================== */
 
-const SignatureBlock = ({ formData }) => (
-  <HStack width="100%" align="flex-start" spacing={6} mt="18px" fontFamily="Georgia">
-    <VStack align="flex-start" flex="1" spacing={1} fontSize="15px">
+const SignatureBlock = ({ formData, fontFamily = "Georgia" }) => (
+  <HStack width="100%" align="flex-start" spacing={6} mt="18px" fontFamily={fontFamily}>
+    <VStack align="flex-start" flex="1" spacing={1} fontSize="13px">
       <Text fontWeight="bold" mb="4px">FOR JAMIDARA SEEDS CORPORATION</Text>
       <Text>Authorized Signatory: GIRDHARI LAL</Text>
       <Text>Designation: PARTNER / AUTHORIZED SIGNATORY</Text>
-      <Text mt="10px">Signature / eSign: __________________________</Text>
-      <Text>Date: ____ / ____ / ______&nbsp;&nbsp; Place: JAIPUR</Text>
+      {/* <Text mt="10px">Signature / eSign: __________________________</Text> */}
+      {/* <Text>Date: ____ / ____ / ______&nbsp;&nbsp; Place: JAIPUR</Text> */}
+      <Text> Place: JAIPUR</Text>
     </VStack>
-    <VStack align="flex-start" flex="1" spacing={1} fontSize="15px">
+    <VStack align="flex-start" flex="1" spacing={1} fontSize="13px">
       <Text fontWeight="bold" mb="4px">EMPLOYEE</Text>
       <Text>Name: {g(formData?.employee_name)}</Text>
       <Text>Designation: {g(formData?.job_role_name)}</Text>
-      <Text mt="10px">Signature / Aadhaar eSign: __________________</Text>
-      <Text>Date: ____ / ____ / ______&nbsp;&nbsp; Place: __________</Text>
+      <Text mt="8px">Signature / Aadhaar eSign: __________________</Text>
+      {/* <Text>Date: ____ / ____ / ______&nbsp;&nbsp; Place: __________</Text> */}
+      <Text> Place: __________</Text>
     </VStack>
   </HStack>
 );
@@ -282,6 +298,7 @@ function buildTableRegistry(employee, formData, d) {
   const totalMonthlyUpto = guaranteedMonthly + variableUpto;
 
   return {
+    // ---- Agreement tables (Georgia, default) ----
     appointmentParticulars: (
       <KV
         rows={[
@@ -315,12 +332,18 @@ function buildTableRegistry(employee, formData, d) {
 
     agreementSignatures: <SignatureBlock formData={{ employee_name: employee?.name, job_role_name: formData?.job_role_name }} />,
     witnessSignatures: <WitnessBlock />,
-    annexureASignatures: <SignatureBlock formData={{ employee_name: employee?.name, job_role_name: formData?.job_role_name }} />,
-    annexureBSignatures: <SignatureBlock formData={{ employee_name: employee?.name, job_role_name: formData?.job_role_name }} />,
-    annexureCSignatures: <SignatureBlock formData={{ employee_name: employee?.name, job_role_name: formData?.job_role_name }} />,
+
+    // ---- Annexure A tables (Arial) ----
+    annexureASignatures: (
+      <SignatureBlock
+        fontFamily="Arial"
+        formData={{ employee_name: employee?.name, job_role_name: formData?.job_role_name }}
+      />
+    ),
 
     employeePayrollDetails: (
       <KV
+        fontFamily="Arial"
         rows={[
           ["Employee Name", employee?.name],
           ["Employee ID", d.employee_id],
@@ -335,6 +358,7 @@ function buildTableRegistry(employee, formData, d) {
 
     monthlyCompensation: (
       <GridTable
+        fontFamily="Arial"
         headers={["COMPONENT", "MONTHLY (₹)", "ANNUAL (₹)", "NATURE"]}
         rows={[
           ["Basic Pay", basic || "__________", basic ? basic * 12 : "__________", "Guaranteed Fixed"],
@@ -351,6 +375,7 @@ function buildTableRegistry(employee, formData, d) {
 
     noticePayBase: (
       <KV
+        fontFamily="Arial"
         rows={[
           ["Notice Pay Base", `BASIC PAY / ${money(d.notice_pay_base_amount)} PER MONTH`],
           ["Daily Notice Pay Base", "MONTHLY NOTICE PAY BASE ÷ 30, subject to Applicable Law"],
@@ -360,6 +385,7 @@ function buildTableRegistry(employee, formData, d) {
 
     taDaTable: (
       <GridTable
+        fontFamily="Arial"
         headers={["ITEM", "RATE / LIMIT", "TREATMENT"]}
         rows={[
           ["Bike Reimbursement", `${money(d.bike_rate)} / KM`, "Approved business travel"],
@@ -374,6 +400,7 @@ function buildTableRegistry(employee, formData, d) {
 
     payoutMatrix: (
       <GridTable
+        fontFamily="Arial"
         headers={["VERIFIED PERFORMANCE", "GUARANTEED FIXED", "VARIABLE PAY EARNED", "TOTAL PAYOUT", "ADDITIONAL INCENTIVE"]}
         rows={[
           ["Below 60%", "100% of Guaranteed Fixed", "NIL", "50% of Total Earning Opportunity", "NIL"],
@@ -388,8 +415,17 @@ function buildTableRegistry(employee, formData, d) {
       />
     ),
 
+    // ---- Annexure B tables (Arial) ----
+    annexureBSignatures: (
+      <SignatureBlock
+        fontFamily="Arial"
+        formData={{ employee_name: employee?.name, job_role_name: formData?.job_role_name }}
+      />
+    ),
+
     employeeRoleDetails: (
       <KV
+        fontFamily="Arial"
         rows={[
           ["Employee Name", employee?.name],
           ["Employee ID", d.employee_id],
@@ -405,6 +441,7 @@ function buildTableRegistry(employee, formData, d) {
 
     businessTargetCommitment: (
       <GridTable
+        fontFamily="Arial"
         headers={["KPI / COMMITMENT", "TARGET / STANDARD", "MEASUREMENT SOURCE"]}
         rows={[
           ["Annual / Seasonal Sales Commitment", g(formData?.annual_sales_commitment), "Verified net sales / ERP"],
@@ -421,6 +458,7 @@ function buildTableRegistry(employee, formData, d) {
 
     performanceWeightage: (
       <GridTable
+        fontFamily="Arial"
         headers={["PERFORMANCE AREA", "WEIGHT", "ACHIEVEMENT", "WEIGHTED SCORE"]}
         rows={[
           ["Net Sales / Business Achievement", "40%", "________%", "________"],
@@ -435,18 +473,28 @@ function buildTableRegistry(employee, formData, d) {
 
     initialValidation: (
       <GridTable
+        fontFamily="Arial"
         headers={["REVIEW", "ACTIVITY / EXPECTATION", "TARGET", "ACTUAL", "DECISION / REMARKS"]}
         rows={[
-          ["Day 7", "Product knowledge, field activity, verified visits, CRM/GPS discipline", "____________", "____________", "____________"],
-          ["Day 15", "Qualified pipeline, dealer/distributor prospects, follow-up, collection activity", "____________", "____________", "____________"],
-          ["Day 22", "Commercial validation, booking/order/collection progress, market execution", "____________", "____________", "____________"],
-          ["Day 30", "Overall suitability and performance decision", "____________", "____________", "Continue / Revise / Discontinue"],
+          ["Day 7", "Product knowledge, field activity, verified visits, CRM/GPS discipline", "________", "_______", "____________"],
+          ["Day 15", "Qualified pipeline, dealer/distributor prospects, follow-up, collection activity", "________", "________", "____________"],
+          ["Day 22", "Commercial validation, booking/order/collection progress, market execution", "________", "________", "____________"],
+          ["Day 30", "Overall suitability and performance decision", "________", "________", "Continue / Revise / Discontinue"],
         ]}
+      />
+    ),
+
+    // ---- Annexure C tables (Arial) ----
+    annexureCSignatures: (
+      <SignatureBlock
+        fontFamily="Arial"
+        formData={{ employee_name: employee?.name, job_role_name: formData?.job_role_name }}
       />
     ),
 
     employeeDetailsC: (
       <KV
+        fontFamily="Arial"
         rows={[
           ["Employee Name", employee?.name],
           ["Employee ID", d.employee_id],
@@ -462,6 +510,7 @@ function buildTableRegistry(employee, formData, d) {
 
     policyAcknowledgementTable: (
       <GridTable
+        fontFamily="Arial"
         headers={["SR.", "POLICY / DOCUMENT", "ACKNOWLEDGEMENT"]}
         rows={[
           ["1", "Provisional Offer Letter and Job Joining Letter", "ACKNOWLEDGED"],
@@ -478,7 +527,7 @@ function buildTableRegistry(employee, formData, d) {
           ["12", "Disciplinary Procedure and Grievance Process", "ACKNOWLEDGED"],
           ["13", "Exit Clearance, NOC, Handover and Property Return Policy", "ACKNOWLEDGED"],
           ["14", "Confidentiality and Intellectual Property Obligations", "ACKNOWLEDGED"],
-          ["15", "Notice Period, Resignation and Notice-Pay Shortfall Rules", "ACKNOWLEDGED"],
+          ["15", "Notice Period, Resignation, Unauthorised Absence / Abandonment and Notice-Pay Shortfall Rules", "ACKNOWLEDGED"],
           ["16", "Electronic Execution / Aadhaar eSign Terms", "ACKNOWLEDGED"],
         ]}
       />
@@ -486,6 +535,7 @@ function buildTableRegistry(employee, formData, d) {
 
     scheduleIndex: (
       <GridTable
+        fontFamily="Arial"
         headers={["SCHEDULE", "POLICY / PROCEDURE"]}
         rows={[
           ["C-1", "Working Hours, Attendance, Leave and Holiday Policy"],
@@ -500,6 +550,7 @@ function buildTableRegistry(employee, formData, d) {
 
     scheduleC1: (
       <GridTable
+        fontFamily="Arial"
         headers={["ITEM", "COMPANY STANDARD", "CONDITIONS"]}
         rows={[
           ["Ordinary Office Hours", "9:30 a.m. to 6:30 p.m.", "Includes one-hour rest/meal break"],
@@ -508,7 +559,8 @@ function buildTableRegistry(employee, formData, d) {
           ["Casual Leave", "7 days per completed year", "Pro-rata; no carry-forward unless required"],
           ["Sick Leave", "7 days per completed year", "Medical proof may be required"],
           ["Earned/Privilege Leave", "As per Applicable Law", "Accrual, carry-forward and encashment per law"],
-          ["Public Holidays", "As per Company annual holiday list", "Mandatory national/festival holidays"],
+          ["Public Holidays", "As per Company annual holiday list", "Mandatory national/festival holidays observed as applicable"],
+          ["Maternity/Other Statutory Leave", "As per Applicable Law", "Eligibility and documentation apply"],
           ["Leave Without Pay", "At Company discretion/law", "When paid leave unavailable or not approved"],
         ]}
       />
@@ -516,6 +568,7 @@ function buildTableRegistry(employee, formData, d) {
 
     complaintChannels: (
       <KV
+        fontFamily="Arial"
         rows={[
           ["Internal Committee Chairperson", formData?.ic_chairperson_name],
           ["IC Contact Email", formData?.ic_contact_email],
@@ -526,6 +579,7 @@ function buildTableRegistry(employee, formData, d) {
 
     scheduleC5: (
       <GridTable
+        fontFamily="Arial"
         headers={["APPROVED TRAVEL LIMITS", "VALUE"]}
         rows={[
           ["Bike Reimbursement Rate", `${money(d.bike_rate)} per KM`],
@@ -540,6 +594,7 @@ function buildTableRegistry(employee, formData, d) {
 
     exitChecklist: (
       <GridTable
+        fontFamily="Arial"
         headers={["✓", "CLEARANCE ITEM", "STATUS / REMARKS"]}
         rows={[
           ["☐", "Resignation/termination acknowledgement and last working day recorded", "________"],
@@ -561,7 +616,7 @@ function buildTableRegistry(employee, formData, d) {
 
 /* ============================== block rendering (restyled) ============================== */
 
-function renderBlock(block, i, tables) {
+function renderBlock(block, i, tables, bodyFontSize = "16px", fontFamily = "Georgia") {
   const trimmed = block.trim();
 
   // Top-level document title, e.g. "## PROBATIONARY EMPLOYMENT AGREEMENT"
@@ -576,7 +631,7 @@ function renderBlock(block, i, tables) {
         width="100%"
         mt="0rem"
         mb="1.25rem"
-        fontFamily="Georgia"
+        fontFamily={fontFamily}
         textDecoration="underline"
       >
         {block.replace("## ", "")}
@@ -590,11 +645,11 @@ function renderBlock(block, i, tables) {
     return (
       <Text
         key={i}
-        fontSize="18px"
+        fontSize="16px"
         fontWeight="bold"
         mb="10px"
         mt="14px"
-        fontFamily="Georgia"
+        fontFamily={fontFamily}
         textDecoration="underline"
       >
         {block.replace("### ", "")}
@@ -604,20 +659,63 @@ function renderBlock(block, i, tables) {
 
   // Sub-label like "BY AND BETWEEN" -> bold only, left aligned, no
   // underline (matches the docx, which does NOT underline this one).
+  if (block.startsWith("###$ ")) {
+    return (
+      <Text key={i} width="100%" mt="10px" fontSize="19px" fontWeight="700" textAlign="center" fontFamily={fontFamily}>
+        {block.replace("###$ ", "")}
+      </Text>
+    );
+  }
+  if (block.startsWith("##$ ")) {
+    return (
+      <Text key={i} width="100%" mb="10px" mt="10px" fontSize="17px" fontWeight="bold" textAlign="center" fontFamily={fontFamily}>
+        {block.replace("##$ ", "")}
+      </Text>
+    );
+  }
+    if (block.startsWith("##& ")) {
+    return (
+      <Text key={i} width="100%" mb="6px" mt="8px" fontSize="15px" fontWeight="bold" letterSpacing="-0.2px" fontFamily={fontFamily}>
+        {block.replace("##& ", "")}
+      </Text>
+    );
+  }
+  if (block.startsWith("#$ ")) {
+    return (
+      <Text key={i} width="100%" fontSize="11px" textAlign="center" fontFamily={fontFamily}>
+        {block.replace("#$ ", "")}
+      </Text>
+    );
+  }
   if (block.startsWith("#### ")) {
     return (
-      <Text key={i} width="100%" mb="10px" mt="10px" fontSize="15px" fontWeight="bold" fontFamily="Georgia">
+      <Text key={i} width="100%" mb="10px" mt="10px" fontSize="15px" fontWeight="bold" fontFamily={fontFamily}>
         {block.replace("#### ", "")}
       </Text>
     );
   }
-   if (block.startsWith("##### ")) {
+  if (block.startsWith("##### ")) {
     return (
-      <Text key={i} width="100%" mb="1.75rem" mt="1.5rem" fontSize="15px" textAlign="center" fontWeight="bold" fontFamily="Georgia">
+      <Text key={i} width="100%" mb="1.75rem" mt="1.5rem" fontSize="15px" textAlign="center" fontWeight="bold" fontFamily={fontFamily}>
         {block.replace("##### ", "")}
       </Text>
     );
   }
+    if (block.startsWith("###* ")) {
+    return (
+      <Text key={i} width="100%"  mt="14px" mb="6px" fontSize="14px" textDecoration="underline" fontWeight="bold" fontFamily={fontFamily}>
+        {block.replace("###* ", "")}
+      </Text>
+    );
+  }
+  if (block.startsWith("####* ")) {
+    return (
+      <Text key={i} width="100%"   fontSize="15px" mt={3} mb={3} fontWeight="bold" fontFamily={fontFamily}>
+        {block.replace("####* ", "")}
+      </Text>
+    );
+  }
+  
 
   if (block.startsWith("TABLE:")) {
     const key = block.replace("TABLE:", "").trim();
@@ -633,8 +731,8 @@ function renderBlock(block, i, tables) {
     return (
       <VStack key={i} align="flex-start" spacing="10px" width="100%">
         {items.map((it, ii) => (
-          <Text key={ii} fontSize="15px" textAlign="justify" fontFamily="Georgia">
-            •&nbsp; {renderInline(it)}
+          <Text key={ii} fontSize={bodyFontSize} textAlign="justify" fontFamily={fontFamily}>
+            •&nbsp; {renderInline(it, fontFamily)}
           </Text>
         ))}
       </VStack>
@@ -650,7 +748,7 @@ function renderBlock(block, i, tables) {
   // Standalone "AND" paragraph joining the two contracting parties.
   if (trimmed === "AND") {
     return (
-      <Text key={i} fontWeight="bold" fontSize="15px" width="100%" mb="14px" fontFamily="Georgia">
+      <Text key={i} fontWeight="bold" fontSize="15px" width="100%" mb="14px" fontFamily={fontFamily}>
         AND
       </Text>
     );
@@ -659,7 +757,7 @@ function renderBlock(block, i, tables) {
   // Closing statement at the very end of the consolidated document.
   if (trimmed === "END OF CONSOLIDATED EMPLOYMENT DOCUMENT") {
     return (
-      <Text key={i} fontWeight="bold" fontSize="15px" textAlign="center" width="100%" mt="20px" mb="14px" fontFamily="Georgia">
+      <Text key={i} fontWeight="bold" fontSize="15px" textAlign="center" width="100%" mt="20px" mb="14px" fontFamily={fontFamily}>
         {trimmed}
       </Text>
     );
@@ -670,8 +768,8 @@ function renderBlock(block, i, tables) {
   // %% ** __ * markers inside the text render as bold+underline / bold /
   // underline / italic respectively.
   return (
-    <Text key={i} fontSize="16px" textAlign="justify" width="100%" mb="14px" fontFamily="Georgia">
-      {renderParagraphContent(block)}
+    <Text key={i} fontSize={bodyFontSize} textAlign="justify" width="100%" mb="14px" fontFamily={fontFamily}>
+      {renderParagraphContent(block, fontFamily)}
     </Text>
   );
 }
@@ -689,18 +787,20 @@ const PlainDocumentPages = ({ employee, formData }) => {
     { label: "ANNEXURE C", template: ANNEXURE_C_TEMPLATE },
   ];
 
-  let pageCounter = 4; // continues numbering after the 4 styled joining-letter pages
+  let pageCounter = 0; // continues numbering after the 4 styled joining-letter pages
 
   return (
     <>
       {sections.map((section) => {
         const filled = fillTemplate(section.template, d);
         const pages = paginateTemplate(filled);
+        const bodyFontSize = section.label === "AGREEMENT" ? "16px" : "13px";
+        const sectionFontFamily = section.label === "AGREEMENT" ? "Georgia" : "Arial";
         return pages.map((blocks, pIdx) => {
           pageCounter += 1;
           return (
-            <PlainPage key={`${section.label}-${pIdx}`} pageNumber={pageCounter}>
-              {blocks.map((block, i) => renderBlock(block, i, tables))}
+            <PlainPage key={`${section.label}-${pIdx}`} pageNumber={pageCounter} fontFamily={sectionFontFamily}>
+              {blocks.map((block, i) => renderBlock(block, i, tables, bodyFontSize, sectionFontFamily))}
             </PlainPage>
           );
         });

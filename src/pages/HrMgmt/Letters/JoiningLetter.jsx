@@ -1,5 +1,5 @@
 import {
-  Box,HStack,Breadcrumb,BreadcrumbItem,BreadcrumbLink,
+  Box, HStack, Breadcrumb, BreadcrumbItem, BreadcrumbLink,
   Button,
   Checkbox,
   Flex,
@@ -45,12 +45,14 @@ import { API_ENDPOINTS } from "../../../services/endpoints";
 import EmpJoiningLetterPreview from "./EmpJoiningLetterPreview";
 import CustomDatePicker from "../../../components/common/CustomDatepicker";
 import jsc_stamp from "../../../assets/images/stamp_jsc.png";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import useUsersapi from "../../../Apis/GetUsersapi";
 
 const EmpJoiningLetter = () => {
 
   const { id } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { users } = useUsersapi();
 
   const [employee, setEmployee] = useState(null);
   const [empList, setEmpList] = useState([]);
@@ -83,6 +85,7 @@ const EmpJoiningLetter = () => {
     aadhaar_last4: "",
     employment_start_time: "",
     reporting_manager_name: "",
+    reporting_manager_id: "",
     reporting_manager_designation: "",
     territory_area: "",
     place_of_posting: "",
@@ -166,6 +169,32 @@ const EmpJoiningLetter = () => {
     }
   };
 
+  const fetchReference = async () => {
+    try {
+      const res = await API.get(
+        API_ENDPOINTS.get_next_offer_reference,
+        {
+          params: {
+            employee_id: employee.id,
+            document_type: "joining_letter",
+          },
+        }
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        ref_no: res.data.referenceNo,
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    if (employee?.id) {
+      fetchReference();
+    }
+  }, [employee]);
+
   /* ================= FETCH APPOINTER DETAILS ================= */
 
   const fetchEmployeeDetails = async (empId) => {
@@ -184,6 +213,7 @@ const EmpJoiningLetter = () => {
           department_name: data?.department_name || "",
           appointer_state: data?.state || "",
           working_area: data?.working_area || "",
+          
         }));
       }
 
@@ -191,17 +221,29 @@ const EmpJoiningLetter = () => {
       console.error("Appointer fetch error:", error);
     }
   };
-
-  useEffect(() => {
-  if (employee?.salary) {
-    const monthly = (employee.salary / 12).toFixed(0);
-
-    setFormData((prev) => ({
-      ...prev,
-      salary: monthly
-    })); 
+const fetchReportingManagerDesignation = async (managerId) => {
+  try {
+    const res = await API.get(`${API_ENDPOINTS.get_emp_details}/${managerId}`);
+    if (res.status === 200) {
+      setFormData((prev) => ({
+        ...prev,
+        reporting_manager_designation: res.data?.data?.job_role_name || "",
+      }));
+    }
+  } catch (err) {
+    console.error("Reporting manager details error:", err);
   }
-}, [employee]);
+};
+  useEffect(() => {
+    if (employee?.salary) {
+      const monthly = (employee.salary / 12).toFixed(0);
+
+      setFormData((prev) => ({
+        ...prev,
+        salary: monthly
+      }));
+    }
+  }, [employee]);
 
   /* ================= USE EFFECTS ================= */
 
@@ -233,17 +275,18 @@ const EmpJoiningLetter = () => {
   }, [employee]);
 
   useEffect(() => {
-  if (employee) {
-    setFormData((prev) => ({
-      ...prev,
-      working_area: employee.working_area || "",
-      department_name: employee.department_name || "",
-      job_role_name: employee.job_role_name || "",
-      employee_id: prev.employee_id || employee.employee_code || "",
-      reporting_manager_name: prev.reporting_manager_name || employee.reporting_manager_name || "",
-    }));
-  }
-}, [employee]);
+    if (employee) {
+      setFormData((prev) => ({
+        ...prev,
+        working_area: employee.working_area || "",
+        department_name: employee.department_name || "",
+        job_role_name: employee.job_role_name || "",
+        // employee_id: prev.employee_id || employee.employee_code || "",
+        employee_id: employee?.id ? `JSC-${employee.id}` : prev.employee_id,
+        reporting_manager_name: prev.reporting_manager_name || employee.reporting_manager_name || "",
+      }));
+    }
+  }, [employee]);
 
   /* ================= NOTICE PAY BASE DEFAULT = BASIC ================= */
 
@@ -333,8 +376,8 @@ const EmpJoiningLetter = () => {
             <BreadcrumbItem>
               <BreadcrumbLink as={Link} to='/dashboard'><GoHomeFill color="#5570F1" /> </BreadcrumbLink>
             </BreadcrumbItem>
-             <BreadcrumbItem>
-              <BreadcrumbLink as={Link} to="/hr-mgmt/view-employee-list"   fontSize='13px'>Employee List</BreadcrumbLink>
+            <BreadcrumbItem>
+              <BreadcrumbLink as={Link} to="/hr-mgmt/view-employee-list" fontSize='13px'>Employee List</BreadcrumbLink>
             </BreadcrumbItem>
 
             <BreadcrumbItem>
@@ -374,32 +417,32 @@ const EmpJoiningLetter = () => {
 
           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacingX={6} spacingY={3}>
 
-            <HStack fontSize={{base:"13px",md:"15px"}} color="gray.700" spacing={2}>
+            <HStack fontSize={{ base: "13px", md: "15px" }} color="gray.700" spacing={2}>
               <Icon as={FiUser} color="gray.400" boxSize="14px" />
               <Text><b>Name:</b> {employee?.name}</Text>
             </HStack>
 
-            <HStack fontSize={{base:"13px",md:"15px"}} color="gray.700" spacing={2}>
+            <HStack fontSize={{ base: "13px", md: "15px" }} color="gray.700" spacing={2}>
               <Icon as={FiMail} color="gray.400" boxSize="14px" />
               <Text><b>Email:</b> {employee?.email}</Text>
             </HStack>
 
-            <HStack fontSize={{base:"13px",md:"15px"}} color="gray.700" spacing={2}>
+            <HStack fontSize={{ base: "13px", md: "15px" }} color="gray.700" spacing={2}>
               <Icon as={FiPhone} color="gray.400" boxSize="14px" />
               <Text><b>Contact:</b> {employee?.contact_no}</Text>
             </HStack>
 
-            <HStack fontSize={{base:"13px",md:"15px"}} color="gray.700" spacing={2}>
+            <HStack fontSize={{ base: "13px", md: "15px" }} color="gray.700" spacing={2}>
               <Icon as={FiFileText} color="gray.400" boxSize="14px" />
               <Text><b>Department:</b> {employee?.department_name}</Text>
             </HStack>
 
-            <HStack fontSize={{base:"13px",md:"15px"}} color="gray.700" spacing={2}>
+            <HStack fontSize={{ base: "13px", md: "15px" }} color="gray.700" spacing={2}>
               <Icon as={FiAward} color="gray.400" boxSize="14px" />
               <Text><b>Role:</b> {employee?.job_role_name}</Text>
             </HStack>
 
-            <HStack fontSize={{base:"13px",md:"15px"}} color="gray.700" spacing={2}>
+            <HStack fontSize={{ base: "13px", md: "15px" }} color="gray.700" spacing={2}>
               <Icon as={FiCalendar} color="gray.400" boxSize="14px" />
               <Text>
                 <b>DOJ:</b>{" "}
@@ -409,12 +452,12 @@ const EmpJoiningLetter = () => {
               </Text>
             </HStack>
 
-            <HStack fontSize={{base:"13px",md:"15px"}} color="gray.700" spacing={2} gridColumn={{ md: "span 2", lg: "span 3" }}>
+            <HStack fontSize={{ base: "13px", md: "15px" }} color="gray.700" spacing={2} gridColumn={{ md: "span 2", lg: "span 3" }}>
               <Icon as={FiMapPin} color="gray.400" boxSize="14px" />
               <Text><b>Address:</b> {employee?.address_line1}</Text>
             </HStack>
 
-          </SimpleGrid>  
+          </SimpleGrid>
 
         </Box>
 
@@ -450,46 +493,37 @@ const EmpJoiningLetter = () => {
                 placeholder="Select Appointer"
                 value={formData.appoint_under || ""}
                 onChange={(e) => {
-
                   const selectedId = e.target.value;
-
-                  const selectedEmp = empList.find(
-                    (emp) => String(emp.id) === selectedId
-                  );
+                  const selectedEmp = users.find((user) => String(user.id) === selectedId);
 
                   setFormData((prev) => ({
                     ...prev,
                     appoint_under: selectedId,
-                    appoint_under_name: selectedEmp?.name || ""
+                    appoint_under_name: selectedEmp?.name || "",
                   }));
-
-                  fetchEmployeeDetails(selectedId);
-
                 }}
               >
-
-                {empList?.map((emp) => (
-                  <option key={emp.id} value={String(emp.id)}>
-                    {emp.name}
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.name}
                   </option>
                 ))}
-
               </Select>
 
             </FormControl>
 
             <FormControl>
               <FormLabel fontSize="13px" color="gray.600">Department</FormLabel>
-              <Input {...inputFocus} value={formData.department_name}  onChange={(e) =>
-                  setFormData({ ...formData, department_name: e.target.value })
-                } />
+              <Input {...inputFocus} value={formData.department_name} onChange={(e) =>
+                setFormData({ ...formData, department_name: e.target.value })
+              } />
             </FormControl>
 
             <FormControl>
               <FormLabel fontSize="13px" color="gray.600">Job Role</FormLabel>
-              <Input {...inputFocus} value={formData.job_role_name}  onChange={(e) =>
-                  setFormData({ ...formData, job_role_name: e.target.value })
-                } />
+              <Input {...inputFocus} value={formData.job_role_name} onChange={(e) =>
+                setFormData({ ...formData, job_role_name: e.target.value })
+              } />
             </FormControl>
 
             <FormControl>
@@ -521,14 +555,14 @@ const EmpJoiningLetter = () => {
               <Input
                 {...inputFocus}
                 value={formData.salary}
-                 onChange={(e) =>
+                onChange={(e) =>
                   setFormData({
                     ...formData,
-                     salary: e.target.value
+                    salary: e.target.value
                   })
                 }
               />
-            
+
             </FormControl>
 
             <FormControl>
@@ -632,16 +666,13 @@ const EmpJoiningLetter = () => {
                 {...inputFocus}
                 type="number"
                 value={formData.min_km}
-                onChange={(e) =>
-                  setFormData({ ...formData, min_km: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, min_km: e.target.value })}
               />
             </FormControl>
 
             {/* ================= STAMP ================= */}
 
             <FormControl>
-
               <Box
                 border="1px dashed"
                 borderColor={formData.show_stamp ? "blue.300" : "gray.300"}
@@ -653,13 +684,7 @@ const EmpJoiningLetter = () => {
                 <Checkbox
                   isChecked={formData.show_stamp}
                   colorScheme="blue"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      show_stamp: e.target.checked
-                    })
-                  }
-                >
+                  onChange={(e) => setFormData({ ...formData, show_stamp: e.target.checked })} >
                   <Text fontSize="14px" fontWeight="500">Show Company Stamp</Text>
                 </Checkbox>
                 <Image src={jsc_stamp} width="97px" mt={2} opacity={formData.show_stamp ? 1 : 0.4} transition="opacity 0.15s ease" />
@@ -696,11 +721,53 @@ const EmpJoiningLetter = () => {
             <AccordionPanel bg="gray.50" pt={5} pb={6} px={5}>
               <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
                 <FormControl><FormLabel fontSize="13px" color="gray.600">Ref. No.</FormLabel><Input {...inputFocus} {...bind("ref_no")} /></FormControl>
-                <FormControl><FormLabel fontSize="13px" color="gray.600">Employee ID</FormLabel><Input {...inputFocus} {...bind("employee_id")} /></FormControl>
+                <FormControl>
+                  <FormLabel fontSize="13px" color="gray.600">Employee ID</FormLabel>
+                  <Input {...inputFocus} isReadOnly {...bind("employee_id")} />
+                </FormControl>
                 <FormControl><FormLabel fontSize="13px" color="gray.600">Father / Mother / Spouse Name</FormLabel><Input {...inputFocus} {...bind("father_spouse_name")} /></FormControl>
                 <FormControl><FormLabel fontSize="13px" color="gray.600">Aadhaar (last 4 digits) / ID Reference</FormLabel><Input {...inputFocus} {...bind("aadhaar_last4")} /></FormControl>
-                <FormControl><FormLabel fontSize="13px" color="gray.600">Employment Start Time</FormLabel><Input {...inputFocus} placeholder="e.g. 9:30 AM" {...bind("employment_start_time")} /></FormControl>
-                <FormControl><FormLabel fontSize="13px" color="gray.600">Reporting Manager Name</FormLabel><Input {...inputFocus} {...bind("reporting_manager_name")} /></FormControl>
+                <FormControl><FormLabel fontSize="13px" color="gray.600">Employment Start Time</FormLabel><Input {...inputFocus} placeholder="Select Date" type="date" {...bind("employment_start_time")} /></FormControl>
+               <FormControl>
+  <FormLabel fontSize="13px" color="gray.600">Reporting Manager Name</FormLabel>
+  <Select
+    {...inputFocus}
+    placeholder="Select Reporting Manager"
+    value={formData.reporting_manager_id || ""}
+    onChange={async (e) => {
+      const selectedId = e.target.value;
+      const selectedUser = users.find((user) => String(user.id) === selectedId);
+
+      // Fill name immediately, clear old designation while we fetch
+      setFormData((prev) => ({
+        ...prev,
+        reporting_manager_id: selectedId,
+        reporting_manager_name: selectedUser?.name || "",
+        reporting_manager_designation: "",
+      }));
+
+      if (!selectedId) return;
+
+      try {
+        const res = await API.get(`${API_ENDPOINTS.get_emp_details}/${selectedId}`);
+        if (res.status === 200) {
+          setFormData((prev) => ({
+            ...prev,
+            reporting_manager_designation: res.data?.data?.job_role_name || "",
+          }));
+        }
+      } catch (err) {
+        console.error("Reporting manager details error:", err);
+      }
+    }}
+  >
+    {users.map((user) => (
+      <option key={user.id} value={user.id}>
+        {user.name}
+      </option>
+    ))}
+  </Select>
+</FormControl>
                 <FormControl><FormLabel fontSize="13px" color="gray.600">Reporting Manager Designation</FormLabel><Input {...inputFocus} {...bind("reporting_manager_designation")} /></FormControl>
                 <FormControl><FormLabel fontSize="13px" color="gray.600">Territory / Area</FormLabel><Input {...inputFocus} {...bind("territory_area")} /></FormControl>
                 <FormControl><FormLabel fontSize="13px" color="gray.600">Place of Posting</FormLabel><Input {...inputFocus} {...bind("place_of_posting")} /></FormControl>
@@ -856,31 +923,21 @@ const EmpJoiningLetter = () => {
           </AccordionItem>
 
         </Accordion>
-<HStack justifyContent="center">
-  <Button colorScheme="blue"
-          bg="#5570F1" fontSize="14px"
-          _hover={{ bg: "#4560E0" }}
-          size="lg" height="38px"
-          px={10}
-          borderRadius="10px" onClick={onOpen}
-          leftIcon={<FiFileText />} >
-          Show Preview
-        </Button>
+        <HStack justifyContent="center">
+          <Button colorScheme="blue"
+            bg="#5570F1" fontSize="14px"
+            _hover={{ bg: "#4560E0" }}
+            size="lg" height="38px"
+            px={10}
+            borderRadius="10px" onClick={onOpen}
+            leftIcon={<FiFileText />} >
+            Show Preview
+          </Button>
         </HStack>
       </Box>
 
       {/* ================= STICKY ACTION BAR ================= */}
-
-
-      
-     
-
-      <EmpJoiningLetterPreview
-        isOpen={isOpen}
-        onClose={onClose}
-        employee={employee}
-        formData={formData}
-      />
+      <EmpJoiningLetterPreview isOpen={isOpen} onClose={onClose} employee={employee} formData={formData} />
 
     </Box>
   );

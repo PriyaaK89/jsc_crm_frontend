@@ -64,6 +64,7 @@ const PageNumber = ({ children }) => (
 const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
 
   const [isDownloading, setIsDownloading] = useState(false);
+ console.log("ref_no", formData?.ref_no) 
 
   const handleClose = () => {
     onClose(true);
@@ -144,6 +145,7 @@ const EmpJoiningLetterPreview = ({ isOpen, onClose, employee, formData }) => {
       formDataObj.append("document_type", "joining_letter");
       formDataObj.append("email", employee?.email);
       formDataObj.append("phone", employee?.contact_no);
+      formDataObj.append("reference_no", formData?.ref_no);
 
       if (pdfBlob.size > 8 * 1024 * 1024) {
         toast({

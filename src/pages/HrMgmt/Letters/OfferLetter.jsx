@@ -170,6 +170,7 @@ const fetchReference = async () => {
       {
         params: {
           employee_id: employee.id,
+          document_type: "offer_letter",
         },
       }
     );

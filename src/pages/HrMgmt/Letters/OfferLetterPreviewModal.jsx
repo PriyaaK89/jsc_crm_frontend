@@ -75,7 +75,8 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
       formDataObj.append("document_type", "offer_letter");
       formDataObj.append("email", employee?.email);
       formDataObj.append("phone", employee?.contact_no);
-    formDataObj.append("reference_no", formData.offer_ref_no);
+      formDataObj.append( "document_type", "offer_letter" );
+      formDataObj.append("reference_no", formData.offer_ref_no);
 
       if (pdfBlob.size > 5 * 1024 * 1024) {
         toast({
@@ -171,7 +172,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
 
                   {/* Body */}
                   <VStack align="flex-start" spacing={0}>
-                    <Text mb={2}>Dear Mr./Ms. {employee?.name},</Text>
+                    <Text mb={2}>Dear <b><u> Mr./Ms. {employee?.name},</u></b></Text>
 
                     <Text mb={2}>
                       Further to your application and discussions with us, we are pleased to offer you probationary
@@ -227,7 +228,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
                     </VStack>
                     <Text fontWeight="bold" mt="6px" >Compensation:</Text>
                     <Text mb={2}>
-                      Monthly Earning Opportunity: ₹ <u><b>{(formData?.annual_earning/12).toFixed(2)}</b></u>
+                      Monthly Earning Opportunity: ₹ <u><b>{(formData?.annual_earning / 12).toFixed(2)}</b></u>
                       &nbsp;&nbsp; Annual: ₹ <u><b>{formData?.annual_earning || employee?.salary}</b></u>
                     </Text>
                     <Text>
@@ -492,7 +493,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
                       electronic signature through an authorised eSign process, shall not by itself constitute
                       execution of this document.
                     </Text>
-<Text fontWeight="bold">{formData?.salary_norms1}</Text>
+                    <Text fontWeight="bold">{formData?.salary_norms1}</Text>
                     <Text fontWeight="700" fontSize="15px" mt="6px">OFFER ACCEPTANCE</Text>
                     <Text fontSize="13px" lineHeight="21px" textAlign="justify">
                       If you accept this provisional offer, please sign / eSign below and return the accepted copy
@@ -501,36 +502,50 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
                       treat this offer as lapsed, subject to any written extension.
                     </Text>
 
-                    <Table size="sm" variant="simple" mt="10px" border="1px solid" borderColor="gray.300" width="100%">
-                      <Thead bg="gray.50">
-                        <Tr>
-                          <Th fontSize="11px">FOR JAMIDARA SEEDS CORPORATION</Th>
-                          <Th fontSize="11px">CANDIDATE / EMPLOYEE</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody>
-                        <Tr>
-                          <Td fontSize="12px">Authorized Signatory: {formData?.authorised_signatory}</Td>
-                          <Td fontSize="12px">Name: {employee?.name}</Td>
-                        </Tr>
-                        <Tr>
-                          <Td fontSize="12px">Designation: Partner / Authorized Signatory</Td>
-                          <Td fontSize="12px">Designation Offered: {formData?.designation || employee?.job_role_name}</Td>
-                        </Tr>
-                        {/* <Tr>
-                          <Td fontSize="12px">Signature / eSign: __________________________</Td>
-                          <Td fontSize="12px">Signature / Aadhaar eSign: __________________</Td>
-                        </Tr>
-                        <Tr>
-                          <Td fontSize="12px">Date: ____ / ____ / ______</Td>
-                          <Td fontSize="12px">Date: ____ / ____ / ______</Td>
-                        </Tr> */}
-                        <Tr>
-                          <Td fontSize="12px">Place: Jaipur, Rajasthan</Td>
-                          <Td fontSize="12px">Place: {formData?.place_of_posting || employee?.city}</Td>
-                        </Tr>
-                      </Tbody>
-                    </Table>
+                    <VStack spacing={0} align="stretch" mt={4}>
+                      <Flex>
+                        <Box flex="1">
+                          <Text fontSize="12px">
+                            <b>Authorized Signatory:</b> {formData?.authorised_signatory}
+                          </Text>
+                        </Box>
+
+                        <Box flex="1" textAlign="left">
+                          <Text fontSize="12px">
+                            <b>Name:</b> {employee?.name}
+                          </Text>
+                        </Box>
+                      </Flex>
+
+                      <Flex>
+                        <Box flex="1">
+                          <Text fontSize="12px">
+                            <b>Designation:</b> Partner / Authorized Signatory
+                          </Text>
+                        </Box>
+
+                        <Box flex="1" textAlign="left">
+                          <Text fontSize="12px" display="flex" width="125%">
+                            <b>Designation Offered:</b>
+                            <p> {formData?.designation || employee?.job_role_name}</p>
+                          </Text>
+                        </Box>
+                      </Flex>
+
+                      <Flex>
+                        <Box flex="1">
+                          <Text fontSize="12px">
+                            <b>Place:</b> Jaipur, Rajasthan
+                          </Text>
+                        </Box>
+
+                        <Box flex="1" textAlign="left">
+                          <Text fontSize="12px">
+                            <b>Place:</b> {formData?.place_of_posting || employee?.city}
+                          </Text>
+                        </Box>
+                      </Flex>
+                    </VStack>
 
                     {/* Footer */}
                     <Box mt="30px">

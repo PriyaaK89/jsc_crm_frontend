@@ -27,7 +27,7 @@ const DeleteTemplateModal = ({ isOpen, onClose, templateId, onSuccess }) => {
     try {
       setLoading(true);
 
-      API.delete( API_ENDPOINTS.DELETE_TEMPLATE(templateId));
+   await API.delete( API_ENDPOINTS.DELETE_TEMPLATE(templateId));
 
       toast({
         title: "Template Deactivated",

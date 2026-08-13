@@ -1,15 +1,19 @@
-import { Badge, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Flex, FormControl, HStack, Heading, IconButton, Input, Select, Spinner,
-  Table, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useDisclosure, useToast,} from "@chakra-ui/react";
+import {
+  Badge, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Flex, FormControl, HStack, Heading, IconButton, Input, Select, Spinner,
+  Table, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useDisclosure, useToast,
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { GoHomeFill } from "react-icons/go";
 import { Link } from "react-router-dom";
-import { FiEdit2, FiTrash2, FiPlus, FiRefreshCw } from "react-icons/fi"; // add FiRefreshCw to existing import
+import { FiEdit2, FiTrash2, FiPlus, FiRefreshCw, FiXCircle, FiPlay, FiPause } from "react-icons/fi"; // add FiRefreshCw to existing import
 
 import TemplateFormModal from "../../components/models/visit/CreateVisitTemplate";
 import DeleteTemplateModal from "../../components/layout/BusinessDevelopment/DeleteTemplateModal";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import ReactivateTemplateModal from "../../components/models/visit/ReactivateTemplate";
+import PermanentDeleteTemplateModal from "../../components/layout/BusinessDevelopment/PermanentDeleteTemplateModal";
+import HoldUnholdTemplateModal from "../../components/layout/BusinessDevelopment/HoldUnholdTemplateModal ";
 
 
 const TemplateList = () => {
@@ -28,10 +32,14 @@ const TemplateList = () => {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [frequency, setFrequency] = useState("");
+  const [holdAction, setHoldAction] = useState("hold"); // "hold" | "unhold"
+  const { isOpen: isHoldOpen, onOpen: onHoldOpen, onClose: onHoldClose } = useDisclosure()
 
   const { isOpen: isFormOpen, onOpen: onFormOpen, onClose: onFormClose } = useDisclosure();
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
   const { isOpen: isReactivateOpen, onOpen: onReactivateOpen, onClose: onReactivateClose } = useDisclosure();
+  const { isOpen: isPermanentDeleteOpen, onOpen: onPermanentDeleteOpen, onClose: onPermanentDeleteClose } = useDisclosure();
+
 
   // ==============================
   // API CALLS
@@ -100,9 +108,26 @@ const TemplateList = () => {
   };
 
   const handleReactivate = (id) => {
-  setSelectedId(id);
-  onReactivateOpen();
-};
+    setSelectedId(id);
+    onReactivateOpen();
+  };
+
+  const handleHoldClick = (id) => {
+    setSelectedId(id);
+    setHoldAction("hold");
+    onHoldOpen();
+  };
+
+  const handleUnholdClick = (id) => {
+    setSelectedId(id);
+    setHoldAction("unhold");
+    onHoldOpen();
+  };
+
+  const handlePermanentDelete = (id) => {
+    setSelectedId(id);
+    onPermanentDeleteOpen(); // new useDisclosure, see below — needs its own confirm modal
+  };
 
   return (
     <Box
@@ -136,7 +161,7 @@ const TemplateList = () => {
       </Flex>
 
       <Flex gap={4} mb={6} flexWrap="wrap" alignItems="end" justifyContent="space-between">
-        <Flex gap={1} flexWrap="wrap" width="70%"> 
+        <Flex gap={1} flexWrap="wrap" width="70%">
           <FormControl maxW="260px">
             <Input
               placeholder="Search by template name"
@@ -154,6 +179,8 @@ const TemplateList = () => {
             >
               <option value="ACTIVE">Active</option>
               <option value="INACTIVE">Inactive</option>
+              <option value="HOLD">On Hold</option>
+
             </Select>
           </FormControl>
 
@@ -216,52 +243,129 @@ const TemplateList = () => {
                       <Td>{item?.employee_count ?? 0}</Td>
 
                       <Td>
-                        <Badge colorScheme={item?.status === "ACTIVE" ? "green" : "gray"} className="ledger_badge" >
+                        <Badge colorScheme={item?.status === "ACTIVE" ? "green" : item?.status === "HOLD" ? "orange" : "gray"} className="ledger_badge" >
                           {item?.status || "-"}
                         </Badge>
                       </Td>
 
                       <Td>
-  <Flex gap="8px">
-    <Tooltip label="Edit Template" hasArrow>
-      <IconButton
-        icon={<FiEdit2 />}
-        size="md"
-        variant="ghost"
-        color="blue.600"
-        _hover={{ bg: "blue.50" }}
-        aria-label="Edit Template"
-        onClick={() => handleEdit(item?.id)}
-      />
-    </Tooltip>
+                        <Flex gap="8px">
+                          <Tooltip label="Edit Template" hasArrow>
+                            <IconButton
+                              icon={<FiEdit2 />}
+                              size="md"
+                              variant="ghost"
+                              color="blue.600"
+                              _hover={{ bg: "blue.50" }}
+                              aria-label="Edit Template"
+                              onClick={() => handleEdit(item?.id)}
+                            />
+                          </Tooltip>
 
-    {item?.status === "ACTIVE" ? (
-      <Tooltip label="Deactivate Template" hasArrow>
-        <IconButton
-          icon={<FiTrash2 />}
-          size="md"
-          variant="ghost"
-          color="red.600"
-          _hover={{ bg: "red.50" }}
-          aria-label="Deactivate Template"
-          onClick={() => handleDelete(item?.id)}
-        />
-      </Tooltip>
-    ) : (
-      <Tooltip label="Reactivate Template" hasArrow>
-        <IconButton
-          icon={<FiRefreshCw />}
-          size="md"
-          variant="ghost"
-          color="green.600"
-          _hover={{ bg: "green.50" }}
-          aria-label="Reactivate Template"
-          onClick={() => handleReactivate(item?.id)}
-        />
-      </Tooltip>
-    )}
-  </Flex>
-</Td>
+                          {item?.status === "ACTIVE" && (
+                            <>
+                              <Tooltip label="Hold Template" hasArrow>
+                                <IconButton
+                                  icon={<FiPause />}
+                                  size="md"
+                                  variant="ghost"
+                                  color="orange.500"
+                                  _hover={{ bg: "orange.50" }}
+                                  aria-label="Hold Template"
+                                  onClick={() => handleHoldClick(item?.id)}
+                                />
+                              </Tooltip>
+                              <Tooltip label="Deactivate Template" hasArrow>
+                                <IconButton
+                                  icon={<FiTrash2 />}
+                                  size="md"
+                                  variant="ghost"
+                                  color="red.600"
+                                  _hover={{ bg: "red.50" }}
+                                  aria-label="Deactivate Template"
+                                  onClick={() => handleDelete(item?.id)}
+                                />
+                              </Tooltip>
+                               <Tooltip label="Delete Permanently" hasArrow>
+                                <IconButton
+                                  icon={<FiXCircle />}
+                                  size="md"
+                                  variant="ghost"
+                                  color="red.700"
+                                  _hover={{ bg: "red.100" }}
+                                  aria-label="Delete Permanently"
+                                  onClick={() => handlePermanentDelete(item?.id)}
+                                />
+                              </Tooltip>
+                            </>
+                          )}
+
+                          {item?.status === "HOLD" && (
+                            <>
+                              <Tooltip label="Resume Template" hasArrow>
+                                <IconButton
+                                  icon={<FiPlay />}
+                                  size="md"
+                                  variant="ghost"
+                                  color="green.600"
+                                  _hover={{ bg: "green.50" }}
+                                  aria-label="Resume Template"
+                                  onClick={() => handleUnholdClick(item?.id)}
+                                />
+                              </Tooltip>
+                              <Tooltip label="Deactivate Template" hasArrow>
+                                <IconButton
+                                  icon={<FiTrash2 />}
+                                  size="md"
+                                  variant="ghost"
+                                  color="red.600"
+                                  _hover={{ bg: "red.50" }}
+                                  aria-label="Deactivate Template"
+                                  onClick={() => handleDelete(item?.id)}
+                                />
+                              </Tooltip>
+                              <Tooltip label="Delete Permanently" hasArrow>
+                                <IconButton
+                                  icon={<FiXCircle />}
+                                  size="md"
+                                  variant="ghost"
+                                  color="red.700"
+                                  _hover={{ bg: "red.100" }}
+                                  aria-label="Delete Permanently"
+                                  onClick={() => handlePermanentDelete(item?.id)}
+                                />
+                              </Tooltip>
+                            </>
+                          )}
+
+                          {item?.status === "INACTIVE" && (
+                            <>
+                              <Tooltip label="Reactivate Template" hasArrow>
+                                <IconButton
+                                  icon={<FiRefreshCw />}
+                                  size="md"
+                                  variant="ghost"
+                                  color="green.600"
+                                  _hover={{ bg: "green.50" }}
+                                  aria-label="Reactivate Template"
+                                  onClick={() => handleReactivate(item?.id)}
+                                />
+                              </Tooltip>
+                              <Tooltip label="Delete Permanently" hasArrow>
+                                <IconButton
+                                  icon={<FiXCircle />}
+                                  size="md"
+                                  variant="ghost"
+                                  color="red.700"
+                                  _hover={{ bg: "red.100" }}
+                                  aria-label="Delete Permanently"
+                                  onClick={() => handlePermanentDelete(item?.id)}
+                                />
+                              </Tooltip>
+                            </>
+                          )}
+                        </Flex>
+                      </Td>
                     </Tr>
                   ))
                 ) : (
@@ -331,11 +435,25 @@ const TemplateList = () => {
         onSuccess={getTemplateList}
       />
       <ReactivateTemplateModal
-  isOpen={isReactivateOpen}
-  onClose={onReactivateClose}
-  templateId={selectedId}
-  onSuccess={getTemplateList}
-/>
+        isOpen={isReactivateOpen}
+        onClose={onReactivateClose}
+        templateId={selectedId}
+        onSuccess={getTemplateList}
+      />
+
+      <PermanentDeleteTemplateModal
+        isOpen={isPermanentDeleteOpen}
+        onClose={onPermanentDeleteClose}
+        templateId={selectedId}
+        onSuccess={getTemplateList}
+      />
+      <HoldUnholdTemplateModal
+        isOpen={isHoldOpen}
+        onClose={onHoldClose}
+        templateId={selectedId}
+        action={holdAction}
+        onSuccess={getTemplateList}
+      />
     </Box>
   );
 }

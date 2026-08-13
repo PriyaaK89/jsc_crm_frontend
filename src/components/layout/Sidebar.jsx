@@ -33,7 +33,7 @@ import { FaReceipt } from "react-icons/fa";
 import { FaCity } from "react-icons/fa";
 import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg'
 import { useState, useContext, useEffect, memo } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import { MdUploadFile } from "react-icons/md";
 import { FaKey } from "react-icons/fa";
@@ -352,7 +352,7 @@ const Newsidebar = () => {
         display="flex"
         alignItems="center"
       >
-        <Image src={logo} alt="Company Logo" h="68px" pl="2rem" loading="eager" fetchpriority="high" />
+      <Link to="/dashboard">  <Image src={logo} alt="Company Logo" h="68px" pl="2rem" loading="eager" fetchpriority="high" /></Link>
       </Box>
 
       <VStack spacing={0} align="stretch" mt="72px" pt={3} px={3} pb={4}>

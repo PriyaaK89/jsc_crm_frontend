@@ -282,6 +282,9 @@ export const API_ENDPOINTS = {
   COMPLETE_ASSIGNMENT: (id) => `visit-targets/assignments/${id}/complete`,
   EXPIRE_ASSIGNMENT: (id) => `visit-targets/assignments/${id}/expire`,
   REACTIVATE_TEMPLATE: (id) => `visit-targets/templates/${id}/reactivate`,
+  HOLD_TEMPLATE: (id) => `/visit-targets/templates/${id}/hold`,
+UNHOLD_TEMPLATE: (id) => `/visit-targets/templates/${id}/unhold`,
+DELETE_TEMPLATE_PERMANENT: (id) => `/visit-targets/templates/${id}/permanent-delete`,
 
 };
 // 

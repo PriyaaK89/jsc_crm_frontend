@@ -152,7 +152,7 @@ const OfferLetterPage = () => {
         emp_state: emp.state || "",
         designation: emp.job_role_name || "",
         department: emp.department_name || "",
-        place_of_posting: emp.city || "",
+        place_of_posting: emp.headquarter || "",
         annual_earning: emp.salary || "",
         reporting_officer_name: emp.reporting_officer_name || "",
       }));

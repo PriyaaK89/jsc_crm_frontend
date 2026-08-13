@@ -75,7 +75,6 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
       formDataObj.append("document_type", "offer_letter");
       formDataObj.append("email", employee?.email);
       formDataObj.append("phone", employee?.contact_no);
-      formDataObj.append( "document_type", "offer_letter" );
       formDataObj.append("reference_no", formData.offer_ref_no);
 
       if (pdfBlob.size > 5 * 1024 * 1024) {

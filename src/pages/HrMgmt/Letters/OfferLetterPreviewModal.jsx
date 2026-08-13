@@ -505,13 +505,13 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
                       <Flex>
                         <Box flex="1">
                           <Text fontSize="12px">
-                            <b>Authorized Signatory:</b> {formData?.authorised_signatory}
+                            <b>Authorized Signatory:</b> <b>{formData?.authorised_signatory} </b>
                           </Text>
                         </Box>
 
                         <Box flex="1" textAlign="left">
                           <Text fontSize="12px">
-                            <b>Name:</b> {employee?.name}
+                            <b>Name:</b> <b>{employee?.name} </b>
                           </Text>
                         </Box>
                       </Flex>
@@ -519,14 +519,14 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
                       <Flex>
                         <Box flex="1">
                           <Text fontSize="12px">
-                            <b>Designation:</b> Partner / Authorized Signatory
+                            <b>Designation:</b> <b>Partner / Authorized Signatory </b>
                           </Text>
                         </Box>
 
                         <Box flex="1" textAlign="left">
                           <Text fontSize="12px" display="flex" width="125%">
                             <b>Designation Offered:</b>
-                            <p> {formData?.designation || employee?.job_role_name}</p>
+                           <b> <p> {formData?.designation || employee?.job_role_name}</p> </b>
                           </Text>
                         </Box>
                       </Flex>
@@ -534,13 +534,13 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
                       <Flex>
                         <Box flex="1">
                           <Text fontSize="12px">
-                            <b>Place:</b> Jaipur, Rajasthan
+                            <b>Place:</b> <b>Jaipur, Rajasthan </b>
                           </Text>
                         </Box>
 
                         <Box flex="1" textAlign="left">
                           <Text fontSize="12px">
-                            <b>Place:</b> {formData?.place_of_posting || employee?.city}
+                            <b>Place:</b> <b> {employee?.city}, {formData?.emp_state} </b>
                           </Text>
                         </Box>
                       </Flex>

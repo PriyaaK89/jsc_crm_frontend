@@ -109,6 +109,7 @@ const OfferLetterPage = () => {
     headquarter: "",
     working_area: "",
     place_of_posting: "",
+    city: "",
     emp_state: "",
     proposed_joining_date: "",
 
@@ -154,6 +155,7 @@ const OfferLetterPage = () => {
         department: emp.department_name || "",
         place_of_posting: emp.headquarter || "",
         annual_earning: emp.salary || "",
+        city: emp.city || "",
         reporting_officer_name: emp.reporting_officer_name || "",
       }));
 
@@ -491,8 +493,7 @@ useEffect(() => {
             <Checkbox
               isChecked={formData.show_stamp}
               onChange={(e) => setField("show_stamp", e.target.checked)}
-              colorScheme="blue"
-            >
+              colorScheme="blue">
               <HStack spacing={3} align="center">
                 <Text fontSize="14px" fontWeight="500" color="gray.700"> Show Company Stamp </Text>
                 <Image src={jsc_stamp} width="97px" />
@@ -504,15 +505,11 @@ useEffect(() => {
       </VStack>
 
       <Flex justify="center" mt={8}>
-        <Button
-          colorScheme="blue"
+        <Button colorScheme="blue"
           bg="#5570F1" fontSize="14px"
           _hover={{ bg: "#4560E0" }}
-          size="lg" height="38px"
-          px={10}
-          borderRadius="10px"
-          onClick={onOpen}
-        >
+          size="lg" height="38px" px={10}
+          borderRadius="10px" onClick={onOpen} >
           Show Preview
         </Button>
       </Flex>

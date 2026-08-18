@@ -18,6 +18,7 @@ import {
 } from "../../Apis/commanApi";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import WhatsappMessageModal from "../../components/models/whatsappnotification/WhatsappMessageModal";
 
 // ─── Styles (matching Sales component) ───────────────────────────────────────
 const sectionStyle = {
@@ -168,6 +169,10 @@ const GenerateCreditNote = ({ salesLedger }) => {
     security_amount: "0",
     credit_limit: "Not Specified",
   });
+
+  const { isOpen: isWhatsappModalOpen, onOpen: openWhatsappModal, onClose: closeWhatsappModal, } = useDisclosure();
+  const [isSendingWhatsapp, setIsSendingWhatsapp] = useState(false);
+  const [createdCreditNoteId, setCreatedCreditNoteId] = useState(null);
 
   // ── Invoice search
   const [invoiceSearchList, setInvoiceSearchList] = useState([]);
@@ -368,7 +373,7 @@ const GenerateCreditNote = ({ salesLedger }) => {
     // Fetch bill references for this sale
     try {
       const res = await API.get(
-        `${API_ENDPOINTS.GET_SALES_BILL_REFERENCES}?sale_id=${sale.id}`
+        `${API_ENDPOINTS.GET_SALES_BILL_REFERENCES}?customer_ledger_id=${customerLedgerId}&sale_id=${sale.id}`
       );
       setBillReferences(res?.data?.data || []);
     } catch (e) {
@@ -696,37 +701,21 @@ const GenerateCreditNote = ({ salesLedger }) => {
         JSON.stringify(
           validItems.map((it) => ({
             stock_item_id: it.stock_item_id,
-
             godown_id: it.godown_id || null,
-
             batch_no: it.batch_no || null,
-
             available_qty: Number(it.available_qty || 0),
-
             return_qty: Number(it.return_qty || 0),
-
             rate: Number(it.rate || 0),
-
             unit_id: it.unit_id || null,
-
             alt_unit_id: it.alt_unit_id || null,
-
             alt_unit_qty: it.alt_unit_qty || null,
-
             amount: Number(it.amount || 0),
-
             igst_percent: Number(it.igst_percent || 0),
-
             igst_amount: Number(it.igst_amount || 0),
-
             cgst_percent: Number(it.cgst_percent || 0),
-
             cgst_amount: Number(it.cgst_amount || 0),
-
             sgst_percent: Number(it.sgst_percent || 0),
-
             sgst_amount: Number(it.sgst_amount || 0),
-
             total_amount: Number(it.total_amount || 0),
           }))
         )
@@ -761,7 +750,8 @@ const GenerateCreditNote = ({ salesLedger }) => {
           status: "success",
           duration: 3000,
         });
-        handleReset();
+        setCreatedCreditNoteId(res.data.credit_note_id);
+        openWhatsappModal();
         loadVoucherNo();
       } else {
         toast({
@@ -828,6 +818,35 @@ const GenerateCreditNote = ({ salesLedger }) => {
     }
   };
 
+  const handleWhatsappModalClose = () => {
+    closeWhatsappModal();
+    setCreatedCreditNoteId(null);
+    handleReset();
+  };
+
+  const handleSendWhatsappConfirm = async () => {
+    if (!createdCreditNoteId) return;
+
+    setIsSendingWhatsapp(true);
+    try {
+      await API.post(API_ENDPOINTS.SEND_CREDIT_NOTE_WHATSAPP(createdCreditNoteId));
+      toast({
+        description: "WhatsApp message sent successfully!",
+        status: "success",
+        duration: 3000,
+      });
+    } catch (err) {
+      toast({
+        description:
+          err?.response?.data?.message || "Failed to send WhatsApp message",
+        status: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsSendingWhatsapp(false);
+      handleWhatsappModalClose();
+    }
+  };
 
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -1597,6 +1616,17 @@ const GenerateCreditNote = ({ salesLedger }) => {
           </Button>
         </Flex>
       </Box>
+
+      <WhatsappMessageModal
+        isWhatsappModalOpen={isWhatsappModalOpen}
+        onWhatsappModalClose={handleWhatsappModalClose}
+        onConfirm={handleSendWhatsappConfirm}
+        isSending={isSendingWhatsapp}
+        ledgerName={
+          customerList.find((l) => String(l.id) === String(customerLedgerId))
+            ?.ledger_name
+        }
+      />
 
       {/* ── Godown / Batch Modal ── */}
       <Modal isOpen={isGodownOpen} onClose={closeGodown} isCentered size="lg">

@@ -4,8 +4,7 @@ import {
   Textarea, Table, Thead, Tbody, Tr, Th, Td, Button, Flex,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton,
   ModalBody, ModalFooter, Badge, Spinner, useToast, HStack, Image,
-  Tag,
-  useDisclosure,
+  Tag, useDisclosure,
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../../services/api";
@@ -44,11 +43,7 @@ const ReceiptApproval = () => {
   const [returnImage, setReturnImage] = useState(null);
   const [remarks, setRemarks] = useState("");
 
-  const {
-    isOpen: isWhatsappModalOpen,
-    onOpen: onWhatsappModalOpen,
-    onClose: onWhatsappModalClose,
-  } = useDisclosure();
+  const { isOpen: isWhatsappModalOpen, onOpen: onWhatsappModalOpen, onClose: onWhatsappModalClose, } = useDisclosure();
   const [sendingWhatsapp, setSendingWhatsapp] = useState(false);
   const [approvedReceiptId, setApprovedReceiptId] = useState(null);
 
@@ -233,6 +228,21 @@ const ReceiptApproval = () => {
     }
   };
 
+  const applyWaterfallAllocation = (rows, outsideAmount, billsList = pendingBills) => {
+    let remaining = Number(outsideAmount || 0);
+    return rows.map((row) => {
+      if (row.reference_type === "AGST REF" && row.sales_bill_reference_id) {
+        const bill = billsList.find((b) => b.id === row.sales_bill_reference_id);
+        const pendingAmt = bill ? Number(bill.pending_amount) : 0;
+        const allocated = Math.max(0, Math.min(remaining, pendingAmt));
+        remaining -= allocated;
+        return { ...row, reference_amount: allocated };
+      }
+      remaining -= Number(row.reference_amount || 0);
+      return row;
+    });
+  };
+
   // ── field edit helpers ────────────────────────────────────────────────────
 
   const handleFieldChange = (field, value) => {
@@ -284,20 +294,21 @@ const ReceiptApproval = () => {
         setPendingBills(serverBills);
 
         const savedRefs = formData.entries[index]?.bill_references ?? [];
-        setBillReferenceData(
-          savedRefs.length > 0
-            ? savedRefs
-            : [
-              {
-                reference_type: "AGST REF",
-                reference_no: "",
-                sales_bill_reference_id: null,
-                reference_amount: formData.entries[index]?.amount || "",
-                due_date: "",
-                dr_cr: "Cr",
-              },
-            ]
-        );
+        if (savedRefs.length > 0) {
+          const rehydrated = savedRefs.map((ref) => {
+            if (ref.reference_type === "AGST REF" && !ref.sales_bill_reference_id) {
+              const matched = serverBills.find((b) => b.reference_no === ref.reference_no);
+              return matched ? { ...ref, sales_bill_reference_id: matched.id } : ref;
+            }
+            return ref;
+          });
+          const entryAmount = formData.entries[index]?.amount || 0;
+          setBillReferenceData(applyWaterfallAllocation(rehydrated, entryAmount, serverBills));
+        } else {
+          setBillReferenceData([
+            { reference_type: "AGST REF", reference_no: "", sales_bill_reference_id: null, reference_amount: 0, due_date: "", dr_cr: "Cr" },
+          ]);
+        }
       }
     } catch (err) {
       toast({
@@ -313,6 +324,8 @@ const ReceiptApproval = () => {
 
   const handleAgstRefSelect = (rowIndex, selectedReferenceNo) => {
     const matchedBill = pendingBills.find((b) => b.reference_no === selectedReferenceNo);
+    const outsideAmount = formData.entries[selectedEntryIndex]?.amount || 0;
+
     setBillReferenceData((prev) => {
       const updated = [...prev];
       updated[rowIndex] = {
@@ -321,70 +334,102 @@ const ReceiptApproval = () => {
         sales_bill_reference_id: matchedBill ? matchedBill.id : null,
         due_date: matchedBill?.due_date ?? updated[rowIndex].due_date,
       };
-      const total = updated.reduce((sum, r) => sum + Number(r.reference_amount || 0), 0);
-      setFormData((prevForm) => {
-        const entries = [...prevForm.entries];
-        entries[selectedEntryIndex] = { ...entries[selectedEntryIndex], amount: total };
-        return { ...prevForm, entries };
-      });
-      return updated;
+      return applyWaterfallAllocation(updated, outsideAmount);
     });
   };
 
+  // const handleBillReferenceChange = (rowIndex, field, value) => {
+  //   setBillReferenceData((prev) => {
+  //     const updated = [...prev];
+  //     updated[rowIndex] = { ...updated[rowIndex], [field]: value };
+  //     if (field === "reference_amount") {
+  //       const total = updated.reduce((sum, r) => sum + Number(r.reference_amount || 0), 0);
+  //       setFormData((prevForm) => {
+  //         const entries = [...prevForm.entries];
+  //         entries[selectedEntryIndex] = { ...entries[selectedEntryIndex], amount: total };
+  //         return { ...prevForm, entries };
+  //       });
+  //     }
+  //     return updated;
+  //   });
+  // };
   const handleBillReferenceChange = (rowIndex, field, value) => {
+    const outsideAmount = formData.entries[selectedEntryIndex]?.amount || 0;
     setBillReferenceData((prev) => {
-      const updated = [...prev];
+      let updated = [...prev];
       updated[rowIndex] = { ...updated[rowIndex], [field]: value };
-      if (field === "reference_amount") {
-        const total = updated.reduce((sum, r) => sum + Number(r.reference_amount || 0), 0);
-        setFormData((prevForm) => {
-          const entries = [...prevForm.entries];
-          entries[selectedEntryIndex] = { ...entries[selectedEntryIndex], amount: total };
-          return { ...prevForm, entries };
-        });
+      if (field === "reference_type" || field === "reference_amount") {
+        updated = applyWaterfallAllocation(updated, outsideAmount);
       }
       return updated;
     });
   };
-
   const addBillRow = () => {
-    setBillReferenceData((prev) => [
-      ...prev,
-      {
-        reference_type: "ON ACCOUNT",
-        reference_no: "",
-        sales_bill_reference_id: null,
-        reference_amount: 0,
-        due_date: "",
-        dr_cr: "Cr",
-      },
-    ]);
+    const outsideAmount = formData.entries[selectedEntryIndex]?.amount || 0;
+    setBillReferenceData((prev) =>
+      applyWaterfallAllocation(
+        [...prev, { reference_type: "ON ACCOUNT", reference_no: "", sales_bill_reference_id: null, reference_amount: 0, due_date: "", dr_cr: "Cr" }],
+        outsideAmount
+      )
+    );
   };
 
   const removeBillRow = (rowIndex) => {
-    setBillReferenceData((prev) => {
-      const updated = prev.filter((_, i) => i !== rowIndex);
-      const total = updated.reduce((sum, r) => sum + Number(r.reference_amount || 0), 0);
-      setFormData((prevForm) => {
-        const entries = [...prevForm.entries];
-        entries[selectedEntryIndex] = { ...entries[selectedEntryIndex], amount: total };
-        return { ...prevForm, entries };
-      });
-      return updated;
-    });
+    const outsideAmount = formData.entries[selectedEntryIndex]?.amount || 0;
+    setBillReferenceData((prev) =>
+      applyWaterfallAllocation(prev.filter((_, i) => i !== rowIndex), outsideAmount)
+    );
   };
+  // const addBillRow = () => {
+  //   setBillReferenceData((prev) => [
+  //     ...prev,
+  //     {
+  //       reference_type: "ON ACCOUNT",
+  //       reference_no: "",
+  //       sales_bill_reference_id: null,
+  //       reference_amount: 0,
+  //       due_date: "",
+  //       dr_cr: "Cr",
+  //     },
+  //   ]);
+  // };
+
+  // const removeBillRow = (rowIndex) => {
+  //   setBillReferenceData((prev) => {
+  //     const updated = prev.filter((_, i) => i !== rowIndex);
+  //     const total = updated.reduce((sum, r) => sum + Number(r.reference_amount || 0), 0);
+  //     setFormData((prevForm) => {
+  //       const entries = [...prevForm.entries];
+  //       entries[selectedEntryIndex] = { ...entries[selectedEntryIndex], amount: total };
+  //       return { ...prevForm, entries };
+  //     });
+  //     return updated;
+  //   });
+  // };
+
+  // const saveBillAllocation = () => {
+  //   const totalAllocated = billReferenceData.reduce(
+  //     (sum, r) => sum + Number(r.reference_amount || 0),
+  //     0
+  //   );
+  //   setFormData((prev) => {
+  //     const entries = [...prev.entries];
+  //     entries[selectedEntryIndex] = {
+  //       ...entries[selectedEntryIndex],
+  //       amount: totalAllocated,
+  //       bill_references: billReferenceData,
+  //     };
+  //     return { ...prev, entries };
+  //   });
+  //   setBillModal(false);
+  // };
 
   const saveBillAllocation = () => {
-    const totalAllocated = billReferenceData.reduce(
-      (sum, r) => sum + Number(r.reference_amount || 0),
-      0
-    );
     setFormData((prev) => {
       const entries = [...prev.entries];
       entries[selectedEntryIndex] = {
         ...entries[selectedEntryIndex],
-        amount: totalAllocated,
-        bill_references: billReferenceData,
+        bill_references: billReferenceData, // amount stays as the outside-typed value
       };
       return { ...prev, entries };
     });
@@ -453,48 +498,48 @@ const ReceiptApproval = () => {
     }
   };
 
-const handleSendReceiptWhatsapp = async () => {
-  if (!approvedReceiptId) return;
-  try {
-    setSendingWhatsapp(true);
-    const res = await API.post(API_ENDPOINTS.send_receipt_whatsapp(approvedReceiptId));
+  const handleSendReceiptWhatsapp = async () => {
+    if (!approvedReceiptId) return;
+    try {
+      setSendingWhatsapp(true);
+      const res = await API.post(API_ENDPOINTS.send_receipt_whatsapp(approvedReceiptId));
 
-    const results = res.data.data || [];
-    const failed = results.filter((r) => !r.sent);
+      const results = res.data.data || [];
+      const failed = results.filter((r) => !r.sent);
 
-    if (failed.length === 0) {
-      toast({ title: "WhatsApp message sent", status: "success", duration: 3000, isClosable: true });
-    } else if (failed.length < results.length) {
+      if (failed.length === 0) {
+        toast({ title: "WhatsApp message sent", status: "success", duration: 3000, isClosable: true });
+      } else if (failed.length < results.length) {
+        toast({
+          title: "Some WhatsApp messages could not be sent",
+          description: failed.map((f) => f.reason).join(", "),
+          status: "warning",
+          duration: 4000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "WhatsApp message not sent",
+          description: failed[0]?.reason || "Unknown error",
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.error("Send WhatsApp error:", error);
       toast({
-        title: "Some WhatsApp messages could not be sent",
-        description: failed.map((f) => f.reason).join(", "),
-        status: "warning",
-        duration: 4000,
-        isClosable: true,
-      });
-    } else {
-      toast({
-        title: "WhatsApp message not sent",
-        description: failed[0]?.reason || "Unknown error",
+        title: error?.response?.data?.message || "Failed to send WhatsApp message",
         status: "error",
-        duration: 4000,
+        duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setSendingWhatsapp(false);
+      onWhatsappModalClose();
+      navigate(-1);
     }
-  } catch (error) {
-    console.error("Send WhatsApp error:", error);
-    toast({
-      title: error?.response?.data?.message || "Failed to send WhatsApp message",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-  } finally {
-    setSendingWhatsapp(false);
-    onWhatsappModalClose();
-    navigate(-1);
-  }
-};
+  };
 
   const handleSkipWhatsapp = () => {
     onWhatsappModalClose();
@@ -592,6 +637,20 @@ const handleSendReceiptWhatsapp = async () => {
       </Flex>
     );
   }
+
+  const billModalTotal = billReferenceData.reduce((sum, b) => sum + Number(b.reference_amount || 0), 0);
+  const entryAmount = selectedEntryIndex !== null ? Number(formData.entries[selectedEntryIndex]?.amount || 0) : 0;
+  const billDiff = entryAmount - billModalTotal;
+  const hasBlankAgstRef = billReferenceData.some(
+    (row) => row.reference_type === "AGST REF" && !row.sales_bill_reference_id
+  );
+  const isAmountMismatched = Math.abs(billDiff) > 0.01;
+  const billModalError = hasBlankAgstRef
+    ? "Please select a bill for all Agst Ref rows."
+    : isAmountMismatched
+      ? "Allocated amount doesn't match entry amount."
+      : null;
+  const isSaveDisabled = billModalError !== null || billReferenceData.length === 0;
 
   return (
     <>
@@ -857,14 +916,9 @@ const handleSendReceiptWhatsapp = async () => {
         {approval.remarks && (
           <Box mb={5}>
             <FormLabel>Previous Remarks</FormLabel>
-            <Box
-              p={3}
-              borderRadius="6px"
-              bg="#f0f4f0"
-              border="1px solid #c8d0d8"
-              fontSize="14px"
-              color="#333"
-            >
+            <Box p={3} borderRadius="6px"
+              bg="#f0f4f0" border="1px solid #c8d0d8"
+              fontSize="14px" color="#333" >
               {approval.remarks}
             </Box>
           </Box>
@@ -920,13 +974,8 @@ const handleSendReceiptWhatsapp = async () => {
                   formData.entries[selectedEntryIndex]?.ledger_id && (
                     <Text as="span" fontWeight="normal" fontSize="13px" ml={2} color="gray.600">
                       —{" "}
-                      {
-                        ledger.find(
-                          (l) =>
-                            String(l.id) ===
-                            String(formData.entries[selectedEntryIndex].ledger_id)
-                        )?.ledger_name
-                      }
+                      {ledger.find((l) => String(l.id) ===
+                        String(formData.entries[selectedEntryIndex].ledger_id))?.ledger_name}
                     </Text>
                   )}
               </HStack>
@@ -938,156 +987,153 @@ const handleSendReceiptWhatsapp = async () => {
                   <Spinner size="lg" />
                 </Flex>
               ) : (
-                <Table size="sm" variant="simple">
-                  <Thead bg="gray.100">
-                    <Tr>
-                      <Th {...thStyle}>Type of Ref</Th>
-                      <Th {...thStyle}>Reference No</Th>
-                      <Th {...thStyle}>Due Date</Th>
-                      <Th {...thStyle} isNumeric>Amount</Th>
-                      <Th {...thStyle}>Dr/Cr</Th>
-                      <Th {...thStyle}>Delete</Th>
-                      <Th {...thStyle}>Add</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {billReferenceData.map((bill, rowIndex) => (
-                      <Tr key={rowIndex}>
-                        <Td minW="130px">
-                          <Select
-                            size="sm"
-                            value={bill.reference_type}
-                            onChange={(e) =>
-                              handleBillReferenceChange(rowIndex, "reference_type", e.target.value)
-                            }
-                          >
-                            <option value="AGST REF">Agst Ref</option>
-                            <option value="ADVANCE">Advance</option>
-                            <option value="ON ACCOUNT">On Account</option>
-                          </Select>
-                        </Td>
-                        <Td minW="200px">
-                          {bill.reference_type === "AGST REF" ? (
-                            <Select
-                              size="sm"
-                              value={bill.reference_no}
-                              onChange={(e) => handleAgstRefSelect(rowIndex, e.target.value)}
-                            >
-                              <option value="">-- Select --</option>
-                              {pendingBills.map((pb) => (
-                                <option key={pb.id} value={pb.reference_no}>
-                                  {pb.reference_no} — {pb.pending_amount} Cr
-                                </option>
-                              ))}
-                            </Select>
-                          ) : (
-                            <Input
-                              size="sm"
-                              value={bill.reference_no}
-                              onChange={(e) =>
-                                handleBillReferenceChange(rowIndex, "reference_no", e.target.value)
-                              }
-                            />
-                          )}
-                        </Td>
-                        <Td>
-                          <Input
-                            size="sm"
-                            type="date"
-                            value={bill.due_date || ""}
-                            onChange={(e) =>
-                              handleBillReferenceChange(rowIndex, "due_date", e.target.value)
-                            }
-                          />
-                        </Td>
-                        <Td>
-                          <Input
-                            size="sm"
-                            type="number"
-                            value={bill.reference_amount}
-                            onChange={(e) =>
-                              handleBillReferenceChange(rowIndex, "reference_amount", e.target.value)
-                            }
-                            w="100px"
-                          />
-                        </Td>
-                        <Td>
-                          <Input size="sm" {...readonlyInputStyle} value={bill.dr_cr || "Cr"} readOnly w="50px" />
-                        </Td>
-                        <Td textAlign="center">
-                          <Button size="xs" colorScheme="red" onClick={() => removeBillRow(rowIndex)}>
-                            ✕
-                          </Button>
-                        </Td>
-                        <Td textAlign="center">
-                          {rowIndex === billReferenceData.length - 1 && (
-                            <Button size="xs" colorScheme="green" onClick={addBillRow}>
-                              +
-                            </Button>
-                          )}
-                        </Td>
-                      </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
+               <>
+                < Flex gap={6} mb={4} p={3} bg="gray.50" borderRadius="md" fontSize="sm">
+              <Box>
+                <Text color="gray.500">Entry Amount</Text>
+                <Text fontWeight="semibold">{entryAmount.toFixed(2)}</Text>
+              </Box>
+              <Box>
+                <Text color="gray.500">Allocated</Text>
+                <Text fontWeight="semibold">{billModalTotal.toFixed(2)}</Text>
+              </Box>
+              <Box>
+                <Text color="gray.500">Difference</Text>
+                <Text
+                  fontWeight="semibold"
+                  color={billDiff === 0 ? "green.600" : billDiff < 0 ? "red.600" : "orange.600"}
+                >
+                  {billDiff.toFixed(2)}
+                </Text>
+              </Box>
+            </Flex>
+            <Table size="sm" variant="simple" borderRadius="8px" border="1px solid grey">
+              <Thead bg="gray.100" borderRadius="8px 8px 0px 0px">
+                <Tr>
+                  <Th {...thStyle}>Type of Ref</Th>
+                  <Th {...thStyle}>Reference No</Th>
+                  <Th {...thStyle}>Due Date</Th>
+                  <Th {...thStyle} isNumeric>Amount</Th>
+                  <Th {...thStyle}>Dr/Cr</Th>
+                  <Th {...thStyle}>Delete</Th>
+                  <Th {...thStyle}>Add</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {billReferenceData.map((bill, rowIndex) => (
+                  <Tr key={rowIndex}>
+                    <Td minW="130px">
+                      <Select
+                       
+                        value={bill.reference_type}
+                        onChange={(e) => handleBillReferenceChange(rowIndex, "reference_type", e.target.value)} >
+                        <option value="AGST REF">Agst Ref</option>
+                        <option value="ADVANCE">Advance</option>
+                        <option value="ON ACCOUNT">On Account</option>
+                      </Select>
+                    </Td>
+                    <Td minW="200px">
+                      {bill.reference_type === "AGST REF" ? (
+                        <Select
+                          
+                          value={bill.reference_no}
+                          onChange={(e) => handleAgstRefSelect(rowIndex, e.target.value)} >
+                          <option value="">-- Select --</option>
+                          {pendingBills.map((pb) => (
+                            <option key={pb.id} value={pb.reference_no}>
+                              {pb.reference_no} — {pb.pending_amount} Cr
+                            </option>
+                          ))}
+                        </Select>
+                      ) : (
+                        <Input
+                        
+                          value={bill.reference_no}
+                          onChange={(e) => handleBillReferenceChange(rowIndex, "reference_no", e.target.value)} />
+                      )}
+                    </Td>
+                    <Td>
+                      <Input
+                        type="date"
+                        value={bill.due_date || ""}
+                        onChange={(e) => handleBillReferenceChange(rowIndex, "due_date", e.target.value)} />
+                    </Td>
+                    <Td>
+                      <Input  type="number" min={0}
+                        value={bill.reference_amount}
+                        isReadOnly={bill.reference_type === "AGST REF"}
+                        bg={bill.reference_type === "AGST REF" ? "gray.50" : "white"}
+                        onChange={(e) => handleBillReferenceChange(rowIndex, "reference_amount", e.target.value)}
+                        w="100px" />
+                    </Td>
+                    <Td>
+                      <Input  {...readonlyInputStyle} value={bill.dr_cr || "Cr"} readOnly w="50px" />
+                    </Td>
+                    <Td textAlign="center">
+                      <Button size="xs" colorScheme="red" onClick={() => removeBillRow(rowIndex)}> ✕ </Button>
+                    </Td>
+                    <Td textAlign="center">
+                      {rowIndex === billReferenceData.length - 1 && (
+                        <Button size="xs" colorScheme="green" onClick={addBillRow}> + </Button>
+                      )}
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+            </>
               )}
-            </ModalBody>
-            <ModalFooter gap={3}>
-              <Button variant="outline" onClick={() => setBillModal(false)}>
-                Cancel
-              </Button>
-              <Button colorScheme="blue" onClick={saveBillAllocation}>
-                Save
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+          </ModalBody>
+          <ModalFooter gap={3} flexDirection="column" alignItems="stretch">
+            {billModalError && (
+              <Text color="red.500" fontSize="sm" mb={2} textAlign="right">{billModalError}</Text>
+            )}
+            <Flex justify="flex-end" gap={3}>
+              <Button variant="outline" onClick={() => setBillModal(false)}>Cancel</Button>
+              <Button colorScheme="blue" onClick={saveBillAllocation} isDisabled={isSaveDisabled}>Save</Button>
+            </Flex>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
-        {/* ── REJECT / RETURN REASON MODAL ── */}
-        <Modal isOpen={!!reasonModal} onClose={() => setReasonModal(null)}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#c57e14" pl={3}>
-              {reasonModal === "REJECT" ? "Reject Receipt Request" : "Return Receipt Request"}
-            </ModalHeader>
-            <ModalCloseButton top={0} right={0} />
-            <ModalBody>
-              <FormControl mb={4} isRequired>
-                <FormLabel>Reason</FormLabel>
-                <Textarea value={reason} onChange={(e) => setReason(e.target.value)} />
+      {/* ── REJECT / RETURN REASON MODAL ── */}
+      <Modal isOpen={!!reasonModal} onClose={() => setReasonModal(null)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#c57e14" pl={3}>
+            {reasonModal === "REJECT" ? "Reject Receipt Request" : "Return Receipt Request"}
+          </ModalHeader>
+          <ModalCloseButton top={0} right={0} />
+          <ModalBody>
+            <FormControl mb={4} isRequired>
+              <FormLabel>Reason</FormLabel>
+              <Textarea value={reason} onChange={(e) => setReason(e.target.value)} />
+            </FormControl>
+
+            {reasonModal === "RETURN" && (
+              <FormControl isRequired>
+                <FormLabel>Return Image</FormLabel>
+                <Input type="file" accept=".jpg,.jpeg,.png,.pdf"
+                  onChange={(e) => setReturnImage(e.target.files[0] || null)} />
               </FormControl>
-
-              {reasonModal === "RETURN" && (
-                <FormControl isRequired>
-                  <FormLabel>Return Image</FormLabel>
-                  <Input
-                    type="file"
-                    accept=".jpg,.jpeg,.png,.pdf"
-                    onChange={(e) => setReturnImage(e.target.files[0] || null)}
-                  />
-                </FormControl>
-              )}
-            </ModalBody>
-            <ModalFooter gap={3}>
-              <Button variant="ghost"
-                colorScheme="gray"
-                size="sm" border="1px solid grey" onClick={() => setReasonModal(null)}>
-                Cancel
-              </Button>
-              <Button variant="outline"
-                height="38px" borderRadius="13px"
-                size="sm"
-                px={6}
-                colorScheme={reasonModal === "REJECT" ? "red" : "orange"}
-                onClick={reasonModal === "REJECT" ? handleReject : handleReturn}
-                isLoading={actionLoading}
-              >
-                Confirm {reasonModal === "REJECT" ? "Reject" : "Return"}
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </Box>
+            )}
+          </ModalBody>
+          <ModalFooter gap={3}>
+            <Button variant="ghost" colorScheme="gray"
+              size="sm" border="1px solid grey" onClick={() => setReasonModal(null)}>
+              Cancel
+            </Button>
+            <Button variant="outline"
+              height="38px" borderRadius="13px" size="sm" px={6}
+              colorScheme={reasonModal === "REJECT" ? "red" : "orange"}
+              onClick={reasonModal === "REJECT" ? handleReject : handleReturn}
+              isLoading={actionLoading} >
+              Confirm {reasonModal === "REJECT" ? "Reject" : "Return"}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </Box >
     </>
   );
 };

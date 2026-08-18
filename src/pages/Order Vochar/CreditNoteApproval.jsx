@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import {
-  Box, Grid, GridItem, Input, Select, Text, Button,
+import { Box, Grid, GridItem, Input, Select, Text, Button,
   Table, Thead, Tbody, Tr, Th, Td, Modal, ModalOverlay, ModalContent,
   ModalHeader, ModalCloseButton, ModalBody, ModalFooter, FormControl,
-  FormLabel, Textarea, useToast, Spinner, Center, Flex, Badge, Divider, HStack,
-} from "@chakra-ui/react";
+  FormLabel, Textarea, useToast, Spinner, Center, Flex, Badge, Divider, HStack, } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import useUsersapi from "../../Apis/GetUsersapi";
-import {
-  fetchGodownList, fetchBatches, fetchAvailableStock, fetchLedgerDetailsByID,
-} from "../../Apis/commanApi";
+import { fetchGodownList, fetchBatches, fetchAvailableStock, fetchLedgerDetailsByID,} from "../../Apis/commanApi";
+import WhatsappMessageModal from "../../components/models/whatsappnotification/WhatsappMessageModal";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 const round2 = (num) => Math.round((Number(num || 0) + Number.EPSILON) * 100) / 100;
@@ -152,12 +149,18 @@ const CreditNoteApproval = () => {
     dispatchDocImagePath: "",
   });
 
+  const [isWhatsappModalOpen, setIsWhatsappModalOpen] = useState(false);
+const [isSendingWhatsapp, setIsSendingWhatsapp] = useState(false);
+const [approvedCreditNoteId, setApprovedCreditNoteId] = useState(null);
+
   const isReturned = approval?.status === "RETURNED";
   const isReturnedToMe = approval?.returned_to_user_id === approval?.current_approver_id;
   const canResubmit = isReturned && isReturnedToMe;
   const isDispatcherOrSenior = approval
     ? DISPATCHER_LEVELS.includes(approval.approval_level)
     : false;
+
+  const isFinalApprover = approval?.approval_level === "SENIOR";
 
   // console.log(formData.originalInvoiceNo, "originalInvoice NO12345")
 
@@ -253,10 +256,10 @@ const CreditNoteApproval = () => {
           billTNo: cleanQuoted(payload.bill_t_no),
           vehicleNo: cleanQuoted(payload.vehicle_no),
           transportFreight: payload.transport_freight ?? "0",
-          localFreight: payload.local_freight ?? "0",
-          loadFreight: payload.load_freight ?? "0",
-          unloadFreight: payload.unload_freight ?? "0",
-          deliveryCharge: payload.delivery_charge ?? "0",
+          localFreight: payload.local_freight ?? "",
+          loadFreight: payload.load_freight ?? "",
+          unloadFreight: payload.unload_freight ?? "",
+          deliveryCharge: payload.delivery_charge ?? "",
           uniqueNumber: cleanQuoted(payload.unique_number),
           transporter: cleanQuoted(payload.transporter),
           billTImage: payload.billTImageUrl || "",
@@ -609,48 +612,55 @@ const CreditNoteApproval = () => {
   };
 
   // ─── Actions ─────────────────────────────────────────────────────────────
-  const handleApprove = async () => {
-    if (items.length === 0) {
-      toast({ title: "At least one item is required", status: "warning", duration: 3000, isClosable: true });
-      return;
+const handleApprove = async () => {
+  if (items.length === 0) {
+    toast({ title: "At least one item is required", status: "warning", duration: 3000, isClosable: true });
+    return;
+  }
+
+  const validationErrors = validate();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    toast({ title: "Required fields missing", description: "Please fill in all required fields before approving.", status: "warning", duration: 4000, isClosable: true });
+    return;
+  }
+
+  setErrors({});
+  setSubmitting(true);
+  try {
+    const payload = buildUpdatedPayload();
+    const formDataObj = new FormData();
+    formDataObj.append("remarks", "Approved");
+    formDataObj.append("payload_json", JSON.stringify(payload));
+
+    if (dispatchData.dispatchDocImageFile) {
+      formDataObj.append("dispatch_doc_image", dispatchData.dispatchDocImageFile, dispatchData.dispatchDocImageFile.name);
+    }
+    if (dispatchData.billTImageFile) {
+      formDataObj.append("bill_t_image", dispatchData.billTImageFile, dispatchData.billTImageFile.name);
     }
 
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      toast({ title: "Required fields missing", description: "Please fill in all required fields before approving.", status: "warning", duration: 4000, isClosable: true });
-      return;
-    }
+    // ── capture the response here ──
+    const res = await API.post(
+      `${API_ENDPOINTS.APPROVE_CREDIT_NOTE_REQUEST}/${approvalId}`,
+      formDataObj,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
 
-    setErrors({});
-    setSubmitting(true);
-    try {
-      const payload = buildUpdatedPayload();
-      const formDataObj = new FormData();
-      formDataObj.append("remarks", "Approved");
-      formDataObj.append("payload_json", JSON.stringify(payload));
+    toast({ title: "Approved", description: "Credit note approved successfully", status: "success", duration: 3000, isClosable: true });
 
-      if (dispatchData.dispatchDocImageFile) {
-        formDataObj.append("dispatch_doc_image", dispatchData.dispatchDocImageFile, dispatchData.dispatchDocImageFile.name);
-      }
-      if (dispatchData.billTImageFile) {
-        formDataObj.append("bill_t_image", dispatchData.billTImageFile, dispatchData.billTImageFile.name);
-      }
-
-      await API.post(
-        `${API_ENDPOINTS.APPROVE_CREDIT_NOTE_REQUEST}/${approvalId}`,
-        formDataObj,
-        { headers: { "Content-Type": "multipart/form-data" } },
-      );
-
-      toast({ title: "Approved", description: "Credit note approved successfully", status: "success", duration: 3000, isClosable: true });
+    if (isFinalApprover) {
+      setApprovedCreditNoteId(res?.data?.credit_note_id || null);
+      setIsWhatsappModalOpen(true);
+    } else {
       navigate(-1);
-    } catch (error) {
-      toast({ title: "Error", description: error?.response?.data?.message || "Failed to approve credit note", status: "error", duration: 3000, isClosable: true });
-    } finally {
-      setSubmitting(false);
     }
-  };
+  } catch (error) {
+    toast({ title: "Error", description: error?.response?.data?.message || "Failed to approve credit note", status: "error", duration: 3000, isClosable: true });
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   const handleReject = async () => {
     if (!rejectRemarks.trim()) {
@@ -740,6 +750,41 @@ const CreditNoteApproval = () => {
   if (loading) {
     return <Center h="60vh"><Spinner size="xl" color="#4f9190" /></Center>;
   }
+
+  const handleWhatsappModalClose = () => {
+  setIsWhatsappModalOpen(false);
+  setApprovedCreditNoteId(null);
+  navigate(-1);
+};
+
+const handleSendWhatsappConfirm = async () => {
+  if (!approvedCreditNoteId) {
+    toast({ title: "Error", description: "Credit note ID missing, cannot send WhatsApp message", status: "error", duration: 3000, isClosable: true });
+    handleWhatsappModalClose();
+    return;
+  }
+
+  setIsSendingWhatsapp(true);
+  try {
+    const response = await API.post(
+      API_ENDPOINTS.SEND_CREDIT_NOTE_WHATSAPP(approvedCreditNoteId)
+    );
+    if (response?.status === 200) {
+      toast({ title: "Sent", description: "WhatsApp message sent successfully!", status: "success", duration: 3000, isClosable: true });
+    }
+  } catch (err) {
+    toast({
+      title: "Error",
+      description: err?.response?.data?.message || "Failed to send WhatsApp message",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
+  } finally {
+    setIsSendingWhatsapp(false);
+    handleWhatsappModalClose();
+  }
+};
 
   // ─── Render ──────────────────────────────────────────────────────────────
   return (
@@ -1592,6 +1637,13 @@ const CreditNoteApproval = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      <WhatsappMessageModal
+  isWhatsappModalOpen={isWhatsappModalOpen}
+  onWhatsappModalClose={handleWhatsappModalClose}
+  onConfirm={handleSendWhatsappConfirm}
+  isSending={isSendingWhatsapp}
+  ledgerName={formData.partyLedgerName}
+/>
     </Box>
   );
 };

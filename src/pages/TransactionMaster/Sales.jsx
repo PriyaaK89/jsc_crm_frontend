@@ -673,7 +673,7 @@ const SalesTransaction = () => {
                 toast({
                     description: res?.data?.message || "Failed to save.",
                     status: "error",
-                    duration: 2000,
+                    duration: 3000,
                 });
             }
         } catch (err) {

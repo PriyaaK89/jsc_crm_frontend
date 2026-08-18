@@ -285,6 +285,6 @@ export const API_ENDPOINTS = {
   HOLD_TEMPLATE: (id) => `/visit-targets/templates/${id}/hold`,
 UNHOLD_TEMPLATE: (id) => `/visit-targets/templates/${id}/unhold`,
 DELETE_TEMPLATE_PERMANENT: (id) => `/visit-targets/templates/${id}/permanent-delete`,
-
+SEND_CREDIT_NOTE_WHATSAPP: (id) => `/send-credit-note-whatsapp/${id}`,
 };
 // 

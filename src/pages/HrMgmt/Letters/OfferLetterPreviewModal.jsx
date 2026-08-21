@@ -501,7 +501,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
                       treat this offer as lapsed, subject to any written extension.
                     </Text>
 
-                    <VStack spacing={0} align="stretch" mt={4}>
+                    <VStack spacing={0} align="stretch" mt={4} width="100%">
                       <Flex>
                         <Box flex="1">
                           <Text fontSize="12px">
@@ -517,7 +517,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
                       </Flex>
 
                       <Flex>
-                        <Box flex="1">
+                        <Box flex="1" textAlign="left">
                           <Text fontSize="12px">
                             <b>Designation:</b> <b>Partner / Authorized Signatory </b>
                           </Text>

@@ -58,6 +58,17 @@ export const fetchLedgerDropdown = async () => {
   }
 };
 
+export const fetchAssignedLedgerDropdown = async () => {
+    try {
+      const response = await API.get(API_ENDPOINTS.GET_ASSIGNED_LEDGERS_LIST);
+      return response?.data?.data || [];
+      // if (res.status === 200) setLedger(res.data.data);
+    } catch (err) {
+      console.error("Error fetching assigned ledgers", err);
+      return [];
+    }
+  };
+
 // ================= AVAILABLE STOCK =================
 
 export const fetchAvailableStock = async ({ itemId, godownId }) => {

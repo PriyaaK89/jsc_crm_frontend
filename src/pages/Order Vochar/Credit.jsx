@@ -12,6 +12,7 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 import {
   fetchGodownList, fetchLedgerDropdown, fetchLedgerDetailsByID,
   fetchStockItemDetailsByID,
+  fetchAssignedLedgerDropdown,
 } from "../../Apis/commanApi";
 
 const round2 = (n) => Math.round((Number(n || 0) + Number.EPSILON) * 100) / 100;
@@ -104,7 +105,7 @@ const Credit = () => {
     }
   };
 
-  const loadLedgerDropdown = async () => setLedgerList(await fetchLedgerDropdown());
+  const loadLedgerDropdown = async () => setLedgerList(await fetchAssignedLedgerDropdown());
 
   const loadStockItems = async () => {
     const res = await API.get(API_ENDPOINTS.GET_STOCK_ITEM_DROPDOWN);

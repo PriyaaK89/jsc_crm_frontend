@@ -41,10 +41,7 @@ const CreateSalesLayout = () => {
                             </BreadcrumbItem>
                         </Breadcrumb>
                     </HStack>
-
-                    <Text className="action_heading" mb={6} textAlign="center">
-                        Create Sale
-                    </Text>
+                    <Text className="action_heading" mb={6} textAlign="center"> Create Sale</Text>
                    <SalesCreate/>
                 </Box>
             </Box>

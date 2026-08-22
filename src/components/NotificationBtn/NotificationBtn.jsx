@@ -2,27 +2,70 @@ import React, { useEffect, useState } from "react";
 import { Box, Button } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
-import SalesOrderModal from "../models/transaction-flow/SalesOrderModal";
+import NotificationModal from "../models/transaction-flow/NotificationModal";
 import AlertTabModal from "../models/transaction-flow/AlertModal";
-import ReceiptNotificationModal from "../models/transaction-flow/ReceiptNotifications";
-import CreditNoteNotificationModal from "../models/transaction-flow/CreditNoteNotifications";
 
+// Central config: add a new module here and it "just works" everywhere
+const NOTIFICATION_MODULES = {
+  SALES: {
+    label: "Sale Order",
+    moduleType: "SALES",
+    headerTitle: "Sales Order Notifications",
+    emptyTitle: "No sales order notifications",
+    routeBase: "sales",
+    reviewLabel: "sales order",
+  },
+  RECEIPT: {
+    label: "Receipt",
+    moduleType: "RECEIPT",
+    headerTitle: "Receipt Notifications",
+    emptyTitle: "No receipt notifications",
+    routeBase: "receipt",
+    reviewLabel: "receipt voucher",
+  },
+  CREDIT_NOTE: {
+    label: "Credit Note",
+    moduleType: "CREDIT_NOTE",
+    headerTitle: "Credit Note Notifications",
+    emptyTitle: "No credit note notifications",
+    routeBase: "credit-note",
+    reviewLabel: "credit note",
+  },
+  PURCHASE: {
+    label: "Purchase Order",
+    moduleType: "PURCHASE",
+    headerTitle: "Purchase Order Notifications",
+    emptyTitle: "No purchase order notifications",
+    routeBase: "purchase",
+    reviewLabel: "purchase order",
+  },
+  DEBIT_NOTE: {
+    label: "Debit Note",
+    moduleType: "DEBIT_NOTE",
+    headerTitle: "Debit Note Notifications",
+    emptyTitle: "No debit note notifications",
+    routeBase: "debit-note",
+    reviewLabel: "debit note",
+  },
+  PAYMENT: {
+    label: "Payment",
+    moduleType: "PAYMENT",
+    headerTitle: "Payment Notifications",
+    emptyTitle: "No payment notifications",
+    routeBase: "payment",
+    reviewLabel: "payment voucher",
+  },
+};
 
 const NotificationBtn = () => {
   const [counts, setCounts] = useState({
-    sales: 0,
-    purchase: 0,
-    payment: 0,
-    receipt: 0,
-    credit_note: 0,
-    debit_note: 0,
-    alert: 0,
+    sales: 0, purchase: 0, payment: 0, receipt: 0,
+    credit_note: 0, debit_note: 0, alert: 0,
   });
-  const [salesModalOpen, setSalesModalOpen] = useState(false);
+
+  // Single piece of state instead of one boolean per modal
+  const [activeModal, setActiveModal] = useState(null); // e.g. "SALES" | "RECEIPT" | null
   const [alertModalOpen, setAlertModalOpen] = useState(false);
-  const [receiptModalOpen, setReceiptModalOpen] = useState(false);
-  const [creditNoteModalOpen, setCreditNoteModalOpen] = useState(false);
-  const EWAY_BILL_URL = "https://ewaybillgst.gov.in/";
 
   useEffect(() => {
     fetchCounts();
@@ -30,68 +73,21 @@ const NotificationBtn = () => {
 
   const fetchCounts = async () => {
     try {
-      const res = await API.get(
-        API_ENDPOINTS.GET_ORDER_NOTIFICATION_COUNT
-      );
+      const res = await API.get(API_ENDPOINTS.GET_ORDER_NOTIFICATION_COUNT);
 
       const result = {
-        sales: 0,
-        purchase: 0,
-        payment: 0,
-        receipt: 0,
-        credit_note: 0,
-        debit_note: 0,
-        alert: 0,
+        sales: 0, purchase: 0, payment: 0, receipt: 0,
+        credit_note: 0, debit_note: 0, alert: 0,
       };
 
       res.data.data.forEach((item) => {
-        if (
-          item.module_type === "SALES" &&
-          item.notification_category === "APPROVAL"
-        ) {
-          result.sales = item.total;
-        }
-
-        if (
-          item.notification_category === "STATUS"
-        ) {
-          result.alert += item.total;
-        }
-
-        if (
-          item.module_type === "PURCHASE" &&
-          item.notification_category === "APPROVAL"
-        ) {
-          result.purchase = item.total;
-        }
-
-        if (
-          item.module_type === "PAYMENT" &&
-          item.notification_category === "APPROVAL"
-        ) {
-          result.payment = item.total;
-        }
-
-        if (
-          item.module_type === "RECEIPT" &&
-          item.notification_category === "APPROVAL"
-        ) {
-          result.receipt = item.total;
-        }
-
-        if (
-          item.module_type === "CREDIT_NOTE" &&
-          item.notification_category === "APPROVAL"
-        ) {
-          result.credit_note = item.total;
-        }
-
-        if (
-          item.module_type === "DEBIT_NOTE" &&
-          item.notification_category === "APPROVAL"
-        ) {
-          result.debit_note = item.total;
-        }
+        if (item.module_type === "SALES" && item.notification_category === "APPROVAL") result.sales = item.total;
+        if (item.notification_category === "STATUS") result.alert += item.total;
+        if (item.module_type === "PURCHASE" && item.notification_category === "APPROVAL") result.purchase = item.total;
+        if (item.module_type === "PAYMENT" && item.notification_category === "APPROVAL") result.payment = item.total;
+        if (item.module_type === "RECEIPT" && item.notification_category === "APPROVAL") result.receipt = item.total;
+        if (item.module_type === "CREDIT_NOTE" && item.notification_category === "APPROVAL") result.credit_note = item.total;
+        if (item.module_type === "DEBIT_NOTE" && item.notification_category === "APPROVAL") result.debit_note = item.total;
       });
 
       setCounts(result);
@@ -100,19 +96,20 @@ const NotificationBtn = () => {
     }
   };
 
-
   const buttons = [
     { label: "Open MailBox" },
-    { label: "Receipt", count: counts.receipt },
-    { label: "Payment", count: counts.payment },
-    { label: "Debit Note", count: counts.debit_note },
-    { label: "Credit Note", count: counts.credit_note },
-    { label: "Sale Order", count: counts.sales },
-    { label: "Purchase Order", count: counts.purchase },
+    { label: "Receipt", count: counts.receipt, moduleKey: "RECEIPT" },
+    { label: "Payment", count: counts.payment, moduleKey: "PAYMENT" },
+    { label: "Debit Note", count: counts.debit_note, moduleKey: "DEBIT_NOTE" },
+    { label: "Credit Note", count: counts.credit_note, moduleKey: "CREDIT_NOTE" },
+    { label: "Sale Order", count: counts.sales, moduleKey: "SALES" },
+    { label: "Purchase Order", count: counts.purchase, moduleKey: "PURCHASE" },
     { label: "Alert", count: counts.alert },
     { label: "E-Way Bill" },
     { label: "Whatsapp" },
   ];
+
+  const activeConfig = activeModal ? NOTIFICATION_MODULES[activeModal] : null;
 
   return (
     <Box
@@ -122,27 +119,24 @@ const NotificationBtn = () => {
       flexWrap="wrap"
       width="100%"
       maxW="100%"
-      // overflow="hidden"
       mt={5} mb={5}
       p={{ base: 1, md: 3 }}>
-      <SalesOrderModal
-        isOpen={salesModalOpen}
-        onClose={() => setSalesModalOpen(false)}
-      />
-      <ReceiptNotificationModal isOpen={receiptModalOpen} onClose={()=> setReceiptModalOpen(false)}/>
 
-      <AlertTabModal
-        isOpen={alertModalOpen}
-        onClose={() => setAlertModalOpen(false)}
+      {/* One modal instance, reused for every module */}
+      <NotificationModal
+        isOpen={!!activeModal}
+        onClose={() => setActiveModal(null)}
+        moduleType={activeConfig?.moduleType}
+        headerTitle={activeConfig?.headerTitle}
+        emptyTitle={activeConfig?.emptyTitle}
+        routeBase={activeConfig?.routeBase}
+        reviewLabel={activeConfig?.reviewLabel}
       />
-      <CreditNoteNotificationModal
-  isOpen={creditNoteModalOpen}
-  onClose={() => setCreditNoteModalOpen(false)}
-/>
+
+      <AlertTabModal isOpen={alertModalOpen} onClose={() => setAlertModalOpen(false)} />
 
       {buttons.map((btn, i) => (
         <Box key={i} position="relative">
-          {/* Button */}
           <Button
             color="white" height={{ base: "34px", sm: "34px", md: "38px" }}
             px={{ base: "6px", sm: "8px", md: "16px" }}
@@ -153,15 +147,12 @@ const NotificationBtn = () => {
               transform: "translateX(2px)",
               color: "white",
             }}
-
             variant="outline"
             borderRadius="lg"
             fontSize={{ sm: "10px", base: "9px", md: "12px" }}
             onClick={() => {
-              if (btn.label === "Sale Order") { setSalesModalOpen(true); }
+              if (btn.moduleKey) { setActiveModal(btn.moduleKey); return; }
               if (btn.label === "Alert") { setAlertModalOpen(true); }
-              if (btn.label === "Receipt") { setReceiptModalOpen(true); }
-              if (btn.label === "Credit Note") { setCreditNoteModalOpen(true); }
               if (btn.label === "E-Way Bill") { window.open("https://ewaybillgst.gov.in/", "_blank"); }
               if (btn.label === "Open MailBox") { window.open("http://jamidaraseeds.com/webmail", "_blank"); }
               if (btn.label === "Whatsapp") { window.open("https://web.whatsapp.com/send", "_blank"); }
@@ -170,7 +161,6 @@ const NotificationBtn = () => {
             {btn.label}
           </Button>
 
-          {/* Notification Badge */}
           {btn.count !== undefined && (
             <Box
               position="absolute"

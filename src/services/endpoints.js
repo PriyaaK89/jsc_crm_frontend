@@ -245,7 +245,6 @@ export const API_ENDPOINTS = {
   CREATE_RECEIPT_APPROVAL_REQUEST: "create-receipt-approval-request",
   GET_NEXT_ORDER_NUMBER: "next-order-number", // matches router.get("/next-order-number", ...)
 
-
   GET_RECEIPT_ORDER_BY_ID: "get-order-approval",
   APPROVE_RECEIPT_REQUEST: "approve-receipt-order",
 
@@ -253,13 +252,19 @@ export const API_ENDPOINTS = {
   REJECT_RECEIPT_REQUEST: "reject-receipt-order",
   RESUBMIT_RECEIPT_REQUEST: "resubmit-receipt-order",
   GET_ASSIGNED_LEDGERS_LIST: "get-my-assigned-ledgers",
-  GET_AVAILABLE_STOCK_QTY: "/get-available-stock", 
+  GET_AVAILABLE_STOCK_QTY: "/get-available-stock",
 
   CREATE_CREDIT_NOTE_APPROVAL_REQUEST: "create-credit-note-approval-request",
   APPROVE_CREDIT_NOTE_REQUEST: "approve-credit-note-order",
   RETURN_CREDIT_NOTE_REQUEST: "return-credit-note-order",
   REJECT_CREDIT_NOTE_REQUEST: "reject-credit-note-order",
   RESUBMIT_CREDIT_NOTE_REQUEST: "resubmit-credit-note-order",
+
+  CREATE_PURCHASE_APPROVAL_REQUEST: "/create-purchase-approval-request",
+  APPROVE_PURCHASE_ORDER: "/approve-purchase-order",
+  REJECT_PURCHASE_ORDER: "/reject-purchase-order",
+  RETURN_PURCHASE_ORDER: "/return-purchase-order",
+  RESUBMIT_PURCHASE_ORDER: "/resubmit-purchase-order",
 
   PAYMENT_HOLD_SEARCH: "payment-hold/search",
   PAYMENT_UPDATE_AMOUNT: "payment-hold/update-amount",
@@ -268,11 +273,11 @@ export const API_ENDPOINTS = {
 
   GET_TRANSACTION_REPORT_IMAGES: "get-transaction-documents",
   get_next_offer_reference: "/next-offer-reference",
- 
+
   send_ledger_whatsapp: (ledgerId) => `/${ledgerId}/send-whatsapp`,
   send_sale_order_whatsapp: (approvalId) => `/${approvalId}/send-whatsapp-confirmation`,
   send_receipt_whatsapp: (id) => `/${id}/send-receipt-whatsapp`,
-  
+
   GET_TEMPLATE_BY_ID: (id) => `visit-targets/templates/${id}`,
   UPDATE_TEMPLATE_BY_ID: (id) => `visit-targets/templates/${id}`,
   DELETE_TEMPLATE: (id) => `visit-targets/templates/${id}`,
@@ -283,8 +288,8 @@ export const API_ENDPOINTS = {
   EXPIRE_ASSIGNMENT: (id) => `visit-targets/assignments/${id}/expire`,
   REACTIVATE_TEMPLATE: (id) => `visit-targets/templates/${id}/reactivate`,
   HOLD_TEMPLATE: (id) => `/visit-targets/templates/${id}/hold`,
-UNHOLD_TEMPLATE: (id) => `/visit-targets/templates/${id}/unhold`,
-DELETE_TEMPLATE_PERMANENT: (id) => `/visit-targets/templates/${id}/permanent-delete`,
-SEND_CREDIT_NOTE_WHATSAPP: (id) => `/send-credit-note-whatsapp/${id}`,
+  UNHOLD_TEMPLATE: (id) => `/visit-targets/templates/${id}/unhold`,
+  DELETE_TEMPLATE_PERMANENT: (id) => `/visit-targets/templates/${id}/permanent-delete`,
+  SEND_CREDIT_NOTE_WHATSAPP: (id) => `/send-credit-note-whatsapp/${id}`,
 };
 // 

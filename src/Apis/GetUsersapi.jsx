@@ -12,8 +12,8 @@ const useUsersapi = () => {
       const res = await API.get(API_ENDPOINTS.get_user_list);
 
       if (res.status === 200) {
-        setUsers(res.data.data || []);
-       
+        setUsers(res?.data?.data || []);
+       console.log(res?.data?.data, "UserList")
       }
     } catch (error) {
       console.log(error);

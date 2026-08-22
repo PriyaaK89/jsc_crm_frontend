@@ -709,7 +709,7 @@ const Purchase = () => {
             <Box>
                 <Box {...sectionStyle}>
                     <Box justify="space-between" align="center" bg="#4f9190" color="white" px={4} py={2} borderTopRadius="md">
-                        <Text fontWeight="500" fontSize="sm" textAlign="left"> Voucher Details </Text>
+                        <Text fontWeight="500" fontSize="sm" textAlign="left"> Voucher Details</Text>
                     </Box>
                     <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)", lg: "repeat(2,1fr)" }}
                         gap={4} p={4}>
@@ -1353,12 +1353,7 @@ const Purchase = () => {
                                 <Text fontWeight="500" fontSize="sm" textAlign="left">
                                     Tax Summary
                                 </Text> </Box>
-                            <Box
-                                bg="white"
-                                border="1px solid #d0d7de"
-                                borderRadius="6px"
-                                overflow="hidden"
-                            >
+                            <Box bg="white" border="1px solid #d0d7de" borderRadius="6px" overflow="hidden" >
                                 {[
                                     {
                                         label: `IGST (${formData.items.some(i => i.igst_percent > 0)
@@ -1384,13 +1379,8 @@ const Purchase = () => {
                                 ].map(({ label, value, color, dividerBefore }, i) => (
                                     <React.Fragment key={label}>
                                         {dividerBefore && <Divider borderColor="#e0e8e2" />}
-                                        <Flex
-                                            justify="space-between"
-                                            align="center"
-                                            px={3}
-                                            py="6px"
-                                            borderBottom="1px solid #f0f4f0"
-                                        >
+                                        <Flex justify="space-between" align="center" px={3} py="6px"
+                                            borderBottom="1px solid #f0f4f0" >
                                             <Text fontSize="12px" color={color} fontWeight="500">{label}</Text>
                                             <Text fontSize="12px" color={color} fontWeight="600">
                                                 ₹{value > 0 ? value.toFixed(2) : "0.00"}
@@ -1419,9 +1409,7 @@ const Purchase = () => {
                         onClick={() => {
                             setFormData({ ...initialForm });
                             setExtraLedgers(Array.from({ length: 5 }, emptyLedger));
-                            loadVoucherNo();
-                        }}
-                    >
+                            loadVoucherNo(); }} >
                         RESET
                     </Button>
                     <Button
@@ -1429,17 +1417,13 @@ const Purchase = () => {
                         fontWeight="500"
                         fontSize="14px"
                         color="white"
-                        _hover={{
-                            bg: "#1B5A6B",
-                        }}
+                        _hover={{ bg: "#1B5A6B",}}
                         px={12}
                         borderRadius="12px"
                         isLoading={saving}
                         loadingText="SAVING..."
                         onClick={handleSave}
-
-                        boxShadow="0 2px 8px rgba(45,90,61,0.4)"
-                    >
+                        boxShadow="0 2px 8px rgba(45,90,61,0.4)" >
                         SAVE
                     </Button>
                 </Flex>
@@ -1450,13 +1434,7 @@ const Purchase = () => {
                 <ModalOverlay bg="blackAlpha.500" backdropFilter="blur(2px)" />
                 <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden">
 
-                    <ModalHeader
-                        bg="#e4eced"
-                        borderBottom="2px solid #c0d4c8"
-
-                        fontSize="13px"
-                        fontWeight="700"
-                        color="#1e4a2e" >
+                    <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#1e4a2e" >
                         <Flex align="center" gap={2}>
                             <Box w="10px" h="10px" bg="#31848f" borderRadius="50%" />
                             Godown & Batch Details
@@ -1485,9 +1463,7 @@ const Purchase = () => {
                                             <Select
                                                 {...inputStyle}
                                                 value={godownModal.batch_no}
-                                                onChange={(e) => handleBatchSelect(e.target.value)}
-
-                                            >
+                                                onChange={(e) => handleBatchSelect(e.target.value)} >
                                                 <option value="">-- Select --</option>
                                                 <option value="NOT_APPLICABLE">Not Applicable</option>
                                                 <option value="NEW_NUMBER">New Number</option>
@@ -1497,17 +1473,12 @@ const Purchase = () => {
                                             </Select>
                                             {/* New batch number input — only shown below select when NEW_NUMBER */}
                                             {godownModal.isNewBatch && (
-                                                <Input
-                                                    {...inputStyle}
-                                                    mt={1}
+                                                <Input {...inputStyle} mt={1}
                                                     placeholder="Enter batch no."
                                                     value={godownModal.newBatchNo}
-                                                    onChange={(e) =>
-                                                        setGodownModal((p) => ({ ...p, newBatchNo: e.target.value }))
-                                                    }
+                                                    onChange={(e) => setGodownModal((p) => ({ ...p, newBatchNo: e.target.value })) }
                                                     autoFocus
-                                                    borderColor="#3d7a52"
-                                                />
+                                                    borderColor="#3d7a52" />
                                             )}
                                         </Td>
 
@@ -1518,9 +1489,7 @@ const Purchase = () => {
                                                     {...inputStyle}
                                                     type="number"
                                                     value={godownModal.qty}
-                                                    onChange={(e) => setGodownModal((p) => ({ ...p, qty: e.target.value }))}
-
-                                                />
+                                                    onChange={(e) => setGodownModal((p) => ({ ...p, qty: e.target.value }))} />
                                             </Td>
                                         )}
                                         {godownModal.isNewBatch && <Td {...tdStyle} />}
@@ -1530,26 +1499,20 @@ const Purchase = () => {
                                                 {...inputStyle}
                                                 type="date"
                                                 value={godownModal.mfg_date}
-                                                onChange={(e) => setGodownModal((p) => ({ ...p, mfg_date: e.target.value }))}
-
-                                            />
+                                                onChange={(e) => setGodownModal((p) => ({ ...p, mfg_date: e.target.value }))} />
                                         </Td>
                                         <Td {...tdStyle}>
                                             <Input
                                                 {...inputStyle}
                                                 type="date"
                                                 value={godownModal.expiry_date}
-                                                onChange={(e) => setGodownModal((p) => ({ ...p, expiry_date: e.target.value }))}
-
-                                            />
+                                                onChange={(e) => setGodownModal((p) => ({ ...p, expiry_date: e.target.value }))} />
                                         </Td>
                                         <Td {...tdStyle}>
                                             <Select
                                                 {...inputStyle}
                                                 value={godownModal.remind_expiry}
-                                                onChange={(e) => setGodownModal((p) => ({ ...p, remind_expiry: e.target.value }))}
-
-                                            >
+                                                onChange={(e) => setGodownModal((p) => ({ ...p, remind_expiry: e.target.value }))} >
                                                 <option value="No">No</option>
                                                 <option value="Yes">Yes</option>
                                             </Select>
@@ -1560,9 +1523,7 @@ const Purchase = () => {
                                                 type="date"
                                                 value={godownModal.remind_date}
                                                 onChange={(e) => setGodownModal((p) => ({ ...p, remind_date: e.target.value }))}
-                                                isDisabled={godownModal.remind_expiry === "No"}
-
-                                            />
+                                                isDisabled={godownModal.remind_expiry === "No"}/>
                                         </Td>
                                     </Tr>
                                 </Tbody>
@@ -1585,12 +1546,10 @@ const Purchase = () => {
                                         </Thead>
                                         <Tbody>
                                             {batchList.map((b, bi) => (
-                                                <Tr
-                                                    key={bi}
+                                                <Tr key={bi}
                                                     _hover={{ bg: "#e4ede6", cursor: "pointer" }}
                                                     bg={godownModal.batch_no === b.batch_no ? "#d4e8d8" : bi % 2 === 0 ? "white" : "#f7faf8"}
-                                                    onClick={() => handleBatchSelect(b.batch_no)}
-                                                >
+                                                    onClick={() => handleBatchSelect(b.batch_no)} >
                                                     <Td {...tdStyle} fontSize="11px" fontWeight="600" color="#2d5a3d">{b.batch_no}</Td>
                                                     <Td {...tdStyle} fontSize="11px" textAlign="right">{b.total_qty ?? b.qty}</Td>
                                                     <Td {...tdStyle} fontSize="11px">{b.godown_name}</Td>
@@ -1611,14 +1570,10 @@ const Purchase = () => {
                                 Cancel
                             </Button>
                             <Button bg="#237086"
-                                fontWeight="500"
-                                fontSize="14px"
-                                color="white"
-                                _hover={{ bg: "#1B5A6B", }}
+                                fontWeight="500" fontSize="14px"
+                                color="white" _hover={{ bg: "#1B5A6B", }}
                                 px={8} size="sm"
-                                borderRadius="12px"
-                                onClick={handleGodownSave}
-                            >
+                                borderRadius="12px" onClick={handleGodownSave} >
                                 SAVE
                             </Button>
                         </Flex>

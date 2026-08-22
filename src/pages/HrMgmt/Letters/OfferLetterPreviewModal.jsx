@@ -540,7 +540,7 @@ const OfferLetterPreviewModal = ({ isOpen, onClose, employee, formData }) => {
 
                         <Box flex="1" textAlign="left">
                           <Text fontSize="12px">
-                            <b>Place:</b> <b> {employee?.city}, {formData?.emp_state} </b>
+                            <b>Place:</b> <b>Jaipur, Rajasthan </b>
                           </Text>
                         </Box>
                       </Flex>

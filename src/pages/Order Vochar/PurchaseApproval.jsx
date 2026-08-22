@@ -1,21 +1,18 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
-  Box, Grid, GridItem, Input, Select, Checkbox, Text, Button, Table, Thead, Tbody,
+  Box, Grid, GridItem, Input, Select, Text, Button, Table, Thead, Tbody,
   Tr, Th, Td, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton,
   ModalBody, ModalFooter, FormControl, FormLabel, Textarea, useToast, Spinner,
   Center, Flex, Badge, Divider,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import useUsersapi from "../../Apis/GetUsersapi";
 import {
-  fetchNextVoucherNo, fetchGodownList, fetchLedgerDropdown,
+  fetchGodownList, fetchLedgerDropdown,
   fetchAvailableStock, fetchBatches, fetchLedgerDetailsByID,
 } from "../../Apis/commanApi";
-import SalesOrderPreviewModal from "./modals/SalesOrderPreview";
-import WhatsappMessageModal from "../../components/models/whatsappnotification/WhatsappMessageModal";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const round2 = (num) => Math.round((Number(num || 0) + Number.EPSILON) * 100) / 100;
@@ -40,7 +37,7 @@ const formatDateForInput = (isoDate) => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
-// ─── Design tokens ────────────────────────────────────────────────────────────
+// ─── Design tokens (same as Sales) ────────────────────────────────────────────
 const sectionStyle = {
   bg: "white", border: "1px solid #d0d7de", borderRadius: "6px",
   p: 0, mb: 3, boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
@@ -61,7 +58,6 @@ const thStyle = {
 };
 const tdStyle = { p: "2px 3px", borderColor: "#e0e8e2", verticalAlign: "middle" };
 
-// ─── Godown modal initial state ───────────────────────────────────────────────
 const emptyGodownModal = {
   isOpen: false,
   itemIndex: null,
@@ -75,11 +71,10 @@ const emptyGodownModal = {
   remindDate: "",
 };
 
-// ─── Dispatcher/Senior approval levels ───────────────────────────────────────
 const DISPATCHER_LEVELS = ["DISPATCHER", "SENIOR"];
 
 // ─── Component ────────────────────────────────────────────────────────────────
-const Sales = () => {
+const PurchaseApproval = () => {
   const { approvalId } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
@@ -90,7 +85,7 @@ const Sales = () => {
   const [approval, setApproval] = useState(null);
   const [godownList, setGodownList] = useState([]);
   const [ledgerList, setLedgerList] = useState([]);
-  const [salesLedgerOptions, setSalesLedgerOptions] = useState([]);
+  const [purchaseLedgerOptions, setPurchaseLedgerOptions] = useState([]);
   const [voucherInfo, setVoucherInfo] = useState({ voucher_no: "", voucher_type_id: null });
   const [items, setItems] = useState([]);
   const [godownModal, setGodownModal] = useState(emptyGodownModal);
@@ -105,20 +100,9 @@ const Sales = () => {
   const [returnModalOpen, setReturnModalOpen] = useState(false);
   const [returnRemarks, setReturnRemarks] = useState("");
   const [returnImageFile, setReturnImageFile] = useState(null);
-   const [saleNo, setSaleNo] = useState("");
   const returnImageRef = useRef();
   const [errors, setErrors] = useState({});
 
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const {
-  isOpen: isWhatsappModalOpen,
-  onOpen: onWhatsappModalOpen,
-  onClose: onWhatsappModalClose,
-} = useDisclosure();
-const [sendingWhatsapp, setSendingWhatsapp] = useState(false);
-const [approvedLevel, setApprovedLevel] = useState(null);
-
-  // Dispatcher/Senior extra fields
   const [dispatchData, setDispatchData] = useState({
     dispatchDocNo: "",
     dispatchDocImage: null,
@@ -128,9 +112,6 @@ const [approvedLevel, setApprovedLevel] = useState(null);
     billTImageFile: null,
     vehicleNo: "",
     transportFreight: "0",
-    localFreight: "0",
-    loadFreight: "0",
-    unloadFreight: "0",
     destination: "",
   });
 
@@ -138,10 +119,10 @@ const [approvedLevel, setApprovedLevel] = useState(null);
   const billTImageRef = useRef();
 
   const [formData, setFormData] = useState({
-    salesNo: "",
+    purchaseNo: "",
     orderNo: "",
     reference_no: "",
-    setOverdueReminder: true,
+    supplierInvoiceNo: "",
     date: "",
     partyLedgerId: "",
     partyLedgerName: "",
@@ -156,18 +137,15 @@ const [approvedLevel, setApprovedLevel] = useState(null);
     balanceType: "Dr",
     creditLimit: "Not Specified",
     transportName: "",
-    ewayNumber: "",
-    transporterGst: "",
-    deliveryPlace: "",
+    assignEmployeeId: "",
     employeeUnder: "",
-    salesLedgerId: "",
+    purchaseLedgerId: "",
     narration: "",
     isBillModified: "",
     orderDocumentPath: "",
     orderDocumentUrl: "",
   });
 
-  // ─── Derived: is dispatcher or senior level ───────────────────────────────
   const isReturned = approval?.status === "RETURNED";
   const isReturnedToMe = approval?.returned_to_user_id === approval?.current_approver_id;
   const canResubmit = isReturned && isReturnedToMe;
@@ -188,33 +166,21 @@ const [approvedLevel, setApprovedLevel] = useState(null);
         loadApprovalDetails(),
         loadGodownList(),
         loadLedgerDropdown(),
-        loadSalesLedgerDropdown(),
-        loadVoucherNo(),
-        loadSalesNo()
+        loadPurchaseLedgerDropdown(),
       ]);
     } finally {
       setLoading(false);
     }
   };
 
-  const loadVoucherNo = async () => {
-    try {
-      const result = await fetchNextVoucherNo("SALES");
-      if (result) {
-        setVoucherInfo(result);
-        setFormData((prev) => ({ ...prev, salesNo: result.voucher_no || "" }));
-      }
-    } catch (err) { console.log("Error fetching next voucher no", err); }
-  };
-
   const loadGodownList = async () => { setGodownList(await fetchGodownList()); };
   const loadLedgerDropdown = async () => { setLedgerList(await fetchLedgerDropdown()); };
 
-  const loadSalesLedgerDropdown = async () => {
+  const loadPurchaseLedgerDropdown = async () => {
     try {
-      const response = await API.get(`${API_ENDPOINTS.GET_SALES_LEDGER_DROPDOWN}`);
-      setSalesLedgerOptions(response?.data?.data || []);
-    } catch (err) { console.log("Error fetching sales ledger dropdown", err); }
+      const response = await API.get(`${API_ENDPOINTS.GET_PURCHASE_LEDGER_DROPDOWN}`);
+      setPurchaseLedgerOptions(response?.data?.data || []);
+    } catch (err) { console.log("Error fetching purchase ledger dropdown", err); }
   };
 
   const loadApprovalDetails = async () => {
@@ -226,13 +192,16 @@ const [approvedLevel, setApprovedLevel] = useState(null);
       const payload = data.payload_json || {};
       const parsedItems = safeParseJSON(payload.items, []);
 
+      setVoucherInfo({ voucher_no: payload.voucher_no, voucher_type_id: payload.voucher_type_id });
+
       setFormData((prev) => ({
         ...prev,
-        orderNo: data.id ?? "",
-        date: formatDateForInput(data.created_at),
-        //  FIX: read reference_no from payload_json
-        reference_no: cleanQuoted(payload.reference_no),
-        partyLedgerId: payload.customer_ledger_id || "",
+        purchaseNo: cleanQuoted(payload.voucher_no),
+        orderNo: payload.order_no ?? data.id ?? "",
+        date: formatDateForInput(payload.purchase_date || data.created_at),
+        // reference_no: cleanQuoted(payload.reference_no),
+        supplierInvoiceNo: cleanQuoted(payload.supplier_invoice_no),
+        partyLedgerId: payload.supplier_ledger_id || "",
         isConsignee: payload.is_consignee === "1" ? "Yes" : "No",
         dealerName: cleanQuoted(payload.dealer_name),
         proprietorName: cleanQuoted(payload.proprietor_name),
@@ -241,16 +210,12 @@ const [approvedLevel, setApprovedLevel] = useState(null);
         consigneeGstnNo: cleanQuoted(payload.consignee_gstn_no),
         narration: cleanQuoted(payload.narration),
         transportName: cleanQuoted(payload.transport_name),
-        ewayNumber: cleanQuoted(payload.eway_number),
-        transporterGst: cleanQuoted(payload.transporter_gst),
-        deliveryPlace: cleanQuoted(payload.delivery_place),
-        salesLedgerId: payload.sales_ledger_id || "",
-        employeeUnder: data.created_by ?? "",
+        purchaseLedgerId: payload.purchase_ledger_id || "",
+        assignEmployeeId: payload.assign_employee_id || payload.employee_under_id || "",
+        employeeUnder: payload.employee_under_id || "",
         isBillModified: data.is_bill_modified ? "Yes" : "No",
         orderDocumentPath: payload.orderBillImage || "",
         orderDocumentUrl: payload.orderBillImageUrl || "",
-        dispatchDocImage: payload.dispatchDocImageUrl || "",
-        billTImage: payload.billTImageUrl || "",
       }));
 
       // Pre-fill dispatcher fields if payload already has them (re-submission case)
@@ -261,17 +226,13 @@ const [approvedLevel, setApprovedLevel] = useState(null);
           billTNo: cleanQuoted(payload.bill_t_no),
           vehicleNo: cleanQuoted(payload.vehicle_no),
           transportFreight: payload.transport_freight ?? "0",
-          localFreight: payload.local_freight ?? "0",
-          loadFreight: payload.load_freight ?? "0",
-          unloadFreight: payload.unload_freight ?? "0",
           destination: cleanQuoted(payload.destination),
           dispatchDocImage: payload.dispatchDocImageUrl || "",
-    billTImage: payload.billTImageUrl || "",
+          billTImage: payload.billTImageUrl || "",
         }));
       }
 
       setItems(
-
         parsedItems.map((item) => {
           const amount = round2(item.amount ?? Number(item.billed_qty || 0) * Number(item.rate || 0));
           const isConfirmed = !!item.godown_confirmed;
@@ -282,16 +243,17 @@ const [approvedLevel, setApprovedLevel] = useState(null);
             cgst_amount: round2((amount * (item.cgst_percent || 0)) / 100),
             sgst_amount: round2((amount * (item.sgst_percent || 0)) / 100),
             total_amount: item.total_amount ?? amount,
-
             godown_id: isConfirmed ? item.godown_id : "",
             godown_name: isConfirmed ? item.godown_name : "",
             batch_no: isConfirmed ? item.batch_no : "",
             available_qty: isConfirmed ? item.available_qty : "",
-            total_qty: isConfirmed ? item.total_qty : "",
+            mfg_date: isConfirmed ? item.mfg_date : null,
+            expiry_date: isConfirmed ? item.expiry_date : null,
             godown_confirmed: isConfirmed,
           };
         }),
       );
+
       const parsedExtraLedgers = safeParseJSON(payload.extra_ledgers, []);
       if (parsedExtraLedgers.length > 0) {
         setExtraLedgers(parsedExtraLedgers.map(l => ({
@@ -302,31 +264,35 @@ const [approvedLevel, setApprovedLevel] = useState(null);
       }
     } catch (error) {
       console.log("Error fetching approval details", error);
-      toast({ title: "Error", description: "Failed to load sales order details", status: "error", duration: 3000, isClosable: true });
+      toast({ title: "Error", description: "Failed to load purchase order details", status: "error", duration: 3000, isClosable: true });
     }
   };
 
-  useEffect(() => {
-    if (!formData.partyLedgerId) return;
-    const ledger = ledgerList.find((l) => String(l.id) === String(formData.partyLedgerId));
-    if (ledger) {
-      setFormData((prev) => ({ ...prev, partyLedgerName: ledger.ledger_name || ledger.name || "" }));
+useEffect(() => {
+  if (!formData.partyLedgerId) return;
+  const ledger = ledgerList.find((l) => String(l.id) === String(formData.partyLedgerId));
+  if (ledger) {
+    setFormData((prev) => ({ ...prev, partyLedgerName: ledger.ledger_name || ledger.name || "" }));
+  }
+  const loadLedgerDetails = async () => {
+    const details = await fetchLedgerDetailsByID(formData?.partyLedgerId);
+      console.log("PARTY LEDGER ID SENT:", formData?.partyLedgerId);
+  console.log("DETAILS RECEIVED:", details);
+    if (details) {
+      setFormData((prev) => ({
+        ...prev,
+        currentBalance: details.current_balance,
+        balanceType: details.balance_type,
+        securityAmount: details.security_amount,
+        creditLimit: details.credit_limit,
+        employeeUnder: prev.employeeUnder || details.employee_under || "",
+        employeeUnderDefaultName: details.employee_under_name || "",
+      }));
     }
-    const loadLedgerDetails = async () => {
-      const details = await fetchLedgerDetailsByID(formData?.partyLedgerId);
-      if (details) {
-        setFormData((prev) => ({
-          ...prev,
-          currentBalance: details.current_balance,
-          balanceType: details.balance_type,
-          securityAmount: details.security_amount,
-          creditLimit: details.credit_limit,
-        }));
-      }
-    };
-    loadLedgerDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.partyLedgerId, ledgerList]);
+  };
+  loadLedgerDetails();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [formData.partyLedgerId, ledgerList]);
 
   // ─── Totals ────────────────────────────────────────────────────────────────
   const totals = useMemo(() => {
@@ -352,10 +318,7 @@ const [approvedLevel, setApprovedLevel] = useState(null);
   }, [items]);
 
   const extraLedgerTotal = useMemo(() => {
-    return extraLedgers.reduce((sum, row) => {
-      const amt = Number(row.amount || 0);
-      return sum + amt; // negative amounts auto-subtract
-    }, 0);
+    return extraLedgers.reduce((sum, row) => sum + Number(row.amount || 0), 0);
   }, [extraLedgers]);
 
   const grandTotal = useMemo(() => {
@@ -365,20 +328,11 @@ const [approvedLevel, setApprovedLevel] = useState(null);
   const validate = () => {
     const newErrors = {};
 
-    if (approval?.approval_level === "SENIOR" && !formData.salesLedgerId) {
-      newErrors.salesLedgerId = "Sales Ledger is required";
-    }
-
     if (isDispatcherOrSenior) {
       if (!dispatchData.billTNo?.trim()) newErrors.billTNo = "Bill-T No. is required";
       if (!formData.transportName?.trim()) newErrors.transportName = "Transport Name is required";
       if (!dispatchData.destination?.trim()) newErrors.destination = "Destination is required";
       if (!dispatchData.dispatchDocNo?.trim()) newErrors.dispatchDocNo = "Dispatch Doc No. is required";
-      if (!formData.deliveryPlace?.trim()) newErrors.deliveryPlace = "Delivery Place is required";
-
-      // if (!dispatchData.dispatchDocImageFile && !dispatchData.dispatchDocImage)
-      // newErrors.dispatchDocImage = "Dispatch Doc Image is required";
-
       if (!dispatchData.billTImageFile && !dispatchData.billTImage)
         newErrors.billTImage = "Bill-T Image is required";
     }
@@ -401,23 +355,6 @@ const [approvedLevel, setApprovedLevel] = useState(null);
   const removeExtraLedgerRow = (index) => {
     setExtraLedgers(prev => prev.filter((_, i) => i !== index));
   };
-
-  const handleRemoveItem = (index) => {
-    setItems((prev) => prev.filter((_, i) => i !== index));
-  };
-
-   const loadSalesNo = async () => {
-      try {
-        const res = await API.get(
-          `${API_ENDPOINTS.GET_NEXT_ORDER_NUMBER}?transaction_type=SALES`
-        );
-        if (res.data.success) {
-          setSaleNo(res.data.next_order_no);
-        }
-      } catch (err) {
-        console.error("Error fetching next receipt number", err);
-      }
-    };
 
   // ─── Item helpers ──────────────────────────────────────────────────────────
   const recalculateItem = (item) => {
@@ -446,10 +383,9 @@ const [approvedLevel, setApprovedLevel] = useState(null);
       ? selectedGodown.godown_name || selectedGodown.name
       : godownId;
 
-    // Open modal immediately
     setGodownModal({
       ...emptyGodownModal,
-      isOpen: true,          // ← was never being set to true
+      isOpen: true,
       itemIndex: index,
       godownId,
       godownName,
@@ -457,13 +393,10 @@ const [approvedLevel, setApprovedLevel] = useState(null);
       batches: [],
     });
 
-    // Fetch batches async and update modal
-    const item = items[index];   // ← was missing, caused ReferenceError
+    const item = items[index];
     const batches = await fetchBatches(item.stock_item_id, godownId);
     setGodownModal((prev) =>
-      prev.godownId === godownId    // guard: user may have changed godown before fetch returned
-        ? { ...prev, batches }
-        : prev
+      prev.godownId === godownId ? { ...prev, batches } : prev
     );
   };
 
@@ -472,14 +405,14 @@ const [approvedLevel, setApprovedLevel] = useState(null);
     setGodownModal((prev) => ({
       ...prev,
       batchNo,
-      mfgDate: formatDateForInput(batchObj?.mfg_date || ""),
-      expiryDate: formatDateForInput(batchObj?.expiry_date || ""),
-      selectedBatchQty: batchObj?.qty || null,   // ← store batch qty
+      mfgDate: formatDateForInput(batchObj?.mfg_date || null),
+      expiryDate: formatDateForInput(batchObj?.expiry_date || null),
+      selectedBatchQty: batchObj?.qty || null,
     }));
   };
 
   const handleConfirmGodown = async () => {
-    const { itemIndex, godownId, godownName, batchNo, selectedBatchQty } = godownModal;
+    const { itemIndex, godownId, godownName, batchNo, selectedBatchQty, mfgDate, expiryDate } = godownModal;
     if (!godownId) {
       toast({ title: "Godown not selected", status: "warning", duration: 2500, isClosable: true });
       return;
@@ -499,7 +432,7 @@ const [approvedLevel, setApprovedLevel] = useState(null);
         itemId: items[itemIndex].stock_item_id,
         godownId,
       });
-      availableQty = fetched ?? 0;  // ← fallback to 0 if null/undefined
+      availableQty = fetched ?? 0;
     }
 
     setItems((prev) => {
@@ -509,16 +442,32 @@ const [approvedLevel, setApprovedLevel] = useState(null);
         godown_id: godownId,
         godown_name: godownName,
         batch_no: batchNo || "Not Applicable",
-        available_qty: availableQty,   // ← explicitly set
-        total_qty: availableQty,       // ← explicitly set same value
+        mfg_date: mfgDate || null,
+        expiry_date: expiryDate || null,
+        available_qty: availableQty,
         godown_confirmed: true,
         _prevGodownId: undefined,
-
       });
       return updated;
     });
 
     setGodownModal(emptyGodownModal);
+  };
+
+  const openRemoveItemModal = (index) => {
+    setRemoveItemModal({
+      isOpen: true,
+      index,
+      itemName: items[index]?.item_name || "this item",
+    });
+  };
+
+  const confirmRemoveItem = () => {
+    const { index, itemName } = removeItemModal;
+    if (index === null) return;
+    setItems((prev) => prev.filter((_, i) => i !== index));
+    setRemoveItemModal({ isOpen: false, index: null, itemName: "" });
+    toast({ title: "Item removed", description: `"${itemName}" has been removed from this order`, status: "success", duration: 3000, isClosable: true });
   };
 
   // ─── Dispatch image helpers ────────────────────────────────────────────────
@@ -530,7 +479,6 @@ const [approvedLevel, setApprovedLevel] = useState(null);
       dispatchDocImageFile: file,
       dispatchDocImage: URL.createObjectURL(file),
     }));
-    // setErrors((prev) => ({ ...prev, dispatchDocImage: undefined }));
   };
 
   const handleBillTImage = (e) => {
@@ -544,43 +492,42 @@ const [approvedLevel, setApprovedLevel] = useState(null);
     setErrors((prev) => ({ ...prev, billTImage: undefined }));
   };
 
-  // ─── Approve / Reject ──────────────────────────────────────────────────────
+  // ─── Build payload ─────────────────────────────────────────────────────────
   const buildUpdatedPayload = () => {
-    const hasCGST = items.some(item => Number(item.cgst_percent || 0) > 0);
     const hasIGST = items.some(item => Number(item.igst_percent || 0) > 0);
     const filledExtraLedgers = extraLedgers
       .filter(row => row.ledger_id && row.amount !== "" && Number(row.amount) !== 0)
       .map(row => ({
         ledger_id: row.ledger_id,
-        amount: Math.abs(Number(row.amount)),       // always store positive
+        amount: Math.abs(Number(row.amount)),
         operation: Number(row.amount) >= 0 ? "PLUS" : "MINUS",
         comments: row.comments || "",
       }));
+
     const base = {
-      customer_ledger_id: formData.partyLedgerId,
+      supplier_ledger_id: formData.partyLedgerId,
+      purchase_ledger_id: formData.purchaseLedgerId,
+      supplier_invoice_no: formData.supplierInvoiceNo,
+    //   reference_no: formData.reference_no,
       is_consignee: formData.isConsignee === "Yes" ? "1" : "0",
       dealer_name: formData.dealerName,
       proprietor_name: formData.proprietorName,
       consignee_contact_no: formData.consigneeContactNo,
       consignee_address: formData.consigneeAddress,
       consignee_gstn_no: formData.consigneeGstnNo,
-      is_supercash_sale: approval?.payload_json?.is_supercash_sale ?? "0",
       subtotal: round2(items.reduce((sum, it) => sum + Number(it.amount || 0), 0)),
       tax_total: round2(totals.igst + totals.cgst + totals.sgst),
-      // total_amount: totals.totalAmount,
       total_amount: grandTotal,
       narration: formData.narration,
-      reference_no: formData.reference_no,
-      transport_name: formData.transportName,
-      eway_number: formData.ewayNumber,
-      transporter_gst: formData.transporterGst,
-      delivery_place: formData.deliveryPlace,
-      employee_under: formData.employeeUnder,
-      sales_ledger_id: formData.salesLedgerId,
-      voucher_no: formData.salesNo,
+      assign_employee_id: formData.employeeUnder,
+      employee_under_id: formData.employeeUnder,
+      voucher_no: formData.purchaseNo,
       voucher_type_id: voucherInfo.voucher_type_id,
-      sales_date: formData.date,
+      purchase_date: formData.date,
       tax_mode: hasIGST ? "IGST" : "CGST_SGST",
+      igst_total: hasIGST ? totals.igst : 0,
+      cgst_total: hasIGST ? 0 : totals.cgst,
+      sgst_total: hasIGST ? 0 : totals.sgst,
       extra_ledgers: JSON.stringify(filledExtraLedgers),
       items: JSON.stringify(
         items.map((item) => ({
@@ -592,44 +539,92 @@ const [approvedLevel, setApprovedLevel] = useState(null);
       orderBillImage: formData.orderDocumentPath,
     };
 
-    // Add dispatcher-level fields only when applicable
     if (isDispatcherOrSenior) {
       base.dispatch_doc_no = dispatchData.dispatchDocNo;
       base.bill_t_no = dispatchData.billTNo;
       base.vehicle_no = dispatchData.vehicleNo;
-      base.transport_freight = dispatchData.transportFreight;
-      base.local_freight = dispatchData.localFreight;
-      base.load_freight = dispatchData.loadFreight;
-      base.unload_freight = dispatchData.unloadFreight;
+      base.transport_freight = dispatchData.transportFreight || "0";
+      base.transport_name = formData.transportName;
       base.destination = dispatchData.destination;
-      // Note: actual file upload should be handled before calling this,
-
     }
 
     return base;
   };
 
+  // ─── Approve / Reject / Return / Resubmit ─────────────────────────────────
+  const handleApprove = async () => {
+    if (items.length === 0) {
+      toast({ title: "At least one item is required", status: "warning", duration: 3000, isClosable: true });
+      return;
+    }
+
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      toast({ title: "Required fields missing", description: "Please fill in all required fields before approving.", status: "warning", duration: 4000, isClosable: true });
+      return;
+    }
+
+    setErrors({});
+    setSubmitting(true);
+    try {
+      const payload = buildUpdatedPayload();
+      const formDataObj = new FormData();
+      formDataObj.append("remarks", "Approved");
+      formDataObj.append("payload_json", JSON.stringify(payload));
+
+      if (dispatchData.dispatchDocImageFile) {
+        formDataObj.append("dispatch_doc_image", dispatchData.dispatchDocImageFile, dispatchData.dispatchDocImageFile.name);
+      }
+      if (dispatchData.billTImageFile) {
+        formDataObj.append("bill_t_image", dispatchData.billTImageFile, dispatchData.billTImageFile.name);
+      }
+
+      await API.post(
+        `${API_ENDPOINTS.APPROVE_PURCHASE_ORDER}/${approvalId}`,
+        formDataObj,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      toast({ title: "Approved", description: "Purchase order approved successfully", status: "success", duration: 3000, isClosable: true });
+      navigate(-1);
+    } catch (error) {
+      console.error("APPROVE ERROR =>", error);
+      toast({ title: "Error", description: error?.response?.data?.message || "Failed to approve purchase order", status: "error", duration: 3000, isClosable: true });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!rejectRemarks.trim()) {
+      toast({ title: "Rejection reason is required", status: "warning", duration: 3000, isClosable: true });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await API.post(`${API_ENDPOINTS.REJECT_PURCHASE_ORDER}/${approvalId}`, {
+        reason: rejectRemarks.trim(),
+      });
+      toast({ title: "Rejected", description: "Purchase order rejected successfully", status: "info", duration: 3000, isClosable: true });
+      setRejectModalOpen(false);
+      navigate(-1);
+    } catch (error) {
+      toast({ title: "Error", description: error?.response?.data?.message || "Failed to reject purchase order", status: "error", duration: 3000, isClosable: true });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleReturn = async () => {
     if (!returnRemarks.trim()) {
-      toast({
-        title: "Return reason is required",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast({ title: "Return reason is required", status: "warning", duration: 3000, isClosable: true });
       return;
     }
-
     if (!returnImageFile) {
-      toast({
-        title: "Return image is required",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast({ title: "Return image is required", status: "warning", duration: 3000, isClosable: true });
       return;
     }
-
     setSubmitting(true);
     try {
       const formDataObj = new FormData();
@@ -637,28 +632,16 @@ const [approvedLevel, setApprovedLevel] = useState(null);
       formDataObj.append("returnImage", returnImageFile, returnImageFile.name);
 
       await API.post(
-        `${API_ENDPOINTS.RETURN_SALES_ORDER}/${approvalId}`,
+        `${API_ENDPOINTS.RETURN_PURCHASE_ORDER}/${approvalId}`,
         formDataObj,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      toast({
-        title: "Returned",
-        description: "Sales order returned successfully",
-        status: "info",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast({ title: "Returned", description: "Purchase order returned successfully", status: "info", duration: 3000, isClosable: true });
       setReturnModalOpen(false);
       navigate(-1);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error?.response?.data?.message || "Failed to return sales order",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast({ title: "Error", description: error?.response?.data?.message || "Failed to return purchase order", status: "error", duration: 3000, isClosable: true });
     } finally {
       setSubmitting(false);
     }
@@ -666,198 +649,17 @@ const [approvedLevel, setApprovedLevel] = useState(null);
 
   const handleResubmit = async () => {
     if (items.length === 0) {
-      toast({
-        title: "At least one item is required",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast({ title: "At least one item is required", status: "warning", duration: 3000, isClosable: true });
       return;
     }
-
     setSubmitting(true);
     try {
       const payload = buildUpdatedPayload();
-
-      await API.post(
-        `${API_ENDPOINTS.RESUBMIT_SALES_ORDER}/${approvalId}`,
-        payload                     // ← backend does JSON.stringify(req.body) directly
-      );
-
-      toast({
-        title: "Resubmitted",
-        description: "Sales order resubmitted successfully",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      await API.post(`${API_ENDPOINTS.RESUBMIT_PURCHASE_ORDER}/${approvalId}`, payload);
+      toast({ title: "Resubmitted", description: "Purchase order resubmitted successfully", status: "success", duration: 3000, isClosable: true });
       navigate(-1);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error?.response?.data?.message || "Failed to resubmit sales order",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-  // Replace handleApprove
-  const handleApprove = async () => {
-    if (items.length === 0) {
-      toast({
-        title: "At least one item is required",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-
-      toast({
-        title: "Required fields missing",
-        description: "Please fill in all required fields before approving.",
-        status: "warning",
-        duration: 4000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    setErrors({});
-    setSubmitting(true);
-    const approvedLevel = approval?.approval_level; // capture before state changes
-
-    try {
-      const payload = buildUpdatedPayload();
-      const formDataObj = new FormData();
-
-      formDataObj.append("remarks", "Approved");
-      formDataObj.append("payload_json", JSON.stringify(payload));
-
-      if (dispatchData.dispatchDocImageFile) {
-        formDataObj.append(
-          "dispatch_doc_image",
-          dispatchData.dispatchDocImageFile,
-          dispatchData.dispatchDocImageFile.name
-        );
-      }
-
-      if (dispatchData.billTImageFile) {
-        formDataObj.append(
-          "bill_t_image",
-          dispatchData.billTImageFile,
-          dispatchData.billTImageFile.name
-        );
-      }
-
-      await API.post(
-        `${API_ENDPOINTS.CREATE_REQUEST_APPROVE}/${approvalId}`,
-        formDataObj,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-
-      toast({
-        title: "Approved",
-        description: "Sales order approved successfully",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-
-
-    if (["JUNIOR", "DISPATCHER"].includes(approval?.approval_level)) {
-  setApprovedLevel(approval.approval_level);
-  onWhatsappModalOpen();
-} else {
-  navigate(-1);
-}
-      
-    } catch (error) {
-      console.error("APPROVE ERROR =>", error);
-      toast({
-        title: "Error",
-        description: error?.response?.data?.message || "Failed to approve sales order",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-const handleSendSalesWhatsapp = async () => {
-  try {
-    setSendingWhatsapp(true);
-    await API.post(API_ENDPOINTS.send_sale_order_whatsapp(approvalId), {
-      level: approval?.approval_level, // JUNIOR | DISPATCHER — captured before approve changed it
-    });
-    toast({
-      title: "WhatsApp message sent",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
-  } catch (error) {
-    console.error("Send WhatsApp error:", error);
-    toast({
-      title: error?.response?.data?.message || "Failed to send WhatsApp message",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-  } finally {
-    setSendingWhatsapp(false);
-    onWhatsappModalClose();
-    navigate(-1);
-  }
-};
-
-const handleSkipWhatsapp = () => {
-  onWhatsappModalClose();
-  navigate(-1);
-};
-
-  const handleReject = async () => {
-    if (!rejectRemarks.trim()) {
-      toast({
-        title: "Rejection reason is required",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      await API.post(`${API_ENDPOINTS.REJECT_SALES_ORDER}/${approvalId}`, {
-        reason: rejectRemarks.trim(),   // ← was "remarks", backend expects "reason"
-      });
-      toast({
-        title: "Rejected",
-        description: "Sales order rejected successfully",
-        status: "info",
-        duration: 3000,
-        isClosable: true,
-      });
-      setRejectModalOpen(false);
-      navigate(-1);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error?.response?.data?.message || "Failed to reject sales order",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast({ title: "Error", description: error?.response?.data?.message || "Failed to resubmit purchase order", status: "error", duration: 3000, isClosable: true });
     } finally {
       setSubmitting(false);
     }
@@ -874,53 +676,16 @@ const handleSkipWhatsapp = () => {
     setDocPreviewOpen(true);
   };
 
-  const openRemoveItemModal = (index) => {
-    setRemoveItemModal({
-      isOpen: true,
-      index,
-      itemName: items[index]?.item_name || "this item",
-    });
-  };
-
-  const confirmRemoveItem = () => {
-    const { index, itemName } = removeItemModal;
-    if (index === null) return;
-
-    setItems((prev) => prev.filter((_, i) => i !== index));
-    setRemoveItemModal({ isOpen: false, index: null, itemName: "" });
-
-    toast({
-      title: "Item removed",
-      description: `"${itemName}" has been removed from this order`,
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
-  };
-
   if (loading) {
     return <Center h="60vh"><Spinner size="xl" color="#4f9190" /></Center>;
   }
 
   // ─── Render ────────────────────────────────────────────────────────────────
   return (
-    <>
-    <WhatsappMessageModal
-  isWhatsappModalOpen={isWhatsappModalOpen}
-  onWhatsappModalClose={handleSkipWhatsapp}
-  onConfirm={handleSendSalesWhatsapp}
-  isSending={sendingWhatsapp}
-  ledgerName={formData.partyLedgerName}
-/>
     <Box>
-      {/* Status bar */}
       {approval && (
         <Flex align="center" gap={2} mb={3}>
-          <Box
-            w="8px" h="8px"
-            bg={isReturned ? "#d69e2e" : "#4f9190"}
-            borderRadius="50%"
-          />
+          <Box w="8px" h="8px" bg={isReturned ? "#d69e2e" : "#4f9190"} borderRadius="50%" />
           <Text fontSize="12px" color="gray.500">
             Created by{" "}
             <Text as="span" fontWeight="600" color="#333">{approval.created_by_name}</Text>
@@ -931,91 +696,67 @@ const handleSkipWhatsapp = () => {
             colorScheme={
               approval.status === "RETURNED" ? "yellow"
                 : approval.approval_level === "DISPATCHER" ? "orange"
-                : approval.approval_level === "SENIOR" ? "purple" : "teal" }
-            fontSize="10px"
-            px={2} >
+                : approval.approval_level === "SENIOR" ? "purple" : "teal"}
+            fontSize="10px" px={2}>
             {approval.status === "RETURNED" ? `RETURNED → fix & resubmit` : approval.approval_level?.replace("_", " ")}
           </Badge>
         </Flex>
       )}
-      {/* ── Section 1: Voucher Details ── */}
+
+      {/* Section 1: Voucher Details */}
       <Box {...sectionStyle}>
-        <Box {...sectionHeaderStyle}>
-          <Text fontWeight="500" fontSize="sm">Voucher Details 12345</Text>
-        </Box>
+        <Box {...sectionHeaderStyle}><Text fontWeight="500" fontSize="sm">Voucher Details</Text></Box>
         <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)" }} gap={4} p={4}>
           <GridItem>
-            <Text {...labelStyle} color="#c0392b">Sales No.</Text>
-            <Input {...readonlyInputStyle} value={formData.salesNo} readOnly />
+            <Text {...labelStyle} color="#c0392b">Purchase No.</Text>
+            <Input {...readonlyInputStyle} value={formData.purchaseNo} readOnly />
           </GridItem>
           <GridItem>
             <Text {...labelStyle} color="#c0392b">Order No.</Text>
             <Input {...readonlyInputStyle} value={formData.orderNo} readOnly />
           </GridItem>
-          {/*  Reference No now pre-filled from payload_json.reference_no */}
           <GridItem>
-            <Text {...labelStyle}>Reference No.</Text>
-            <Input
-              {...inputStyle}
-              value={formData.reference_no}
-              onChange={(e) => setFormData((prev) => ({ ...prev, reference_no: e.target.value }))}
-              placeholder="Enter reference no." />
+            <Text {...labelStyle}>Supplier Invoice No.</Text>
+            <Input {...inputStyle} value={formData.supplierInvoiceNo}
+              onChange={(e) => setFormData((prev) => ({ ...prev, supplierInvoiceNo: e.target.value }))} />
           </GridItem>
+          {/* <GridItem>
+            <Text {...labelStyle}>Reference No.</Text>
+            <Input {...inputStyle} value={formData.reference_no}
+              onChange={(e) => setFormData((prev) => ({ ...prev, reference_no: e.target.value }))} />
+          </GridItem> */}
           <GridItem>
             <Text {...labelStyle}>Date <Text as="span" color="red.500">*</Text></Text>
-            <Input
-              {...inputStyle}
-              type="date"
-              value={formData.date}
+            <Input {...inputStyle} type="date" value={formData.date}
               onChange={(e) => setFormData((prev) => ({ ...prev, date: e.target.value }))} />
           </GridItem>
           <GridItem>
             <Text {...labelStyle}>Party A/c Name</Text>
-            <Select
-              {...inputStyle}
-              pointerEvents="none"
-              bg="gray.100"
+            <Select {...inputStyle} pointerEvents="none" bg="gray.100"
               value={formData.partyLedgerId}
-              onChange={(e) => setFormData((prev) => ({ ...prev, partyLedgerId: e.target.value }))}
-            >
+              onChange={(e) => setFormData((prev) => ({ ...prev, partyLedgerId: e.target.value }))}>
               <option value="">-- Select Party --</option>
               {ledgerList.map((ledger) => (
                 <option key={ledger.id} value={ledger.id}>{ledger.ledger_name || ledger.name}</option>
               ))}
             </Select>
           </GridItem>
+          
           <GridItem>
             <Text {...labelStyle}>Is Consignee</Text>
-            <Select
-              {...inputStyle}
-              value={formData.isConsignee}
-              onChange={(e) => setFormData((prev) => ({ ...prev, isConsignee: e.target.value }))}
-              maxW="200px"
-            >
+            <Select {...inputStyle} value={formData.isConsignee}
+              onChange={(e) => setFormData((prev) => ({ ...prev, isConsignee: e.target.value }))} maxW="200px">
               <option value="No">No</option>
               <option value="Yes">Yes</option>
             </Select>
           </GridItem>
-          <GridItem colSpan={{ base: 1, md: 2 }}>
-            <Flex align="center" gap={3}>
-              <Checkbox
-                isChecked={formData.setOverdueReminder}
-                onChange={(e) => setFormData((prev) => ({ ...prev, setOverdueReminder: e.target.checked }))}
-                colorScheme="teal"
-                size="sm"
-              />
-              <Text fontSize="12px" color="green.600" fontWeight="500">Set Default OverDue Reminder</Text>
-            </Flex>
-          </GridItem>
         </Grid>
       </Box>
 
-      {/* ── Section 2: Consignee Details (conditional) ── */}
+      {/* Section 2: Consignee (conditional) */}
       {formData.isConsignee === "Yes" && (
         <Box {...sectionStyle}>
-          <Box {...sectionHeaderStyle}>
-            <Text fontWeight="500" fontSize="sm">Consignee Details</Text>
-          </Box>
+          <Box {...sectionHeaderStyle}><Text fontWeight="500" fontSize="sm">Consignee Details</Text></Box>
           <Box overflowX="auto">
             <Table size="sm">
               <Thead bg="gray.50">
@@ -1039,12 +780,10 @@ const handleSkipWhatsapp = () => {
         </Box>
       )}
 
-      {/* ── Section 3: Customer Information ── */}
+      {/* Section 3: Supplier Information */}
       {formData.partyLedgerId && (
         <Box {...sectionStyle}>
-          <Box {...sectionHeaderStyle}>
-            <Text fontWeight="500" fontSize="sm">Customer Information</Text>
-          </Box>
+          <Box {...sectionHeaderStyle}><Text fontWeight="500" fontSize="sm">Supplier Information</Text></Box>
           <Grid templateColumns={{ base: "1fr", md: "repeat(3,1fr)" }} gap={4} p={4}>
             <Box>
               <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>Current Balance</Text>
@@ -1067,49 +806,7 @@ const handleSkipWhatsapp = () => {
         </Box>
       )}
 
-      {/* ── Section 4: Transport Details ── */}
-      <Box {...sectionStyle}>
-        <Box {...sectionHeaderStyle}>
-          <Text fontWeight="500" fontSize="sm">Transport Details</Text>
-        </Box>
-        <Grid templateColumns={{ base: "1fr", md: "repeat(3,1fr)" }} gap={4} p={4}>
-          <FormControl isInvalid={!!errors.transportName}>
-            <Text {...labelStyle}>Transport Name</Text>
-            <Input {...inputStyle} value={formData.transportName}
-              onChange={(e) => {
-                setFormData((prev) => ({ ...prev, transportName: e.target.value }));
-                if (e.target.value) setErrors((prev) => ({ ...prev, transportName: undefined }));
-              }} />
-            {errors.transportName && (
-              <Text fontSize="11px" color="red.500" mt="2px">{errors.transportName}</Text>
-            )}
-
-          </FormControl>
-          <Box>
-            <Text {...labelStyle}>E-Way Number</Text>
-            <Input {...inputStyle} value={formData.ewayNumber} onChange={(e) => setFormData((prev) => ({ ...prev, ewayNumber: e.target.value }))} />
-          </Box>
-          <Box>
-            <Text {...labelStyle}>Transporter GST</Text>
-            <Input {...inputStyle} value={formData.transporterGst} onChange={(e) => setFormData((prev) => ({ ...prev, transporterGst: e.target.value }))} />
-          </Box>
-          <Box>
-            <FormControl isInvalid={!!errors.deliveryPlace}>
-              <Text {...labelStyle}>Delivery Place</Text>
-              <Input {...inputStyle} value={formData.deliveryPlace}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, deliveryPlace: e.target.value }));
-                  if (e.target.value) setErrors((prev) => ({ ...prev, deliveryPlace: undefined }));
-                }} />
-              {errors.deliveryPlace && (
-                <Text fontSize="11px" color="red.500" mt="2px">{errors.deliveryPlace}</Text>
-              )}
-            </FormControl>
-          </Box>
-        </Grid>
-      </Box>
-
-      {/* ── Section 5: Dispatch & Transport Details (Dispatcher / Senior only) ── */}
+      {/* Section 4: Dispatch & Transport Details (Dispatcher / Senior only) */}
       {isDispatcherOrSenior && (
         <Box {...sectionStyle}>
           <Box {...sectionHeaderStyle} bg="#7b5ea7">
@@ -1124,136 +821,66 @@ const handleSkipWhatsapp = () => {
             </Flex>
           </Box>
           <Grid templateColumns={{ base: "1fr", md: "repeat(3,1fr)" }} gap={4} p={4}>
-            {/* Row 1 */}
             <Box>
               <FormControl isInvalid={!!errors.dispatchDocNo}>
                 <Text {...labelStyle}>Dispatch Doc No.</Text>
-                <Input
-                  {...inputStyle}
-                  value={dispatchData.dispatchDocNo}
-                  onChange={(e) => {
-                    setDispatchData((prev) => ({ ...prev, dispatchDocNo: e.target.value }));
-                    if (e.target.value) setErrors((prev) => ({ ...prev, dispatchDocNo: undefined }));
-                  }}
-                  placeholder="Enter dispatch doc no."
-                />
-                {errors.dispatchDocNo && (
-                  <Text fontSize="11px" color="red.500" mt="2px">{errors.dispatchDocNo}</Text>
-                )}
+                <Input {...inputStyle} value={dispatchData.dispatchDocNo}
+                  onChange={(e) => { setDispatchData((prev) => ({ ...prev, dispatchDocNo: e.target.value })); if (e.target.value) setErrors((prev) => ({ ...prev, dispatchDocNo: undefined })); }}
+                  placeholder="Enter dispatch doc no." />
+                {errors.dispatchDocNo && <Text fontSize="11px" color="red.500" mt="2px">{errors.dispatchDocNo}</Text>}
               </FormControl>
             </Box>
             <Box>
               <FormControl isInvalid={!!errors.billTNo}>
                 <Text {...labelStyle}>Bill-T No.</Text>
-                <Input
-                  {...inputStyle}
-                  value={dispatchData.billTNo}
-                  onChange={(e) => {
-                    setDispatchData((prev) => ({ ...prev, billTNo: e.target.value }));
-                    if (e.target.value) setErrors((prev) => ({ ...prev, billTNo: undefined }));
-                  }}
-                  placeholder="Enter Bill-T no."
-                />
-                {errors.billTNo && (
-                  <Text fontSize="11px" color="red.500" mt="2px">{errors.billTNo}</Text>
-                )}
+                <Input {...inputStyle} value={dispatchData.billTNo}
+                  onChange={(e) => { setDispatchData((prev) => ({ ...prev, billTNo: e.target.value })); if (e.target.value) setErrors((prev) => ({ ...prev, billTNo: undefined })); }}
+                  placeholder="Enter Bill-T no." />
+                {errors.billTNo && <Text fontSize="11px" color="red.500" mt="2px">{errors.billTNo}</Text>}
               </FormControl>
             </Box>
             <Box>
               <Text {...labelStyle}>Vehicle No.</Text>
-              <Input
-                {...inputStyle}
-                value={dispatchData.vehicleNo}
+              <Input {...inputStyle} value={dispatchData.vehicleNo}
                 onChange={(e) => setDispatchData((prev) => ({ ...prev, vehicleNo: e.target.value }))}
-                placeholder="Enter vehicle no."
-              />
+                placeholder="Enter vehicle no." />
             </Box>
-
-            {/* Row 2 */}
+            <Box>
+              <FormControl isInvalid={!!errors.transportName}>
+                <Text {...labelStyle}>Transport Name</Text>
+                <Input {...inputStyle} value={formData.transportName}
+                  onChange={(e) => { setFormData((prev) => ({ ...prev, transportName: e.target.value })); if (e.target.value) setErrors((prev) => ({ ...prev, transportName: undefined })); }} />
+                {errors.transportName && <Text fontSize="11px" color="red.500" mt="2px">{errors.transportName}</Text>}
+              </FormControl>
+            </Box>
             <Box>
               <FormControl isInvalid={!!errors.destination}>
                 <Text {...labelStyle}>Destination</Text>
-                <Input
-                  {...inputStyle}
-                  value={dispatchData.destination}
+                <Input {...inputStyle} value={dispatchData.destination}
                   onChange={(e) => { setDispatchData((prev) => ({ ...prev, destination: e.target.value })); if (e.target.value) setErrors((prev) => ({ ...prev, destination: undefined })); }}
-                  placeholder="Enter destination"
-                />
-                {errors.destination && (
-                  <Text fontSize="11px" color="red.500" mt="2px">{errors.destination}</Text>
-                )}
+                  placeholder="Enter destination" />
+                {errors.destination && <Text fontSize="11px" color="red.500" mt="2px">{errors.destination}</Text>}
               </FormControl>
             </Box>
             <Box>
               <Text {...labelStyle}>Transport Freight (₹)</Text>
-              <Input
-                {...inputStyle}
-                type="number"
-                value={dispatchData.transportFreight}
-                onChange={(e) => setDispatchData((prev) => ({ ...prev, transportFreight: e.target.value }))}
-              />
-            </Box>
-            <Box>
-              <Text {...labelStyle}>Local Freight (₹)</Text>
-              <Input
-                {...inputStyle}
-                type="number"
-                value={dispatchData.localFreight}
-                onChange={(e) => setDispatchData((prev) => ({ ...prev, localFreight: e.target.value }))}
-              />
+              <Input {...inputStyle} type="number" value={dispatchData.transportFreight}
+                onChange={(e) => setDispatchData((prev) => ({ ...prev, transportFreight: e.target.value }))} />
             </Box>
 
-            {/* Row 3 */}
-            <Box>
-              <Text {...labelStyle}>Load Freight (₹)</Text>
-              <Input
-                {...inputStyle}
-                type="number"
-                value={dispatchData.loadFreight}
-                onChange={(e) => setDispatchData((prev) => ({ ...prev, loadFreight: e.target.value }))}
-              />
-            </Box>
-            <Box>
-              <Text {...labelStyle}>Unload Freight (₹)</Text>
-              <Input
-                {...inputStyle}
-                type="number"
-                value={dispatchData.unloadFreight}
-                onChange={(e) => setDispatchData((prev) => ({ ...prev, unloadFreight: e.target.value }))}
-              />
-            </Box>
-
-            {/* Dispatch Doc Image */}
             <Box gridColumn={{ md: "1 / -1" }}>
               <Divider my={2} borderColor="#d8d0e8" />
               <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)" }} gap={4}>
                 <Box>
-                  <FormControl
-                  // isInvalid={!!errors.dispatchDocImage}
-                  >
+                  <FormControl>
                     <Text {...labelStyle} fontWeight="600">Dispatch Doc Image</Text>
                     <Flex align="center" gap={2} mt={1}>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        colorScheme="purple"
-                        fontSize="12px"
-                        onClick={() => dispatchDocRef.current?.click()}
-                      >
+                      <Button size="sm" variant="outline" colorScheme="purple" fontSize="12px" onClick={() => dispatchDocRef.current?.click()}>
                         Choose File
                       </Button>
-                      <Text fontSize="11px" color="gray.500">
-                        {dispatchData.dispatchDocImageFile?.name || "No file chosen"}
-                      </Text>
-                      <input
-                        type="file"
-                        ref={dispatchDocRef}
-                        accept="image/*,application/pdf"
-                        style={{ display: "none" }}
-                        onChange={handleDispatchDocImage}
-                      />
+                      <Text fontSize="11px" color="gray.500">{dispatchData.dispatchDocImageFile?.name || "No file chosen"}</Text>
+                      <input type="file" ref={dispatchDocRef} accept="image/*,application/pdf" style={{ display: "none" }} onChange={handleDispatchDocImage} />
                     </Flex>
-                    {/* {errors.dispatchDocImage && ( <Text fontSize="11px" color="red.500" mt="2px">{errors.dispatchDocImage}</Text> )} */}
                   </FormControl>
                   {dispatchData.dispatchDocImage && (
                     <Box mt={2} border="1px solid #d0d7de" borderRadius="6px" overflow="hidden" maxW="200px">
@@ -1265,29 +892,13 @@ const handleSkipWhatsapp = () => {
                   <FormControl isInvalid={!!errors.billTImage}>
                     <Text {...labelStyle} fontWeight="600">Bill-T Image</Text>
                     <Flex align="center" gap={2} mt={1}>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        colorScheme="purple"
-                        fontSize="12px"
-                        onClick={() => billTImageRef.current?.click()}
-                      >
+                      <Button size="sm" variant="outline" colorScheme="purple" fontSize="12px" onClick={() => billTImageRef.current?.click()}>
                         Choose File
                       </Button>
-                      <Text fontSize="11px" color="gray.500">
-                        {dispatchData.billTImageFile?.name || "No file chosen"}
-                      </Text>
-                      <input
-                        type="file"
-                        ref={billTImageRef}
-                        accept="image/*,application/pdf"
-                        style={{ display: "none" }}
-                        onChange={handleBillTImage}
-                      />
+                      <Text fontSize="11px" color="gray.500">{dispatchData.billTImageFile?.name || "No file chosen"}</Text>
+                      <input type="file" ref={billTImageRef} accept="image/*,application/pdf" style={{ display: "none" }} onChange={handleBillTImage} />
                     </Flex>
-                    {errors.billTImage && (
-                      <Text fontSize="11px" color="red.500" mt="2px">{errors.billTImage}</Text>
-                    )}
+                    {errors.billTImage && <Text fontSize="11px" color="red.500" mt="2px">{errors.billTImage}</Text>}
                   </FormControl>
                   {dispatchData.billTImage && (
                     <Box mt={2} border="1px solid #d0d7de" borderRadius="6px" overflow="hidden" maxW="200px">
@@ -1301,53 +912,45 @@ const handleSkipWhatsapp = () => {
         </Box>
       )}
 
-      {/* ── Section 6: Assignment ── */}
+      {/* Section 5: Assignment */}
       <Box {...sectionStyle}>
-        <Box {...sectionHeaderStyle}>
-          <Text fontWeight="500" fontSize="sm">Assignment</Text>
-        </Box>
+        <Box {...sectionHeaderStyle}><Text fontWeight="500" fontSize="sm">Assignment</Text></Box>
         <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)" }} gap={4} p={4}>
-          <Box>
-            <Text {...labelStyle}>Employee Under</Text>
-            <Select {...inputStyle} value={formData.employeeUnder} onChange={(e) => setFormData((prev) => ({ ...prev, employeeUnder: e.target.value }))}>
+         <GridItem>
+            <Text {...labelStyle}>Purchase Ledger</Text>
+            <Select {...inputStyle} value={formData.purchaseLedgerId}
+              onChange={(e) => setFormData((prev) => ({ ...prev, purchaseLedgerId: e.target.value }))}>
               <option value="">-- Select --</option>
-              {(users || []).map((u) => (
-                <option key={u.id} value={u.id}>{u.name}</option>
+              {purchaseLedgerOptions.map((l) => (
+                <option key={l.id} value={l.id}>{l.ledger_name || l.name}</option>
               ))}
             </Select>
-          </Box>
+          </GridItem>
           <Box>
-            <FormControl isInvalid={!!errors.salesLedgerId}>
-              <Text {...labelStyle}>Sales Ledger</Text>
-              <Select {...inputStyle} value={formData.salesLedgerId}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, salesLedgerId: e.target.value }));
-                  if (e.target.value) setErrors((prev) => ({ ...prev, salesLedgerId: undefined }));
-                }}
-              >
-                <option value="">-- Please Select --</option>
-                {salesLedgerOptions.map((ledger) => (
-                  <option key={ledger.id} value={ledger.id}>{ledger.ledger_name || ledger.name}</option>
-                ))}
-              </Select>
-              {errors.salesLedgerId && (
-                <Text fontSize="11px" color="red.500" mt="2px">{errors.salesLedgerId}</Text>
-              )}
-            </FormControl>
-          </Box>
+  <Text {...labelStyle}>Employee Under</Text>
+  <Select {...inputStyle} value={formData.employeeUnder}
+    onChange={(e) => setFormData((prev) => ({ ...prev, employeeUnder: e.target.value }))}>
+    <option value="">-- Select --</option>
+    {(users).map((u) => (
+      <option key={u.id} value={u.id}>{u.name}</option>
+    ))}
+  </Select>
+  {/* {formData.employeeUnderDefaultName && (
+    <Text fontSize="10px" color="gray.500" mt="2px">
+      Default from ledger: {formData.employeeUnderDefaultName}
+    </Text>
+  )} */}
+</Box>
         </Grid>
       </Box>
 
-      {/* ── Section 7: Stock Items ── */}
+      {/* Section 6: Stock Items */}
       <Box {...sectionStyle} overflowX="auto">
-        <Box {...sectionHeaderStyle}>
-          <Text fontWeight="500" fontSize="sm">Stock Items</Text>
-        </Box>
+        <Box {...sectionHeaderStyle}><Text fontWeight="500" fontSize="sm">Stock Items</Text></Box>
         <Table size="sm" variant="simple" style={{ borderCollapse: "separate", borderSpacing: 0 }}>
           <Thead bg="gray.50">
             <Tr>
               <Th {...thStyle} minW="160px">Item Name</Th>
-              <Th {...thStyle} minW="90px">Total Qty.</Th>
               <Th {...thStyle} minW="140px">Godown</Th>
               <Th {...thStyle} minW="70px">Available</Th>
               <Th {...thStyle} minW="80px">Billed Qty.</Th>
@@ -1362,70 +965,30 @@ const handleSkipWhatsapp = () => {
           </Thead>
           <Tbody>
             {items.map((item, index) => (
-              <Tr
-                key={`${item.stock_item_id}-${index}`}
-                bg={index % 2 === 0 ? "white" : "#f7faf8"}
-                _hover={{ bg: "#edf5ef" }}
-              >
+              <Tr key={`${item.stock_item_id}-${index}`} bg={index % 2 === 0 ? "white" : "#f7faf8"} _hover={{ bg: "#edf5ef" }}>
                 <Td {...tdStyle}><Input {...readonlyInputStyle} value={item.item_name} readOnly minW="160px" /></Td>
-                <Td {...tdStyle}>
-                  <Input
-                    {...readonlyInputStyle}
-                    value={item.total_qty ?? item.available_qty ?? 0}
-                    readOnly
-                    textAlign="right"
-                  />
-                </Td>
-
-                {/*  NEW: Godown column — selecting opens modal directly */}
-
                 <Td {...tdStyle} minW="160px">
-                  <Select
-                    {...inputStyle}
-                    value={item.godown_id || ""}
+                  <Select {...inputStyle} value={item.godown_id || ""}
                     onChange={(e) => {
                       const val = e.target.value;
                       if (!val) return;
-
-                      // Update the row's godown_id in state first
                       setItems((prev) => {
                         const updated = [...prev];
-
-                        updated[index] = {
-                          ...updated[index],
-                          godown_id: String(val),
-                          _prevGodownId: updated[index].godown_id || ""
-                        };
-
+                        updated[index] = { ...updated[index], godown_id: String(val), _prevGodownId: updated[index].godown_id || "" };
                         return updated;
                       });
-
-                      // Then open modal
                       handleRowGodownSelect(index, val);
-                    }}
-                  >
+                    }}>
                     <option value="">-- Select Godown --</option>
                     {godownList.map((g) => (
-                      <option key={g.id} value={g.id}>
-                        {g.godown_name || g.name}
-                      </option>
+                      <option key={g.id} value={g.id}>{g.godown_name || g.name}</option>
                     ))}
                   </Select>
                   {item.batch_no && item.batch_no !== "Not Applicable" && (
-                    <Text fontSize="10px" color="purple.600" mt="1px" fontStyle="italic">
-                      Batch: {item.batch_no}
-                    </Text>
+                    <Text fontSize="10px" color="purple.600" mt="1px" fontStyle="italic">Batch: {item.batch_no}</Text>
                   )}
                 </Td>
-
-                <Td {...tdStyle}>
-                  <Input
-                    {...readonlyInputStyle}
-                    value={item.available_qty ?? 0}
-                    readOnly
-                    textAlign="right"
-                  />
-                </Td>
+                <Td {...tdStyle}><Input {...readonlyInputStyle} value={item.available_qty ?? 0} readOnly textAlign="right" /></Td>
                 <Td {...tdStyle}>
                   <Input {...inputStyle} type="number" value={item.billed_qty ?? 0} onChange={(e) => handleItemChange(index, "billed_qty", e.target.value)} textAlign="right" />
                 </Td>
@@ -1439,22 +1002,10 @@ const handleSkipWhatsapp = () => {
                 </Td>
                 <Td {...tdStyle}><Input {...readonlyInputStyle} value={item.igst_amount ?? 0} readOnly textAlign="right" /></Td>
                 <Td {...tdStyle}>
-                  <Input
-                    value={Number(item.total_amount || 0).toFixed(2)}
-                    readOnly size="sm" borderRadius="6px" bg="#e8f5ec"
-                    textAlign="right" fontWeight="600" color="#1e4a2e" minW="100px"
-                  />
+                  <Input value={Number(item.total_amount || 0).toFixed(2)} readOnly size="sm" borderRadius="6px" bg="#e8f5ec" textAlign="right" fontWeight="600" color="#1e4a2e" minW="100px" />
                 </Td>
                 <Td {...tdStyle} textAlign="center">
-                  <Button
-                    size="xs"
-                    variant="ghost"
-                    colorScheme="red"
-                    onClick={() => openRemoveItemModal(index)}
-                    title="Remove item"
-                  >
-                    ✕
-                  </Button>
+                  <Button size="xs" variant="ghost" colorScheme="red" onClick={() => openRemoveItemModal(index)} title="Remove item">✕</Button>
                 </Td>
               </Tr>
             ))}
@@ -1474,16 +1025,13 @@ const handleSkipWhatsapp = () => {
         </Flex>
       </Box>
 
+      {/* Section 7: Additional Ledgers (Senior only) */}
       {approval?.approval_level === "SENIOR" && (
         <Box {...sectionStyle}>
           <Box {...sectionHeaderStyle} bg="#5d6e6e">
             <Flex justify="space-between" align="center">
               <Text fontWeight="500" fontSize="sm">Additional Ledgers</Text>
-              <Button
-                size="xs" variant="outline" color="white" borderColor="white"
-                fontSize="11px" onClick={addExtraLedgerRow}
-                _hover={{ bg: "whiteAlpha.200" }}
-              >
+              <Button size="xs" variant="outline" color="white" borderColor="white" fontSize="11px" onClick={addExtraLedgerRow} _hover={{ bg: "whiteAlpha.200" }}>
                 + Add Row
               </Button>
             </Flex>
@@ -1495,9 +1043,7 @@ const handleSkipWhatsapp = () => {
                   <Th {...thStyle} minW="220px">Ledger</Th>
                   <Th {...thStyle} minW="140px">
                     Amount
-                    <Text as="span" fontSize="9px" fontWeight="400" color="gray.500" ml={1}>
-                      (− to deduct, + to add)
-                    </Text>
+                    <Text as="span" fontSize="9px" fontWeight="400" color="gray.500" ml={1}>(− to deduct, + to add)</Text>
                   </Th>
                   <Th {...thStyle} minW="200px">Comments</Th>
                   <Th {...thStyle} w="40px"></Th>
@@ -1506,63 +1052,30 @@ const handleSkipWhatsapp = () => {
               <Tbody>
                 {extraLedgers.map((row, index) => {
                   const amt = Number(row.amount || 0);
-                  const isNegative = amt < 0;
-                  const isPositive = amt > 0;
                   return (
                     <Tr key={index} bg={index % 2 === 0 ? "white" : "#f7faf8"}>
                       <Td {...tdStyle}>
-                        <Select
-                          {...inputStyle}
-                          value={row.ledger_id}
-                          onChange={(e) => handleExtraLedgerChange(index, "ledger_id", e.target.value)}
-                          minW="220px"
-                        >
+                        <Select {...inputStyle} value={row.ledger_id} onChange={(e) => handleExtraLedgerChange(index, "ledger_id", e.target.value)} minW="220px">
                           <option value="">-- Select Ledger --</option>
                           {ledgerList.map((l) => (
-                            <option key={l.id} value={l.id}>
-                              {l.ledger_name || l.name}
-                            </option>
+                            <option key={l.id} value={l.id}>{l.ledger_name || l.name}</option>
                           ))}
                         </Select>
                       </Td>
                       <Td {...tdStyle}>
-                        <Input
-                          {...inputStyle}
-                          type="number"
-                          value={row.amount}
-                          onChange={(e) => handleExtraLedgerChange(index, "amount", e.target.value)}
-                          textAlign="right"
-                          color={isNegative ? "red.600" : isPositive ? "green.600" : "inherit"}
-                          fontWeight={amt !== 0 ? "600" : "400"}
-                          placeholder="e.g. 100 or -50"
-                        />
-                        {/* live operation badge */}
+                        <Input {...inputStyle} type="number" value={row.amount} onChange={(e) => handleExtraLedgerChange(index, "amount", e.target.value)}
+                          textAlign="right" color={amt < 0 ? "red.600" : amt > 0 ? "green.600" : "inherit"} fontWeight={amt !== 0 ? "600" : "400"} placeholder="e.g. 100 or -50" />
                         {amt !== 0 && (
-                          <Badge
-                            mt="2px"
-                            colorScheme={isNegative ? "red" : "green"}
-                            fontSize="9px"
-                          >
-                            {isNegative ? "MINUS" : "PLUS"} ₹{Math.abs(amt).toFixed(2)}
+                          <Badge mt="2px" colorScheme={amt < 0 ? "red" : "green"} fontSize="9px">
+                            {amt < 0 ? "MINUS" : "PLUS"} ₹{Math.abs(amt).toFixed(2)}
                           </Badge>
                         )}
                       </Td>
                       <Td {...tdStyle}>
-                        <Input
-                          {...inputStyle}
-                          value={row.comments}
-                          onChange={(e) => handleExtraLedgerChange(index, "comments", e.target.value)}
-                          placeholder="Enter comments"
-                        />
+                        <Input {...inputStyle} value={row.comments} onChange={(e) => handleExtraLedgerChange(index, "comments", e.target.value)} placeholder="Enter comments" />
                       </Td>
                       <Td {...tdStyle}>
-                        <Button
-                          size="xs" variant="ghost" colorScheme="red"
-                          onClick={() => removeExtraLedgerRow(index)}
-                          isDisabled={extraLedgers.length === 1}
-                        >
-                          ✕
-                        </Button>
+                        <Button size="xs" variant="ghost" colorScheme="red" onClick={() => removeExtraLedgerRow(index)} isDisabled={extraLedgers.length === 1}>✕</Button>
                       </Td>
                     </Tr>
                   );
@@ -1570,11 +1083,8 @@ const handleSkipWhatsapp = () => {
               </Tbody>
             </Table>
           </Box>
-
-          {/* Running impact summary */}
           {extraLedgerTotal !== 0 && (
-            <Flex justify="flex-end" gap={4} px={3} py={2} bg="#f0f4f0"
-              fontSize="12px" fontWeight="600" borderTop="1px solid #e0e8e2">
+            <Flex justify="flex-end" gap={4} px={3} py={2} bg="#f0f4f0" fontSize="12px" fontWeight="600" borderTop="1px solid #e0e8e2">
               <Text color="gray.600">
                 Ledger Adjustment:
                 <Text as="span" color={extraLedgerTotal < 0 ? "red.600" : "green.600"} ml={1}>
@@ -1582,54 +1092,35 @@ const handleSkipWhatsapp = () => {
                 </Text>
               </Text>
               <Text>|</Text>
-              <Text color="#1e4a2e">
-                Grand Total: ₹{grandTotal.toFixed(2)}
-              </Text>
+              <Text color="#1e4a2e">Grand Total: ₹{grandTotal.toFixed(2)}</Text>
             </Flex>
           )}
         </Box>
       )}
 
-      {/* ── Section 8: Totals + Narration ── */}
+      {/* Section 8: Totals + Narration */}
       <Box {...sectionStyle} mt={4} padding={3}>
         <Grid templateColumns="1fr 320px" gap={5}>
           <Box>
-            <Box {...sectionHeaderStyle} borderTopRadius="md">
-              <Text fontWeight="500" fontSize="sm">Narration</Text>
-            </Box>
-            <Textarea
-              size="sm" placeholder="Enter narration / remarks..."
-              value={formData.narration}
+            <Box {...sectionHeaderStyle} borderTopRadius="md"><Text fontWeight="500" fontSize="sm">Narration</Text></Box>
+            <Textarea size="sm" placeholder="Enter narration / remarks..." value={formData.narration}
               onChange={(e) => setFormData((prev) => ({ ...prev, narration: e.target.value }))}
-              rows={4} borderColor="#c8d0d8" bg="white"
-              _focus={{ borderColor: "#3d7a52" }} resize="vertical" mt={0}
-            />
+              rows={4} borderColor="#c8d0d8" bg="white" _focus={{ borderColor: "#3d7a52" }} resize="vertical" mt={0} />
             <Flex align="center" gap={3} mt={3}>
-              <Text fontSize="11px" color="gray.500" fontStyle="italic">
-                Note: If you modify the bill it will be auto-identified
-              </Text>
+              <Text fontSize="11px" color="gray.500" fontStyle="italic">Note: If you modify the bill it will be auto-identified</Text>
             </Flex>
             <Flex align="center" gap={3} mt={2}>
               <Text fontSize="12px" fontWeight="600" color="#555">Order Document:</Text>
-              <Button size="xs" variant="outline" colorScheme="blue" onClick={handleViewDocument} fontSize="11px" px={4}>
-                VIEW DOCUMENT
-              </Button>
+              <Button size="xs" variant="outline" colorScheme="blue" onClick={handleViewDocument} fontSize="11px" px={4}>VIEW DOCUMENT</Button>
             </Flex>
 
-            {/* Dispatcher docs — visible to SENIOR only */}
             {approval?.approval_level === "SENIOR" && (
               <>
                 {approval?.payload_json?.dispatchDocImageUrl && (
                   <Flex align="center" gap={3} mt={2}>
                     <Text fontSize="12px" fontWeight="600" color="#555">Dispatch Doc:</Text>
-                    <Button
-                      size="xs" variant="outline" colorScheme="orange" fontSize="11px" px={4}
-                      onClick={() => setDispatchPreview({
-                        isOpen: true,
-                        url: approval.payload_json.dispatchDocImageUrl, // ← was dispatch_doc_image
-                        title: "Dispatch Document",
-                      })}
-                    >
+                    <Button size="xs" variant="outline" colorScheme="orange" fontSize="11px" px={4}
+                      onClick={() => setDispatchPreview({ isOpen: true, url: approval.payload_json.dispatchDocImageUrl, title: "Dispatch Document" })}>
                       VIEW DISPATCH DOC
                     </Button>
                   </Flex>
@@ -1637,14 +1128,8 @@ const handleSkipWhatsapp = () => {
                 {approval?.payload_json?.billTImageUrl && (
                   <Flex align="center" gap={3} mt={2}>
                     <Text fontSize="12px" fontWeight="600" color="#555">Bill-T Document:</Text>
-                    <Button
-                      size="xs" variant="outline" colorScheme="purple" fontSize="11px" px={4}
-                      onClick={() => setDispatchPreview({
-                        isOpen: true,
-                        url: approval.payload_json.billTImageUrl,
-                        title: "Bill-T Document",
-                      })}
-                    >
+                    <Button size="xs" variant="outline" colorScheme="purple" fontSize="11px" px={4}
+                      onClick={() => setDispatchPreview({ isOpen: true, url: approval.payload_json.billTImageUrl, title: "Bill-T Document" })}>
                       VIEW BILL-T DOC
                     </Button>
                   </Flex>
@@ -1654,9 +1139,7 @@ const handleSkipWhatsapp = () => {
           </Box>
 
           <Box>
-            <Box {...sectionHeaderStyle} borderTopRadius="md">
-              <Text fontWeight="500" fontSize="sm">Tax Summary</Text>
-            </Box>
+            <Box {...sectionHeaderStyle} borderTopRadius="md"><Text fontWeight="500" fontSize="sm">Tax Summary</Text></Box>
             <Box bg="white" border="1px solid #d0d7de" borderRadius="6px" overflow="hidden">
               {[
                 { label: `IGST${totals.igstPercent !== null ? ` (${totals.igstPercent}%)` : ""}`, value: totals.igst },
@@ -1674,79 +1157,40 @@ const handleSkipWhatsapp = () => {
               ))}
               <Flex justify="space-between" align="center" px={3} py={2} bg="#5d6e6e">
                 <Text fontSize="13px" color="white" fontWeight="700">Grand Total</Text>
-                <Text fontSize="14px" color="white" fontWeight="800">
-                  ₹{grandTotal.toFixed(2)}  {/* ← was totals.totalAmount */}
-                </Text>
+                <Text fontSize="14px" color="white" fontWeight="800">₹{grandTotal.toFixed(2)}</Text>
               </Flex>
             </Box>
           </Box>
         </Grid>
       </Box>
 
-      {/* ── Footer Actions ── */}
-      {/* ── Footer Actions ── */}
+      {/* Footer Actions */}
       <Flex justify="flex-end" alignItems="center" mt={2} gap={3}>
         {canResubmit ? (
-          // ── RETURNED state: only Resubmit is available ──
-          <Button
-            bg="#237086"
-            fontWeight="500"
-            fontSize="14px"
-            color="white"
-            _hover={{ bg: "#1B5A6B" }}
-            px={10}
-            borderRadius="12px"
-            isLoading={submitting}
-            loadingText="Resubmitting..."
-            onClick={handleResubmit}
-            boxShadow="0 2px 8px rgba(45,90,61,0.4)"
-          >
+          <Button bg="#237086" fontWeight="500" fontSize="14px" color="white" _hover={{ bg: "#1B5A6B" }}
+            px={10} borderRadius="12px" isLoading={submitting} loadingText="Resubmitting..." onClick={handleResubmit}
+            boxShadow="0 2px 8px rgba(45,90,61,0.4)">
             Resubmit
           </Button>
         ) : (
-          // ── PENDING state: normal approve / reject / return ──
           <>
-            <Button
-              variant="outline"
-              colorScheme="yellow"
-              size="sm" px={6} height="38px" borderRadius="13px"
-              isDisabled={submitting}
-              onClick={() => setReturnModalOpen(true)}
-            >
+            <Button variant="outline" colorScheme="yellow" size="sm" px={6} height="38px" borderRadius="13px"
+              isDisabled={submitting} onClick={() => setReturnModalOpen(true)}>
               Return
             </Button>
-            <Button
-              variant="outline"
-              colorScheme="red" height="38px" borderRadius="13px"
-              size="sm"
-              px={6}
-              onClick={() => setRejectModalOpen(true)}
-              isDisabled={submitting}
-            >
+            <Button variant="outline" colorScheme="red" height="38px" borderRadius="13px" size="sm" px={6}
+              onClick={() => setRejectModalOpen(true)} isDisabled={submitting}>
               Reject
             </Button>
-            <Button
-              bg="#237086"
-              fontWeight="500"
-              fontSize="14px"
-              color="white"
-              _hover={{ bg: "#1B5A6B" }}
-              px={7}
-              borderRadius="12px"
-              isLoading={submitting}
-              loadingText="Saving..."
-              onClick={handleApprove}
-            // boxShadow="0 2px 8px rgba(45,90,61,0.4)"
-            >
-              Accept 
+            <Button bg="#237086" fontWeight="500" fontSize="14px" color="white" _hover={{ bg: "#1B5A6B" }}
+              px={7} borderRadius="12px" isLoading={submitting} loadingText="Saving..." onClick={handleApprove}>
+              Accept
             </Button>
-            <Button color="white" bg="green.600" _hover={{ bg: "green.700" }} fontSize="12px" fontWeight="500" borderRadius="13px" onClick={() => setPreviewOpen(true)}>Download Bill</Button>
           </>
         )}
       </Flex>
 
-      {/* ══ Godown / Batch Modal ══ */}
-      {/*  NEW: No godown select inside modal — shows selected godown as readonly, only batch is chosen here */}
+      {/* Godown / Batch Modal */}
       <Modal isOpen={godownModal.isOpen} onClose={() => setGodownModal(emptyGodownModal)} size="2xl" isCentered>
         <ModalOverlay bg="blackAlpha.500" backdropFilter="blur(2px)" />
         <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden">
@@ -1758,20 +1202,14 @@ const handleSkipWhatsapp = () => {
             <ModalCloseButton />
           </ModalHeader>
           <ModalBody p={4} bg="white">
-            {/* Godown shown as readonly info */}
             <Box mb={4} p={3} bg="#f0f7f7" borderRadius="6px" border="1px solid #c0d4c8">
               <Text fontSize="12px" fontWeight="600" color="#555" mb={1}>Selected Godown</Text>
               <Text fontSize="13px" color="#1e4a2e" fontWeight="700">{godownModal.godownName}</Text>
             </Box>
-
             <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={4}>
               <FormControl>
                 <FormLabel fontSize="12px" fontWeight="600" color="#555">Batch No.</FormLabel>
-                <Select
-                  {...inputStyle}
-                  value={godownModal.batchNo}
-                  onChange={(e) => handleGodownModalBatchChange(e.target.value)}
-                >
+                <Select {...inputStyle} value={godownModal.batchNo} onChange={(e) => handleGodownModalBatchChange(e.target.value)}>
                   <option value="Not Applicable">Not Applicable</option>
                   {godownModal.batches.map((batch) => (
                     <option key={batch.batch_no} value={batch.batch_no}>{batch.batch_no}</option>
@@ -1779,7 +1217,6 @@ const handleSkipWhatsapp = () => {
                 </Select>
               </FormControl>
             </Grid>
-
             <Grid templateColumns="repeat(2, 1fr)" gap={4}>
               <FormControl>
                 <FormLabel fontSize="12px" fontWeight="600" color="#555">Mfg Dt.</FormLabel>
@@ -1804,31 +1241,14 @@ const handleSkipWhatsapp = () => {
           </ModalBody>
           <ModalFooter bg="#f7f9f8" borderTop="1px solid #e0e8e2">
             <Flex gap={3}>
-              {/* <Button variant="outline" colorScheme="gray" size="sm" onClick={() => setGodownModal(emptyGodownModal)}>Cancel</Button> */}
-
-              <Button variant="outline" colorScheme="gray" size="sm" onClick={() => {
-                if (godownModal.itemIndex !== null) {
-                  setItems((prev) => {
-                    const updated = [...prev];
-                    updated[godownModal.itemIndex] = {
-                      ...updated[godownModal.itemIndex],
-                      // godown_id: updated[godownModal.itemIndex]._prevGodownId || "",
-                    }; return updated;
-                  });
-                }
-                setGodownModal(emptyGodownModal);
-              }} >
-                Cancel
-              </Button>
-              <Button bg="#237086" color="white" _hover={{ bg: "#1B5A6B" }} px={8} size="sm" borderRadius="12px" onClick={handleConfirmGodown}>
-                Confirm
-              </Button>
+              <Button variant="outline" colorScheme="gray" size="sm" onClick={() => setGodownModal(emptyGodownModal)}>Cancel</Button>
+              <Button bg="#237086" color="white" _hover={{ bg: "#1B5A6B" }} px={8} size="sm" borderRadius="12px" onClick={handleConfirmGodown}>Confirm</Button>
             </Flex>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      {/* ══ Document Preview Modal ══ */}
+      {/* Document Preview Modal */}
       <Modal isOpen={docPreviewOpen} onClose={() => setDocPreviewOpen(false)} size="4xl" isCentered>
         <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(2px)" />
         <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden" maxH="90vh">
@@ -1843,33 +1263,26 @@ const handleSkipWhatsapp = () => {
             {formData.orderDocumentUrl ? (
               isImageDoc() ? (
                 <Box textAlign="center">
-                  <img src={formData.orderDocumentUrl} alt="Order Document"
-                    style={{ maxWidth: "100%", objectFit: "contain", borderRadius: "6px", border: "1px solid #d0d7de" }} />
+                  <img src={formData.orderDocumentUrl} alt="Order Document" style={{ maxWidth: "100%", objectFit: "contain", borderRadius: "6px", border: "1px solid #d0d7de" }} />
                 </Box>
               ) : isPdfDoc() ? (
-                <Box h="70vh">
-                  <iframe src={formData.orderDocumentUrl} title="Order Document PDF" width="100%" height="100%" style={{ border: "none", borderRadius: "6px" }} />
-                </Box>
+                <Box h="70vh"><iframe src={formData.orderDocumentUrl} title="Order Document PDF" width="100%" height="100%" style={{ border: "none", borderRadius: "6px" }} /></Box>
               ) : (
                 <Center h="200px" flexDirection="column" gap={3}>
                   <Text fontSize="13px" color="gray.500">Preview not available for this file type.</Text>
-                  <Button as="a" href={formData.orderDocumentUrl} target="_blank" rel="noopener noreferrer"
-                    size="sm" bg="#237086" color="white" _hover={{ bg: "#1B5A6B" }} borderRadius="12px" px={6}>
+                  <Button as="a" href={formData.orderDocumentUrl} target="_blank" rel="noopener noreferrer" size="sm" bg="#237086" color="white" _hover={{ bg: "#1B5A6B" }} borderRadius="12px" px={6}>
                     Open in New Tab
                   </Button>
                 </Center>
               )
             ) : (
-              <Center h="200px">
-                <Text fontSize="13px" color="gray.400" fontStyle="italic">No document attached to this order.</Text>
-              </Center>
+              <Center h="200px"><Text fontSize="13px" color="gray.400" fontStyle="italic">No document attached to this order.</Text></Center>
             )}
           </ModalBody>
           <ModalFooter bg="#f7f9f8" borderTop="1px solid #e0e8e2">
             <Flex gap={3} justify="flex-end" w="100%">
               {formData.orderDocumentUrl && (
-                <Button as="a" href={formData.orderDocumentUrl} target="_blank" rel="noopener noreferrer"
-                  size="sm" variant="outline" colorScheme="blue" px={5}>
+                <Button as="a" href={formData.orderDocumentUrl} target="_blank" rel="noopener noreferrer" size="sm" variant="outline" colorScheme="blue" px={5}>
                   Open in New Tab
                 </Button>
               )}
@@ -1879,42 +1292,36 @@ const handleSkipWhatsapp = () => {
         </ModalContent>
       </Modal>
 
-      {/* ══ Reject Modal ══ */}
+      {/* Reject Modal */}
       <Modal isOpen={rejectModalOpen} onClose={() => setRejectModalOpen(false)} isCentered>
         <ModalOverlay bg="blackAlpha.500" />
         <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden">
           <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#e6210c" pl={3}>
-            Reject Sales Order
+            Reject Purchase Order
             <ModalCloseButton top={0} right={0} />
           </ModalHeader>
           <ModalBody p={4} bg="white">
             <FormControl>
               <FormLabel fontSize="12px" fontWeight="600" color="#555">Reason for rejection</FormLabel>
-              <Textarea
-                value={rejectRemarks}
-                onChange={(e) => setRejectRemarks(e.target.value)}
-                placeholder="Let the employee know what needs to change"
-                borderColor="#c8d0d8" bg="white" _focus={{ borderColor: "#e53e3e" }} rows={4}
-              />
+              <Textarea value={rejectRemarks} onChange={(e) => setRejectRemarks(e.target.value)}
+                placeholder="Let the employee know what needs to change" borderColor="#c8d0d8" bg="white" _focus={{ borderColor: "#e53e3e" }} rows={4} />
             </FormControl>
           </ModalBody>
           <ModalFooter bg="#f7f9f8" borderTop="1px solid #e0e8e2">
             <Flex gap={3}>
               <Button variant="ghost" colorScheme="gray" size="sm" onClick={() => setRejectModalOpen(false)}>Cancel</Button>
-              <Button colorScheme="red" size="sm" px={6} borderRadius="12px" onClick={handleReject} isLoading={submitting}>
-                Reject
-              </Button>
+              <Button colorScheme="red" size="sm" px={6} borderRadius="12px" onClick={handleReject} isLoading={submitting}>Reject</Button>
             </Flex>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      {/* ══ Return Modal ══ */}
+      {/* Return Modal */}
       <Modal isOpen={returnModalOpen} onClose={() => { setReturnModalOpen(false); setReturnRemarks(""); setReturnImageFile(null); }} isCentered>
         <ModalOverlay bg="blackAlpha.500" />
         <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden">
           <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#c57e14" pl={3}>
-            Return Sales Order
+            Return Purchase Order
             <ModalCloseButton top={0} right={0} />
           </ModalHeader>
           <ModalBody p={4} bg="white">
@@ -1922,75 +1329,36 @@ const handleSkipWhatsapp = () => {
               <FormLabel fontSize="12px" fontWeight="600" color="#555">
                 Reason for return <Text as="span" color="red.500">*</Text>
               </FormLabel>
-              <Textarea
-                value={returnRemarks}
-                onChange={(e) => setReturnRemarks(e.target.value)}
-                placeholder="Describe what needs to be corrected"
-                borderColor="#c8d0d8"
-                bg="white"
-                _focus={{ borderColor: "#d69e2e" }}
-                rows={4}
-              />
+              <Textarea value={returnRemarks} onChange={(e) => setReturnRemarks(e.target.value)}
+                placeholder="Describe what needs to be corrected" borderColor="#c8d0d8" bg="white" _focus={{ borderColor: "#d69e2e" }} rows={4} />
             </FormControl>
-
             <FormControl>
               <FormLabel fontSize="12px" fontWeight="600" color="#555">
                 Attach Image <Text as="span" color="red.500">*</Text>
               </FormLabel>
               <Flex align="center" gap={2}>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  colorScheme="yellow"
-                  fontSize="12px"
-                  onClick={() => returnImageRef.current?.click()}
-                >
+                <Button size="sm" variant="outline" colorScheme="yellow" fontSize="12px" onClick={() => returnImageRef.current?.click()}>
                   Choose File
                 </Button>
                 <Text fontSize="11px" color={returnImageFile ? "green.600" : "gray.400"}>
                   {returnImageFile ? returnImageFile.name : "No file chosen"}
                 </Text>
-                <input
-                  type="file"
-                  ref={returnImageRef}
-                  accept="image/*,application/pdf"
-                  style={{ display: "none" }}
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) setReturnImageFile(file);
-                  }}
-                />
+                <input type="file" ref={returnImageRef} accept="image/*,application/pdf" style={{ display: "none" }}
+                  onChange={(e) => { const file = e.target.files[0]; if (file) setReturnImageFile(file); }} />
               </Flex>
-
-              {/* Preview if image */}
               {returnImageFile && returnImageFile.type.startsWith("image/") && (
                 <Box mt={2} border="1px solid #d0d7de" borderRadius="6px" overflow="hidden" maxW="200px">
-                  <img
-                    src={URL.createObjectURL(returnImageFile)}
-                    alt="Return attachment"
-                    style={{ width: "100%", objectFit: "cover" }}
-                  />
+                  <img src={URL.createObjectURL(returnImageFile)} alt="Return attachment" style={{ width: "100%", objectFit: "cover" }} />
                 </Box>
               )}
             </FormControl>
           </ModalBody>
           <ModalFooter bg="#f7f9f8" borderTop="1px solid #e0e8e2">
             <Flex gap={3}>
-              <Button
-                variant="ghost"
-                colorScheme="gray"
-                size="sm"
-                onClick={() => { setReturnModalOpen(false); setReturnRemarks(""); setReturnImageFile(null); }}>
+              <Button variant="ghost" colorScheme="gray" size="sm" onClick={() => { setReturnModalOpen(false); setReturnRemarks(""); setReturnImageFile(null); }}>
                 Cancel
               </Button>
-              <Button
-                colorScheme="yellow"
-                size="sm"
-                px={6}
-                borderRadius="12px"
-                onClick={handleReturn}
-                isLoading={submitting}
-                loadingText="Returning...">
+              <Button colorScheme="yellow" size="sm" px={6} borderRadius="12px" onClick={handleReturn} isLoading={submitting} loadingText="Returning...">
                 Return
               </Button>
             </Flex>
@@ -1998,7 +1366,7 @@ const handleSkipWhatsapp = () => {
         </ModalContent>
       </Modal>
 
-      {/* ══ Dispatch / Bill-T Document Preview Modal ══ */}
+      {/* Dispatch / Bill-T Document Preview Modal */}
       <Modal isOpen={dispatchPreview.isOpen} onClose={() => setDispatchPreview({ isOpen: false, url: "", title: "" })} size="4xl" isCentered>
         <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(2px)" />
         <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden" maxH="90vh">
@@ -2013,49 +1381,37 @@ const handleSkipWhatsapp = () => {
             {dispatchPreview.url ? (
               /\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?|$)/i.test(dispatchPreview.url) ? (
                 <Box textAlign="center">
-                  <img
-                    src={dispatchPreview.url}
-                    alt={dispatchPreview.title}
-                    style={{ maxWidth: "100%", objectFit: "contain", borderRadius: "6px", border: "1px solid #d0d7de" }}
-                  />
+                  <img src={dispatchPreview.url} alt={dispatchPreview.title} style={{ maxWidth: "100%", objectFit: "contain", borderRadius: "6px", border: "1px solid #d0d7de" }} />
                 </Box>
               ) : /\.pdf(\?|$)/i.test(dispatchPreview.url) ? (
-                <Box h="70vh">
-                  <iframe src={dispatchPreview.url} title={dispatchPreview.title} width="100%" height="100%" style={{ border: "none", borderRadius: "6px" }} />
-                </Box>
+                <Box h="70vh"><iframe src={dispatchPreview.url} title={dispatchPreview.title} width="100%" height="100%" style={{ border: "none", borderRadius: "6px" }} /></Box>
               ) : (
                 <Center h="200px" flexDirection="column" gap={3}>
                   <Text fontSize="13px" color="gray.500">Preview not available for this file type.</Text>
-                  <Button as="a" href={dispatchPreview.url} target="_blank" rel="noopener noreferrer"
-                    size="sm" bg="#237086" color="white" _hover={{ bg: "#1B5A6B" }} borderRadius="12px" px={6}>
+                  <Button as="a" href={dispatchPreview.url} target="_blank" rel="noopener noreferrer" size="sm" bg="#237086" color="white" _hover={{ bg: "#1B5A6B" }} borderRadius="12px" px={6}>
                     Open in New Tab
                   </Button>
                 </Center>
               )
             ) : (
-              <Center h="200px">
-                <Text fontSize="13px" color="gray.400" fontStyle="italic">No document available.</Text>
-              </Center>
+              <Center h="200px"><Text fontSize="13px" color="gray.400" fontStyle="italic">No document available.</Text></Center>
             )}
           </ModalBody>
           <ModalFooter bg="#f7f9f8" borderTop="1px solid #e0e8e2">
             <Flex gap={3} justify="flex-end" w="100%">
               {dispatchPreview.url && (
-                <Button as="a" href={dispatchPreview.url} target="_blank" rel="noopener noreferrer"
-                  size="sm" variant="outline" colorScheme="blue" px={5}>
+                <Button as="a" href={dispatchPreview.url} target="_blank" rel="noopener noreferrer" size="sm" variant="outline" colorScheme="blue" px={5}>
                   Open in New Tab
                 </Button>
               )}
-              <Button size="sm" variant="outline" colorScheme="gray"
-                onClick={() => setDispatchPreview({ isOpen: false, url: "", title: "" })}> Close </Button>
+              <Button size="sm" variant="outline" colorScheme="gray" onClick={() => setDispatchPreview({ isOpen: false, url: "", title: "" })}>Close</Button>
             </Flex>
           </ModalFooter>
         </ModalContent>
       </Modal>
-      {/* ══ Remove Item Confirm Modal ══ */}
-      <Modal isOpen={removeItemModal.isOpen}
-        onClose={() => setRemoveItemModal({ isOpen: false, index: null, itemName: "" })}
-        isCentered >
+
+      {/* Remove Item Confirm Modal */}
+      <Modal isOpen={removeItemModal.isOpen} onClose={() => setRemoveItemModal({ isOpen: false, index: null, itemName: "" })} isCentered>
         <ModalOverlay bg="blackAlpha.500" />
         <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden">
           <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#e6210c" pl={3}>
@@ -2066,35 +1422,18 @@ const handleSkipWhatsapp = () => {
             <Text fontSize="13px" color="#333">
               Are you sure you want to remove <b>"{removeItemModal.itemName}"</b> from this order?
             </Text>
-            <Text fontSize="12px" color="red.500" mt={2}>
-              This action can't be undone.
-            </Text>
+            <Text fontSize="12px" color="red.500" mt={2}>This action can't be undone.</Text>
           </ModalBody>
           <ModalFooter bg="#f7f9f8" borderTop="1px solid #e0e8e2">
             <Flex gap={3}>
-              <Button variant="ghost" colorScheme="gray" size="sm"
-                onClick={() => setRemoveItemModal({ isOpen: false, index: null, itemName: "" })}>
-                Cancel
-              </Button>
-              <Button colorScheme="red" size="sm" px={6} borderRadius="12px" onClick={confirmRemoveItem}>
-                OK, Remove
-              </Button>
+              <Button variant="ghost" colorScheme="gray" size="sm" onClick={() => setRemoveItemModal({ isOpen: false, index: null, itemName: "" })}>Cancel</Button>
+              <Button colorScheme="red" size="sm" px={6} borderRadius="12px" onClick={confirmRemoveItem}>OK, Remove</Button>
             </Flex>
           </ModalFooter>
         </ModalContent>
       </Modal>
-
-      <SalesOrderPreviewModal
-        isOpen={previewOpen}
-        onClose={() => setPreviewOpen(false)}
-        approval={approval}
-        formData={formData}
-        items={items}
-        dispatchData={dispatchData}
-        extraLedgers={extraLedgers} />
     </Box>
-    </>
   );
 };
 
-export default Sales;
+export default PurchaseApproval;

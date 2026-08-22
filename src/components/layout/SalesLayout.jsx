@@ -40,9 +40,7 @@ const SalesLayout = () => {
             </Breadcrumb>
           </HStack>
 
-          <Text className="action_heading" mb={6} textAlign="center">
-            Sale Order 
-          </Text>
+          <Text className="action_heading" mb={6} textAlign="center"> Sale Order </Text>
           <Sales />
           </Box>
       </Box>

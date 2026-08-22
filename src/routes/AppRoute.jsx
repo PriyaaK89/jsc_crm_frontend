@@ -118,6 +118,7 @@ import Receipt from "../components/layout/OrderVoucher/Receipt";
 import CreditNoteApprovalLayout from "../components/layout/OrderVoucher/CreditNoteApprovalLayout";
 import EmPaymentHoldLayout from "../components/layout/HRMaster/EmPaymentHoldLayout";
 import TransactionDocuments from "../components/layout/MiscActions/TransactionDocuments";
+import PurchaseApprovalLayout from "../components/layout/OrderVoucher/PurchaseApprovalLayout";
 
 
 function App() {
@@ -211,6 +212,7 @@ function App() {
         <Route path="/order-voucher/sales/:approvalId" element={<SalesLayout />} />
         <Route path="/order-voucher/receipt/:approvalId" element={<OrderVoucherReceiptLayout/>} />
         <Route path="/order-voucher/credit-note/:approvalId" element={<CreditNoteApprovalLayout/>} />
+        <Route path="/order-voucher/purchase/:approvalId" element={<PurchaseApprovalLayout/>} />
 
         <Route path="/order-voucher/receipt-request" element={<Receipt/>} />
         <Route path="/order-vochor/credit" element={<CreditLayout />} />

@@ -174,6 +174,8 @@ export const fetchLedgerDetailsByID = async (ledgerId) => {
         security_amount: d?.interest_configs?.[0]?.security_amount || "0.00",
         credit_limit: d?.credit_limit || "0.00",
         ledger_name: d?.ledger_name,
+         employee_under: d.employee_under,
+    employee_under_name: d.employee_under_name,
       };
     }
   } catch (err) {

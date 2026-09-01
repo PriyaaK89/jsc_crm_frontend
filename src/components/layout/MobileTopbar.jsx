@@ -46,7 +46,7 @@ import {
   RiTeamFill,
 } from "react-icons/ri";
 
-import { FaBookOpen, FaCity, FaExchangeAlt, FaListAlt, FaMoneyBill, FaProjectDiagram, FaTable, FaUserAlt, FaUserCheck, FaUsers, FaWarehouse } from "react-icons/fa";
+import { FaBookOpen, FaCity, FaCommentsDollar, FaExchangeAlt, FaListAlt, FaMoneyBill, FaProjectDiagram, FaTable, FaUserAlt, FaUserCheck, FaUsers, FaWarehouse } from "react-icons/fa";
 
 import {
   FaChartLine,
@@ -91,6 +91,7 @@ import {
   MdOutlineInventory2,
   MdAttractions,
   MdPayment,
+  MdCardTravel,
 } from "react-icons/md";
 
 import {
@@ -215,6 +216,7 @@ const MobileTopbar = () => {
         {label: "Create Team",path: "/business-development/create-team",icon: FaUserPlus, },
         {label: "Create Sub Team",path: "/business-development/create-sub-team",icon: HiUserGroup,},
         { label: "Assign Target", path: "/business-development/assign-target",  icon: MdAssignmentInd,},
+         { label: "Assign Visit Target", path: "/business-development/view-visit-target", icon: MdCardTravel, },
         { label: "View Teams", path: "/business-development/view-teams",  icon: RiTeamFill ,},
         { label: "View Assigned Targets", path: "/business-development/view-assigned-targets",  icon: FiTarget  ,},
         { label: "View Employee Targets", path: "/business-development/view-employee-targets",  icon: FaUserAlt   ,},
@@ -332,7 +334,8 @@ const MobileTopbar = () => {
           {label:"Activate/Deactivate Voucher",path:"/misc/voucher-action",icon:FaMoneyBill  },      
           {label:"Define Retailer",path:"/misc/create-retailer",icon:IoMdPersonAdd   },      
           {label:"View Retailer",path:"/misc/view-retailers",icon:IoCreate  },      
-          {label:"Transaction Approval",path:"/misc/transaction-approval",icon:FaUserCheck  },      
+          {label:"Transaction Approval",path:"/misc/transaction-approval",icon:FaUserCheck  },  
+                  { label: "Employee Penalty", path: "/misc/emp-penalty", icon: FaCommentsDollar  },    
          ]
       },
       {

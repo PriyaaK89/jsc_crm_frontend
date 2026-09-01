@@ -4,7 +4,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
 import { MdAssignmentInd, MdAttractions, MdCardTravel, MdOutlineAssignmentReturn, MdOutlineInventory2, MdOutlinePayments, MdOutlineTour, MdOutlineTrackChanges, MdPayment, MdTour, MdTravelExplore } from "react-icons/md";
 import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
-import { FaExchangeAlt, FaListAlt, FaMoneyBill, FaTable, FaUserAlt, FaUserCheck, FaUserTie, FaWarehouse } from 'react-icons/fa';
+import { FaCommentsDollar, FaExchangeAlt, FaListAlt, FaMoneyBill, FaRupeeSign, FaTable, FaUserAlt, FaUserCheck, FaUserTie, FaWarehouse } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
 import { MdCorporateFare, MdGroupAdd } from "react-icons/md";
 import { HiOfficeBuilding, HiOutlineDocumentReport } from "react-icons/hi";
@@ -274,6 +274,7 @@ const Newsidebar = () => {
         { label: "View Retailer", path: "/misc/view-retailers", icon: IoCreate },
         { label: "Transaction Approval", path: "/misc/transaction-approval", icon: FaUserCheck },
         { label: "Transaction Documents", path: "/misc/transaction-documents", icon: IoDocumentTextSharp },
+        { label: "Employee Penalty", path: "/misc/emp-penalty", icon: FaCommentsDollar  },
       ]
     },
     {

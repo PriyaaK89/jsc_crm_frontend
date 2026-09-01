@@ -274,6 +274,8 @@ export const API_ENDPOINTS = {
   GET_TRANSACTION_REPORT_IMAGES: "get-transaction-documents",
   get_next_offer_reference: "/next-offer-reference",
 
+  send_penalty_message: "/send-penalty-notice",
+
   send_ledger_whatsapp: (ledgerId) => `/${ledgerId}/send-whatsapp`,
   send_sale_order_whatsapp: (approvalId) => `/${approvalId}/send-whatsapp-confirmation`,
   send_receipt_whatsapp: (id) => `/${id}/send-receipt-whatsapp`,

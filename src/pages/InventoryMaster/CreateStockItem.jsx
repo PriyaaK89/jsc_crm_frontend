@@ -15,59 +15,59 @@ const CreateStockItem = () => {
     const [selectedGroup, setSelectedGroup] = useState();
 
     const initialFormData = {
-    item_name: "",
-    stock_group_id: "",
-    stock_category_id: "",
-    unit_id: "",
+        item_name: "",
+        stock_group_id: "",
+        stock_category_id: "",
+        unit_id: "",
 
-    gst_applicable: "",
-    set_gst_details: "",
+        gst_applicable: "",
+        set_gst_details: "",
 
-    type_of_supply: "Goods",
-    rate_of_duty: "",
-    description: "",
+        type_of_supply: "Goods",
+        rate_of_duty: "",
+        description: "",
 
-    alternative_unit_id: "",
-    alternative_unit_value: "",
-    base_unit_value: "",
+        alternative_unit_id: "",
+        alternative_unit_value: "",
+        base_unit_value: "",
 
-    bulk_unit_id: "",
-    bulk_unit_value: "",
-    bulk_base_value: "",
+        bulk_unit_id: "",
+        bulk_unit_value: "",
+        bulk_base_value: "",
 
-    is_returnable: "0",
-    returnable_percentage: "",
+        is_returnable: "0",
+        returnable_percentage: "",
 
-    maintain_in_batches: "",
-    track_mfg_date: "",
-    use_expiry_dates: "",
+        maintain_in_batches: "",
+        track_mfg_date: "",
+        use_expiry_dates: "",
 
-    set_standard_rates: "",
-    enable_cost_tracking: "",
+        set_standard_rates: "",
+        enable_cost_tracking: "",
 
-    gst_details: {
-        gst_description: "",
-        hsn_sac: "",
-        is_non_gst_goods: false,
-        calculation_type: "On Value",
-        taxability: "",
-        integrated_tax: "",
-        central_tax: "",
-        state_tax: "",
-    },
+        gst_details: {
+            gst_description: "",
+            hsn_sac: "",
+            is_non_gst_goods: false,
+            calculation_type: "On Value",
+            taxability: "",
+            integrated_tax: "",
+            central_tax: "",
+            state_tax: "",
+        },
 
-    opening_stock: {
-        godown_id: "",
-        batch_no: "",
-        mfg_date: "",
-        expiry_date: "",
-        quantity: "",
-        rate: "",
-        supercash_price: "",
-        per_unit_id: "",
-        amount: "",
-    },
-};
+        opening_stock: {
+            godown_id: null,
+            batch_no: "",
+            mfg_date: "",
+            expiry_date: "",
+            quantity: "",
+            rate: "",
+            supercash_price: "",
+            per_unit_id: "",
+            amount: "",
+        },
+    };
 
     const [formData, setFormData] = useState(initialFormData);
 
@@ -108,9 +108,9 @@ const CreateStockItem = () => {
                 }),
 
                 ...(name === "is_returnable" &&
-    value === "0" && {
-    returnable_percentage: "",
-}),
+                    value === "0" && {
+                    returnable_percentage: "",
+                }),
             };
 
             // AUTO SET OPENING STOCK PER UNIT
@@ -121,24 +121,24 @@ const CreateStockItem = () => {
                 };
             }
 
-             if (name === "rate_of_duty") {
+            if (name === "rate_of_duty") {
 
-            const dutyRate = parseFloat(value) || 0;
+                const dutyRate = parseFloat(value) || 0;
 
-            // divide equally
-            const halfTax = dutyRate / 2;
+                // divide equally
+                const halfTax = dutyRate / 2;
 
-            updatedData.gst_details = {
-                ...prev.gst_details,
+                updatedData.gst_details = {
+                    ...prev.gst_details,
 
-                // user can still edit/remove later manually
-                central_tax: value === "" ? "" : halfTax,
-                state_tax: value === "" ? "" : halfTax,
+                    // user can still edit/remove later manually
+                    central_tax: value === "" ? "" : halfTax,
+                    state_tax: value === "" ? "" : halfTax,
 
-                // optional
-                // integrated_tax: value === "" ? "" : dutyRate,
-            };
-        }
+                    // optional
+                    // integrated_tax: value === "" ? "" : dutyRate,
+                };
+            }
 
             return updatedData;
         });
@@ -235,28 +235,144 @@ const CreateStockItem = () => {
     // =========================
 
     const handleCreateStockItem = async () => {
+
+        if (!formData.stock_category_id) {
+            toast({
+                title: "Required Field",
+                description: "Please select a category.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+            });
+            return;
+        }
+
+        if (!formData.alternative_unit_id) {
+            toast({
+                title: "Required Field",
+                description: "Please select an alternative unit.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+            });
+            return;
+        }
+
+        if (!formData.bulk_unit_id) {
+            toast({
+                title: "Required Field",
+                description: "Please select a bulk unit.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+            });
+            return;
+        }
+
+        if (!formData.maintain_in_batches) {
+            toast({
+                title: "Required Field",
+                description: "Please select whether to maintain stock in batches.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+            });
+            return;
+        }
+
+        if (!formData.set_standard_rates) {
+            toast({
+                title: "Required Field",
+                description: "Please select whether to set standard rates.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+            });
+            return;
+        }
+        if (!formData.enable_cost_tracking) {
+            toast({
+                title: "Required Field",
+                description: "Please select whether to enable cost tracking.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+            });
+            return;
+        }
+
+        if (!formData.gst_applicable) {
+            toast({
+                title: "Required Field",
+                description: "Please select GST applicability.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+            });
+            return;
+        }
+        if (!formData.set_gst_details) {
+            toast({
+                title: "Required Field",
+                description: "Please select whether to set/alter GST details.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+            });
+            return;
+        }
+
+        if (!formData.type_of_supply) {
+            toast({
+                title: "Required Field",
+                description: "Please select type of supply.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+            });
+            return;
+        }
+
+
+        if (!formData.opening_stock.godown_id) {
+            toast({
+                title: "Godown Required",
+                description: "Select a godown for creating stock.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+            });
+            return;
+        }
         if (
-    Number(formData.is_returnable) === 1 &&
-    !formData.returnable_percentage
-) {
-    toast({
-        title: "Error",
-        description: "Please enter returnable percentage",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-    });
+            Number(formData.is_returnable) === 1 &&
+            !formData.returnable_percentage
+        ) {
+            toast({
+                title: "Error",
+                description: "Please enter returnable percentage",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
 
-    return;
-}
+            return;
+        }
+
         try {
-            
             setLoading(true);
-
             const payload = {
-
                 ...formData,
-
                 gst_applicable: Number(formData.gst_applicable),
                 set_gst_details: Number(formData.set_gst_details),
                 maintain_in_batches: Number(formData.maintain_in_batches),
@@ -266,10 +382,7 @@ const CreateStockItem = () => {
                 enable_cost_tracking: Number(formData.enable_cost_tracking),
                 is_returnable: Number(formData.is_returnable),
 
-returnable_percentage:
-    formData.returnable_percentage === ""
-        ? null
-        : Number(formData.returnable_percentage),
+                returnable_percentage: formData.returnable_percentage === "" ? null : Number(formData.returnable_percentage),
                 gst_details: {
                     ...formData.gst_details,
                     is_non_gst_goods: formData.gst_details.is_non_gst_goods ? 1 : 0,
@@ -286,7 +399,7 @@ returnable_percentage:
                 isClosable: true,
             });
             setFormData(initialFormData);
-setSelectedGroup("");
+            setSelectedGroup("");
 
             console.log(response?.data);
 
@@ -309,7 +422,6 @@ setSelectedGroup("");
 
     useEffect(() => {
         getStockGroups();
-
         getUnits();
         getGodowns();
     }, []);
@@ -319,6 +431,7 @@ setSelectedGroup("");
             getStockCategories()
         }
     }, [selectedGroup])
+
     return (
         <Box bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 4 }} borderRadius="lg" boxShadow="md">
 
@@ -372,7 +485,7 @@ setSelectedGroup("");
                         </GridItem>
 
                         <GridItem>
-                            <FormControl>
+                            <FormControl isRequired>
                                 <FormLabel>Category</FormLabel>
 
                                 <Select
@@ -435,8 +548,7 @@ setSelectedGroup("");
 
                                             <GridItem>
 
-                                                <FormControl>
-
+                                                <FormControl isRequired>
                                                     <FormLabel>
                                                         Alternative Unit
                                                     </FormLabel>
@@ -530,7 +642,7 @@ setSelectedGroup("");
 
                                             <GridItem>
 
-                                                <FormControl>
+                                                <FormControl isRequired>
 
                                                     <FormLabel>
                                                         Bulk Unit
@@ -626,7 +738,7 @@ setSelectedGroup("");
 
                                 <Grid templateColumns="repeat(2, 1fr)" gap={5} >
                                     <GridItem>
-                                        <FormControl>
+                                        <FormControl isRequired>
 
                                             <FormLabel> Maintain In Batches </FormLabel>
 
@@ -646,7 +758,7 @@ setSelectedGroup("");
 
                                     <GridItem>
 
-                                        <FormControl>
+                                        <FormControl isRequired>
 
                                             <FormLabel>
                                                 Set Standard Rates
@@ -677,7 +789,7 @@ setSelectedGroup("");
 
                                     <GridItem>
 
-                                        <FormControl>
+                                        <FormControl isRequired>
 
                                             <FormLabel>
                                                 Enable Cost Tracking
@@ -788,7 +900,7 @@ setSelectedGroup("");
                         </GridItem>
 
                         <GridItem>
-                            <FormControl>
+                            <FormControl isRequired>
                                 <FormLabel>Type Of Supply</FormLabel>
 
                                 <Select
@@ -826,7 +938,7 @@ setSelectedGroup("");
                     <Grid templateColumns="repeat(2, 1fr)" gap={5} mt={5} >
 
                         <GridItem>
-                            <FormControl>
+                            <FormControl isRequired>
                                 <FormLabel>GST Applicable</FormLabel>
 
                                 <Select placeholder="Select Option" name="gst_applicable" value={formData.gst_applicable} onChange={handleChange} >
@@ -839,7 +951,7 @@ setSelectedGroup("");
                         {/* SET GST DETAILS */}
 
                         <GridItem>
-                            <FormControl>
+                            <FormControl isRequired>
                                 <FormLabel> Set / Alter GST Details </FormLabel>
                                 <Select placeholder="Select Option" name="set_gst_details" value={formData.set_gst_details} onChange={handleChange}>
                                     <option value="1"> Yes </option>
@@ -850,33 +962,33 @@ setSelectedGroup("");
 
                         <GridItem>
                             <FormControl>
-  <FormLabel>Item is Returnable</FormLabel>
+                                <FormLabel>Item is Returnable</FormLabel>
 
-<Select
-    placeholder="Select Option"
-    name="is_returnable"
-    value={formData.is_returnable}
-    onChange={handleChange}
->
-    <option value="1">Yes</option>
-    <option value="0">No</option>
-</Select>
-</FormControl>
- {Number(formData.is_returnable) === 1 && (
-  <FormControl mt={4}>
-    <FormLabel>Returnable Percentage</FormLabel>
+                                <Select
+                                    placeholder="Select Option"
+                                    name="is_returnable"
+                                    value={formData.is_returnable}
+                                    onChange={handleChange}
+                                >
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </Select>
+                            </FormControl>
+                            {Number(formData.is_returnable) === 1 && (
+                                <FormControl mt={4}>
+                                    <FormLabel>Returnable Percentage</FormLabel>
 
-    <Input
-    type="number"
-    name="returnable_percentage"
-    value={formData.returnable_percentage}
-    onChange={handleChange}
-    placeholder="Enter Number"
-    min={0}
-    max={100}
-/>
-  </FormControl>
-)}
+                                    <Input
+                                        type="number"
+                                        name="returnable_percentage"
+                                        value={formData.returnable_percentage}
+                                        onChange={handleChange}
+                                        placeholder="Enter Number"
+                                        min={0}
+                                        max={100}
+                                    />
+                                </FormControl>
+                            )}
                         </GridItem>
 
 
@@ -884,7 +996,7 @@ setSelectedGroup("");
 
                 </Box>
 
-               
+
 
                 {/* GST DETAILS */}
 
@@ -904,21 +1016,21 @@ setSelectedGroup("");
                             <GridItem>
                                 <FormControl>
                                     <FormLabel>Description</FormLabel>
-                                    <Input name="gst_description" value={ formData.gst_details.gst_description } onChange={handleGSTChange}/>
+                                    <Input name="gst_description" value={formData.gst_details.gst_description} onChange={handleGSTChange} />
                                 </FormControl>
                             </GridItem>
 
                             <GridItem>
                                 <FormControl>
                                     <FormLabel>HSN/SAC</FormLabel>
-                                    <Input name="hsn_sac" value={ formData.gst_details.hsn_sac } onChange={handleGSTChange}/>
+                                    <Input name="hsn_sac" value={formData.gst_details.hsn_sac} onChange={handleGSTChange} />
                                 </FormControl>
                             </GridItem>
 
                             <GridItem>
                                 <FormControl>
                                     <FormLabel>Taxability</FormLabel>
-                                    <Select name="taxability" value={ formData.gst_details.taxability } onChange={handleGSTChange}>
+                                    <Select name="taxability" value={formData.gst_details.taxability} onChange={handleGSTChange}>
                                         <option value=""> Select </option>
                                         <option value="Taxable"> Taxable </option>
                                         <option value="Exempt"> Exempt </option>
@@ -944,7 +1056,7 @@ setSelectedGroup("");
                                     <Td fontSize="12px" color="gray.600">Integrated Tax</Td>
                                     <Td>
                                         <Input type="number" name="integrated_tax"
-                                            value={ formData.gst_details.integrated_tax }
+                                            value={formData.gst_details.integrated_tax}
                                             onChange={handleGSTChange} />
                                     </Td>
                                 </Tr>
@@ -952,7 +1064,7 @@ setSelectedGroup("");
                                     <Td fontSize="12px" color="gray.600">Central Tax</Td>
                                     <Td>
                                         <Input type="number" name="central_tax"
-                                        value={ formData.gst_details.central_tax } onChange={handleGSTChange}/>
+                                            value={formData.gst_details.central_tax} onChange={handleGSTChange} />
                                     </Td>
                                 </Tr>
 
@@ -962,7 +1074,7 @@ setSelectedGroup("");
                                         <Input
                                             type="number"
                                             name="state_tax"
-                                            value={ formData.gst_details.state_tax }
+                                            value={formData.gst_details.state_tax}
                                             onChange={handleGSTChange}
                                         />
                                     </Td>
@@ -983,12 +1095,12 @@ setSelectedGroup("");
                     <Grid templateColumns="repeat(4, 1fr)" gap={5} >
 
                         <GridItem>
-                            <FormControl>
+                            <FormControl isRequired>
                                 <FormLabel>Godown</FormLabel>
                                 <Select
                                     placeholder="Select Godown"
                                     name="godown_id"
-                                    value={ formData.opening_stock.godown_id }
+                                    value={formData.opening_stock.godown_id}
                                     onChange={handleOpeningStockChange}>
                                     {godowns?.map((item) => (
                                         <option
@@ -1033,7 +1145,7 @@ setSelectedGroup("");
                                         <Input
                                             type="date"
                                             name="mfg_date"
-                                            value={ formData.opening_stock.mfg_date }
+                                            value={formData.opening_stock.mfg_date}
                                             onChange={handleOpeningStockChange}
                                         />
                                     </FormControl>
@@ -1051,7 +1163,7 @@ setSelectedGroup("");
                                             type="date"
                                             name="expiry_date"
                                             value={formData.opening_stock.expiry_date}
-                                            onChange={handleOpeningStockChange}/>
+                                            onChange={handleOpeningStockChange} />
                                     </FormControl>
                                 </GridItem>
                             )
@@ -1088,7 +1200,7 @@ setSelectedGroup("");
                                 <FormLabel> Per </FormLabel>
                                 <Select
                                     name="per_unit_id"
-                                    value={ formData.opening_stock.per_unit_id }
+                                    value={formData.opening_stock.per_unit_id}
                                     onChange={handleOpeningStockChange} >
 
                                     <option value=""> Select Unit </option>
@@ -1104,7 +1216,7 @@ setSelectedGroup("");
                             <FormControl>
                                 <FormLabel> Amount </FormLabel>
                                 <Input
-                                    value={ formData.opening_stock.amount }
+                                    value={formData.opening_stock.amount}
                                     isReadOnly
                                     bg="#F5F5F5" />
                             </FormControl>
@@ -1125,7 +1237,7 @@ setSelectedGroup("");
                         borderRadius="12px"
                         onClick={handleCreateStockItem}
                         isDisabled={loading} >
-                        {loading ? ( <Spinner size="sm" /> ) : ( "Create Stock Item" )}
+                        {loading ? (<Spinner size="sm" />) : ("Create Stock Item")}
                     </Button>
                 </Flex>
             </VStack>

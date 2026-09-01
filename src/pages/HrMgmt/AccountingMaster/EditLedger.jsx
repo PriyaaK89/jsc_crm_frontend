@@ -506,7 +506,7 @@ const EditLedger = () => {
 
     const showToast = useCallback(
         (type, message) => {
-            toast({ title: message, status: type === "success" ? "success" : "error", duration: 3500, isClosable: true, position: "top-right" });
+            toast({ title: message, status: type === "success" ? "success" : "error", duration: 2000, isClosable: true, position: "bottom-center" });
         },
         [toast]
     );
@@ -730,6 +730,10 @@ const EditLedger = () => {
 
             await API.put(`${API_ENDPOINTS.update_ledger}/${id}`, payload);
             showToast("success", "Ledger updated successfully!");
+            setTimeout(()=>{
+                navigate("/accounting-master/view-ledger")
+            },1000)
+            
         } catch (error) {
             console.error("Update ledger error:", error);
             const msg = error?.response?.data?.message || "Failed to update ledger.";

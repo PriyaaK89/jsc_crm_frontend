@@ -6,12 +6,12 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { AddIcon, CloseIcon } from "@chakra-ui/icons";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import useUsersapi from "../../Apis/GetUsersapi";
 import {
-  fetchNextVoucherNo, fetchGodownList, fetchLedgerDropdown,fetchAssignedLedgerDropdown,
+  fetchNextVoucherNo, fetchGodownList, fetchLedgerDropdown, fetchAssignedLedgerDropdown,
   fetchLedgerDetailsByID, fetchStockItemDetailsByID,
 } from "../../Apis/commanApi";
 
@@ -35,7 +35,7 @@ const makeEmptyItem = () => ({
   total_amount: 0, godown_id: "", godown_name: "", batch_no: "Not Applicable",
   available_qty: 0,
   gst_applicable: 0, rate_of_duty: 0,
-   sale_rate: 0,        
+  sale_rate: 0,
   supercash_price: 0,  // ← add
 });
 
@@ -153,8 +153,8 @@ const SalesCreate = () => {
   // tax_mode per item: if igst_percent > 0 → IGST only; if cgst_percent > 0 → CGST+SGST only.
   // IGST and CGST/SGST are mutually exclusive — never added together.
   const recalculateItem = (item) => {
-    const qty    = Number(item.billed_qty) || 0;
-    const rate   = Number(item.rate)       || 0;
+    const qty = Number(item.billed_qty) || 0;
+    const rate = Number(item.rate) || 0;
     const amount = round2(qty * rate);
 
     const igstP = Number(item.igst_percent) || 0;
@@ -165,16 +165,16 @@ const SalesCreate = () => {
 
     if (igstP > 0) {
       // IGST mode — CGST/SGST zeroed out
-      igst_amount  = round2((amount * igstP) / 100);
-      cgst_amount  = 0;
-      sgst_amount  = 0;
-      tax_percent  = igstP;
+      igst_amount = round2((amount * igstP) / 100);
+      cgst_amount = 0;
+      sgst_amount = 0;
+      tax_percent = igstP;
     } else if (cgstP > 0 || sgstP > 0) {
       // CGST + SGST mode — IGST zeroed out
-      igst_amount  = 0;
-      cgst_amount  = round2((amount * cgstP) / 100);
-      sgst_amount  = round2((amount * sgstP) / 100);
-      tax_percent  = round2(cgstP + sgstP);   // e.g. 9+9 = 18%
+      igst_amount = 0;
+      cgst_amount = round2((amount * cgstP) / 100);
+      sgst_amount = round2((amount * sgstP) / 100);
+      tax_percent = round2(cgstP + sgstP);   // e.g. 9+9 = 18%
     }
 
     const tax_amount = round2(igst_amount + cgst_amount + sgst_amount);
@@ -223,25 +223,25 @@ const SalesCreate = () => {
       const cgst_percent = useIGST ? 0 : round2(gstRate / 2);
       const sgst_percent = useIGST ? 0 : round2(gstRate / 2);
 
-      const sale_rate       = Number(details?.rate || 0);
+      const sale_rate = Number(details?.rate || 0);
       const supercash_price = Number(details?.supercash_price || 0);
 
-    // ← pick rate based on current supercash toggle
+      // ← pick rate based on current supercash toggle
       const rate = isSupercash ? supercash_price : sale_rate;
 
       updated[index] = recalculateItem({
         ...base,
         stock_item_id: stockItemId,
-        item_name:     selectedItem.name || selectedItem.item_name,
-        unit_id:       details?.unit_id   || selectedItem.unit_id   || "",
-        unit_name:     details?.unit_name || selectedItem.unit_name || "",
+        item_name: selectedItem.name || selectedItem.item_name,
+        unit_id: details?.unit_id || selectedItem.unit_id || "",
+        unit_name: details?.unit_name || selectedItem.unit_name || "",
         // rate:          details?.rate      || selectedItem.sale_rate || selectedItem.rate || 0,
         rate,
-         sale_rate,        // ← store both
-      supercash_price,
+        sale_rate,        // ← store both
+        supercash_price,
         available_qty: details?.available_qty || 0,
         gst_applicable: Number(details?.gst_applicable || 0),
-        rate_of_duty:  gstRate,
+        rate_of_duty: gstRate,
         igst_percent,
         cgst_percent,
         sgst_percent,
@@ -351,7 +351,7 @@ const SalesCreate = () => {
       voucher_type_id: voucherInfo.voucher_type_id,
       order_no: orderNo,
       sales_date: formData.date,
-      is_supercash_sale: isSupercash ? "1" : "0", 
+      is_supercash_sale: isSupercash ? "1" : "0",
       tax_mode,
       subtotal: totals.subtotal,
       tax_total: totals.taxTotal,
@@ -387,16 +387,16 @@ const SalesCreate = () => {
   };
 
   useEffect(() => {
-  setItems(prev =>
-    prev.map(item => {
-      if (!item.stock_item_id) return item; // skip empty rows
-      const rate = isSupercash
-        ? (item.supercash_price || item.sale_rate || 0)
-        : (item.sale_rate || 0);
-      return recalculateItem({ ...item, rate });
-    })
-  );
-}, [isSupercash]);
+    setItems(prev =>
+      prev.map(item => {
+        if (!item.stock_item_id) return item; // skip empty rows
+        const rate = isSupercash
+          ? (item.supercash_price || item.sale_rate || 0)
+          : (item.sale_rate || 0);
+        return recalculateItem({ ...item, rate });
+      })
+    );
+  }, [isSupercash]);
 
   if (loading) return <Center h="60vh"><Spinner size="xl" color="#4f9190" /></Center>;
 
@@ -435,32 +435,32 @@ const SalesCreate = () => {
           </GridItem>
           <GridItem>
             <Text {...labelStyle}>Is Consignee</Text>
-            <Select {...inputStyle} value={formData.isConsignee} 
-            // maxW="200px"
+            <Select {...inputStyle} value={formData.isConsignee}
+              // maxW="200px"
               onChange={e => setFormData(prev => ({ ...prev, isConsignee: e.target.value }))}>
               <option value="No">No</option>
               <option value="Yes">Yes</option>
             </Select>
           </GridItem>
-            <GridItem>
-  <Text {...labelStyle}>Is Supercash Sale?</Text>
-  <Flex align="center" gap={3} mt={1}>
-    <Select
-      {...inputStyle}
-    //   maxW="200px"
-      value={isSupercash ? "Yes" : "No"}
-      onChange={e => setIsSupercash(e.target.value === "Yes")}
-    >
-      <option value="No">No</option>
-      <option value="Yes">Yes</option>
-    </Select>
-    {isSupercash && (
-      <Badge colorScheme="orange" fontSize="11px" px={2} py={1}>
-        Supercash Prices Active
-      </Badge>
-    )}
-  </Flex>
-</GridItem>
+          <GridItem>
+            <Text {...labelStyle}>Is Supercash Sale?</Text>
+            <Flex align="center" gap={3} mt={1}>
+              <Select
+                {...inputStyle}
+                //   maxW="200px"
+                value={isSupercash ? "Yes" : "No"}
+                onChange={e => setIsSupercash(e.target.value === "Yes")}
+              >
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </Select>
+              {isSupercash && (
+                <Badge colorScheme="orange" fontSize="11px" px={2} py={1}>
+                  Supercash Prices Active
+                </Badge>
+              )}
+            </Flex>
+          </GridItem>
           <GridItem colSpan={{ base: 1, md: 2 }}>
             <Flex align="center" gap={3}>
               <Checkbox isChecked={formData.setOverdueReminder} colorScheme="teal" size="sm"
@@ -468,7 +468,7 @@ const SalesCreate = () => {
               <Text fontSize="12px" color="green.600" fontWeight="500">Set Default OverDue Reminder</Text>
             </Flex>
           </GridItem>
-        
+
         </Grid>
       </Box>
 
@@ -528,20 +528,26 @@ const SalesCreate = () => {
       {/* Section 4: Stock Items */}
       <Box {...sectionStyle}>
         <Box {...sectionHeaderStyle}>
-            <HStack justifyContent="space-between">
-          <Text fontWeight="500" fontSize="sm">Stock Items</Text>
-            
-          <Button
-            size="xs"
-            leftIcon={<AddIcon />}
-            variant="outline"
-            colorScheme="white"
-            fontSize="11px"
-            onClick={addRow}
-          >
-            Add Row
-          </Button>
-       </HStack>
+          <HStack justifyContent="space-between">
+            <Text fontWeight="500" fontSize="sm">Stock Items</Text>
+<HStack>
+            <Button size="xs"
+              leftIcon={<AddIcon />}
+              variant="outline"
+              colorScheme="white"
+              fontSize="11px" _hover={{ bg: "#2d595a" }}><Link to={"/inventory/create-stock-item"}>Create Item</Link></Button>
+
+            <Button
+              size="xs"
+              leftIcon={<AddIcon />}
+              variant="outline"
+              colorScheme="white"
+              fontSize="11px"
+              onClick={addRow}
+            >
+              Add Row
+            </Button></HStack>
+          </HStack>
         </Box>
         <Box overflowX="auto">
           <Table size="sm" variant="simple">
@@ -637,26 +643,26 @@ const SalesCreate = () => {
             </Tbody>
           </Table>
         </Box>
-     
+
       </Box>
 
-           {/* Totals row */}
-        <Box bg="#f0f4f0" p={3} border="1px solid #d0d7de" my={4} borderRadius="8px">
-          <Grid templateColumns="repeat(5, 1fr)" gap={3}>
-            {[
-              { label: "Subtotal", value: totals.subtotal },
-              { label: "IGST Total", value: totals.igst },
-              { label: "CGST Total", value: totals.cgst },
-              { label: "SGST Total", value: totals.sgst },
-              { label: "Total Amount", value: totals.totalAmount },
-            ].map(({ label, value }) => (
-              <Box key={label}>
-                <Text fontSize="11px" color="#555" fontWeight="600">{label}</Text>
-                <Input {...readonlyInputStyle} value={value.toFixed(2)} readOnly textAlign="right" />
-              </Box>
-            ))}
-          </Grid>
-        </Box>
+      {/* Totals row */}
+      <Box bg="#f0f4f0" p={3} border="1px solid #d0d7de" my={4} borderRadius="8px">
+        <Grid templateColumns="repeat(5, 1fr)" gap={3}>
+          {[
+            { label: "Subtotal", value: totals.subtotal },
+            { label: "IGST Total", value: totals.igst },
+            { label: "CGST Total", value: totals.cgst },
+            { label: "SGST Total", value: totals.sgst },
+            { label: "Total Amount", value: totals.totalAmount },
+          ].map(({ label, value }) => (
+            <Box key={label}>
+              <Text fontSize="11px" color="#555" fontWeight="600">{label}</Text>
+              <Input {...readonlyInputStyle} value={value.toFixed(2)} readOnly textAlign="right" />
+            </Box>
+          ))}
+        </Grid>
+      </Box>
 
       {/* Section 5: Narration + Upload */}
       <Box {...sectionStyle} p={4}>

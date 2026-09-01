@@ -52,6 +52,12 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
   const [usersLoading, setUsersLoading] = useState(false);
   const [dropUp, setDropUp] = useState(false);
 
+  const [templateNameOptions, setTemplateNameOptions] = useState([]); // [{id, template_name}]
+  const [nameDropdownOpen, setNameDropdownOpen] = useState(false);
+  const [nameSearchQuery, setNameSearchQuery] = useState("");
+  const nameDropdownRef = useRef(null);
+
+
   const [form, setForm] = useState({
     template_name: "",
     frequency: "MONTHLY",
@@ -74,15 +80,35 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
     ref: empDropdownRef,
     handler: () => setEmpDropdownOpen(false),
   });
+  useOutsideClick({
+    ref: nameDropdownRef,
+    handler: () => setNameDropdownOpen(false),
+  });
+
+  const getTemplateNameOptions = async () => {
+    try {
+      const response = await API.get(API_ENDPOINTS?.GET_TEMPLATES_DROPDOWN);
+      if (response?.status === 200) {
+        const raw = response?.data?.data || [];
+        setTemplateNameOptions(raw);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const filteredNameSuggestions = templateNameOptions.filter((t) =>
+    t.template_name.toLowerCase().includes(nameSearchQuery.toLowerCase())
+  );
 
   const openEmpDropdown = () => {
-  const rect = empDropdownRef.current?.getBoundingClientRect();
-  if (rect) {
-    const spaceBelow = window.innerHeight - rect.bottom;
-    setDropUp(spaceBelow < 240); // 240 ≈ dropdown max height + buffer
-  }
-  setEmpDropdownOpen(true);
-};
+    const rect = empDropdownRef.current?.getBoundingClientRect();
+    if (rect) {
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setDropUp(spaceBelow < 240); // 240 ≈ dropdown max height + buffer
+    }
+    setEmpDropdownOpen(true);
+  };
   // ==============================
   // LOAD EMPLOYEE DROPDOWN
   // ==============================
@@ -158,6 +184,7 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
     if (!isOpen) return;
 
     getEmployees();
+    getTemplateNameOptions(); // NEW
 
     if (isEditMode) {
       getTemplateDetail();
@@ -172,8 +199,11 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
       });
       setTargets(emptyTargets);
     }
+
     setEmpSearch("");
     setEmpDropdownOpen(false);
+    setNameDropdownOpen(false); // NEW
+    setNameSearchQuery("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, templateId]);
 
@@ -209,8 +239,16 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
     emp.name?.toLowerCase().includes(empSearch.toLowerCase())
   );
 
+
+  const selectTemplateName = (name) => {
+  handleChange("template_name", name);
+  setNameSearchQuery("");
+  setNameDropdownOpen(false);
+};
+
   const validate = () => {
     if (!form.template_name.trim()) return "Template name is required";
+    // if (isDuplicateTemplateName(form.template_name)) return "A template with this name already exists";
     if (!form.start_date || !form.end_date) return "Start and end date are required";
     if (form.start_date > form.end_date) return "Start date must be before end date";
     if (!form.employee_id) return "Select an employee";
@@ -279,8 +317,7 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
 
       toast({
         title: "Error",
-        description:
-          error?.response?.data?.message ||
+        description: error?.response?.data?.message ||
           (conflicts
             ? "Selected employee already has an active target for this period"
             : `Failed to ${isEditMode ? "update" : "create"} template`),
@@ -310,14 +347,14 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
           py={5}
         >
           <VStack spacing={4} alignItems="baseline">
-          <Text fontSize="16px" fontWeight="500">
-            {isEditMode ? "Edit Target Template" : "Create Target Template"}
-          </Text>
-          <Text fontSize="10px" fontWeight="400" color="whiteAlpha.800" mt={1}>
-            {isEditMode
-              ? "Update targets and assigned employee"
-              : "Set up visit targets for your field team"}
-          </Text></VStack>
+            <Text fontSize="16px" fontWeight="500">
+              {isEditMode ? "Edit Target Template" : "Create Target Template"}
+            </Text>
+            <Text fontSize="10px" fontWeight="400" color="whiteAlpha.800" mt={1}>
+              {isEditMode
+                ? "Update targets and assigned employee"
+                : "Set up visit targets for your field team"}
+            </Text></VStack>
         </ModalHeader>
         <ModalCloseButton color="white" top={5} />
 
@@ -339,14 +376,54 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
                     <FormLabel fontSize="13px" fontWeight="600" color="gray.700">
                       Template Name
                     </FormLabel>
-                    <Input
-                      value={form.template_name}
-                      onChange={(e) => handleChange("template_name", e.target.value)}
-                      placeholder="e.g. Visit Target"
-                      bg="gray.50"
-                      borderRadius="8px"
-                      _focus={{ bg: "white", borderColor: "blue.400", boxShadow: "0 0 0 1px #4299E1" }}
-                    />
+                    <Box position="relative" ref={nameDropdownRef}>
+
+                      <Input
+                        value={form.template_name}
+                        onChange={(e) => {
+                          handleChange("template_name", e.target.value);
+                          setNameSearchQuery(e.target.value); // NEW — filter follows what's typed
+                          setNameDropdownOpen(true);
+                        }}
+                        onFocus={() => setNameDropdownOpen(true)}
+                        placeholder="e.g. Visit Target"
+                        bg="gray.50"
+                        borderRadius="8px"
+                        _focus={{ bg: "white", borderColor: "blue.400", boxShadow: "0 0 0 1px #4299E1" }}
+                      />
+
+                      {nameDropdownOpen && filteredNameSuggestions.length > 0 && (
+                        <Box
+                          position="absolute"
+                          top="calc(100% + 4px)"
+                          left={0}
+                          right={0}
+                          bg="white"
+                          border="1px solid"
+                          borderColor="gray.200"
+                          borderRadius="8px"
+                          boxShadow="lg"
+                          zIndex={20}
+                          maxH="160px"
+                          overflowY="auto"
+                        >
+                          {filteredNameSuggestions.map((t) => (
+                            <Text
+                              key={t.id}
+                              fontSize="13px"
+                              color="gray.600"
+                              px={3}
+                              py={2}
+                              cursor="pointer"
+                              _hover={{ bg: "gray.50" }}
+                              onClick={() => selectTemplateName(t.template_name)}
+                            >
+                              {t.template_name}
+                            </Text>
+                          ))}
+                        </Box>
+                      )}
+                    </Box>
                   </FormControl>
 
                   <FormControl isRequired>
@@ -476,109 +553,109 @@ const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
                 </Flex>
 
                 <Box position="relative" ref={empDropdownRef}>
-  {/* Single-select trigger field — always the same, just toggles dropdown */}
-  <Flex
-    align="center"
-    justify="space-between"
-    gap={2}
-    minH="44px"
-    px={3}
-    py={2}
-    bg="gray.50"
-    border="1px solid"
-    borderColor={empDropdownOpen ? "blue.400" : "gray.200"}
-    borderRadius="8px"
-    cursor="pointer"
-    onClick={() => (empDropdownOpen ? setEmpDropdownOpen(false) : openEmpDropdown())}
-    boxShadow={empDropdownOpen ? "0 0 0 1px #4299E1" : "none"}
-    transition="all 0.15s"
-  >
-    <Text fontSize="14px" color={form.employee_id ? "gray.700" : "gray.400"} fontWeight={form.employee_id ? "500" : "400"}>
-      {form.employee_id ? getEmployeeName(form.employee_id) : "Select an employee..."}
-    </Text>
+                  {/* Single-select trigger field — always the same, just toggles dropdown */}
+                  <Flex
+                    align="center"
+                    justify="space-between"
+                    gap={2}
+                    minH="44px"
+                    px={3}
+                    py={2}
+                    bg="gray.50"
+                    border="1px solid"
+                    borderColor={empDropdownOpen ? "blue.400" : "gray.200"}
+                    borderRadius="8px"
+                    cursor="pointer"
+                    onClick={() => (empDropdownOpen ? setEmpDropdownOpen(false) : openEmpDropdown())}
+                    boxShadow={empDropdownOpen ? "0 0 0 1px #4299E1" : "none"}
+                    transition="all 0.15s"
+                  >
+                    <Text fontSize="14px" color={form.employee_id ? "gray.700" : "gray.400"} fontWeight={form.employee_id ? "500" : "400"}>
+                      {form.employee_id ? getEmployeeName(form.employee_id) : "Select an employee..."}
+                    </Text>
 
-    <Flex align="center" gap={2}>
-      {form.employee_id && (
-        <Icon
-          as={CloseIcon}
-          boxSize="10px"
-          cursor="pointer"
-          color="gray.400"
-          _hover={{ color: "red.500" }}
-          onClick={(e) => {
-            e.stopPropagation();
-            clearEmployee();
-          }}
-        />
-      )}
-      <Icon as={ChevronDownIcon} color="gray.400" />
-    </Flex>
-  </Flex>
+                    <Flex align="center" gap={2}>
+                      {form.employee_id && (
+                        <Icon
+                          as={CloseIcon}
+                          boxSize="10px"
+                          cursor="pointer"
+                          color="gray.400"
+                          _hover={{ color: "red.500" }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            clearEmployee();
+                          }}
+                        />
+                      )}
+                      <Icon as={ChevronDownIcon} color="gray.400" />
+                    </Flex>
+                  </Flex>
 
-  {/* Dropdown: search box + list, both live here so the trigger never changes shape */}
-  {empDropdownOpen && (
-    <Box
-      position="absolute"
-      top={dropUp ? "auto" : "calc(100% + 4px)"}
-      bottom={dropUp ? "calc(100% + 4px)" : "auto"}
-      left={0}
-      right={0}
-      bg="white"
-      border="1px solid"
-      borderColor="gray.200"
-      borderRadius="8px"
-      boxShadow="lg"
-      zIndex={20}
-      overflow="hidden"
-    >
-      <Box p={2} borderBottom="1px solid" borderColor="gray.100">
-        <Input
-          autoFocus
-          value={empSearch}
-          onChange={(e) => setEmpSearch(e.target.value)}
-          placeholder="Search employees..."
-          size="sm"
-          bg="gray.50"
-          borderRadius="6px"
-        />
-      </Box>
+                  {/* Dropdown: search box + list, both live here so the trigger never changes shape */}
+                  {empDropdownOpen && (
+                    <Box
+                      position="absolute"
+                      top={dropUp ? "auto" : "calc(100% + 4px)"}
+                      bottom={dropUp ? "calc(100% + 4px)" : "auto"}
+                      left={0}
+                      right={0}
+                      bg="white"
+                      border="1px solid"
+                      borderColor="gray.200"
+                      borderRadius="8px"
+                      boxShadow="lg"
+                      zIndex={20}
+                      overflow="hidden"
+                    >
+                      <Box p={2} borderBottom="1px solid" borderColor="gray.100">
+                        <Input
+                          autoFocus
+                          value={empSearch}
+                          onChange={(e) => setEmpSearch(e.target.value)}
+                          placeholder="Search employees..."
+                          size="sm"
+                          bg="gray.50"
+                          borderRadius="6px"
+                        />
+                      </Box>
 
-      <Box maxH="180px" overflowY="auto">
-        {usersLoading ? (
-          <Flex justify="center" py={4}>
-            <Spinner size="sm" color="blue.500" />
-          </Flex>
-        ) : filteredEmployeeOptions.length > 0 ? (
-          filteredEmployeeOptions.map((emp) => {
-            const selected = String(emp.id) === String(form.employee_id);
-            return (
-              <Flex
-                key={emp.id}
-                align="center"
-                justify="space-between"
-                px={3}
-                py={2}
-                cursor="pointer"
-                bg={selected ? "blue.50" : "white"}
-                _hover={{ bg: selected ? "blue.50" : "gray.50" }}
-                onClick={() => selectEmployee(emp.id)}
-              >
-                <Text fontSize="14px" color="gray.700">
-                  {emp.name}
-                </Text>
-                {selected && <Icon as={CheckIcon} boxSize="12px" color="blue.500" />}
-              </Flex>
-            );
-          })
-        ) : (
-          <Text fontSize="13px" color="gray.500" px={3} py={3}>
-            No employees found
-          </Text>
-        )}
-      </Box>
-    </Box>
-  )}
-</Box>
+                      <Box maxH="180px" overflowY="auto">
+                        {usersLoading ? (
+                          <Flex justify="center" py={4}>
+                            <Spinner size="sm" color="blue.500" />
+                          </Flex>
+                        ) : filteredEmployeeOptions.length > 0 ? (
+                          filteredEmployeeOptions.map((emp) => {
+                            const selected = String(emp.id) === String(form.employee_id);
+                            return (
+                              <Flex
+                                key={emp.id}
+                                align="center"
+                                justify="space-between"
+                                px={3}
+                                py={2}
+                                cursor="pointer"
+                                bg={selected ? "blue.50" : "white"}
+                                _hover={{ bg: selected ? "blue.50" : "gray.50" }}
+                                onClick={() => selectEmployee(emp.id)}
+                              >
+                                <Text fontSize="14px" color="gray.700">
+                                  {emp.name}
+                                </Text>
+                                {selected && <Icon as={CheckIcon} boxSize="12px" color="blue.500" />}
+                              </Flex>
+                            );
+                          })
+                        ) : (
+                          <Text fontSize="13px" color="gray.500" px={3} py={3}>
+                            No employees found
+                          </Text>
+                        )}
+                      </Box>
+                    </Box>
+                  )}
+                </Box>
               </Box>
             </>
           )}

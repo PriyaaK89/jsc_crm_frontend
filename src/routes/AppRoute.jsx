@@ -119,6 +119,7 @@ import CreditNoteApprovalLayout from "../components/layout/OrderVoucher/CreditNo
 import EmPaymentHoldLayout from "../components/layout/HRMaster/EmPaymentHoldLayout";
 import TransactionDocuments from "../components/layout/MiscActions/TransactionDocuments";
 import PurchaseApprovalLayout from "../components/layout/OrderVoucher/PurchaseApprovalLayout";
+import PenaltyLayout from "../components/layout/MiscActions/PenalityLayout";
 
 
 function App() {
@@ -255,6 +256,7 @@ function App() {
         <Route path="/misc/view-retailers" element={<ViewRetailerLayout />} />
         <Route path="/misc/transaction-approval" element={<TransactionApprovalLayout/>}/>
         <Route path="/misc/transaction-documents" element={<TransactionDocuments/>}/>
+        <Route path="/misc/emp-penalty" element={<PenaltyLayout/>}/>
 
         <Route path="/transaction-master/purchase" element={<PurchaseTxnMasterLayout />} />
         <Route path="/transaction-master/payment" element={<PaymentTxnMasterLayout />} />

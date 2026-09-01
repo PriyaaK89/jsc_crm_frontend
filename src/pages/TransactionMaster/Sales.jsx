@@ -2,12 +2,14 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
     Box, Grid, GridItem, Input, Select, Text, Button, Table, Thead, Tbody, Tr,
     Th, Td, Textarea, Flex, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure, Badge, Divider, useToast,
+    HStack,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import useUsersapi from "../../Apis/GetUsersapi";
 import { fetchStockItemDropdown, fetchGodownList, fetchNextVoucherNo, fetchBatches, fetchStockItemDetailsByID, fetchLedgerDetailsByID, } from "../../Apis/commanApi";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import { Link } from "react-router-dom";
 
 // ─── Styles (matching Purchase) ───────────────────────────────────────────────
 const sectionStyle = {
@@ -1146,6 +1148,14 @@ const SalesTransaction = () => {
                                 </Badge>
                             )}
                         </Text>
+                        <HStack>
+                        <Button  size="xs"
+                            padding={3}
+                            fontWeight="500"
+                            marginRight="4px"
+                            leftIcon={<AddIcon fontSize="11px" />}
+                            colorScheme="whiteAlpha"
+                            variant="solid" _hover={{ bg: "#2d595a" }}><Link to={"/inventory/create-stock-item"}>Create Item</Link></Button>
                         <Button
                             size="xs"
                             padding={3}
@@ -1158,6 +1168,7 @@ const SalesTransaction = () => {
                             _hover={{ bg: "#2d595a" }}>
                             Add Item
                         </Button>
+                        </HStack>
                     </Flex>
 
                     {isSuperCashSale && (

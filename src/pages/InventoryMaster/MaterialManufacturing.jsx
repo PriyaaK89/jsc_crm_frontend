@@ -112,6 +112,7 @@ const emptyComponent = () => ({
   gst_applicable: 0,
   rate_of_duty: 0,
 
+  duty_amount: 0,
   amount: 0,
 });
 
@@ -167,13 +168,13 @@ const MaterialManufacturing = ({
       if (res?.status === 200) {
         const d = res?.data?.data;
         return {
-  unit_name: d?.base_unit_name || "",
-  unit_id: d?.unit_id || "",
-  rate: Number(d?.opening_stock?.rate || 0),
+          unit_name: d?.base_unit_name || "",
+          unit_id: d?.unit_id || "",
+          rate: Number(d?.opening_stock?.rate || 0),
 
-  gst_applicable: Number(d?.gst_applicable || 0),
-  rate_of_duty: Number(d?.rate_of_duty || 0),
-};
+          gst_applicable: Number(d?.gst_applicable || 0),
+          rate_of_duty: Number(d?.rate_of_duty || 0),
+        };
       }
     } catch (err) {
       console.error("Stock item details fetch error", err);
@@ -267,13 +268,13 @@ const MaterialManufacturing = ({
       if (value) {
         const details = await fetchStockItemDetails(value);
         if (details) {
-  updated[index].rate = details.rate;
-  updated[index].unit_id = details.unit_id;
-  updated[index].unit_name = details.unit_name;
+          updated[index].rate = details.rate;
+          updated[index].unit_id = details.unit_id;
+          updated[index].unit_name = details.unit_name;
 
-  updated[index].gst_applicable = details.gst_applicable;
-  updated[index].rate_of_duty = details.rate_of_duty;
-}
+          updated[index].gst_applicable = details.gst_applicable;
+          updated[index].rate_of_duty = details.rate_of_duty;
+        }
       }
     }
 
@@ -287,24 +288,26 @@ const MaterialManufacturing = ({
     }
 
     /* ── Recalculate amount ── */
- const qty = Number(updated[index].qty || 0);
-const rate = Number(updated[index].rate || 0);
+    const qty = Number(updated[index].qty || 0);
+    const rate = Number(updated[index].rate || 0);
 
-const baseAmount = qty * rate;
+    const baseAmount = qty * rate;
 
-let finalAmount = baseAmount;
+    let dutyAmount = 0;
+    let finalAmount = baseAmount;
 
-if (
-  Number(updated[index].gst_applicable) === 1 &&
-  Number(updated[index].rate_of_duty) > 0
-) {
-  const gstAmount =
-    (baseAmount * Number(updated[index].rate_of_duty)) / 100;
+    if (
+      Number(updated[index].gst_applicable) === 1 &&
+      Number(updated[index].rate_of_duty) > 0
+    ) {
+       dutyAmount =
+        (baseAmount * Number(updated[index].rate_of_duty)) / 100;
 
-  finalAmount += gstAmount;
-}
+      finalAmount += dutyAmount;
+    }
 
-updated[index].amount = finalAmount;
+    updated[index].duty_amount = dutyAmount;
+    updated[index].amount = finalAmount;
 
     setComponents([...updated]);
   };
@@ -555,7 +558,7 @@ updated[index].amount = finalAmount;
     } catch (error) {
       toast({
         title: "Error",
-        description: error?.response?.data?.message || "Something went wrong",
+        description: error?.response?.data?.error || "Something went wrong",
         status: "error", duration: 3000, isClosable: true,
       });
     } finally {
@@ -572,26 +575,26 @@ updated[index].amount = finalAmount;
   /**
    * Header batch fields — shown only when finished_item_id + finished_godown_id are set.
    */
-<BatchFields
-  batchOptions={headerBatchOptions}
-  batchLoading={headerBatchLoading}
-  selectedValue={formData.selected_batch_no}
-  newValue={formData.new_batch_no}
-  selectSx={selectSx}
-  inputSx={inputSx}
-  onSelectChange={(e) =>
-    setFormData((p) => ({
-      ...p,
-      selected_batch_no: e.target.value,
-    }))
-  }
-  onNewChange={(e) =>
-    setFormData((p) => ({
-      ...p,
-      new_batch_no: e.target.value,
-    }))
-  }
-/>
+  <BatchFields
+    batchOptions={headerBatchOptions}
+    batchLoading={headerBatchLoading}
+    selectedValue={formData.selected_batch_no}
+    newValue={formData.new_batch_no}
+    selectSx={selectSx}
+    inputSx={inputSx}
+    onSelectChange={(e) =>
+      setFormData((p) => ({
+        ...p,
+        selected_batch_no: e.target.value,
+      }))
+    }
+    onNewChange={(e) =>
+      setFormData((p) => ({
+        ...p,
+        new_batch_no: e.target.value,
+      }))
+    }
+  />
 
   /* ════════════════════════════════════════════════════════════
      JSX
@@ -732,6 +735,7 @@ updated[index].amount = finalAmount;
                 <Th>Qty</Th>
                 <Th>Unit</Th>
                 <Th>Rate</Th>
+                <Th>Duty/GST Amt</Th>
                 <Th>Amount</Th>
                 <Th />
               </Tr>
@@ -789,8 +793,23 @@ updated[index].amount = finalAmount;
 
                   {/* Rate (auto-filled from API) */}
                   <Td minW="90px">
+                    {/* <Input value={row.rate}  bg="gray.50" sx={inputSx}/> */}
+
                     <Input
-                      value={row.rate} readOnly bg="gray.50" sx={inputSx}
+                      type="number"
+                      value={row.rate}
+                      sx={inputSx}
+                      onChange={(e) => handleComponentChange(index, "rate", e.target.value)}
+                    />
+
+                  </Td>
+
+                  <Td minW="100px">
+                    <Input
+                      value={Number(row.duty_amount || 0).toFixed(2)}
+                      readOnly
+                      bg="gray.50"
+                      sx={inputSx}
                     />
                   </Td>
 

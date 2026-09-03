@@ -248,17 +248,7 @@ const CreateStockItem = () => {
             return;
         }
 
-        if (!formData.alternative_unit_id) {
-            toast({
-                title: "Required Field",
-                description: "Please select an alternative unit.",
-                status: "warning",
-                duration: 3000,
-                isClosable: true,
-                position: "top-right",
-            });
-            return;
-        }
+      
 
         if (!formData.bulk_unit_id) {
             toast({
@@ -548,7 +538,7 @@ const CreateStockItem = () => {
 
                                             <GridItem>
 
-                                                <FormControl isRequired>
+                                                <FormControl>
                                                     <FormLabel>
                                                         Alternative Unit
                                                     </FormLabel>

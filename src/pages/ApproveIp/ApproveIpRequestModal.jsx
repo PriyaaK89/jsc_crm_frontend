@@ -57,7 +57,7 @@ const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
 
       <ModalContent borderRadius="12px" mx="10px" overflow="hidden">
 
-        {/* ✅ Proper Header */}
+        {/*  Proper Header */}
         <ModalHeader
           bg="blue.500"
           color="white"
@@ -78,7 +78,7 @@ const ApproveIpRequestModal = ({ isOpen, onClose, userId, refreshData }) => {
             Cancel
           </Button>
 
-          {/* ✅ Same Color as Header */}
+          {/*  Same Color as Header */}
          <Button
          overflow="hidden"
   bg="blue.500"

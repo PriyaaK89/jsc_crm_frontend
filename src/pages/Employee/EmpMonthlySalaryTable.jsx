@@ -25,7 +25,7 @@ const EmpMonthlySalaryTable = () => {
         month: "",
         year: "",
         page: 1,
-        limit: 10,
+        limit: 35,
     });
 
     const [pagination, setPagination] = useState({
@@ -279,18 +279,15 @@ const EmpMonthlySalaryTable = () => {
             <EmpExpenseModal isOpen={isOpen} onClose={onClose} selectedBill={selectedBill} billTitle={billTitle} />
 
             <Flex justify="space-between" align="center" mb={5}>
-                <Heading size="md"> Employee Monthly Salary </Heading>
+                <Text className="action_heading" mb={6} textAlign="center"> Employee Monthly Salary </Text>
             </Flex>
 
             <Flex gap={5} mb={6} flexWrap="wrap" >
                 <FormControl maxW="300px">
-
                     <FormLabel> Employee Name </FormLabel>
                     <Select placeholder="Select Employee" name="employee_id" value={filters.employee_id} onChange={handleFilterChange}>
                         {emp.map((item) => (
-                            <option key={item.id} value={item.id} >
-                                {item.name || item.employee_name}
-                            </option>
+                            <option key={item.id} value={item.id} > {item.name || item.employee_name} </option>
                         ))}
                     </Select>
                 </FormControl>
@@ -299,21 +296,10 @@ const EmpMonthlySalaryTable = () => {
 
                 <FormControl maxW="300px">
                     <FormLabel> Select Month </FormLabel>
-
-                    <Select
-                        placeholder="Select Month"
-                        name="month"
-                        value={
-                            filters.month &&
-                                filters.year
-                                ? `${filters.month}-${filters.year}`
-                                : ""
-                        }
+                    <Select placeholder="Select Month" name="month"
+                        value={ filters.month && filters.year ? `${filters.month}-${filters.year}` : "" }
                         onChange={handleFilterChange} >
-
-                        {months.map((item, index) => (
-                            <option key={index} value={`${item.month}-${item.year}`}> {item.label} </option>
-                        ))}
+                        {months.map((item, index) => ( <option key={index} value={`${item.month}-${item.year}`}> {item.label} </option> ))}
                     </Select>
                 </FormControl>
             </Flex>
@@ -391,25 +377,13 @@ const EmpMonthlySalaryTable = () => {
 
                             <Tr>
                                 <Td colSpan={11}>
-                                    <Flex
-                                        justify="center"
-                                        py={10}
-                                    >
-                                        <Spinner />
-                                    </Flex>
+                                    <Flex justify="center" py={10}> <Spinner /> </Flex>
                                 </Td>
                             </Tr>
 
                         ) : salary.length === 0 ? (
 
-                            <Tr>
-                                <Td
-                                    colSpan={11}
-                                    textAlign="center"
-                                >
-                                    No Data Found
-                                </Td>
-                            </Tr>
+                            <Tr> <Td colSpan={11} textAlign="center" > No Data Found </Td> </Tr>
 
                         ) : (
 
@@ -524,7 +498,7 @@ const EmpMonthlySalaryTable = () => {
                     <b> {pagination.total_records} </b>
                 </Text>
 
-                <HStack>
+                {/* <HStack>
 
                     <Button
                         size="sm"
@@ -573,7 +547,7 @@ const EmpMonthlySalaryTable = () => {
                         Next
                     </Button>
 
-                </HStack>
+                </HStack> */}
 
             </Flex>
 

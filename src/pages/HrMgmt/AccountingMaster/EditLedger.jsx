@@ -1,20 +1,25 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Box, Flex, SimpleGrid, Text, Input, Select, Textarea, Button, Switch, FormControl, FormLabel, FormErrorMessage, Tabs, TabList, Tab, TabPanels, TabPanel, Badge, Spinner, Center, Divider, HStack, VStack, useToast, IconButton, Heading, Breadcrumb, BreadcrumbItem, BreadcrumbLink,} from "@chakra-ui/react";
+import { Box, Flex, SimpleGrid, Text, Input, Select, Textarea, Button, Switch, FormControl, FormLabel, FormErrorMessage, Tabs, TabList, Tab, TabPanels, TabPanel, Badge, Spinner, Center, Divider, HStack, VStack, useToast, IconButton, Heading, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import { GROUP_CONFIG, DEFAULT_GROUP_CONFIG } from "../../HrMgmt/AccountingMaster/LedgerGroupConfig";
 
 const TABS = [
-  { id: "basic",    label: "Basic Info",   icon: "📋" },
-  { id: "bank",     label: "Bank Details", icon: "🏦" },
-  { id: "interest", label: "Interest",     icon: "📊" },
-  { id: "crm",      label: "Party Details",  icon: "👤" },
+    { id: "basic", label: "Basic Info", icon: "📋" },
+    { id: "bank", label: "Bank Details", icon: "🏦" },
+    { id: "interest", label: "Interest", icon: "📊" },
+    { id: "crm", label: "Party Details", icon: "👤" },
 ];
 
-const EMPTY_INTEREST_SLAB = {
-    slab_no: 1,
+// FIX: fixed slab types, mirroring CreateLedger.jsx — no more free-form add/remove
+const SLAB_TYPES = ["debit", "credit", "security"];
+const SLAB_LABELS = { debit: "Debit Interest", credit: "Credit Interest", security: "Security Interest" };
+
+const makeEmptySlab = (idx) => ({
+    slab_no: idx + 1,
+    slab_type: SLAB_TYPES[idx],
     calculate_transaction_by_transaction: 0,
     interest_based_on: "",
     amount_added: 0,
@@ -22,12 +27,12 @@ const EMPTY_INTEREST_SLAB = {
     rate: 0,
     rate_per: "",
     rate_on: "",
-    applicability: "",
+    applicability: "Always",
     applicability_days: 0,
     grace_period: 0,
     security_enabled: 0,
     security_amount: 0,
-};
+});
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const val = (v, fallback = "") => (v === null || v === undefined ? fallback : v);
@@ -36,20 +41,10 @@ const numVal = (v) => (v === null || v === undefined ? "" : String(v));
 // ─── Shared: SectionCard ─────────────────────────────────────────────────────
 function SectionCard({ icon, title, children }) {
     return (
-        <Box
-            bg="#fbfbfb"
-            borderRadius="xl"
-            border="1px solid"
-            borderColor="gray.200"
-            p={5}
-            mb={4}
-            boxShadow="sm"
-        >
+        <Box bg="#fbfbfb" borderRadius="xl" border="1px solid" borderColor="gray.200" p={5} mb={4} boxShadow="sm">
             <HStack mb={4} spacing={2}>
                 <Text fontSize="lg">{icon}</Text>
-                <Text fontWeight="600" fontSize="md" color="gray.800">
-                    {title}
-                </Text>
+                <Text fontWeight="600" fontSize="md" color="gray.800">{title}</Text>
             </HStack>
             {children}
         </Box>
@@ -59,41 +54,12 @@ function SectionCard({ icon, title, children }) {
 // ─── Shared: Toggle ───────────────────────────────────────────────────────────
 function Toggle({ id, checked, onChange, label, desc }) {
     return (
-        <FormControl
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            py={3}
-            px={4}
-            bg="gray.50"
-            borderRadius="lg"
-            border="1px solid"
-            borderColor="gray.200"
-        >
+        <FormControl display="flex" alignItems="center" justifyContent="space-between" py={3} px={4} bg="gray.50" borderRadius="lg" border="1px solid" borderColor="gray.200">
             <Box>
-                <FormLabel
-                    htmlFor={id}
-                    mb={0}
-                    fontWeight="500"
-                    fontSize="sm"
-                    color="gray.700"
-                    cursor="pointer"
-                >
-                    {label}
-                </FormLabel>
-                {desc && (
-                    <Text fontSize="xs" color="gray.500" mt={0.5}>
-                        {desc}
-                    </Text>
-                )}
+                <FormLabel htmlFor={id} mb={0} fontWeight="500" fontSize="sm" color="gray.700" cursor="pointer">{label}</FormLabel>
+                {desc && <Text fontSize="xs" color="gray.500" mt={0.5}>{desc}</Text>}
             </Box>
-            <Switch
-                id={id}
-                isChecked={!!checked}
-                onChange={(e) => onChange(e.target.checked ? 1 : 0)}
-                colorScheme="blue"
-                size="md"
-            />
+            <Switch id={id} isChecked={!!checked} onChange={(e) => onChange(e.target.checked ? 1 : 0)} colorScheme="blue" size="md" />
         </FormControl>
     );
 }
@@ -102,9 +68,7 @@ function Toggle({ id, checked, onChange, label, desc }) {
 function Field({ label, required, error, children }) {
     return (
         <FormControl isInvalid={!!error} isRequired={required}>
-            <FormLabel fontSize="sm" fontWeight="500" color="gray.700" mb={1}>
-                {label}
-            </FormLabel>
+            <FormLabel fontSize="sm" fontWeight="500" color="gray.700" mb={1}>{label}</FormLabel>
             {children}
             {error && <FormErrorMessage fontSize="xs">{error}</FormErrorMessage>}
         </FormControl>
@@ -112,194 +76,97 @@ function Field({ label, required, error, children }) {
 }
 
 // ─── Tab: Basic Info ──────────────────────────────────────────────────────────
-function BasicInfoTab({ ledger, onChange, errors, config }) {
+// FIX: added `employees` prop, employee_under is now a Select bound to id
+function BasicInfoTab({ ledger, onChange, errors, config, employees }) {
     return (
         <>
-            {/* Core Details */}
-            <SectionCard >
+            <SectionCard>
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                     <Field label="Ledger Name" required error={errors.ledger_name}>
-                        <Input
-                            value={val(ledger.ledger_name)}
-                            onChange={(e) => onChange("ledger_name", e.target.value)}
-                            placeholder="Enter ledger name"
-                            size="sm"
-                            borderRadius="lg"
-                        />
+                        <Input value={val(ledger.ledger_name)} onChange={(e) => onChange("ledger_name", e.target.value)} placeholder="Enter ledger name" size="sm" borderRadius="lg" />
                     </Field>
                     <Field label="Group ID" required error={errors.group_id}>
-                        <Input
-                            value={val(ledger.group_id)}
-                            onChange={(e) => onChange("group_id", e.target.value)}
-                            placeholder="Group ID"
-                            size="sm"
-                            borderRadius="lg"
-                        />
+                        <Input value={val(ledger.group_id)} onChange={(e) => onChange("group_id", e.target.value)} placeholder="Group ID" size="sm" borderRadius="lg" />
                     </Field>
+                    {/* FIX: was a free-text Input bound to employee_under_name (never sent to backend) */}
                     <Field label="Employee Under">
-                        <Input
+                        <Select
                             value={val(ledger.employee_under)}
                             onChange={(e) => onChange("employee_under", e.target.value)}
-                            placeholder="Employee (optional)"
-                            size="sm"
-                            borderRadius="lg"
-                        />
-                    </Field>
-                    <Field label="Balance Type">
-                        <Select
-                            value={val(ledger.balance_type, "Dr")}
-                            onChange={(e) => onChange("balance_type", e.target.value)}
+                            placeholder="Select Employee"
                             size="sm"
                             borderRadius="lg"
                         >
+                            {employees.map((emp) => (
+                                <option key={emp.id} value={emp.id}>{emp.name}</option>
+                            ))}
+                        </Select>
+                    </Field>
+                    <Field label="Balance Type">
+                        <Select value={val(ledger.balance_type, "Dr")} onChange={(e) => onChange("balance_type", e.target.value)} size="sm" borderRadius="lg">
                             <option value="Dr">Dr (Debit)</option>
                             <option value="Cr">Cr (Credit)</option>
                         </Select>
                     </Field>
                     <Field label="Opening Balance">
-                        <Input
-                            type="number"
-                            value={numVal(ledger.opening_balance)}
-                            onChange={(e) => onChange("opening_balance", e.target.value)}
-                            placeholder="0.00"
-                            size="sm"
-                            borderRadius="lg"
-                        />
+                        <Input type="number" value={numVal(ledger.opening_balance)} onChange={(e) => onChange("opening_balance", e.target.value)} placeholder="0.00" size="sm" borderRadius="lg" />
                     </Field>
                     <Field label="Opening Date">
-                        <Input
-                            type="date"
-                            value={val(ledger.opening_date)}
-                            onChange={(e) => onChange("opening_date", e.target.value)}
-                            size="sm"
-                            borderRadius="lg"
-                        />
+                        <Input type="date" value={val(ledger.opening_date)} onChange={(e) => onChange("opening_date", e.target.value)} size="sm" borderRadius="lg" />
                     </Field>
                 </SimpleGrid>
             </SectionCard>
 
-            {/* Tax Details */}
             {config.showTax && (
                 <SectionCard icon="🧾" title="Tax Details">
                     <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                         {config.showPan && (
                             <Field label="PAN No.">
-                                <Input
-                                    value={val(ledger.pan_no)}
-                                    onChange={(e) => onChange("pan_no", e.target.value.toUpperCase())}
-                                    placeholder="ABCDE1234F"
-                                    size="sm"
-                                    borderRadius="lg"
-                                />
+                                <Input value={val(ledger.pan_no)} onChange={(e) => onChange("pan_no", e.target.value.toUpperCase())} placeholder="ABCDE1234F" size="sm" borderRadius="lg" />
                             </Field>)}
                         <Field label="GST No.">
-                            <Input
-                                value={val(ledger.gst_no)}
-                                onChange={(e) => onChange("gst_no", e.target.value.toUpperCase())}
-                                placeholder="22AAAAA0000A1Z5"
-                                size="sm"
-                                borderRadius="lg"
-                            />
+                            <Input value={val(ledger.gst_no)} onChange={(e) => onChange("gst_no", e.target.value.toUpperCase())} placeholder="22AAAAA0000A1Z5" size="sm" borderRadius="lg" />
                         </Field>
                     </SimpleGrid>
                 </SectionCard>
             )}
 
-            {/* Credit Settings */}
-            {(
-                config.showBillByBill ||
-                config.showCreditLimit ||
-                config.showCreditPeriod ||
-                config.showOdLimit ||
-                config.showVoucherCheck
-            ) && (
-                    <SectionCard icon="💳" title="Credit Settings">
-                        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mb={4}>
-                            {config.showCreditPeriod && (
-                                <Field label="Default Credit Period (days)">
-                                    <Input
-                                        type="number"
-                                        value={numVal(ledger.default_credit_period)}
-                                        onChange={(e) => onChange("default_credit_period", e.target.value)}
-                                        size="sm"
-                                        borderRadius="lg"
-                                    />
-                                </Field>)}
+            {(config.showBillByBill || config.showCreditLimit || config.showCreditPeriod || config.showOdLimit || config.showVoucherCheck) && (
+                <SectionCard icon="💳" title="Credit Settings">
+                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mb={4}>
+                        {config.showCreditPeriod && (
+                            <Field label="Default Credit Period (days)">
+                                <Input type="number" value={numVal(ledger.default_credit_period)} onChange={(e) => onChange("default_credit_period", e.target.value)} size="sm" borderRadius="lg" />
+                            </Field>)}
+                        {config.showCreditLimit && (
+                            <Field label="Credit Limit">
+                                <Input type="number" value={numVal(ledger.credit_limit)} onChange={(e) => onChange("credit_limit", e.target.value)} size="sm" borderRadius="lg" />
+                            </Field>)}
+                        {config.showOdLimit && (
+                            <Field label="OD Limit">
+                                <Input type="number" value={numVal(ledger.od_limit)} onChange={(e) => onChange("od_limit", e.target.value)} size="sm" borderRadius="lg" />
+                            </Field>)}
+                    </SimpleGrid>
+                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                        {config.showBillByBill && (
+                            <Toggle id="maintain_bill_by_bill" checked={ledger.maintain_bill_by_bill} onChange={(v) => onChange("maintain_bill_by_bill", v)} label="Maintain Bill-by-Bill" desc="Track each bill separately" />)}
+                        {config.showVoucherCheck && (
+                            <Toggle id="check_credit_days" checked={ledger.check_credit_days} onChange={(v) => onChange("check_credit_days", v)} label="Check Credit Days" />
+                        )}
+                    </SimpleGrid>
+                </SectionCard>)}
 
-                            {config.showCreditLimit && (
-                                <Field label="Credit Limit">
-                                    <Input
-                                        type="number"
-                                        value={numVal(ledger.credit_limit)}
-                                        onChange={(e) => onChange("credit_limit", e.target.value)}
-                                        size="sm"
-                                        borderRadius="lg"
-                                    />
-                                </Field>)}
-
-                            {config.showOdLimit && (
-                                <Field label="OD Limit">
-                                    <Input
-                                        type="number"
-                                        value={numVal(ledger.od_limit)}
-                                        onChange={(e) => onChange("od_limit", e.target.value)}
-                                        size="sm"
-                                        borderRadius="lg"
-                                    />
-                                </Field>)}
-                        </SimpleGrid>
-                        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-                            {config.showBillByBill && (
-                                <Toggle
-                                    id="maintain_bill_by_bill"
-                                    checked={ledger.maintain_bill_by_bill}
-                                    onChange={(v) => onChange("maintain_bill_by_bill", v)}
-                                    label="Maintain Bill-by-Bill"
-                                    desc="Track each bill separately"
-                                />)}
-                            {config.showVoucherCheck && (
-                                <Toggle
-                                    id="check_credit_days"
-                                    checked={ledger.check_credit_days}
-                                    onChange={(v) => onChange("check_credit_days", v)}
-                                    label="Check Credit Days"
-                                />
-                            )}
-                        </SimpleGrid>
-                    </SectionCard>)}
-
-            {/* Features */}
-            {(
-                config.showInventory ||
-                config.showPayroll ||
-                config.showInterest
-            ) && (
-                    <SectionCard icon="⚙️" title="Features">
-                        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-                            {config.showInventory && (
-                            <Toggle
-                                id="inventory_values_affected"
-                                checked={ledger.inventory_values_affected}
-                                onChange={(v) => onChange("inventory_values_affected", v)}
-                                label="Inventory Values Affected"
-                            />)}
-                            {config.showPayroll && (
-                            <Toggle
-                                id="use_for_payroll"
-                                checked={ledger.use_for_payroll}
-                                onChange={(v) => onChange("use_for_payroll", v)}
-                                label="Use for Payroll"
-                            />)}
-                            {config.showInterest && (
-                            <Toggle
-                                id="activate_interest_calculation"
-                                checked={ledger.activate_interest_calculation}
-                                onChange={(v) => onChange("activate_interest_calculation", v)}
-                                label="Activate Interest Calculation"
-                                desc="Enable interest slabs in the Interest tab"
-                            />)}
-                        </SimpleGrid>
-                    </SectionCard>)}
+            {(config.showInventory || config.showPayroll || config.showInterest) && (
+                <SectionCard icon="⚙️" title="Features">
+                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                        {config.showInventory && (
+                            <Toggle id="inventory_values_affected" checked={ledger.inventory_values_affected} onChange={(v) => onChange("inventory_values_affected", v)} label="Inventory Values Affected" />)}
+                        {config.showPayroll && (
+                            <Toggle id="use_for_payroll" checked={ledger.use_for_payroll} onChange={(v) => onChange("use_for_payroll", v)} label="Use for Payroll" />)}
+                        {config.showInterest && (
+                            <Toggle id="activate_interest_calculation" checked={ledger.activate_interest_calculation} onChange={(v) => onChange("activate_interest_calculation", v)} label="Activate Interest Calculation" desc="Enable interest slabs in the Interest tab" />)}
+                    </SimpleGrid>
+                </SectionCard>)}
         </>
     );
 }
@@ -310,87 +177,40 @@ function BankTab({ bank, onChange }) {
         <SectionCard icon="🏦" title="Bank Account Details">
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mb={4}>
                 <Field label="Account Holder Name">
-                    <Input
-                        value={val(bank.account_holder_name)}
-                        onChange={(e) => onChange("account_holder_name", e.target.value)}
-                        size="sm"
-                        borderRadius="lg"
-                    />
+                    <Input value={val(bank.account_holder_name)} onChange={(e) => onChange("account_holder_name", e.target.value)} size="sm" borderRadius="lg" />
                 </Field>
                 <Field label="Account Number">
-                    <Input
-                        value={val(bank.account_number)}
-                        onChange={(e) => onChange("account_number", e.target.value)}
-                        size="sm"
-                        borderRadius="lg"
-                    />
+                    <Input value={val(bank.account_number)} onChange={(e) => onChange("account_number", e.target.value)} size="sm" borderRadius="lg" />
                 </Field>
                 <Field label="IFSC Code">
-                    <Input
-                        value={val(bank.ifsc_code)}
-                        onChange={(e) => onChange("ifsc_code", e.target.value.toUpperCase())}
-                        placeholder="SBIN0000001"
-                        size="sm"
-                        borderRadius="lg"
-                    />
+                    <Input value={val(bank.ifsc_code)} onChange={(e) => onChange("ifsc_code", e.target.value.toUpperCase())} placeholder="SBIN0000001" size="sm" borderRadius="lg" />
                 </Field>
                 <Field label="Bank Name">
-                    <Input
-                        value={val(bank.bank_name)}
-                        onChange={(e) => onChange("bank_name", e.target.value)}
-                        size="sm"
-                        borderRadius="lg"
-                    />
+                    <Input value={val(bank.bank_name)} onChange={(e) => onChange("bank_name", e.target.value)} size="sm" borderRadius="lg" />
                 </Field>
                 <Field label="Branch Name">
-                    <Input
-                        value={val(bank.branch_name)}
-                        onChange={(e) => onChange("branch_name", e.target.value)}
-                        size="sm"
-                        borderRadius="lg"
-                    />
+                    <Input value={val(bank.branch_name)} onChange={(e) => onChange("branch_name", e.target.value)} size="sm" borderRadius="lg" />
                 </Field>
             </SimpleGrid>
-
             <Divider my={4} />
-
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-                <Toggle
-                    id="cheque_book_enabled"
-                    checked={bank.cheque_book_enabled}
-                    onChange={(v) => onChange("cheque_book_enabled", v)}
-                    label="Cheque Book Enabled"
-                />
-                <Toggle
-                    id="cheque_printing_enabled"
-                    checked={bank.cheque_printing_enabled}
-                    onChange={(v) => onChange("cheque_printing_enabled", v)}
-                    label="Cheque Printing Enabled"
-                />
+                <Toggle id="cheque_book_enabled" checked={bank.cheque_book_enabled} onChange={(v) => onChange("cheque_book_enabled", v)} label="Cheque Book Enabled" />
+                <Toggle id="cheque_printing_enabled" checked={bank.cheque_printing_enabled} onChange={(v) => onChange("cheque_printing_enabled", v)} label="Cheque Printing Enabled" />
             </SimpleGrid>
         </SectionCard>
     );
 }
 
 // ─── Tab: Interest ────────────────────────────────────────────────────────────
-function InterestTab({ slabs, onChange, onAdd, onRemove, interestEnabled }) {
+// FIX: fixed 3 slabs (debit/credit/security), no add/remove; options now match
+// CreateLedger.jsx exactly; added amount_added / amount_deducted toggles that
+// were previously missing entirely; slab_type shown (read-only) and always sent.
+function InterestTab({ slabs, onChange, interestEnabled }) {
     if (!interestEnabled) {
         return (
-            <Center
-                bg="white"
-                borderRadius="xl"
-                border="1px solid"
-                borderColor="gray.200"
-                py={16}
-                px={8}
-                boxShadow="sm"
-                flexDirection="column"
-                gap={3}
-            >
+            <Center bg="white" borderRadius="xl" border="1px solid" borderColor="gray.200" py={16} px={8} boxShadow="sm" flexDirection="column" gap={3}>
                 <Text fontSize="4xl">📊</Text>
-                <Text fontWeight="600" fontSize="lg" color="gray.700">
-                    Interest Calculation Disabled
-                </Text>
+                <Text fontWeight="600" fontSize="lg" color="gray.700">Interest Calculation Disabled</Text>
                 <Text fontSize="sm" color="gray.500" textAlign="center" maxW="sm">
                     Enable "Activate Interest Calculation" in the Basic Info tab to configure interest slabs.
                 </Text>
@@ -400,176 +220,73 @@ function InterestTab({ slabs, onChange, onAdd, onRemove, interestEnabled }) {
 
     return (
         <>
-            <HStack mb={4}>
-                <Badge colorScheme="blue" px={3} py={1} borderRadius="full" fontSize="sm">
-                    📊 {slabs.length} slab{slabs.length !== 1 ? "s" : ""} configured
-                </Badge>
-            </HStack>
-
             {slabs.map((slab, idx) => (
-                <Box
-                    key={idx}
-                    border="1px solid"
-                    borderColor="blue.100"
-                    borderRadius="xl"
-                    p={5}
-                    mb={4}
-                    bg="#f7f7f7"
-                >
-                    {/* Slab Header */}
+                <Box key={slab.slab_type} border="1px solid" borderColor="blue.100" borderRadius="xl" p={5} mb={4} bg="#f7f7f7">
                     <Flex justify="space-between" align="center" mb={4}>
                         <Text fontWeight="600" fontSize="md" color="blue.700">
-                            Slab {idx + 1}
+                            {SLAB_LABELS[slab.slab_type]}
                         </Text>
-                        {slabs.length > 1 && (
-                            <Button
-                                size="xs"
-                                colorScheme="red"
-                                variant="ghost"
-                                onClick={() => onRemove(idx)}
-                            >
-                                ✕ Remove
-                            </Button>
-                        )}
+                        <Badge colorScheme="blue" px={2} py={0.5} borderRadius="full" fontSize="xs">
+                            slab {idx + 1} · {slab.slab_type}
+                        </Badge>
                     </Flex>
 
                     <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} mb={4}>
-                        <Field label="Slab No.">
-                            <Input
-                                type="number"
-                                value={numVal(slab.slab_no)}
-                                onChange={(e) => onChange(idx, "slab_no", e.target.value)}
-                                size="sm"
-                                borderRadius="lg"
-                                bg="white"
-                            />
-                        </Field>
                         <Field label="Rate (%)">
-                            <Input
-                                type="number"
-                                step="0.01"
-                                value={numVal(slab.rate)}
-                                onChange={(e) => onChange(idx, "rate", e.target.value)}
-                                size="sm"
-                                borderRadius="lg"
-                                bg="white"
-                            />
+                            <Input type="number" step="0.01" value={numVal(slab.rate)} onChange={(e) => onChange(idx, "rate", e.target.value)} size="sm" borderRadius="lg" bg="white" />
                         </Field>
                         <Field label="Rate Per">
-                            <Select
-                                value={val(slab.rate_per)}
-                                onChange={(e) => onChange(idx, "rate_per", e.target.value)}
-                                size="sm"
-                                borderRadius="lg"
-                                bg="white"
-                            >
-                                <option value="">Select</option>
-                                <option value="Day">Day</option>
-                                <option value="Month">Month</option>
-                                <option value="Year">Year</option>
+                            <Select value={val(slab.rate_per)} onChange={(e) => onChange(idx, "rate_per", e.target.value)} size="sm" borderRadius="lg" bg="white">
+                                <option value="">Select Any One</option>
+                                <option value="Calendar Month">Calendar Month</option>
+                                <option value="Calendar Year">Calendar Year</option>
                             </Select>
                         </Field>
                         <Field label="Rate On">
-                            <Select
-                                value={val(slab.rate_on)}
-                                onChange={(e) => onChange(idx, "rate_on", e.target.value)}
-                                size="sm"
-                                borderRadius="lg"
-                                bg="white"
-                            >
-                                <option value="">Select</option>
-                                <option value="Balance">Balance</option>
-                                <option value="Amount">Amount</option>
+                            <Select value={val(slab.rate_on)} onChange={(e) => onChange(idx, "rate_on", e.target.value)} size="sm" borderRadius="lg" bg="white">
+                                <option value="">Select Any One</option>
+                                <option value="Credit Balances Only">Credit Balances Only</option>
+                                <option value="Debit Balances Only">Debit Balances Only</option>
                             </Select>
                         </Field>
                         <Field label="Interest Based On">
-                            <Select
-                                value={val(slab.interest_based_on)}
-                                onChange={(e) => onChange(idx, "interest_based_on", e.target.value)}
-                                size="sm"
-                                borderRadius="lg"
-                                bg="white"
-                            >
-                                <option value="">Select</option>
-                                <option value="Simple">Simple</option>
-                                <option value="Compound">Compound</option>
+                            <Select value={val(slab.interest_based_on)} onChange={(e) => onChange(idx, "interest_based_on", e.target.value)} size="sm" borderRadius="lg" bg="white">
+                                <option value="">Select Any One</option>
+                                <option value="Bank/Reco date">Bank/Reco date</option>
+                                <option value="Voucher date">Voucher date</option>
                             </Select>
                         </Field>
                         <Field label="Applicability">
-                            <Select
-                                value={val(slab.applicability)}
-                                onChange={(e) => onChange(idx, "applicability", e.target.value)}
-                                size="sm"
-                                borderRadius="lg"
-                                bg="white"
-                            >
-                                <option value="">Select</option>
-                                <option value="Due Date">Due Date</option>
-                                <option value="Transaction Date">Transaction Date</option>
+                            <Select value={val(slab.applicability, "Always")} onChange={(e) => onChange(idx, "applicability", e.target.value)} size="sm" borderRadius="lg" bg="white">
+                                <option value="Always">Always</option>
+                                <option value="Past Due Date">Past Due Date</option>
                             </Select>
                         </Field>
-                        <Field label="Applicability Days">
-                            <Input
-                                type="number"
-                                value={numVal(slab.applicability_days)}
-                                onChange={(e) => onChange(idx, "applicability_days", e.target.value)}
-                                size="sm"
-                                borderRadius="lg"
-                                bg="white"
-                            />
+                        <Field label="By (days)">
+                            <Input type="number" value={numVal(slab.applicability_days)} onChange={(e) => onChange(idx, "applicability_days", e.target.value)} size="sm" borderRadius="lg" bg="white" />
                         </Field>
                         <Field label="Grace Period (days)">
-                            <Input
-                                type="number"
-                                value={numVal(slab.grace_period)}
-                                onChange={(e) => onChange(idx, "grace_period", e.target.value)}
-                                size="sm"
-                                borderRadius="lg"
-                                bg="white"
-                            />
+                            <Input type="number" value={numVal(slab.grace_period)} onChange={(e) => onChange(idx, "grace_period", e.target.value)} size="sm" borderRadius="lg" bg="white" />
                         </Field>
                         <Field label="Security Amount">
-                            <Input
-                                type="number"
-                                value={numVal(slab.security_amount)}
-                                onChange={(e) => onChange(idx, "security_amount", e.target.value)}
-                                size="sm"
-                                borderRadius="lg"
-                                bg="white"
-                            />
+                            <Input type="number" value={numVal(slab.security_amount)} onChange={(e) => onChange(idx, "security_amount", e.target.value)} size="sm" borderRadius="lg" bg={slab.security_enabled ? "white" : "gray.100"} isDisabled={!slab.security_enabled}/>
                         </Field>
                     </SimpleGrid>
 
-                    <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-                        <Toggle
-                            id={`calc_txn_${idx}`}
-                            checked={slab.calculate_transaction_by_transaction}
-                            onChange={(v) => onChange(idx, "calculate_transaction_by_transaction", v)}
-                            label="Calc. Txn-by-Txn"
-                        />
-                        <Toggle
-                            id={`security_enabled_${idx}`}
-                            checked={slab.security_enabled}
-                            onChange={(v) => onChange(idx, "security_enabled", v)}
-                            label="Security Enabled"
-                        />
+                    {/* FIX: these two toggles didn't exist before — amount_added/amount_deducted
+                        could never be set from the Edit screen */}
+                    <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4}>
+                        <Toggle id={`amount_added_${idx}`} checked={slab.amount_added} onChange={(v) => onChange(idx, "amount_added", v)} label="For Amount Added" />
+                        <Toggle id={`amount_deducted_${idx}`} checked={slab.amount_deducted} onChange={(v) => onChange(idx, "amount_deducted", v)} label="For Amount Deducted" />
+                        <Toggle id={`calc_txn_${idx}`} checked={slab.calculate_transaction_by_transaction} onChange={(v) => onChange(idx, "calculate_transaction_by_transaction", v)} label="Calc. Txn-by-Txn" />
+                        <Toggle id={`security_enabled_${idx}`} checked={slab.security_enabled} 
+                        // onChange={(v) => onChange(idx, "security_enabled", v)}
+                         onChange={(v) => { onChange(idx, "security_enabled", v);
+                         if (!v) onChange(idx, "security_amount", 0); }}
+                         label="Security Enabled" />
                     </SimpleGrid>
                 </Box>
             ))}
-
-            <Button
-                leftIcon={<Text>+</Text>}
-                onClick={onAdd}
-                variant="outline"
-                colorScheme="blue"
-                size="sm"
-                borderRadius="lg"
-                borderStyle="dashed"
-                w="full"
-                mt={2}
-            >
-                Add Interest Slab
-            </Button>
         </>
     );
 }
@@ -578,7 +295,6 @@ function InterestTab({ slabs, onChange, onAdd, onRemove, interestEnabled }) {
 function CrmTab({ crm, onChange }) {
     return (
         <>
-            {/* Customer & Firm */}
             <SectionCard icon="👤" title="Customer & Firm Details">
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                     <Field label="Customer Name">
@@ -628,21 +344,12 @@ function CrmTab({ crm, onChange }) {
                         <Input size="sm" borderRadius="lg" value={val(crm.contact)} onChange={(e) => onChange("contact", e.target.value)} />
                     </Field>
                 </SimpleGrid>
-
                 <Divider my={4} />
-
                 <Field label="Other Company Detail">
-                    <Textarea
-                        size="sm"
-                        borderRadius="lg"
-                        rows={3}
-                        value={val(crm.other_company_detail)}
-                        onChange={(e) => onChange("other_company_detail", e.target.value)}
-                    />
+                    <Textarea size="sm" borderRadius="lg" rows={3} value={val(crm.other_company_detail)} onChange={(e) => onChange("other_company_detail", e.target.value)} />
                 </Field>
             </SectionCard>
 
-            {/* Address */}
             <SectionCard icon="📍" title="Address">
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                     <Field label="Address">
@@ -672,7 +379,6 @@ function CrmTab({ crm, onChange }) {
                 </SimpleGrid>
             </SectionCard>
 
-            {/* Responsible Person */}
             <SectionCard icon="🧑‍💼" title="Responsible Person">
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                     <Field label="Name">
@@ -689,7 +395,6 @@ function CrmTab({ crm, onChange }) {
                 </SimpleGrid>
             </SectionCard>
 
-            {/* Licence Numbers */}
             <SectionCard icon="📜" title="Licence Numbers">
                 <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
                     <Field label="Seed Licence No.">
@@ -704,8 +409,10 @@ function CrmTab({ crm, onChange }) {
                 </SimpleGrid>
             </SectionCard>
 
-            {/* CRM Bank Details */}
-            <SectionCard icon="🏦" title="Bank Details">
+            {/* Note: this is the CRM/Party's own bank info (ledger_other_details table),
+                distinct from the "Bank Details" tab (ledger_bank_details table). This is
+                intentional — CreateLedger.jsx has the same fields labeled "CRM Bank Name" etc. */}
+            <SectionCard icon="🏦" title="Party's Bank Details (for records)">
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mb={4}>
                     <Field label="Bank Name">
                         <Input size="sm" borderRadius="lg" value={val(crm.bank_name)} onChange={(e) => onChange("bank_name", e.target.value)} />
@@ -720,9 +427,7 @@ function CrmTab({ crm, onChange }) {
                         <Input size="sm" borderRadius="lg" value={val(crm.bank_branch)} onChange={(e) => onChange("bank_branch", e.target.value)} />
                     </Field>
                 </SimpleGrid>
-
                 <Divider my={4} />
-
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                     <Field label="Security Cheque No. 1">
                         <Input size="sm" borderRadius="lg" value={val(crm.security_cheque_no1)} onChange={(e) => onChange("security_cheque_no1", e.target.value)} />
@@ -747,12 +452,12 @@ const EditLedger = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [errors, setErrors] = useState({});
+    const [employees, setEmployees] = useState([]); // FIX: added
 
-    // ── Form state ──────────────────────────────────────────────────────────────
     const [ledger, setLedger] = useState({
         ledger_name: "",
         group_id: "",
-        employee_under: "",
+        employee_under: "", // FIX: was employee_under_name
         opening_balance: 0,
         balance_type: "Dr",
         opening_date: "",
@@ -783,7 +488,8 @@ const EditLedger = () => {
         cheque_printing_enabled: 0,
     });
 
-    const [interestSlabs, setInterestSlabs] = useState([{ ...EMPTY_INTEREST_SLAB }]);
+    // FIX: fixed 3 slabs instead of a single free-form slab list
+    const [interestSlabs, setInterestSlabs] = useState(SLAB_TYPES.map((_, idx) => makeEmptySlab(idx)));
 
     const [crm, setCrm] = useState({
         customer_name: "", customer_dob: "",
@@ -798,31 +504,40 @@ const EditLedger = () => {
         security_cheque_no1: "", security_cheque_no2: "",
     });
 
-    // ── Toast helper ────────────────────────────────────────────────────────────
     const showToast = useCallback(
         (type, message) => {
-            toast({
-                title: message,
-                status: type === "success" ? "success" : "error",
-                duration: 3500,
-                isClosable: true,
-                position: "top-right",
-            });
+            toast({ title: message, status: type === "success" ? "success" : "error", duration: 2000, isClosable: true, position: "bottom-center" });
         },
         [toast]
     );
 
-    const activeConfig =
-        GROUP_CONFIG[groupName] || DEFAULT_GROUP_CONFIG;
+    const activeConfig = GROUP_CONFIG[groupName] || DEFAULT_GROUP_CONFIG;
 
-        const TABS = [
-  { id: "basic",    label: "Basic Info",   icon: "📋" },
-  { id: "bank",     label: "Bank Details", icon: "🏦" },
-  { id: "interest", label: "Interest",     icon: "📊" },
-  { id: "crm",      label: "Party Details",  icon: "👤" },
-];
+     const visibleTabs = TABS.filter((tab) => {
+        if (tab.id === "bank") return activeConfig.showBankDetails;
+        if (tab.id === "interest") return activeConfig.showInterest;
+        return true;
+    });
 
-    // ── Fetch ledger ────────────────────────────────────────────────────────────
+    useEffect(() => {
+        if (!visibleTabs.find((t) => t.id === activeTab)) {
+            setActiveTab("basic");
+        }
+    }, [groupName]);
+
+    // FIX: fetch employee dropdown list (same source as CreateLedger.jsx)
+    useEffect(() => {
+        const fetchEmployees = async () => {
+            try {
+                const res = await API.get(API_ENDPOINTS?.get_user_list);
+                setEmployees(res.data.data || []);
+            } catch (err) {
+                console.error("fetchEmployees:", err);
+            }
+        };
+        fetchEmployees();
+    }, []);
+
     const fetchLedger = useCallback(async () => {
         setLoading(true);
         try {
@@ -834,7 +549,7 @@ const EditLedger = () => {
             setLedger({
                 ledger_name: val(d.ledger_name),
                 group_id: val(d.group_id),
-                employee_under: val(d.employee_under),
+                employee_under: val(d.employee_under), // FIX: id, not name
                 opening_balance: val(d.opening_balance, 0),
                 balance_type: val(d.balance_type, "Dr"),
                 opening_date: d.opening_date ? d.opening_date.slice(0, 10) : "",
@@ -867,11 +582,23 @@ const EditLedger = () => {
                 });
             }
 
+            // FIX: map incoming configs onto the 3 fixed slots by slab_type
+            // (falling back to slab_no position for older rows saved before
+            // slab_type existed), instead of trusting raw array order.
             const configs = Array.isArray(d.interest_configs) ? d.interest_configs : [];
-            if (configs.length > 0) {
-                setInterestSlabs(
-                    configs.map((c) => ({
-                        slab_no: val(c.slab_no, 1),
+            const bySlabType = {};
+            configs.forEach((c) => {
+                const type = c.slab_type || SLAB_TYPES[(Number(c.slab_no) || 1) - 1] || null;
+                if (type) bySlabType[type] = c;
+            });
+
+            setInterestSlabs(
+                SLAB_TYPES.map((type, idx) => {
+                    const c = bySlabType[type];
+                    if (!c) return makeEmptySlab(idx);
+                    return {
+                        slab_no: idx + 1,
+                        slab_type: type,
                         calculate_transaction_by_transaction: val(c.calculate_transaction_by_transaction, 0),
                         interest_based_on: val(c.interest_based_on),
                         amount_added: val(c.amount_added, 0),
@@ -879,14 +606,14 @@ const EditLedger = () => {
                         rate: val(c.rate, 0),
                         rate_per: val(c.rate_per),
                         rate_on: val(c.rate_on),
-                        applicability: val(c.applicability),
+                        applicability: val(c.applicability, "Always"),
                         applicability_days: val(c.applicability_days, 0),
                         grace_period: val(c.grace_period, 0),
                         security_enabled: val(c.security_enabled, 0),
                         security_amount: val(c.security_amount, 0),
-                    }))
-                );
-            }
+                    };
+                })
+            );
 
             setCrm({
                 customer_name: val(d.customer_name),
@@ -933,14 +660,12 @@ const EditLedger = () => {
 
     useEffect(() => { fetchLedger(); }, [fetchLedger]);
 
-    // ── Change handlers ─────────────────────────────────────────────────────────
     const handleLedgerChange = (key, value) => {
         setLedger((prev) => ({ ...prev, [key]: value }));
         if (errors[key]) setErrors((e) => ({ ...e, [key]: undefined }));
     };
 
-    const handleBankChange = (key, value) =>
-        setBank((prev) => ({ ...prev, [key]: value }));
+    const handleBankChange = (key, value) => setBank((prev) => ({ ...prev, [key]: value }));
 
     const handleSlabChange = (idx, key, value) =>
         setInterestSlabs((prev) => {
@@ -949,21 +674,8 @@ const EditLedger = () => {
             return next;
         });
 
-    const handleAddSlab = () =>
-        setInterestSlabs((prev) => [
-            ...prev,
-            { ...EMPTY_INTEREST_SLAB, slab_no: prev.length + 1 },
-        ]);
+    const handleCrmChange = (key, value) => setCrm((prev) => ({ ...prev, [key]: value }));
 
-    const handleRemoveSlab = (idx) =>
-        setInterestSlabs((prev) =>
-            prev.filter((_, i) => i !== idx).map((s, i) => ({ ...s, slab_no: i + 1 }))
-        );
-
-    const handleCrmChange = (key, value) =>
-        setCrm((prev) => ({ ...prev, [key]: value }));
-
-    // ── Validation ──────────────────────────────────────────────────────────────
     const validate = () => {
         const errs = {};
         if (!ledger.ledger_name?.trim()) errs.ledger_name = "Ledger name is required";
@@ -972,7 +684,6 @@ const EditLedger = () => {
         return Object.keys(errs).length === 0;
     };
 
-    // ── Submit ──────────────────────────────────────────────────────────────────
     const handleUpdate = async () => {
         if (!validate()) {
             setActiveTab("basic");
@@ -982,9 +693,17 @@ const EditLedger = () => {
 
         setSaving(true);
         try {
+            // FIX: only send slabs that actually have data, same rule as
+            // CreateLedger.jsx, so we don't insert 3 empty rows every save
+            const filledSlabs = interestSlabs.filter((s) =>
+                s.rate || s.amount_added || s.amount_deducted || s.rate_per ||
+                s.rate_on || s.grace_period || s.security_amount
+            );
+
             const payload = {
                 ledger: {
                     ...ledger,
+                    employee_under: ledger.employee_under || null, // FIX: correct key now sent
                     opening_balance: Number(ledger.opening_balance) || 0,
                     default_credit_period: Number(ledger.default_credit_period) || 0,
                     credit_limit: Number(ledger.credit_limit) || 0,
@@ -992,9 +711,10 @@ const EditLedger = () => {
                 },
                 bank_details: bank,
                 interest_configs: ledger.activate_interest_calculation
-                    ? interestSlabs.map((s) => ({
+                    ? filledSlabs.map((s) => ({
                         ...s,
                         slab_no: Number(s.slab_no) || 1,
+                        slab_type: s.slab_type, // FIX: sent explicitly now
                         rate: Number(s.rate) || 0,
                         applicability_days: Number(s.applicability_days) || 0,
                         grace_period: Number(s.grace_period) || 0,
@@ -1010,6 +730,10 @@ const EditLedger = () => {
 
             await API.put(`${API_ENDPOINTS.update_ledger}/${id}`, payload);
             showToast("success", "Ledger updated successfully!");
+            setTimeout(()=>{
+                navigate("/accounting-master/view-ledger")
+            },1000)
+            
         } catch (error) {
             console.error("Update ledger error:", error);
             const msg = error?.response?.data?.message || "Failed to update ledger.";
@@ -1019,104 +743,71 @@ const EditLedger = () => {
         }
     };
 
-    // ── Derived: controlled tab index ───────────────────────────────────────────
-    const tabIndex = TABS.findIndex((t) => t.id === activeTab);
+  
+    const tabIndex = visibleTabs.findIndex((t) => t.id === activeTab);
 
-    // ─── Render ─────────────────────────────────────────────────────────────────
+
     return (
         <Box bg="white" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={{ base: 3, md: 5 }} borderRadius="16px" boxShadow="sm">
-            <Flex justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={4} mb={3} >
+            <Flex justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={4} mb={3}>
                 <Box>
                     <Breadcrumb color="#8B8D97" mb={1}>
                         <BreadcrumbItem>
                             <BreadcrumbLink as={Link} to="/dashboard"> <GoHomeFill color="#5570F1" /> </BreadcrumbLink>
                         </BreadcrumbItem>
-
                         <BreadcrumbItem>
-                            <BreadcrumbLink isCurrentPage color="#8B8D97" fontSize="13px" > Edit Ledger </BreadcrumbLink>
+                            <BreadcrumbLink as={Link} to="/accounting-master/view-ledger" color="#8B8D97" fontSize="13px"> Ledger List </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink isCurrentPage color="#8B8D97" fontSize="13px"> Edit Ledger </BreadcrumbLink>
                         </BreadcrumbItem>
                     </Breadcrumb>
-                    <Heading size="md" color="#1A202C" > Edit Ledger </Heading>
+                    <Heading size="md" color="#1A202C"> Edit Ledger </Heading>
                 </Box>
             </Flex>
 
             {loading ? (
                 <Center py={24} flexDirection="column" gap={3}>
                     <Spinner size="lg" color="blue.500" thickness="3px" />
-                    <Text fontSize="sm" color="gray.500">
-                        Loading ledger details…
-                    </Text>
+                    <Text fontSize="sm" color="gray.500">Loading ledger details…</Text>
                 </Center>
             ) : (
                 <Box maxW="1000px" mx="auto" px={{ base: 4, md: 6 }} py={6}>
-                    <Tabs index={tabIndex} onChange={(i) => setActiveTab(TABS[i].id)} variant="enclosed" colorScheme="blue" isLazy >
-                        <TabList bg="white" borderRadius="xl" border="1px solid" borderColor="gray.200" p={1} mb={5} boxShadow="sm" overflowX="auto" gap={2} >
-                            {TABS.map((tab) => (
-                                <Tab
-                                    key={tab.id}
-                                    borderRadius="lg"
-                                    fontSize="sm"
-                                    fontWeight="500"
-                                    _selected={{ bg: "blue.500", color: "white", fontWeight: "600", }}
-                                    _hover={{ bg: "gray.100" }}
-                                    px={4}
-                                    py={2} >
-                                    <HStack spacing={1.5}>
-                                        <Text>{tab.icon}</Text>
-                                        <Text>{tab.label}</Text>
-                                    </HStack>
-                                </Tab>
-                            ))}
-                        </TabList>
+                    <Tabs index={tabIndex} onChange={(i) => setActiveTab(visibleTabs[i].id)} variant="enclosed" colorScheme="blue" isLazy>
+    <TabList bg="white" borderRadius="xl" border="1px solid" borderColor="gray.200" p={1} mb={5} boxShadow="sm" overflowX="auto" gap={2}>
+        {visibleTabs.map((tab) => (
+            <Tab key={tab.id} borderRadius="lg" fontSize="sm" fontWeight="500" _selected={{ bg: "blue.500", color: "white", fontWeight: "600" }} _hover={{ bg: "gray.100" }} px={4} py={2}>
+                <HStack spacing={1.5}>
+                    <Text>{tab.icon}</Text>
+                    <Text>{tab.label}</Text>
+                </HStack>
+            </Tab>
+        ))}
+    </TabList>
 
-                        <TabPanels>
-                            {/* Basic Info */}
-                            <TabPanel p={0}>
-                                <BasicInfoTab ledger={ledger} onChange={handleLedgerChange} errors={errors} config={activeConfig} />
-                            </TabPanel>
-
-                            {/* Bank Details */}
-                            {activeConfig.showBankDetails && (
-                            <TabPanel p={0}>
-                                <BankTab bank={bank} onChange={handleBankChange} />
-                            </TabPanel>)}
-
-                            {/* Interest */}
-                            {activeConfig.showInterest && (
-                            <TabPanel p={0}>
-                                <InterestTab
-                                    slabs={interestSlabs}
-                                    onChange={handleSlabChange}
-                                    onAdd={handleAddSlab}
-                                    onRemove={handleRemoveSlab}
-                                    interestEnabled={!!ledger.activate_interest_calculation}
-                                />
-                            </TabPanel>)}
-
-                            {/* CRM */}
-                            <TabPanel p={0}>
-                                <CrmTab crm={crm} onChange={handleCrmChange} />
-                            </TabPanel>
-                        </TabPanels>
-                    </Tabs>
+    <TabPanels>
+        {visibleTabs.map((tab) => (
+            <TabPanel key={tab.id} p={0}>
+                {tab.id === "basic" && (
+                    <BasicInfoTab ledger={ledger} onChange={handleLedgerChange} errors={errors} config={activeConfig} employees={employees} />
+                )}
+                {tab.id === "bank" && (
+                    <BankTab bank={bank} onChange={handleBankChange} />
+                )}
+                {tab.id === "interest" && (
+                    <InterestTab slabs={interestSlabs} onChange={handleSlabChange} interestEnabled={!!ledger.activate_interest_calculation} />
+                )}
+                {tab.id === "crm" && (
+                    <CrmTab crm={crm} onChange={handleCrmChange} />
+                )}
+            </TabPanel>
+        ))}
+    </TabPanels>
+</Tabs>
                 </Box>
             )}
             <HStack justifyContent="end">
-                <Button
-                    bg="#237086"
-                    fontWeight="500"
-                    fontSize="14px"
-                    color="white"
-                    _hover={{
-                        bg: "#1B5A6B",
-                    }}
-                    px={8}
-                    borderRadius="12px"
-                    onClick={handleUpdate}
-                    isLoading={saving}
-                    loadingText="Saving…"
-                    isDisabled={loading} textAlign="end"
-                >
+                <Button bg="#237086" fontWeight="500" fontSize="14px" color="white" _hover={{ bg: "#1B5A6B" }} px={8} borderRadius="12px" onClick={handleUpdate} isLoading={saving} loadingText="Saving…" isDisabled={loading} textAlign="end">
                     Update
                 </Button>
             </HStack>

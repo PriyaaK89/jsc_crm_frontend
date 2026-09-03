@@ -9,25 +9,9 @@ import { CloseButton } from "@chakra-ui/react";
 
 const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, probationDays }) => {
 
-
     const handleClose = () => {
         onClose(true);
     };
-    // const handleDownloadAgreementPDF = () => {
-    //     const element = document.getElementById("agre-letter-preview");
-
-    //     html2pdf()
-    //         .set({
-    //             margin: 0,
-    //             filename: `Agreement_Letter_${employee?.name}.pdf`,
-    //             image: { type: "jpeg", quality: 1 },
-    //             html2canvas: { scale: 2, useCORS: true, scrollY: 0},
-    //             jsPDF: { unit: "mm", format: "a4", orientation: "portrait"},
-    //             pagebreak: { mode: ['css', 'legacy']}
-    //         })
-    //         .from(element)
-    //         .save();
-    // };
 
     const salaryPolicy = [
         {
@@ -99,12 +83,7 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
 
             const uploadFormData = new FormData();
 
-            uploadFormData.append(
-                "file",
-                pdfBlob,
-                `Agreement_Letter_${employee?.name}.pdf`
-            );
-
+            uploadFormData.append( "file", pdfBlob, `Agreement_Letter_${employee?.name}.pdf` );
             uploadFormData.append("employee_id", employee?.id);
             uploadFormData.append("employee_name", employee?.name);
             uploadFormData.append("document_type", "agreement_letter");
@@ -112,11 +91,7 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
             const res = await API.post(
                 API_ENDPOINTS.upload_emp_letters,
                 uploadFormData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data"
-                    }
-                }
+                { headers: { "Content-Type": "multipart/form-data" } }
             );
 
             if (res?.status === 200) {
@@ -170,10 +145,7 @@ const EmpAgreementLetterPreview = ({ isOpen, onClose, employee, formData, age, p
                                 <Box className="pdf-page" textAlign="justify" >
                                     <Text fontWeight="bold" fontSize="22px" textAlign="center" mt="7rem">EMPLOYMENT AGREEMENT</Text>
                                     <Text color="gray.500" mt="1rem" textAlign="center">This agreement lays down the terms of employment, agreed upon by the employer and employee. Whether stated explicitly in the agreement or not, both the employee and the employer have the duty of mutual confidence and trust, and to make only lawful and reasonable demands on each other.</Text>
-                                    <Divider borderColor="black"
-                                        borderWidth="1px"
-                                        w="92%"
-                                        mt="2rem" mb="1rem" />
+                                    <Divider borderColor="black" borderWidth="1px" w="92%" mt="2rem" mb="1rem" />
                                     <Text textAlign="center" wordSpacing="1px">This EMPLOYMENT AGREEMENT (Hereinafter, the “Agreement”) is entered into on this <br /> {formatDateLong(formData?.date_of_issue)}</Text>
                                     <VStack gap="1.5rem" alignItems="center" >
                                         <Text fontWeight="600" mt="2rem">BY AND BETWEEN</Text>

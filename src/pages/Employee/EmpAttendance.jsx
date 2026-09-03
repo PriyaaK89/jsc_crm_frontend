@@ -228,7 +228,7 @@ const EmpAttendance = () => {
 
         <EmpCard />
 
-        <Heading size="md" mb={6}>
+        <Heading fontSize="18px" fontWeight="600" color="#4d4d4d" mb={4} mt={4}>
           Attendance Report
         </Heading>
 

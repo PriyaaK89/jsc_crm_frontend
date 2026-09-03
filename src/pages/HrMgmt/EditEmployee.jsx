@@ -59,6 +59,7 @@ const EditEmployee = () => {
 
         login_time: "",
         logout_time: "",
+        visit_upto: "",
         pf: "",
         esi: "",
         approver_name: "",
@@ -96,9 +97,13 @@ const EditEmployee = () => {
                     date_of_joining: formatDateForApi(data.date_of_joining),
                     login_time: data.login_time || "10:00",
                     logout_time: data.logout_time || "06:00",
+                    visit_upto: data.visit_upto,
                     week_off: data.week_off || "Sunday",
 
                 });
+                   if (data.department_id) {
+                fetchRoleList(data.department_id);
+            }
             }
         } catch (err) {
             toast({
@@ -126,12 +131,25 @@ const EditEmployee = () => {
     };
 
     /* ---------------- FETCH ROLES ---------------- */
+ 
     const fetchRoleList = async (deptId) => {
+    try {
         const res = await API.get(
             `${API_ENDPOINTS.get_jobRole_list}/${deptId}`
         );
         setJobRole(res.data);
-    };
+
+        if (res.data?.length === 1) {
+            setFormData(prev => ({
+                ...prev,
+                job_role_id: res.data[0].id,
+                job_role_name: res.data[0].name,
+            }));
+        }
+    } catch (err) {
+        toast({ title: "Failed to load job roles", status: "error", duration: 3000 });
+    }
+};
 
     useEffect(() => {
         fetchEmployeeDetails();
@@ -172,6 +190,7 @@ const EditEmployee = () => {
             ...prev,
             department_id: deptId,
             job_role_id: "",
+             job_role_name: "",
         }));
 
         if (deptId) {
@@ -189,13 +208,14 @@ const EditEmployee = () => {
                 department_id: Number(formData.department_id),
                 job_role_id: Number(formData.job_role_id),
                 approver_id: Number(formData.approver_id) || null,
-                reporting_under_id: Number(formData.reporting_under_id) || null,
+                reporting_under: Number(formData.reporting_under) || null,
                 date_of_birth: formatDateForApi(formData.date_of_birth),
                 date_of_joining: formatDateForApi(formData.date_of_joining),
                 approver_name: formData.approver_name,
-                reporting_under: formData.reporting_under,
+                // reporting_under: formData.reporting_under,
                 login_time: formData.login_time || "10:00",
                 logout_time: formData.logout_time || "06:00",
+                visit_upto: formData.visit_upto,
                 weak_off: formData.week_off || "Sunday",
                 salary: Number(formData.salary),
                 two_wheeler_travelling_allowance_per_km: Number(formData.two_wheeler_travelling_allowance_per_km),
@@ -450,9 +470,6 @@ const EditEmployee = () => {
                                 <option key={r.id} value={r.id} >{r.name}</option>
                             ))}
                         </Select>
-
-
-
                     </FormControl>
 
                     <CustomDatePicker
@@ -593,6 +610,12 @@ const EditEmployee = () => {
                         <FormLabel>Logout Time</FormLabel>
                         <Input type="time" name="logout_time" value={formData?.logout_time || "06:00"} onChange={handleChange} />
                     </FormControl>
+
+                    <FormControl>
+              <FormLabel>Visit UpTo</FormLabel>
+              <Input type="time" name="visit_upto" value={formData.visit_upto} onChange={handleChange} />
+            </FormControl>
+
                     <FormControl>
                         <FormLabel {...labelStyles}>Authentication Amount</FormLabel>
                         <Input name="authentication_amount" value={formData.authentication_amount} onChange={handleChange} />

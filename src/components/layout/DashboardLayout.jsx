@@ -25,11 +25,10 @@ const DashboardLayout = () => {
             <MobileTopbar />
           </Box>
           <Box
-            ml={{ base: 5, md: "295px" }}
-            mr={{base:5, md:5}}
-            pt="5rem"
-            pb={6}
-          >
+ ml={{ base: 5, md: "295px" }}
+ mr={{base:5, md:5}}
+ pt="5rem"
+ pb={6}>
             <NotificationBtn/>
              {(role === "ADMIN" || role === "SUPER_ADMIN") && (
             <PieChart />

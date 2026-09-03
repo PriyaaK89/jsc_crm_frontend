@@ -1,0 +1,684 @@
+import {
+  Badge,
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  Flex,
+  FormControl,
+  FormLabel,
+  Grid,
+  HStack,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Select,
+  SimpleGrid,
+  Spinner,
+  Switch,
+  Text,
+  Wrap,
+  WrapItem,
+  useToast,
+  useOutsideClick,
+  VStack,
+} from "@chakra-ui/react";
+
+import { useEffect, useRef, useState } from "react";
+import { SearchIcon, CloseIcon, ChevronDownIcon, CalendarIcon, CheckIcon } from "@chakra-ui/icons";
+import API from "../../../services/api";
+import { API_ENDPOINTS } from "../../../services/endpoints";
+
+const VISIT_TYPES = ["farmer", "retailer", "distributor"];
+
+const emptyTargets = { farmer: "", retailer: "", distributor: "" };
+
+const TemplateFormModal = ({ isOpen, onClose, templateId, onSuccess }) => {
+  const toast = useToast();
+  const isEditMode = Boolean(templateId);
+
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const [employeeOptions, setEmployeeOptions] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [dropUp, setDropUp] = useState(false);
+
+  const [templateNameOptions, setTemplateNameOptions] = useState([]); // [{id, template_name}]
+  const [nameDropdownOpen, setNameDropdownOpen] = useState(false);
+  const [nameSearchQuery, setNameSearchQuery] = useState("");
+  const nameDropdownRef = useRef(null);
+
+
+  const [form, setForm] = useState({
+    template_name: "",
+    frequency: "MONTHLY",
+    is_recurring: true,
+    start_date: "",
+    end_date: "",
+    employee_id: "",
+  });
+
+  const [targets, setTargets] = useState(emptyTargets);
+
+  // ==============================
+  // EMPLOYEE DROPDOWN STATE
+  // ==============================
+  const [empSearch, setEmpSearch] = useState("");
+  const [empDropdownOpen, setEmpDropdownOpen] = useState(false);
+  const empDropdownRef = useRef(null);
+
+  useOutsideClick({
+    ref: empDropdownRef,
+    handler: () => setEmpDropdownOpen(false),
+  });
+  useOutsideClick({
+    ref: nameDropdownRef,
+    handler: () => setNameDropdownOpen(false),
+  });
+
+  const getTemplateNameOptions = async () => {
+    try {
+      const response = await API.get(API_ENDPOINTS?.GET_TEMPLATES_DROPDOWN);
+      if (response?.status === 200) {
+        const raw = response?.data?.data || [];
+        setTemplateNameOptions(raw);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const filteredNameSuggestions = templateNameOptions.filter((t) =>
+    t.template_name.toLowerCase().includes(nameSearchQuery.toLowerCase())
+  );
+
+  const openEmpDropdown = () => {
+    const rect = empDropdownRef.current?.getBoundingClientRect();
+    if (rect) {
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setDropUp(spaceBelow < 240); // 240 ≈ dropdown max height + buffer
+    }
+    setEmpDropdownOpen(true);
+  };
+  // ==============================
+  // LOAD EMPLOYEE DROPDOWN
+  // ==============================
+  const getEmployees = async () => {
+    try {
+      setUsersLoading(true);
+
+      const response = await API.get(API_ENDPOINTS?.get_user_list);
+
+      if (response?.status === 200) {
+        // NOTE: adjust this mapping once you see the real response shape —
+        // falls back across a few common field-name variants for now.
+        const raw = response?.data?.data || response?.data || [];
+
+        const normalized = raw.map((u) => ({
+          id: u.id ?? u.user_id ?? u.value,
+          name: u.name ?? u.user_name ?? u.full_name ?? u.label,
+        }));
+
+        setEmployeeOptions(normalized);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setUsersLoading(false);
+    }
+  };
+
+  // ==============================
+  // LOAD EXISTING TEMPLATE (edit mode)
+  // ==============================
+  const getTemplateDetail = async () => {
+    try {
+      setLoading(true);
+
+      const response = await API.get(API_ENDPOINTS.GET_TEMPLATE_BY_ID(templateId));
+
+      if (response?.status === 200) {
+        const data = response?.data?.data;
+
+        setForm({
+          template_name: data?.template_name || "",
+          frequency: data?.frequency || "MONTHLY",
+          is_recurring: Boolean(data?.is_recurring),
+          start_date: data?.start_date?.substring(0, 10) || "",
+          end_date: data?.end_date?.substring(0, 10) || "",
+          // single-select: just take the first assigned employee (if any)
+          employee_id: data?.employees?.[0]?.id != null ? String(data.employees[0].id) : "",
+        });
+
+        const targetMap = { ...emptyTargets };
+        data?.targets?.forEach((t) => {
+          targetMap[t.visit_type] = t.target_value;
+        });
+        setTargets(targetMap);
+      }
+    } catch (error) {
+      console.log(error);
+
+      toast({
+        title: "Error",
+        description: "Failed to load template",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    getEmployees();
+    getTemplateNameOptions(); // NEW
+
+    if (isEditMode) {
+      getTemplateDetail();
+    } else {
+      setForm({
+        template_name: "",
+        frequency: "MONTHLY",
+        is_recurring: true,
+        start_date: "",
+        end_date: "",
+        employee_id: "",
+      });
+      setTargets(emptyTargets);
+    }
+
+    setEmpSearch("");
+    setEmpDropdownOpen(false);
+    setNameDropdownOpen(false); // NEW
+    setNameSearchQuery("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, templateId]);
+
+  // ==============================
+  // HANDLERS
+  // ==============================
+  const handleChange = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleTargetChange = (visitType, value) => {
+    setTargets((prev) => ({ ...prev, [visitType]: value }));
+  };
+
+  // ---- employee single-select helpers ----
+  const selectEmployee = (id) => {
+    setForm((prev) => ({ ...prev, employee_id: String(id) }));
+    setEmpSearch("");
+    setEmpDropdownOpen(false);
+  };
+
+
+  const clearEmployee = () => {
+    setForm((prev) => ({ ...prev, employee_id: "" }));
+  };
+
+  const getEmployeeName = (id) => {
+    const emp = employeeOptions.find((e) => String(e.id) === String(id));
+    return emp?.name || "Unknown";
+  };
+
+  const filteredEmployeeOptions = employeeOptions.filter((emp) =>
+    emp.name?.toLowerCase().includes(empSearch.toLowerCase())
+  );
+
+
+  const selectTemplateName = (name) => {
+  handleChange("template_name", name);
+  setNameSearchQuery("");
+  setNameDropdownOpen(false);
+};
+
+  const validate = () => {
+    if (!form.template_name.trim()) return "Template name is required";
+    // if (isDuplicateTemplateName(form.template_name)) return "A template with this name already exists";
+    if (!form.start_date || !form.end_date) return "Start and end date are required";
+    if (form.start_date > form.end_date) return "Start date must be before end date";
+    if (!form.employee_id) return "Select an employee";
+
+    const hasAtLeastOneTarget = VISIT_TYPES.some(
+      (type) => targets[type] !== "" && Number(targets[type]) > 0
+    );
+    if (!hasAtLeastOneTarget) return "Enter at least one visit-type target";
+
+    return null;
+  };
+
+  const handleSubmit = async () => {
+    const validationError = validate();
+
+    if (validationError) {
+      toast({
+        title: "Validation Error",
+        description: validationError,
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    const payload = {
+      template_name: form.template_name,
+      frequency: form.frequency,
+      is_recurring: form.is_recurring,
+      start_date: form.start_date,
+      end_date: form.end_date,
+      // backend still expects an array — just send the single selected id
+      employee_ids: [Number(form.employee_id)],
+      targets: VISIT_TYPES.filter(
+        (type) => targets[type] !== "" && Number(targets[type]) > 0
+      ).map((type) => ({
+        visit_type: type,
+        target_value: Number(targets[type]),
+      })),
+    };
+
+    try {
+      setSaving(true);
+
+      if (isEditMode) {
+        await API.put(API_ENDPOINTS.UPDATE_TEMPLATE_BY_ID(templateId), payload);
+      } else {
+        await API.post(API_ENDPOINTS?.CREATE_VISIT_TARGET_TEMPLATE, payload);
+      }
+
+      toast({
+        title: "Success",
+        description: `Template ${isEditMode ? "updated" : "created"} successfully`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      onSuccess?.();
+      onClose();
+    } catch (error) {
+      console.log(error);
+
+      const conflicts = error?.response?.data?.conflicts;
+
+      toast({
+        title: "Error",
+        description: error?.response?.data?.message ||
+          (conflicts
+            ? "Selected employee already has an active target for this period"
+            : `Failed to ${isEditMode ? "update" : "create"} template`),
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const FREQUENCY_COLORS = {
+    DAILY: "orange",
+    WEEKLY: "purple",
+    FORTNIGHT: "teal",
+    MONTHLY: "blue",
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} size="2xl" scrollBehavior="inside" isCentered>
+      <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(2px)" />
+      <ModalContent borderRadius="16px" overflow="hidden">
+        <ModalHeader
+          bg="linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%)"
+          color="white"
+          py={5}
+        >
+          <VStack spacing={4} alignItems="baseline">
+            <Text fontSize="16px" fontWeight="500">
+              {isEditMode ? "Edit Target Template" : "Create Target Template"}
+            </Text>
+            <Text fontSize="10px" fontWeight="400" color="whiteAlpha.800" mt={1}>
+              {isEditMode
+                ? "Update targets and assigned employee"
+                : "Set up visit targets for your field team"}
+            </Text></VStack>
+        </ModalHeader>
+        <ModalCloseButton color="white" top={5} />
+
+        <ModalBody bg="gray.50" py={6}>
+          {loading ? (
+            <Flex justify="center" align="center" py={16}>
+              <Spinner size="lg" color="blue.500" thickness="3px" />
+            </Flex>
+          ) : (
+            <>
+              {/* ---- Basic Details Card ---- */}
+              <Box bg="white" borderRadius="12px" p={5} mb={4} boxShadow="sm" border="1px solid" borderColor="gray.100">
+                <Text fontSize="12px" fontWeight="700" color="gray.500" textTransform="uppercase" letterSpacing="0.5px" mb={4}>
+                  Basic Details
+                </Text>
+
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mb={4}>
+                  <FormControl isRequired>
+                    <FormLabel fontSize="13px" fontWeight="600" color="gray.700">
+                      Template Name
+                    </FormLabel>
+                    <Box position="relative" ref={nameDropdownRef}>
+
+                      <Input
+                        value={form.template_name}
+                        onChange={(e) => {
+                          handleChange("template_name", e.target.value);
+                          setNameSearchQuery(e.target.value); // NEW — filter follows what's typed
+                          setNameDropdownOpen(true);
+                        }}
+                        onFocus={() => setNameDropdownOpen(true)}
+                        placeholder="e.g. Visit Target"
+                        bg="gray.50"
+                        borderRadius="8px"
+                        _focus={{ bg: "white", borderColor: "blue.400", boxShadow: "0 0 0 1px #4299E1" }}
+                      />
+
+                      {nameDropdownOpen && filteredNameSuggestions.length > 0 && (
+                        <Box
+                          position="absolute"
+                          top="calc(100% + 4px)"
+                          left={0}
+                          right={0}
+                          bg="white"
+                          border="1px solid"
+                          borderColor="gray.200"
+                          borderRadius="8px"
+                          boxShadow="lg"
+                          zIndex={20}
+                          maxH="160px"
+                          overflowY="auto"
+                        >
+                          {filteredNameSuggestions.map((t) => (
+                            <Text
+                              key={t.id}
+                              fontSize="13px"
+                              color="gray.600"
+                              px={3}
+                              py={2}
+                              cursor="pointer"
+                              _hover={{ bg: "gray.50" }}
+                              onClick={() => selectTemplateName(t.template_name)}
+                            >
+                              {t.template_name}
+                            </Text>
+                          ))}
+                        </Box>
+                      )}
+                    </Box>
+                  </FormControl>
+
+                  <FormControl isRequired>
+                    <FormLabel fontSize="13px" fontWeight="600" color="gray.700">
+                      Frequency
+                    </FormLabel>
+                    <Flex align="center" gap={2}>
+                      <Select
+                        value={form.frequency}
+                        onChange={(e) => handleChange("frequency", e.target.value)}
+                        bg="gray.50"
+                        borderRadius="8px"
+                        _focus={{ bg: "white", borderColor: "blue.400" }}
+                      >
+                        {/* <option value="DAILY">Daily</option> */}
+                        <option value="WEEKLY">Weekly</option>
+                        <option value="FORTNIGHT">Fortnightly</option>
+                        <option value="MONTHLY">Monthly</option>
+                      </Select>
+                      <Badge
+                        colorScheme={FREQUENCY_COLORS[form.frequency]}
+                        borderRadius="6px"
+                        px={2}
+                        py={1}
+                        fontSize="10px"
+                        whiteSpace="nowrap"
+                      >
+                        {form.frequency}
+                      </Badge>
+                    </Flex>
+                  </FormControl>
+
+                  <FormControl isRequired>
+                    <FormLabel fontSize="13px" fontWeight="600" color="gray.700">
+                      Start Date
+                    </FormLabel>
+                    <InputGroup>
+                      <InputLeftElement pointerEvents="none">
+                        <CalendarIcon color="gray.400" fontSize="13px" />
+                      </InputLeftElement>
+                      <Input
+                        type="date"
+                        value={form.start_date}
+                        onChange={(e) => handleChange("start_date", e.target.value)}
+                        bg="gray.50"
+                        borderRadius="8px"
+                        _focus={{ bg: "white", borderColor: "blue.400" }}
+                      />
+                    </InputGroup>
+                  </FormControl>
+
+                  <FormControl isRequired>
+                    <FormLabel fontSize="13px" fontWeight="600" color="gray.700">
+                      End Date
+                    </FormLabel>
+                    <InputGroup>
+                      <InputLeftElement pointerEvents="none">
+                        <CalendarIcon color="gray.400" fontSize="13px" />
+                      </InputLeftElement>
+                      <Input
+                        type="date"
+                        value={form.end_date}
+                        onChange={(e) => handleChange("end_date", e.target.value)}
+                        bg="gray.50"
+                        borderRadius="8px"
+                        _focus={{ bg: "white", borderColor: "blue.400" }}
+                      />
+                    </InputGroup>
+                  </FormControl>
+                </SimpleGrid>
+
+                <Divider mb={4} />
+
+                <FormControl display="flex" alignItems="center" justifyContent="space-between">
+                  <Box>
+                    <FormLabel fontSize="13px" fontWeight="600" color="gray.700" mb={0}>
+                      Recurring Template
+                    </FormLabel>
+                    <Text fontSize="12px" color="gray.500">
+                      Auto-continue into the next period
+                    </Text>
+                  </Box>
+                  <Switch
+                    isChecked={form.is_recurring}
+                    onChange={(e) => handleChange("is_recurring", e.target.checked)}
+                    colorScheme="blue"
+                    size="lg"
+                  />
+                </FormControl>
+              </Box>
+
+              {/* ---- Targets Card ---- */}
+              <Box bg="white" borderRadius="12px" p={5} mb={4} boxShadow="sm" border="1px solid" borderColor="gray.100">
+                <Text fontSize="12px" fontWeight="700" color="gray.500" textTransform="uppercase" letterSpacing="0.5px" mb={4}>
+                  Visit-type Targets (per period)
+                </Text>
+
+                <SimpleGrid columns={{ base: 1, sm: 3 }} spacing={4}>
+                  {VISIT_TYPES.map((type) => (
+                    <FormControl key={type}>
+                      <FormLabel fontSize="13px" fontWeight="600" color="gray.700" textTransform="capitalize">
+                        {type}
+                      </FormLabel>
+                      <Input
+                        type="number"
+                        min={0}
+                        value={targets[type]}
+                        onChange={(e) => handleTargetChange(type, e.target.value)}
+                        placeholder="0"
+                        bg="gray.50"
+                        borderRadius="8px"
+                        textAlign="center"
+                        fontWeight="600"
+                        _focus={{ bg: "white", borderColor: "blue.400" }}
+                      />
+                    </FormControl>
+                  ))}
+                </SimpleGrid>
+              </Box>
+
+              {/* ---- Employee Assignment Card ---- */}
+              <Box bg="white" borderRadius="12px" p={5} boxShadow="sm" border="1px solid" borderColor="gray.100">
+                <Flex justify="space-between" align="center" mb={4}>
+                  <Text fontSize="12px" fontWeight="700" color="gray.500" textTransform="uppercase" letterSpacing="0.5px">
+                    Assign Employee
+                  </Text>
+                </Flex>
+
+                <Box position="relative" ref={empDropdownRef}>
+                  {/* Single-select trigger field — always the same, just toggles dropdown */}
+                  <Flex
+                    align="center"
+                    justify="space-between"
+                    gap={2}
+                    minH="44px"
+                    px={3}
+                    py={2}
+                    bg="gray.50"
+                    border="1px solid"
+                    borderColor={empDropdownOpen ? "blue.400" : "gray.200"}
+                    borderRadius="8px"
+                    cursor="pointer"
+                    onClick={() => (empDropdownOpen ? setEmpDropdownOpen(false) : openEmpDropdown())}
+                    boxShadow={empDropdownOpen ? "0 0 0 1px #4299E1" : "none"}
+                    transition="all 0.15s"
+                  >
+                    <Text fontSize="14px" color={form.employee_id ? "gray.700" : "gray.400"} fontWeight={form.employee_id ? "500" : "400"}>
+                      {form.employee_id ? getEmployeeName(form.employee_id) : "Select an employee..."}
+                    </Text>
+
+                    <Flex align="center" gap={2}>
+                      {form.employee_id && (
+                        <Icon
+                          as={CloseIcon}
+                          boxSize="10px"
+                          cursor="pointer"
+                          color="gray.400"
+                          _hover={{ color: "red.500" }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            clearEmployee();
+                          }}
+                        />
+                      )}
+                      <Icon as={ChevronDownIcon} color="gray.400" />
+                    </Flex>
+                  </Flex>
+
+                  {/* Dropdown: search box + list, both live here so the trigger never changes shape */}
+                  {empDropdownOpen && (
+                    <Box
+                      position="absolute"
+                      top={dropUp ? "auto" : "calc(100% + 4px)"}
+                      bottom={dropUp ? "calc(100% + 4px)" : "auto"}
+                      left={0}
+                      right={0}
+                      bg="white"
+                      border="1px solid"
+                      borderColor="gray.200"
+                      borderRadius="8px"
+                      boxShadow="lg"
+                      zIndex={20}
+                      overflow="hidden"
+                    >
+                      <Box p={2} borderBottom="1px solid" borderColor="gray.100">
+                        <Input
+                          autoFocus
+                          value={empSearch}
+                          onChange={(e) => setEmpSearch(e.target.value)}
+                          placeholder="Search employees..."
+                          size="sm"
+                          bg="gray.50"
+                          borderRadius="6px"
+                        />
+                      </Box>
+
+                      <Box maxH="180px" overflowY="auto">
+                        {usersLoading ? (
+                          <Flex justify="center" py={4}>
+                            <Spinner size="sm" color="blue.500" />
+                          </Flex>
+                        ) : filteredEmployeeOptions.length > 0 ? (
+                          filteredEmployeeOptions.map((emp) => {
+                            const selected = String(emp.id) === String(form.employee_id);
+                            return (
+                              <Flex
+                                key={emp.id}
+                                align="center"
+                                justify="space-between"
+                                px={3}
+                                py={2}
+                                cursor="pointer"
+                                bg={selected ? "blue.50" : "white"}
+                                _hover={{ bg: selected ? "blue.50" : "gray.50" }}
+                                onClick={() => selectEmployee(emp.id)}
+                              >
+                                <Text fontSize="14px" color="gray.700">
+                                  {emp.name}
+                                </Text>
+                                {selected && <Icon as={CheckIcon} boxSize="12px" color="blue.500" />}
+                              </Flex>
+                            );
+                          })
+                        ) : (
+                          <Text fontSize="13px" color="gray.500" px={3} py={3}>
+                            No employees found
+                          </Text>
+                        )}
+                      </Box>
+                    </Box>
+                  )}
+                </Box>
+              </Box>
+            </>
+          )}
+        </ModalBody>
+
+        <ModalFooter bg="white" borderTop="1px solid" borderColor="gray.100">
+          <Button variant="ghost" border="1px solid grey" mr={3} onClick={onClose} borderRadius="8px" fontSize="14px" fontWeight="500">
+            Cancel
+          </Button>
+          <Button
+            bg="blue.600"
+            color="white" fontSize="14px" fontWeight="500"
+            _hover={{ bg: "blue.700" }}
+            onClick={handleSubmit}
+            isLoading={saving}
+            borderRadius="8px"
+            px={6}>
+            {isEditMode ? "Save Changes" : "Create Template"}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+export default TemplateFormModal;

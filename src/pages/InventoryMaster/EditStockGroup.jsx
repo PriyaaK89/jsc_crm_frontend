@@ -37,7 +37,7 @@ const EditStockGroup = () => {
     overdue_limit: 300,
   });
 
-  // ✅ FETCH DATA (autofill)
+  //  FETCH DATA (autofill)
   const fetchStockGroup = async () => {
     try {
       setFetchLoading(true);
@@ -71,7 +71,7 @@ const EditStockGroup = () => {
     if (id) fetchStockGroup();
   }, [id]);
 
-  // ✅ HANDLE CHANGE
+  //  HANDLE CHANGE
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -81,7 +81,7 @@ const EditStockGroup = () => {
     }));
   };
 
-  // ✅ UPDATE API
+  //  UPDATE API
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);

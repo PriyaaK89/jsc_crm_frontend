@@ -1,20 +1,6 @@
 import {
-  Flex,
-  Text,
-  Avatar,
-  Spacer,
-  Button,
-  Box,
-  Portal,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverBody,
-  Divider,
-  useToast,
-  useDisclosure,
-  Image
+  Flex, Text, Avatar, Spacer, Button, Box, Portal, Popover, PopoverTrigger, PopoverContent,
+  PopoverArrow, PopoverBody, Divider, useToast, useDisclosure, Image
 } from "@chakra-ui/react";
 import React, { useState, useContext } from "react";
 import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
@@ -77,15 +63,14 @@ const Topbar = ({ profileImage }) => {
         top="0"
         left="280px"
         w="calc(100% - 280px)"
-        h="75px"
+        h="72px"
         bg="white"
         align="center"
         px={6}
         zIndex="1000"
         border="1px solid #e5e7eb"
-        boxShadow="sm"
-      >
-   
+        boxShadow="sm" >
+
 
         <Spacer />
 
@@ -132,12 +117,13 @@ const Topbar = ({ profileImage }) => {
 
             <Portal>
               <PopoverContent
-                w="380px"
+                w={{ base: "95vw", md: "380px" }}
+                maxW="380px"
                 borderRadius="16px"
                 overflow="hidden"
                 boxShadow="xl"
               >
-                <PopoverArrow />        
+                <PopoverArrow />
                 <NotofictionBarModel setUnreadCount={setUnreadCount} />
 
               </PopoverContent>
@@ -150,12 +136,12 @@ const Topbar = ({ profileImage }) => {
         <Popover placement="bottom-end">
           <PopoverTrigger>
 
-           <Box cursor="pointer">
-            <CustomeAvater
-             name={auth?.user?.name}
-              src={auth?.user?.profile_image_url}  cursor="pointer"
+            <Box cursor="pointer">
+              <CustomeAvater
+                name={auth?.user?.name}
+                src={auth?.user?.profile_image_url} cursor="pointer"
               />
-              </Box>
+            </Box>
           </PopoverTrigger>
 
           <Portal>

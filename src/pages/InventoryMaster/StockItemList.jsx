@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import {
-    Badge, Box, Button, Flex, HStack, IconButton, Input, InputGroup, InputLeftElement, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr,
+    Badge, Box, Flex, HStack, IconButton, Input, InputGroup, InputLeftElement, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr,
     VStack, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useToast,
 } from "@chakra-ui/react";
-import { FiEdit2, FiSearch, FiTrash2, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiEdit2, FiSearch, FiTrash2 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import DeleteStockItemModal from "../../components/models/DeleteStockItemModal";
+import Pagination from "../../Pagination/Pagination"; // adjust the path to wherever you place Pagination.jsx
 
 const StockItemList = () => {
 
@@ -16,7 +17,7 @@ const StockItemList = () => {
     const [stockItems, setStockItems] = useState([]);
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
-    const [limit] = useState(10);
+    const [limit, setLimit] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
 
@@ -64,7 +65,17 @@ const StockItemList = () => {
 
     useEffect(() => {
         getStockItemList();
-    }, [page]);
+    }, [page, limit]);
+
+    const handlePageChange = (newPage) => {
+        if (newPage < 1 || newPage > totalPages || newPage === page) return;
+        setPage(newPage);
+    };
+
+    const handleLimitChange = (newLimit) => {
+        setLimit(newLimit);
+        setPage(1);
+    };
 
     const formatNumber = (value) => {
 
@@ -133,37 +144,24 @@ const StockItemList = () => {
                                         <Td fontWeight="600"> {(page - 1) * limit + index + 1} </Td>
                                         <Td>
                                             <VStack align="start" spacing={1} >
-
                                                 <Text fontWeight="700" color="gray.700" > {item?.item_name || "-"} </Text>
                                                 <Badge className="badge" colorScheme={item?.type_of_supply === "Goods" ? "blue" : "purple"} > {item?.type_of_supply} </Badge>
                                                 <Text fontSize="12px" color="gray.500"> Duty : {" "} {formatNumber(item?.rate_of_duty) || 0}  </Text>
-
                                             </VStack>
 
                                         </Td>
 
                                         <Td>
-                                            <VStack
-                                                align="start"
-                                                spacing={1}
-                                            >
+                                            <VStack align="start" spacing={1} >
 
-                                                <Text
-                                                    fontWeight="600"
-                                                    color="gray.700"
-                                                >
+                                                <Text fontWeight="600" color="gray.700" >
                                                     {item?.stock_group_name || "-"}
                                                 </Text>
 
-                                                <Text
-                                                    fontSize="12px"
-                                                    color="gray.500"
-                                                >
+                                                <Text fontSize="12px" color="gray.500" >
                                                     {item?.stock_category_name || "-"}
                                                 </Text>
-
                                             </VStack>
-
                                         </Td>
 
                                         <Td>
@@ -176,13 +174,9 @@ const StockItemList = () => {
                                                 {item?.alternative_unit_name && (
 
                                                     <Box>
-                                                        <Text fontSize="12px" color="gray.500" >
-                                                            Alternative Unit
-                                                        </Text>
+                                                        <Text fontSize="12px" color="gray.500" > Alternative Unit </Text>
 
-                                                        <Text
-                                                            fontWeight="600"
-                                                        >
+                                                        <Text fontWeight="600" >
                                                             {formatNumber(item?.alternative_unit_value)}
                                                             {" "}
                                                             {item?.alternative_unit_name}
@@ -201,16 +195,11 @@ const StockItemList = () => {
 
                                                     <Box>
 
-                                                        <Text
-                                                            fontSize="12px"
-                                                            color="gray.500"
-                                                        >
+                                                        <Text fontSize="12px" color="gray.500" >
                                                             Bulk Unit
                                                         </Text>
 
-                                                        <Text
-                                                            fontWeight="600"
-                                                        >
+                                                        <Text fontWeight="600" >
                                                             {formatNumber(item?.bulk_unit_value)}
                                                             {" "}
                                                             {item?.bulk_unit_name}
@@ -222,186 +211,79 @@ const StockItemList = () => {
 
                                                     </Box>
                                                 )}
-
                                             </VStack>
-
                                         </Td>
 
-
-
-                                        {/* ===================================== */}
-                                        {/* OPENING STOCK */}
-                                        {/* ===================================== */}
 
                                         <Td>
                                             <VStack align="start" spacing={1} >
                                                 <Text fontWeight="700" color="green.600" >
-                                                    Qty :
-                                                    {" "}
-                                                    {formatNumber(item?.quantity) || 0}
-                                                    {" "}
-                                                    {item?.opening_stock_unit || ""}
+                                                    Qty : {" "} {formatNumber(item?.quantity) || 0} {" "} {item?.opening_stock_unit || ""}
                                                 </Text>
 
-                                                <Text fontSize="13px">
-                                                    Rate :
-                                                    {" "}
-                                                    ₹ {formatNumber(item?.rate) || 0}
-                                                </Text>
+                                                <Text fontSize="13px"> Rate : {" "} ₹ {formatNumber(item?.rate) || 0} </Text>
 
-                                                <Text
-                                                    fontWeight="700"
-                                                    color="blue.600"
-                                                >
-                                                    Amount :
-                                                    {" "}
-                                                    ₹ {formatNumber(item?.amount) || 0}
-                                                </Text>
+                                                <Text fontWeight="700" color="blue.600" > Amount : {" "} ₹ {formatNumber(item?.amount) || 0} </Text>
 
-                                                <Text
-                                                    fontSize="12px"
-                                                    color="gray.500"
-                                                >
-                                                    Godown :
-                                                    {" "}
-                                                    {item?.godown_name || "-"}
+                                                <Text fontSize="12px" color="gray.500" >
+                                                    Godown : {" "} {item?.godown_name || "-"}
                                                 </Text>
-
                                             </VStack>
 
                                         </Td>
                                         <Td>₹ {formatNumber(item?.supercash_price)} </Td>
 
                                         <Td>
-
-                                            <VStack
-                                                align="start"
-                                                spacing={2}
-                                            >
-
-                                                <Badge className="badge"
-                                                    colorScheme={
-                                                        item?.maintain_in_batches == 1
-                                                            ? "green"
-                                                            : "red"
-                                                    }
-                                                >
-                                                    {item?.maintain_in_batches == 1
-                                                        ? "Batch Enabled"
-                                                        : "No Batch"}
+                                            <VStack align="start" spacing={2} >
+                                                <Badge className="badge" colorScheme={ item?.maintain_in_batches == 1 ? "green" : "red" } >
+                                                    {item?.maintain_in_batches == 1 ? "Batch Enabled" : "No Batch"}
                                                 </Badge>
 
-
-
                                                 {item?.track_mfg_date == 1 && (
-
-                                                    <Badge className="badge"
-                                                        colorScheme="blue"
-                                                    >
-                                                        MFG Tracking
-                                                    </Badge>
+                                                    <Badge className="badge" colorScheme="blue" > MFG Tracking </Badge>
                                                 )}
-
-
 
                                                 {item?.use_expiry_dates == 1 && (
-
-                                                    <Badge className="badge"
-                                                        colorScheme="orange"
-                                                    >
-                                                        Expiry Tracking
-                                                    </Badge>
+                                                    <Badge className="badge" colorScheme="orange" > Expiry Tracking </Badge>
                                                 )}
-
                                             </VStack>
-
                                         </Td>
 
 
                                         <Td>
-
-                                            <VStack
-                                                align="start"
-                                                spacing={2}
-                                            >
-
-                                                <Badge className="badge"
-                                                    colorScheme={
-                                                        item?.gst_applicable == 1
-                                                            ? "green"
-                                                            : "red"
-                                                    }
-                                                >
-                                                    {item?.gst_applicable == 1
-                                                        ? "GST"
-                                                        : "NON GST"}
+                                            <VStack align="start" spacing={2} >
+                                                <Badge className="badge" colorScheme={ item?.gst_applicable == 1 ? "green" : "red" } >
+                                                    {item?.gst_applicable == 1 ? "GST" : "NON GST"}
                                                 </Badge>
 
-
-
                                                 {item?.set_gst_details == 1 && (
-
-                                                    <Badge className="badge"
-                                                        colorScheme="purple"
-                                                    >
+                                                    <Badge className="badge" colorScheme="purple" >
                                                         GST Details Added
                                                     </Badge>
                                                 )}
-
                                             </VStack>
-
                                         </Td>
 
 
                                         <Td>
-
-                                            <VStack
-                                                align="start"
-                                                spacing={2}
-                                            >
-
+                                            <VStack align="start" spacing={2} >
                                                 {item?.set_standard_rates == 1 && (
-
-                                                    <Badge className="badge"
-                                                        colorScheme="cyan"
-                                                    >
-                                                        Standard Rates
-                                                    </Badge>
+                                                    <Badge className="badge" colorScheme="cyan" > Standard Rates </Badge>
                                                 )}
-
-
 
                                                 {item?.enable_cost_tracking == 1 && (
-
-                                                    <Badge className="badge"
-                                                        colorScheme="pink"
-                                                    >
-                                                        Cost Tracking
-                                                    </Badge>
+                                                    <Badge className="badge" colorScheme="pink"> Cost Tracking </Badge>
                                                 )}
-
                                             </VStack>
-
                                         </Td>
 
-
                                         <Td>
-
-                                            <Text
-                                                fontSize="13px"
-                                                color="gray.600"
-                                            >
-
-                                                {new Date(
-                                                    item?.created_at
-                                                ).toLocaleDateString("en-IN", {
-
+                                            <Text fontSize="13px" color="gray.600" >
+                                                {new Date( item?.created_at).toLocaleDateString("en-IN", {
                                                     day: "2-digit",
                                                     month: "short",
                                                     year: "numeric"
-
                                                 })}
-
                                             </Text>
 
                                         </Td>
@@ -409,41 +291,20 @@ const StockItemList = () => {
 
                                         <Td>
 
-                                            <HStack
-                                                justify="center"
-                                                spacing={2}
-                                            >
+                                            <HStack justify="center" spacing={2} >
 
-                                                {/* EDIT */}
-
-                                                <Link
-                                                    to={`/inventory/edit-stock-item/${item?.id}`}
-                                                >
-
-                                                    <IconButton
-                                                        icon={<FiEdit2 />}
-                                                        size="sm"
-                                                        colorScheme="blue"
-                                                    />
-
+                                                <Link to={`/inventory/edit-stock-item/${item?.id}`} >
+                                                    <IconButton icon={<FiEdit2 />} size="sm" colorScheme="blue" />
                                                 </Link>
-
-
-
-                                                {/* DELETE */}
 
                                                 <IconButton icon={<FiTrash2 />} size="sm" colorScheme="red" onClick={() => handleDeleteModalOpen(item?.id)} />
                                             </HStack>
-
                                         </Td>
-
                                     </Tr>
                                 ))
-
                             ) : (
 
                                 <Tr>
-
                                     <Td colSpan={10} textAlign="center" py={10} >
                                         <Text color="gray.500"> No Stock Items Found </Text>
                                     </Td>
@@ -453,27 +314,14 @@ const StockItemList = () => {
                     </Table>
                 </Box>
 
-                <Flex justify="space-between" align="center" flexWrap="wrap" gap={4}>
-                    <Text fontSize="sm" color="gray.600">  Page {page} of {totalPages}  </Text>
-                    <HStack>
-
-                        <Button
-                            size="sm"
-                            leftIcon={<FiChevronLeft />}
-                            onClick={() => setPage((prev) => prev - 1)}
-                            isDisabled={page === 1} >
-                            Previous
-                        </Button>
-
-                        <Button
-                            size="sm"
-                            rightIcon={<FiChevronRight />}
-                            onClick={() => setPage((prev) => prev + 1)}
-                            isDisabled={page === totalPages} >
-                            Next
-                        </Button>
-                    </HStack>
-                </Flex>
+                <Pagination
+                    page={page}
+                    limit={limit}
+                    totalItems={totalRecords}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                    onLimitChange={handleLimitChange}
+                />
             </VStack>
             <DeleteStockItemModal isDeleteModalOpen={isDeleteModalOpen} onClose={onDeleteModalClose} selectedId={selectedId} getStockItemList={getStockItemList} />
 

@@ -4,9 +4,7 @@ import {
     Table, Thead, Tbody, Tr, Th, Td, Textarea,
     Flex, Modal, ModalOverlay, ModalContent, ModalHeader,
     ModalBody, useDisclosure, Badge, Divider,
-    GridItem,
-    ModalCloseButton,
-    useToast,
+    GridItem, ModalCloseButton, useToast,
 } from "@chakra-ui/react";
 import useUsersapi from "../../Apis/GetUsersapi";
 import {
@@ -23,6 +21,7 @@ import {
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { AddIcon } from "@chakra-ui/icons";
+import { useRef } from "react";
 
 // ─── Empty item template ──────────────────────────────────────────────────────
 const emptyItem = () => ({
@@ -58,7 +57,7 @@ const emptyLedger = () => ({ ledger_id: "", amount: "", comments: "" });
 
 // ─── Initial form state ───────────────────────────────────────────────────────
 const initialForm = {
-    voucher_type_id: 1,
+    voucher_type_id: "",
     voucher_no: "",
     purchase_date: new Date().toISOString().slice(0, 10),
     supplier_invoice_no: "",
@@ -85,8 +84,10 @@ const initialForm = {
     sgst_total: 0,
     tax_total: 0,
     total_amount: 0,
+  bill_t_image: null,
+   dispatch_doc_image: null,
     narration: "",
-     reference_type: "NEW REF",
+    reference_type: "NEW REF",
     reference_no: "",
     due_date: "",
     items: [emptyItem()],
@@ -212,6 +213,9 @@ const Purchase = () => {
     const [ledgerDetails, setLedgerDetails] = useState({});
     const toast = useToast();
 
+    const billTImageRef = useRef(null);
+    const dispatchDocImageRef = useRef(null);
+
     const [formData, setFormData] = useState(initialForm);
     const { isOpen: isGodownOpen, onOpen: openGodown, onClose: closeGodown } = useDisclosure();
     const [activeItemIndex, setActiveItemIndex] = useState(null);
@@ -247,8 +251,6 @@ const Purchase = () => {
         loadVoucherNo();
     }, []);
 
-
-
     const loadData = async () => {
         try {
             const [godownData, stockData, purchaseLedgerData, ledgerData] =
@@ -269,18 +271,25 @@ const Purchase = () => {
     };
 
     const loadVoucherNo = async () => {
-
         try {
-
-            const voucherNo = await fetchNextVoucherNo("PURCHASE");
+            const voucherData = await fetchNextVoucherNo("PURCHASE");
 
             setFormData((prev) => ({
                 ...prev,
-                voucher_no: voucherNo
+                voucher_no: voucherData?.voucher_no || "",
+                voucher_type_id: voucherData?.voucher_type_id || "",
             }));
-
         } catch (err) {
-            console.error("loadVoucherNo error:", err);
+            console.log(err);
+            console.log(err.response);
+
+            toast({
+                title: "Error",
+                description: err.response?.data?.message || err.message,
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
         }
     };
 
@@ -338,6 +347,15 @@ const Purchase = () => {
                 credit_limit: "Not Specified",
             });
         }
+    };
+
+    const handleImageChange = (e) => {
+        const { name, files } = e.target;
+
+        setFormData((prev) => ({
+            ...prev,
+            [name]: files[0] || null,
+        }));
     };
 
     // ─── Item field change + auto-recalc ──────────────────────────────────────
@@ -492,12 +510,20 @@ const Purchase = () => {
         const finalBatchNo = godownModal.isNewBatch
             ? godownModal.newBatchNo
             : godownModal.batch_no === "NOT_APPLICABLE"
-                ? ""
+                ? "NOT_APPLICABLE"
                 : godownModal.batch_no;
+
+        // If a specific existing batch was selected, use that batch's available_qty
+        const selectedBatch = batchList.find((b) => b.batch_no === finalBatchNo);
 
         setFormData((prev) => {
             const items = [...prev.items];
-            const prevAvailableQty = items[activeItemIndex].available_qty;
+            // Use batch-level available_qty if a known batch was picked,
+            // otherwise keep the godown-level qty already on the item
+            const resolvedAvailableQty = selectedBatch
+                ? (selectedBatch.available_qty ?? selectedBatch.qty ?? 0)
+                : items[activeItemIndex].available_qty;
+
             items[activeItemIndex] = {
                 ...items[activeItemIndex],
                 batch_no: finalBatchNo,
@@ -505,7 +531,7 @@ const Purchase = () => {
                 expiry_date: godownModal.expiry_date,
                 remind_expiry: godownModal.remind_expiry,
                 remind_date: godownModal.remind_date,
-                available_qty: prevAvailableQty,
+                available_qty: resolvedAvailableQty,  // ← key fix
             };
             return { ...prev, items };
         });
@@ -567,7 +593,6 @@ const Purchase = () => {
     // ─── Submit ────────────────────────────────────────────────────────────────
     const handleSave = async () => {
         if (!formData.supplier_invoice_no) {
-           
             toast({
                 description: 'Supplier Invoice No cannot be blank!',
                 status: 'error',
@@ -584,7 +609,6 @@ const Purchase = () => {
             return;
         }
         if (!formData.supplier_ledger_id) {
-          
             toast({
                 description: "Please select Party A/c Name!",
                 status: 'error',
@@ -594,28 +618,55 @@ const Purchase = () => {
         }
         setSaving(true);
         try {
-            const payload = {
+            const payload = new FormData();
+            const payloadData = {
                 ...formData,
-                // items: formData.items.filter((i) => i.stock_item_id),
-                extra_ledgers: extraLedgers.filter((l) => l.ledger_id),
-
                 employee_under_id: formData.employee_under_id || null,
                 purchase_ledger_id: formData.purchase_ledger_id || null,
                 supplier_ledger_id: formData.supplier_ledger_id || null,
-                items: formData.items
-                    .filter((i) => i.stock_item_id)
-                    .map((item) => ({
-                        ...item,
-                        mfg_date: item.mfg_date || null,
-                        expiry_date: item.expiry_date || null,
-                        remind_date: item.remind_date || null,
-                        alt_unit_id: item.alt_unit_id === "" ? null : item.alt_unit_id,
-                        alt_unit_qty: item.alt_unit_qty === "" ? null : item.alt_unit_qty,
-                        unit_id: item.unit_id === "" ? null : item.unit_id,
-                        godown_id: item.godown_id === "" ? null : item.godown_id,
-                    })),
-
             };
+
+            // Append all normal form fields
+            Object.entries(payloadData).forEach(([key, value]) => {
+                if (
+                    key !== "items" &&
+                    key !== "bill_t_image" &&
+                    key !== "dispatch_doc_image"
+                ) {
+                    payload.append(key, value ?? "");
+                }
+            });
+            // Append items
+            payload.append(
+                "items",
+                JSON.stringify(
+                    formData.items
+                        .filter((i) => i.stock_item_id)
+                        .map((item) => ({
+                            ...item,
+                            mfg_date: item.mfg_date || null,
+                            expiry_date: item.expiry_date || null,
+                            remind_date: item.remind_date || null,
+                            alt_unit_id: item.alt_unit_id === "" ? null : item.alt_unit_id,
+                            alt_unit_qty: item.alt_unit_qty === "" ? null : item.alt_unit_qty,
+                            unit_id: item.unit_id === "" ? null : item.unit_id,
+                            godown_id: item.godown_id === "" ? null : item.godown_id,
+                        }))
+                )
+            );
+
+            // Append extra ledgers
+            payload.append(
+                "extra_ledgers",
+                JSON.stringify(
+                    extraLedgers.filter((l) => l.ledger_id)
+                )
+            );
+
+            // Append files
+            if (formData.bill_t_image) { payload.append("bill_t_image", formData.bill_t_image); }
+            if (formData.dispatch_doc_image) { payload.append("dispatch_doc_image", formData.dispatch_doc_image); }
+           
             const response = await createPurchase(payload);
             if (response.success) {
                 toast({
@@ -624,18 +675,29 @@ const Purchase = () => {
                     duration: 1500
                 })
                 setFormData({ ...initialForm });
-                setExtraLedgers(Array.from({ length: 5 }, emptyLedger));
+                setExtraLedgers(Array.from({ length: 1 }, emptyLedger));
                 loadVoucherNo();
+                if (billTImageRef.current) {
+                    billTImageRef.current.value = "";
+                }
+
+                if (dispatchDocImageRef.current) {
+                    dispatchDocImageRef.current.value = "";
+                }
             }
-        } catch (error) {
-            console.error(error);
-            toast({
-                description: `Error creating purchase: ${error.message} || "Unknown error`,
-                status: "error",
-                duration: 1500
-            })
-      
-        } finally {
+        }catch (error) {
+    console.error(error);
+
+    toast({
+        description:
+            error?.response?.data?.message ||
+            error?.message ||
+            "Unknown error",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+    });
+} finally {
             setSaving(false);
         }
     };
@@ -647,7 +709,7 @@ const Purchase = () => {
             <Box>
                 <Box {...sectionStyle}>
                     <Box justify="space-between" align="center" bg="#4f9190" color="white" px={4} py={2} borderTopRadius="md">
-                        <Text fontWeight="500" fontSize="sm" textAlign="left"> Voucher Details </Text>
+                        <Text fontWeight="500" fontSize="sm" textAlign="left"> Voucher Details</Text>
                     </Box>
                     <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)", lg: "repeat(2,1fr)" }}
                         gap={4} p={4}>
@@ -669,7 +731,8 @@ const Purchase = () => {
                         <GridItem>
 
                             <Text {...labelStyle}>
-                                Date <Text as="span" color="red.500">*</Text>
+                                Date 
+                                <Text as="span" color="red.500">*</Text>
                             </Text>
                             <Input
                                 {...inputStyle}
@@ -882,18 +945,79 @@ const Purchase = () => {
                             { label: "Vehicle No.", name: "vehicle_no" },
                         ].map(({ label, name }) => (
                             <Box key={name}>
-                                <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>{label}</Text>
-                                <Input name={name} value={formData[name]} onChange={handleChange} />
+                                <Text
+                                    fontSize="11px"
+                                    fontWeight="600"
+                                    color="#555"
+                                    mb={1}
+                                >
+                                    {label}
+                                </Text>
+
+                                <Input
+                                    name={name}
+                                    value={formData[name]}
+                                    onChange={handleChange}
+                                />
                             </Box>
                         ))}
-                        <Box>
-                            <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>Transport Freight</Text>
-                            <Input
 
+                        <Box>
+                            <Text
+                                fontSize="11px"
+                                fontWeight="600"
+                                color="#555"
+                                mb={1}
+                            >
+                                Transport Freight
+                            </Text>
+
+                            <Input
                                 type="number"
                                 name="transport_freight"
                                 value={formData.transport_freight}
                                 onChange={handleFreightChange}
+                            />
+                        </Box>
+                    </Grid>
+
+                    <Grid templateColumns="1fr 1fr" gap={3} px={4} pb={4}>
+                        <Box>
+                            <Text
+                                fontSize="11px"
+                                fontWeight="600"
+                                color="#555"
+                                mb={1}
+                            >
+                                Bill-T Image
+                            </Text>
+
+                            <Input
+                                ref={billTImageRef}
+                                type="file"
+                                name="bill_t_image"
+                                accept="image/*,.pdf"
+                                onChange={handleImageChange}
+                            />
+
+                        </Box>
+
+                        <Box>
+                            <Text
+                                fontSize="11px"
+                                fontWeight="600"
+                                color="#555"
+                                mb={1}
+                            >
+                                Dispatch Document Image
+                            </Text>
+
+                            <Input
+                                ref={dispatchDocImageRef}
+                                type="file"
+                                name="dispatch_doc_image"
+                                accept="image/*,.pdf"
+                                onChange={handleImageChange}
                             />
                         </Box>
                     </Grid>
@@ -974,7 +1098,6 @@ const Purchase = () => {
                                     {/* Available Qty */}
                                     <Td {...tdStyle}>
                                         <Input
-
                                             value={item.available_qty ?? 0}
                                             readOnly
                                             bg="#f0f4f0"
@@ -1230,12 +1353,7 @@ const Purchase = () => {
                                 <Text fontWeight="500" fontSize="sm" textAlign="left">
                                     Tax Summary
                                 </Text> </Box>
-                            <Box
-                                bg="white"
-                                border="1px solid #d0d7de"
-                                borderRadius="6px"
-                                overflow="hidden"
-                            >
+                            <Box bg="white" border="1px solid #d0d7de" borderRadius="6px" overflow="hidden" >
                                 {[
                                     {
                                         label: `IGST (${formData.items.some(i => i.igst_percent > 0)
@@ -1261,13 +1379,8 @@ const Purchase = () => {
                                 ].map(({ label, value, color, dividerBefore }, i) => (
                                     <React.Fragment key={label}>
                                         {dividerBefore && <Divider borderColor="#e0e8e2" />}
-                                        <Flex
-                                            justify="space-between"
-                                            align="center"
-                                            px={3}
-                                            py="6px"
-                                            borderBottom="1px solid #f0f4f0"
-                                        >
+                                        <Flex justify="space-between" align="center" px={3} py="6px"
+                                            borderBottom="1px solid #f0f4f0" >
                                             <Text fontSize="12px" color={color} fontWeight="500">{label}</Text>
                                             <Text fontSize="12px" color={color} fontWeight="600">
                                                 ₹{value > 0 ? value.toFixed(2) : "0.00"}
@@ -1296,9 +1409,7 @@ const Purchase = () => {
                         onClick={() => {
                             setFormData({ ...initialForm });
                             setExtraLedgers(Array.from({ length: 5 }, emptyLedger));
-                            loadVoucherNo();
-                        }}
-                    >
+                            loadVoucherNo(); }} >
                         RESET
                     </Button>
                     <Button
@@ -1306,17 +1417,13 @@ const Purchase = () => {
                         fontWeight="500"
                         fontSize="14px"
                         color="white"
-                        _hover={{
-                            bg: "#1B5A6B",
-                        }}
+                        _hover={{ bg: "#1B5A6B",}}
                         px={12}
                         borderRadius="12px"
                         isLoading={saving}
                         loadingText="SAVING..."
                         onClick={handleSave}
-
-                        boxShadow="0 2px 8px rgba(45,90,61,0.4)"
-                    >
+                        boxShadow="0 2px 8px rgba(45,90,61,0.4)" >
                         SAVE
                     </Button>
                 </Flex>
@@ -1327,13 +1434,7 @@ const Purchase = () => {
                 <ModalOverlay bg="blackAlpha.500" backdropFilter="blur(2px)" />
                 <ModalContent borderRadius="8px" border="1px solid #c0cfc4" overflow="hidden">
 
-                    <ModalHeader
-                        bg="#e4eced"
-                        borderBottom="2px solid #c0d4c8"
-
-                        fontSize="13px"
-                        fontWeight="700"
-                        color="#1e4a2e" >
+                    <ModalHeader bg="#e4eced" borderBottom="2px solid #c0d4c8" fontSize="13px" fontWeight="700" color="#1e4a2e" >
                         <Flex align="center" gap={2}>
                             <Box w="10px" h="10px" bg="#31848f" borderRadius="50%" />
                             Godown & Batch Details
@@ -1362,9 +1463,7 @@ const Purchase = () => {
                                             <Select
                                                 {...inputStyle}
                                                 value={godownModal.batch_no}
-                                                onChange={(e) => handleBatchSelect(e.target.value)}
-
-                                            >
+                                                onChange={(e) => handleBatchSelect(e.target.value)} >
                                                 <option value="">-- Select --</option>
                                                 <option value="NOT_APPLICABLE">Not Applicable</option>
                                                 <option value="NEW_NUMBER">New Number</option>
@@ -1374,17 +1473,12 @@ const Purchase = () => {
                                             </Select>
                                             {/* New batch number input — only shown below select when NEW_NUMBER */}
                                             {godownModal.isNewBatch && (
-                                                <Input
-                                                    {...inputStyle}
-                                                    mt={1}
+                                                <Input {...inputStyle} mt={1}
                                                     placeholder="Enter batch no."
                                                     value={godownModal.newBatchNo}
-                                                    onChange={(e) =>
-                                                        setGodownModal((p) => ({ ...p, newBatchNo: e.target.value }))
-                                                    }
+                                                    onChange={(e) => setGodownModal((p) => ({ ...p, newBatchNo: e.target.value })) }
                                                     autoFocus
-                                                    borderColor="#3d7a52"
-                                                />
+                                                    borderColor="#3d7a52" />
                                             )}
                                         </Td>
 
@@ -1395,9 +1489,7 @@ const Purchase = () => {
                                                     {...inputStyle}
                                                     type="number"
                                                     value={godownModal.qty}
-                                                    onChange={(e) => setGodownModal((p) => ({ ...p, qty: e.target.value }))}
-
-                                                />
+                                                    onChange={(e) => setGodownModal((p) => ({ ...p, qty: e.target.value }))} />
                                             </Td>
                                         )}
                                         {godownModal.isNewBatch && <Td {...tdStyle} />}
@@ -1407,26 +1499,20 @@ const Purchase = () => {
                                                 {...inputStyle}
                                                 type="date"
                                                 value={godownModal.mfg_date}
-                                                onChange={(e) => setGodownModal((p) => ({ ...p, mfg_date: e.target.value }))}
-
-                                            />
+                                                onChange={(e) => setGodownModal((p) => ({ ...p, mfg_date: e.target.value }))} />
                                         </Td>
                                         <Td {...tdStyle}>
                                             <Input
                                                 {...inputStyle}
                                                 type="date"
                                                 value={godownModal.expiry_date}
-                                                onChange={(e) => setGodownModal((p) => ({ ...p, expiry_date: e.target.value }))}
-
-                                            />
+                                                onChange={(e) => setGodownModal((p) => ({ ...p, expiry_date: e.target.value }))} />
                                         </Td>
                                         <Td {...tdStyle}>
                                             <Select
                                                 {...inputStyle}
                                                 value={godownModal.remind_expiry}
-                                                onChange={(e) => setGodownModal((p) => ({ ...p, remind_expiry: e.target.value }))}
-
-                                            >
+                                                onChange={(e) => setGodownModal((p) => ({ ...p, remind_expiry: e.target.value }))} >
                                                 <option value="No">No</option>
                                                 <option value="Yes">Yes</option>
                                             </Select>
@@ -1437,9 +1523,7 @@ const Purchase = () => {
                                                 type="date"
                                                 value={godownModal.remind_date}
                                                 onChange={(e) => setGodownModal((p) => ({ ...p, remind_date: e.target.value }))}
-                                                isDisabled={godownModal.remind_expiry === "No"}
-
-                                            />
+                                                isDisabled={godownModal.remind_expiry === "No"}/>
                                         </Td>
                                     </Tr>
                                 </Tbody>
@@ -1462,12 +1546,10 @@ const Purchase = () => {
                                         </Thead>
                                         <Tbody>
                                             {batchList.map((b, bi) => (
-                                                <Tr
-                                                    key={bi}
+                                                <Tr key={bi}
                                                     _hover={{ bg: "#e4ede6", cursor: "pointer" }}
                                                     bg={godownModal.batch_no === b.batch_no ? "#d4e8d8" : bi % 2 === 0 ? "white" : "#f7faf8"}
-                                                    onClick={() => handleBatchSelect(b.batch_no)}
-                                                >
+                                                    onClick={() => handleBatchSelect(b.batch_no)} >
                                                     <Td {...tdStyle} fontSize="11px" fontWeight="600" color="#2d5a3d">{b.batch_no}</Td>
                                                     <Td {...tdStyle} fontSize="11px" textAlign="right">{b.total_qty ?? b.qty}</Td>
                                                     <Td {...tdStyle} fontSize="11px">{b.godown_name}</Td>
@@ -1488,16 +1570,10 @@ const Purchase = () => {
                                 Cancel
                             </Button>
                             <Button bg="#237086"
-                                fontWeight="500"
-                                fontSize="14px"
-                                color="white"
-                                _hover={{
-                                    bg: "#1B5A6B",
-                                }}
+                                fontWeight="500" fontSize="14px"
+                                color="white" _hover={{ bg: "#1B5A6B", }}
                                 px={8} size="sm"
-                                borderRadius="12px"
-                                onClick={handleGodownSave}
-                            >
+                                borderRadius="12px" onClick={handleGodownSave} >
                                 SAVE
                             </Button>
                         </Flex>

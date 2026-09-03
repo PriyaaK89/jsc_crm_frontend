@@ -45,14 +45,14 @@ function DistributorDocuments({ onChange, formData, onSendData }) {
   const [shopPreview, setShopPreview] = useState([]);
   const [chequePreview, setChequePreview] = useState([]);
 
-  // ✅ MULTI FILE UPLOAD WITH LIMIT
+  //  MULTI FILE UPLOAD WITH LIMIT
   const handleMultiUpload = (e, field) => {
     const files = Array.from(e.target.files);
 
     setDocs((prev) => {
       let updatedFiles = [...(prev[field] || []), ...files];
 
-      // 🚀 LIMIT LOGIC
+      //  LIMIT LOGIC
       if (field === "shop_image") {
         if (updatedFiles.length > 4) {
           alert("Maximum 4 shop images allowed");
@@ -77,7 +77,7 @@ function DistributorDocuments({ onChange, formData, onSendData }) {
     });
   };
 
-  // ✅ SINGLE FILE
+  //  SINGLE FILE
   const handleSingleUpload = (e, field) => {
     const file = e.target.files[0];
 
@@ -90,7 +90,7 @@ function DistributorDocuments({ onChange, formData, onSendData }) {
     onChange && onChange(updated);
   };
 
-  // ✅ PREVIEW SHOP
+  //  PREVIEW SHOP
   useEffect(() => {
     const urls = docs.shop_image.map(file => URL.createObjectURL(file));
     setShopPreview(urls);
@@ -98,7 +98,7 @@ function DistributorDocuments({ onChange, formData, onSendData }) {
     return () => urls.forEach(url => URL.revokeObjectURL(url));
   }, [docs.shop_image]);
 
-  // ✅ PREVIEW CHEQUE
+  //  PREVIEW CHEQUE
   useEffect(() => {
     const urls = docs.cheque_photo.map(file => URL.createObjectURL(file));
     setChequePreview(urls);
@@ -106,13 +106,13 @@ function DistributorDocuments({ onChange, formData, onSendData }) {
     return () => urls.forEach(url => URL.revokeObjectURL(url));
   }, [docs.cheque_photo]);
 
-  // ✅ SEND DATA TO PARENT
+  //  SEND DATA TO PARENT
   useEffect(() => {
     onSendData && onSendData(docs);
   }, [docs]);
 
   return (
-    <Box border="1px solid #313131" mt={5} borderRadius="lg">
+    <Box border="1px solid #b6c0c9" mt={5} borderRadius="lg">
 
       <HStack bg="#e9f2ff" borderBottom="1px solid #d9e5f8" borderTopRadius="lg" pl={6}>
         <Breadcrumb py={3}>

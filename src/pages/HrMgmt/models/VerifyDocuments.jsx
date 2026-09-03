@@ -40,15 +40,28 @@ const VerifyDocumentModel = ({ isVerifyModelOpen, onVerifyModalClose, selectedId
     const response = await API.get(
       `${API_ENDPOINTS.document_status}/${legID}`
     );
-    if (response?.data?.status === 1) {
-      getEmployeeDocs();
-    }
 
   } catch (error) {
     console.log("Document status error", error);
   }
 };
+useEffect(() => {
+  if (!documents.length) return;
 
+  documents.forEach((doc) => {
+    const isLeegalityDoc =
+      doc.document_type === "offer_letter";
+
+    const isPending =
+      !["signed", "completed"].includes(doc.signing_status);
+
+      console.log(isPending, "pending1234")
+
+    if (isLeegalityDoc && isPending && doc.leegality_document_id) {
+      checkDocumentStatus(doc.leegality_document_id);
+    }
+  });
+}, [documents]);
   // -------get sattus color----
   const getStatusColor = (status) => {
     if (status === "signed") return "green";
@@ -250,11 +263,11 @@ useEffect(() => {
       <ModalOverlay />
 
       <ModalContent width={{base: "90%",sm: "90%", md: "100%"}}>
-        <Flex bg="#2e89c1" padding="12px" borderRadius="5px 5px 0px 0px">
-          <Text fontSize={{sm:"14px",md: "18px", lg:"18px"}} color="white" marginBottom="0px" mb="0" fontWeight="600" >
+        <Flex bg="#327dab" padding="6px 12px" borderRadius="5px 5px 0px 0px">
+          <Text fontSize={{sm:"13px",md: "14px", lg:"14px"}} color="white" marginBottom="0px" mb="0" fontWeight="500" >
             Employee Document ({empName})
           </Text>
-        <ModalCloseButton color="white"/>
+        <ModalCloseButton color="white" top={0.5} right={0.5}/>
         </Flex>
 
         <ModalBody p={6}>
@@ -276,7 +289,7 @@ useEffect(() => {
                   <Flex align={{base: "start",md:"center"}} gap="12px">
                     <FaFilePdf size="24px" color="#E53E3E" style={{marginTop: "4px"}} />
                     <Box>
-                      <Text fontWeight="600" textTransform="capitalize" fontSize={{base: "14px", md: "16px"}}>
+                      <Text fontWeight="600" color='#4d4d4d' textTransform="capitalize" fontSize={{base: "12px", md: "14px"}}>
                         {doc.document_type.replace("_", " ")}
                       </Text>
 

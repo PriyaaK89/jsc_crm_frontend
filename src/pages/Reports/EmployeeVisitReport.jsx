@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink,
-  Button, FormControl, FormLabel, Heading,
-  Input, Select, HStack, SimpleGrid, InputGroup,
-  InputRightElement, Modal, ModalOverlay, ModalContent,
+  Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, FormControl, FormLabel, Heading,
+  Input, Select, HStack, SimpleGrid, InputGroup, InputRightElement, Modal, ModalOverlay, ModalContent,
   ModalHeader, ModalBody, ModalCloseButton, useDisclosure,
-  Table, Thead, Tbody, Tr, Th, Td, Img,
-  Flex, Spinner, Text,
-  TableContainer, Image,
-  VStack
-} from "@chakra-ui/react";
+  Table, Thead, Tbody, Tr, Th, Td, Img, Flex, Spinner, Text, TableContainer, Image, VStack } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
 import { ViewIcon } from "@chakra-ui/icons";
 import { RepeatIcon } from "@chakra-ui/icons";
@@ -35,6 +29,10 @@ function EmployeeVisitReport() {
   const [issOpen, setIssOpen] = useState(false);
   const [selectedComment, setSelectedComment] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
+  const [sortConfig, setSortConfig] = useState({
+  key: "",
+  direction: "asc",
+});
 
   const [filters, setFilters] = useState({
     user_id: "",
@@ -45,15 +43,74 @@ function EmployeeVisitReport() {
   });
   const [pagination, setPagination] = useState({
     page: 1,
-    limit: 10,
+    limit: 20,
     total_pages: 1,
     total: 0,
   });
 
+
+  const handleSort = (key) => {
+  let direction = "asc";
+
+  if (
+    sortConfig.key === key &&
+    sortConfig.direction === "asc"
+  ) {
+    direction = "desc";
+  }
+
+  setSortConfig({
+    key,
+    direction,
+  });
+};
+
+const sortedVisits = React.useMemo(() => {
+  if (!sortConfig.key) return visits;
+
+  return [...visits].sort((a, b) => {
+    let first = a[sortConfig.key];
+    let second = b[sortConfig.key];
+
+    if (first === null || first === undefined) first = "";
+    if (second === null || second === undefined) second = "";
+
+    if (typeof first === "string") first = first.toLowerCase();
+    if (typeof second === "string") second = second.toLowerCase();
+
+    if (first < second) {
+      return sortConfig.direction === "asc" ? -1 : 1;
+    }
+
+    if (first > second) {
+      return sortConfig.direction === "asc" ? 1 : -1;
+    }
+
+    return 0;
+  });
+}, [visits, sortConfig]);
+
+const columns = [
+  { label: "Ser.No.", key: null },
+  { label: "Employee", key: "emp_name" },
+  { label: "Visit type", key: "visit_type" },
+  { label: "Visit Purpose", key: "visit_purpose" },
+  { label: "comment", key: "comment" },
+  { label: "Reminder Date", key: "reminder_date" },
+  { label: "Visit Date", key: "created_at" },
+  { label: "Customer Name", key: "customer_name" },
+  { label: "Firm Name", key: "firm_name" },
+  { label: "Firm Address", key: "firm_address" },
+  { label: "Contact No.", key: "contact_number" },
+  { label: "Address", key: "address" },
+  { label: "Area.", key: "area" },
+  { label: "District", key: "district" },
+  { label: "pincode.", key: "pincode" },
+  { label: "Image", key: null },
+];
   //  Fetch API
   // const fetchVisits = async (targetPage = pagination.page) => {
   const fetchVisits = async () => {
-
     setLoading(true);
     try {
       const res = await API.get(API_ENDPOINTS.get_emp_visit_report, {
@@ -66,8 +123,6 @@ function EmployeeVisitReport() {
           user_id: filters.user_id || null,
         },
       });
-
-      //       //  Validate response
       if (res.status === 200) {
         setVisits(res.data.data);
         setPagination({
@@ -76,19 +131,14 @@ function EmployeeVisitReport() {
           total_pages: res.data.totalPages,
           total: res.data.total
         })
-
       }
       else {
         console.warn("Unexpected API response:", res);
         setVisits([]);
       }
-
     } catch (error) {
       console.error("Fetch Visits Error:", error);
-
-      //  Optional: show user-friendly error
       setVisits([]);
-
     } finally {
       setLoading(false);
     }
@@ -199,7 +249,7 @@ function EmployeeVisitReport() {
 
 
         <FormControl >
-          <FormLabel>Search Employee/Contact No.</FormLabel>
+          <FormLabel>Search By Name, Phone No</FormLabel>
 
           <InputGroup>
             <Input
@@ -262,20 +312,29 @@ function EmployeeVisitReport() {
                 background: "#E8E8E8", borderRadius: "4px",
               },
             }}>
-              <Table variant="striped" size="sm" minW={{ base: "2000px", md: "2900px" }} overflow="auto">
+              <Table variant="striped" size="sm" minW={{ base: "2000px", md: "2900px" }} overflow="auto" className="productsTable">
 
                 <Thead>
                   <Tr>
-                    {["Ser.No.", "Employee", "Visit type", "Visit Purpose", "comment", "Reminder Date", "Visit Date", "Customer Name", "Firm Name", "Firm Address", "Contact No.", "Address", "Area.", "District", "pincode.", "Image",].map((h) => (
-                      <Th key={h} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize'
-                        width={tablehead[h] || "100px"} >
+                    {/* {["Ser.No.", "Employee", "Visit type", "Visit Purpose", "comment", "Reminder Date", "Visit Date", "Customer Name", "Firm Name", "Firm Address", "Contact No.", "Address", "Area.", "District", "pincode.", "Image",].map((h) => ( */}
+                    {columns.map((col) => (
+                     <Th
+  key={col.label}
+  width={tablehead[col.label] || "100px"}
+>
+  <Flex align="center" gap={2}>
+    <Text>{col.label}</Text>
 
-                        <Flex gap={2} pt={3} pb={3} spacing="300px">
-                          <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' overflow="hidden" >{h}</Text>
-
-                          <Img src={sort_icon} />
-                        </Flex>
-                      </Th>
+    {col.key && (
+      <Img
+        src={sort_icon}
+        cursor="pointer"
+        w="14px"
+        onClick={() => handleSort(col.key)}
+      />
+    )}
+  </Flex>
+</Th>
                     ))}
                   </Tr>
                 </Thead>
@@ -288,7 +347,7 @@ function EmployeeVisitReport() {
                       </Td>
                     </Tr>
                   ) : (
-                    visits.map((item, index) => (
+                    sortedVisits.map((item, index) => (
                       <Tr key={item.id}>
                         <Td>{(pagination.page - 1) * pagination.limit + index + 1}</Td>
                         <Td>{item.emp_name}</Td>

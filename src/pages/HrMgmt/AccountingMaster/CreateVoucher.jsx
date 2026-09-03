@@ -266,23 +266,23 @@ const handleChange = (e) => {
                 CONTRA
               </option>
 
-              <option value="CREDIT NOTE">
+              <option value="CREDIT_NOTE">
                 CREDIT NOTE
               </option>
 
-              <option value="DEBIT NOTE">
+              <option value="DEBIT_NOTE">
                 DEBIT NOTE
               </option>
 
-              <option value="DELIVERY NOTE">
+              <option value="DELIVERY_NOTE">
                 DELIVERY NOTE
               </option>
 
-              <option value="JOB WORK IN ORDER">
+              <option value="JOB_WORK_IN_ORDER">
                 JOB WORK IN ORDER
               </option>
 
-              <option value="JOB WORK OUT ORDER">
+              <option value="JOB_WORK_OUT_ORDER">
                 JOB WORK OUT ORDER
               </option>
 
@@ -290,11 +290,11 @@ const handleChange = (e) => {
                 JOURNAL
               </option>
 
-              <option value="MATERIAL IN">
+              <option value="MATERIAL_IN">
                 MATERIAL IN
               </option>
 
-              <option value="MATERIAL OUT">
+              <option value="MATERIAL_OUT">
                 MATERIAL OUT
               </option>
 
@@ -310,7 +310,7 @@ const handleChange = (e) => {
                 PAYROLL
               </option>
 
-              <option value="PHYSICAL STOCK">
+              <option value="PHYSICAL_STOCK">
                 PHYSICAL STOCK
               </option>
 
@@ -318,7 +318,7 @@ const handleChange = (e) => {
                 PURCHASE
               </option>
 
-              <option value="PURCHASE ORDER">
+              <option value="PURCHASE_ORDER">
                 PURCHASE ORDER
               </option>
 
@@ -326,19 +326,19 @@ const handleChange = (e) => {
                 RECEIPT
               </option>
 
-              <option value="RECEIPT NOTE">
+              <option value="RECEIPT_NOTE">
                 RECEIPT NOTE
               </option>
 
-              <option value="REJECTIONS IN">
+              <option value="REJECTIONS_IN">
                 REJECTIONS IN
               </option>
 
-              <option value="REJECTIONS OUT">
+              <option value="REJECTIONS_OUT">
                 REJECTIONS OUT
               </option>
 
-              <option value="REVERSING JOURNAL">
+              <option value="REVERSING_JOURNAL">
                 REVERSING JOURNAL
               </option>
 

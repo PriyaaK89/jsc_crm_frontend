@@ -220,7 +220,7 @@ const UploadEmployeeExpensives = () => {
               <Select
                 placeholder="Select User"
                 value={formData.user_id}
-                size="md" borderRadius="md"
+                size="md" borderRadius="md" fontSize="14px"
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
@@ -285,7 +285,7 @@ const UploadEmployeeExpensives = () => {
           </SimpleGrid>
           <Flex justifyContent="flex-end" >
             <Button
-              colorScheme="blue"
+              colorScheme="blue" fontWeight="500"
               isLoading={loading}
               onClick={handleSubmit}
             >
@@ -299,16 +299,14 @@ const UploadEmployeeExpensives = () => {
           flexDirection={{ base: "column", md: "column", lg: "row" }}
           align={{ base: "stretch", md: "stretch", lg: "center" }}
           mt={10}
-          px={6}
-          py={4}
-          gap={4}
+          justifyContent="space-between" alignItems="end"
         >
 
-          <Text flexShrink={0} mr={{ base: 0, md: 0, lg: 3 }} mt={{ base: 2, md: 4 }} fontWeight="600" bg="#F3F4F6" px={2} borderRadius="md" p={2}>
+          <Text flexShrink={0} mr={{ base: 0, md: 0, lg: 3 }} mt={{ base: 2, md: 4 }} fontWeight="500" fontSize="12px" width="250px" color="blue.600" >
             Allocate Expense Table
           </Text>
           {/* <Flex> */}
-          <Flex flexDirection={{ base: "column", md: "column", lg: "row" }} ml={{ base: "0", md: "0", lg: "auto" }} gap={3} alignItems="center">
+          <Flex flexDirection={{ base: "column", md: "column", lg: "row" }} ml={{ base: "0", md: "0", lg: "auto" }} gap={1} alignItems="center">
 
 
             <FormControl>
@@ -352,7 +350,7 @@ const UploadEmployeeExpensives = () => {
                   <FiSearch fontSize='20px' />
                 </Box>
 
-                <Input placeholder="Search by Employee Name" border='1px solid #CFD3D4' borderRadius='32px' _placeholder={{ fontSize: '12px', color: '#8C8C91' }} boxShadow='0px 2px 2px #e5e5e5'
+                <Input placeholder="Search by Employee Name" border='1px solid #CFD3D4' _placeholder={{ fontSize: '12px', color: '#8C8C91' }}
                   value={search} onChange={(e) => setSearch(e.target.value)} />
               </InputGroup>
             </Box>
@@ -391,10 +389,10 @@ const UploadEmployeeExpensives = () => {
                     <Tr>
                       {
                         tableHeader.map((header, index) => (
-                          <Th key={index} fontSize='14px' fontWeight='500' color='#2C2D33' textTransform='capitalize' whiteSpace="nowrap" width={header[tableWidth]}>
+                          <Th key={index} fontWeight='500' color='#2C2D33' textTransform='capitalize' whiteSpace="nowrap" width={header[tableWidth]}>
 
                             <Flex alignItems="center" gap='7px'>
-                              <Text fontSize='14px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' >
+                              <Text fontSize='13px' color='#2C2D33' fontWeight='400' textTransform='capitalize' fontFamily='InterRegular' >
                                 {header}
                               </Text>
                               <Img src={sort_icon} alt='sort_icon' />
@@ -416,7 +414,7 @@ const UploadEmployeeExpensives = () => {
                         <Td>{admin.allocation.PETROL_DIESEL}</Td>
                         <Td>{admin.allocation.OTHER}</Td>
                         <Td>
-                          <Button colorScheme="blue" onClick={() => {
+                          <Button colorScheme="teal" fontSize="12px" fontWeight="500" height="26px" padding="0px 1rem" onClick={() => {
                             setSelectData(admin);
                             onOpen();
                           }}>View</Button>

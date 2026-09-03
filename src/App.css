@@ -2,7 +2,17 @@
     padding: 0;
     margin: 0;
     font-family: 'InterRegular';
-   
+}
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  /* overflow-x: hidden; */
+}
+
+* {
+  box-sizing: border-box;
 }
 
 @font-face{
@@ -49,30 +59,34 @@
 }
 
 .productsTable tbody tr td{
-    color: #6E7079;
-    font-size: 13px;
+    color: #4d4e4e;
+    font-size: 12px;
     font-family: 'InterRegular';
-    border-bottom: 2px solid #F4F4F4;
-    border-top: 2px solid #F4F4F4;
-    padding: 4px 20px;
+    border-bottom: 2px solid #e6e6e6;
+    border-top: 2px solid #e6e6e6;
+    padding: 4px 15px;
     height: 50px;
 
 }
 .productsTable tbody{
-  border-left: 1px solid #F4F4F4;
-  border-right: 1px solid #F4F4F4;
+  border-left: 1px solid #e6e6e6;
+  border-right: 1px solid #e6e6e6;
 
 }
 
 .productsTable Thead Tr Th{
-  padding: 4px 20px;
+  padding: 4px 18px;
   /* border-top: 1px solid #E1E2E9; */
-  border-bottom: 1px solid #E1E2E9;
+  border-bottom: 1px solid #e7e7e9;
   text-transform: capitalize;
 
 }
 .productsTable Thead{
-  height: 54px;
+  height: 52px;
+  border-top: 2px solid #e6e6e6;
+  border-left: 2px solid #e6e6e6;
+  border-right: 2px solid #e6e6e6;
+  border-radius: 8px;
 }
 
 .letter_align{
@@ -89,20 +103,6 @@
   font-size: 14px;
 }
 
-/* .pdf-page {
-  width: 210mm;
-  height: 296mm; 
-padding: 40px;
-  box-sizing: border-box;  
-  position: relative;
-  background: white;
-  overflow: hidden;  
-}
-.page-break {
-  page-break-before: always;
-  break-before: page;
-} */
-
 #agre-letter-preview {
   width: 210mm;
 }
@@ -110,7 +110,7 @@ padding: 40px;
 .pdf-page {
   width: 210mm;
   height: 296mm;
-  padding: 15mm;
+  padding: 11mm 15mm;
   box-sizing: border-box;
   background: white;
   position: relative;
@@ -229,12 +229,13 @@ height: 50px !important;
 }
 
 .submit_btn{
-  background: #237086 !important;
+  background: #357f94 !important;
   font-weight: 500 !important;
   font-size: 14px !important;
   color: white !important;
-  padding: 0px 54px !important;
+  padding: 0px 44px !important;
   border-radius: 12px !important;
+  text-transform: capitalize;
 }
 .submit_btn:hover{
   background: #1B5A6B !important;
@@ -276,8 +277,15 @@ height: 50px !important;
 }
 
 .material_mfg tbody tr td{
-  padding-top: 12px;
-  padding-bottom: 12px
+  padding-top: 9px;
+  padding-bottom: 9px;
+  padding-left: 3px !important;
+  padding-right: 3px !important;
+}
+
+.material_mfg tbody tr td input{
+  padding: 8px 6px !important;
+  font-size: 14px !important;
 }
 
 .stock_transfer_table tbody tr td{
@@ -308,4 +316,9 @@ height: 50px !important;
 .font-serif p{
   font-family: serif;
   color: black;
+}
+
+.chakra-button{
+  /* font-size: 14px !important; */
+  font-weight: 500 !important;
 }

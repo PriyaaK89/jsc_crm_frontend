@@ -431,7 +431,7 @@ function DistributorAgreement() {
       }
 
 
-      // ✅ 2. Partners (files + data separate)
+      //  2. Partners (files + data separate)
       const partnersData = partners.map((p, index) => {
         const { partner_photo, ...rest } = p;
 
@@ -469,7 +469,7 @@ function DistributorAgreement() {
         });
       }
 
-      // ✅ 5. API Call
+      //  5. API Call
       const response = await API.put(
         `${API_ENDPOINTS.update_distributor}/${id}`,
         formDataToSend,
@@ -480,7 +480,7 @@ function DistributorAgreement() {
         }
       );
 
-      // ✅ 6. Success
+      //  6. Success
       if (response.status === 200) {
         toast({
           title: "Distributor updated successfully",

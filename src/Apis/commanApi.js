@@ -1,16 +1,9 @@
-
-
-// ================= STOCK ITEMS =================
-
 import API from "../services/api";
 import { API_ENDPOINTS } from "../services/endpoints";
 
 export const fetchStockItemDropdown = async () => {
   try {
-    const response = await API.get(
-      API_ENDPOINTS.GET_STOCK_ITEM_DROPDOWN
-    );
-
+    const response = await API.get(API_ENDPOINTS.GET_STOCK_ITEM_DROPDOWN);
     return response?.data?.data || [];
   } catch (error) {
     console.log("Error fetching stock items", error);
@@ -18,13 +11,32 @@ export const fetchStockItemDropdown = async () => {
   }
 };
 
-// ================= GODOWN =================
+// ================= NEXT VOUCHER NO =================
+
+export const fetchNextVoucherNo = async (voucherType) => {
+    if (!voucherType ) {
+    return null;
+  }
+
+  try {
+    const response = await API.get(
+      `${API_ENDPOINTS.GET_NEXTVOUCHER_NO}?voucher_type=${voucherType}`,
+    );
+
+    return {
+      voucher_no: response?.data?.voucher_no,
+      voucher_type_id: response?.data?.voucher_type_id,
+      nextSequence: response?.data?.nextSequence,
+    };
+  } catch (err) {
+   throw err;
+}
+};
+
 
 export const fetchGodownList = async () => {
   try {
-    const response = await API.get(
-      API_ENDPOINTS.godown_list
-    );
+    const response = await API.get(API_ENDPOINTS.godown_list);
 
     return response?.data?.data || [];
   } catch (error) {
@@ -37,9 +49,7 @@ export const fetchGodownList = async () => {
 
 export const fetchLedgerDropdown = async () => {
   try {
-    const response = await API.get(
-      API_ENDPOINTS.GET_LEDGER_DROPDOWN
-    );
+    const response = await API.get(API_ENDPOINTS.GET_LEDGER_DROPDOWN);
 
     return response?.data?.data || [];
   } catch (error) {
@@ -48,17 +58,25 @@ export const fetchLedgerDropdown = async () => {
   }
 };
 
+export const fetchAssignedLedgerDropdown = async () => {
+    try {
+      const response = await API.get(API_ENDPOINTS.GET_ASSIGNED_LEDGERS_LIST);
+      return response?.data?.data || [];
+      // if (res.status === 200) setLedger(res.data.data);
+    } catch (err) {
+      console.error("Error fetching assigned ledgers", err);
+      return [];
+    }
+  };
+
 // ================= AVAILABLE STOCK =================
 
-export const fetchAvailableStock = async ({
-  itemId,
-  godownId,
-}) => {
+export const fetchAvailableStock = async ({ itemId, godownId }) => {
   if (!itemId || !godownId) return 0;
 
   try {
     const response = await API.get(
-      `${API_ENDPOINTS.GET_AVAILABLE_QTY_OF_STOCK}?item_id=${itemId}&godown_id=${godownId}`
+      `${API_ENDPOINTS.GET_AVAILABLE_QTY_OF_STOCK}?item_id=${itemId}&godown_id=${godownId}`,
     );
 
     return response?.data?.data?.available_stock || 0;
@@ -70,15 +88,12 @@ export const fetchAvailableStock = async ({
 
 // ================= BATCHES =================
 
-export const fetchBatches = async (
-  itemId,
-  godownId
-) => {
+export const fetchBatches = async (itemId, godownId) => {
   if (!itemId || !godownId) return [];
 
   try {
     const response = await API.get(
-      `${API_ENDPOINTS.GET_BATCH_BY_STOCK_ITEM_ID}?item_id=${itemId}&godown_id=${godownId}`
+      `${API_ENDPOINTS.GET_BATCH_BY_STOCK_ITEM_ID}?item_id=${itemId}&godown_id=${godownId}`,
     );
 
     return response?.data?.data || [];
@@ -86,107 +101,66 @@ export const fetchBatches = async (
     console.log("Batch fetch error", error);
     return [];
   }
-
-
 };
 
 // ================= PURCHASE LEDGER =================
 
-export const fetchPurchaseLedgerDropdown =
-  async () => {
-    try {
+export const fetchPurchaseLedgerDropdown = async () => {
+  try {
+    const response = await API.get(API_ENDPOINTS.GET_PURCHASE_LEDGER_DROPDOWN);
 
-      const response = await API.get(
-        API_ENDPOINTS.GET_PURCHASE_LEDGER_DROPDOWN
-      );
+    return response?.data?.data || [];
+  } catch (error) {
+    console.log("Error fetching purchase ledger", error);
 
-      return response?.data?.data || [];
-
-    } catch (error) {
-
-      console.log(
-        "Error fetching purchase ledger",
-        error
-      );
-
-      return [];
-    }
-  };
-
+    return [];
+  }
+};
 
 // ================= SUPPLIER DROPDOWN =================
 
-export const fetchSupplierDropdown =
-  async () => {
-    try {
+export const fetchSupplierDropdown = async () => {
+  try {
+    const response = await API.get(API_ENDPOINTS.GET_SUPPLIER_DROPDOWN);
 
-      const response = await API.get(
-        API_ENDPOINTS.GET_SUPPLIER_DROPDOWN
-      );
+    return response?.data?.data || [];
+  } catch (error) {
+    console.log("Error fetching supplier dropdown", error);
 
-      return response?.data?.data || [];
-
-    } catch (error) {
-
-      console.log(
-        "Error fetching supplier dropdown",
-        error
-      );
-
-      return [];
-    }
-  };
-
-  export   const fetchStockItemDetailsByID = async (itemId) => {
-    if (!itemId) return null;
-    try {
-      const res = await API.get(`${API_ENDPOINTS.getStockItemById}/${itemId}`);
-      if (res?.status === 200) {
-        const d = res?.data?.data;
-        return {
-  unit_name: d?.base_unit_name || "",
-  unit_id: d?.unit_id || "",
-  rate: Number(d?.opening_stock?.rate || 0),
-  available_qty: Number(d?.opening_stock?.quantity || 0),
-  alt_unit_qty: d?.alternative_unit_value || "",
-  alt_unit_name: d?.alternative_unit_name || "",
-
-  gst_applicable: Number(d?.gst_applicable || 0),
-  rate_of_duty: Number(d?.rate_of_duty || 0),
+    return [];
+  }
 };
-      }
-    } catch (err) {
-      console.error("Stock item details fetch error", err);
+
+export const fetchStockItemDetailsByID = async (itemId) => {
+  if (!itemId) return null;
+  try {
+    const res = await API.get(`${API_ENDPOINTS.getStockItemById}/${itemId}`);
+    if (res?.status === 200) {
+      const d = res?.data?.data;
+      return {
+        unit_name: d?.base_unit_name || "",
+        unit_id: d?.unit_id || "",
+        rate: Number(d?.opening_stock?.rate || 0),
+        available_qty: Number(d?.opening_stock?.quantity || 0),
+        alt_unit_id: d?.alt_unit_id || "",
+        alt_unit_qty: d?.alternative_unit_value || "",
+        alt_unit_name: d?.alternative_unit_name || "",
+        bulk_unit_id: d?.bulk_unit_id || "",
+        bulk_unit_value: d?.bulk_unit_value || "",
+        bulk_unit_name: d?.bulk_unit_name || "",
+        calculated_alt_unit: d?.calculated_alt_unit || "",
+        supercash_price: Number(d?.opening_stock?.supercash_price || 0),
+        gst_applicable: Number(d?.gst_applicable || 0),
+        rate_of_duty: Number(d?.rate_of_duty || 0),
+      };
     }
-    return null;
-  };
-
-
-// ================= NEXT VOUCHER NO =================
-
-export const fetchNextVoucherNo =
-  async (voucherType) => {
-
-    if (!voucherType) return "";
-
-    try {
-
-      const response = await API.get(
-        `${API_ENDPOINTS.GET_NEXTVOUCHER_NO}?voucher_type=${voucherType}`
-      );
-
-      return response?.data?.voucher_no || "";
-
-    } catch (error) {
-
-      console.log(
-        "Error fetching voucher no",
-        error
-      );
-
-      return "";
-    }
+  } catch (err) {
+    console.error("Stock item details fetch error", err);
+  }
+  return null;
 };
+
+
 
 export const fetchLedgerDetailsByID = async (ledgerId) => {
   if (!ledgerId) return null;
@@ -199,6 +173,9 @@ export const fetchLedgerDetailsByID = async (ledgerId) => {
         balance_type: d?.balance_type || "Dr",
         security_amount: d?.interest_configs?.[0]?.security_amount || "0.00",
         credit_limit: d?.credit_limit || "0.00",
+        ledger_name: d?.ledger_name,
+         employee_under: d.employee_under,
+    employee_under_name: d.employee_under_name,
       };
     }
   } catch (err) {
@@ -207,23 +184,51 @@ export const fetchLedgerDetailsByID = async (ledgerId) => {
   return null;
 };
 
-
 // ================= CREATE PURCHASE =================
 
-export const createPurchase =
-  async (payload) => {
+export const createPurchase = async (payload) => {
+  try {
+    const response = await API.post(API_ENDPOINTS.CREATE_PURCHASE, payload,   {
+            headers: {
+                "Content-Type":
+                    "multipart/form-data",
+            },
+        });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
-    try {
+export const fetchPendingBills = async (
+  ledgerId
+) => {
 
-      const response = await API.post(
-        API_ENDPOINTS.CREATE_PURCHASE,
-        payload
-      );
+  if (!ledgerId) return [];
+  try {
+    const response = await API.get( `${API_ENDPOINTS.GET_PENDING_BILLS}/${ledgerId}` );
+    return response?.data?.data || [];
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+};
 
-      return response.data;
+export const createReceipt = async (
+  payload
+) => {
 
-    } catch (error) {
+  try {
 
-      throw error;
-    }
-  };
+    const response = await API.post(
+      API_ENDPOINTS.CREATE_RECEIPT,
+      payload
+    );
+
+    return response.data;
+
+  } catch (error) {
+
+    throw error;
+  }
+};

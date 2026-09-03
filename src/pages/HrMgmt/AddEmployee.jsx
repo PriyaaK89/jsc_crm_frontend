@@ -133,6 +133,7 @@ const AddEmployee = () => {
     working_area: "",
     login_time: "",
     logout_time: "",
+    visit_upto: "",
     pf: "",
     esi: "",
     approver_id: "",
@@ -959,6 +960,11 @@ const AddEmployee = () => {
             </FormControl>
 
             <FormControl>
+              <FormLabel {...lableStyles}>Visit UpTo</FormLabel>
+              <Input type="time" name="visit_upto" onChange={handleChange} value={formData.visit_upto}/>
+            </FormControl>
+
+            <FormControl>
               <FormLabel {...lableStyles}>Attendance Time</FormLabel>
               <Input
                 name="attendance_time"
@@ -982,16 +988,18 @@ const AddEmployee = () => {
               <Input name="esi" onChange={handleChange} />
             </FormControl>
           </SimpleGrid>
-
+<Box textAlign="center" mt={1}>
           <Button
-            colorScheme="blue"
-            alignSelf="center"
+             bg="#237086" fontWeight="500" 
+                fontSize="14px" color="white"
+                _hover={{ bg: "#1B5A6B" }}
+                 px={12} borderRadius="12px"
             isLoading={loading}
             onClick={handleSubmit}
           >
             Create User
           </Button>
-
+</Box>
 
 
           {/* <DocumentUploadTable/> */}

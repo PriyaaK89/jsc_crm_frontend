@@ -7,6 +7,7 @@ import {
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import CustomDatePicker from "../../components/common/CustomDatepicker";
 
 const BatchFields = ({
   batchOptions,
@@ -442,6 +443,12 @@ const MaterialManufacturing = ({
   const effectiveRate = producedQty > 0 ? allocationToPrimary / producedQty : 0;
   const effectiveQty = producedQty;
 
+  const RequiredMark = () => (
+  <Text as="span" color="red.500" ml="2px">
+    *
+  </Text>
+);
+
   /* ════════════════════════════════════════════════════════════
      RESET / SUBMIT
   ════════════════════════════════════════════════════════════ */
@@ -628,18 +635,20 @@ if (invalidCoproductRow) {
           {/* Date */}
           <GridItem>
             <Text mb="2px" fontSize="12px" fontWeight="medium" color="gray.600">
-              Select Date
+              Select Date<RequiredMark />
             </Text>
-            <Input
-              type="date" name="entry_date"
-              value={formData.entry_date} onChange={handleFormChange} sx={inputSx}
-            />
+            {/* <Input type="date" name="entry_date" value={formData.entry_date} onChange={handleFormChange} sx={inputSx} /> */}
+            <CustomDatePicker
+  name="entry_date"
+  value={formData.entry_date}
+  onChange={(val) => handleFormChange({ target: { name: "entry_date", value: val } })}
+/>
           </GridItem>
 
           {/* Finished Item */}
           <GridItem>
             <Text mb="2px" fontSize="12px" fontWeight="medium" color="gray.600">
-              Name of Product
+              Name of Product<RequiredMark />
             </Text>
             <Select
               name="finished_item_id" onFocus={onRefreshStockItems}
@@ -655,7 +664,7 @@ if (invalidCoproductRow) {
           {/* Godown */}
           <GridItem>
             <Text mb="2px" fontSize="12px" fontWeight="medium" color="gray.600">
-              Godown
+              Godown<RequiredMark />
             </Text>
             <Select
               name="finished_godown_id"
@@ -671,7 +680,7 @@ if (invalidCoproductRow) {
           {/* Qty + Unit (unit fetched from API) */}
           <GridItem>
             <Text mb="2px" fontSize="12px" fontWeight="medium" color="gray.600">
-              Qty
+              Qty<RequiredMark />
             </Text>
             <Flex gap={2}>
               <Input
@@ -719,19 +728,23 @@ if (invalidCoproductRow) {
           {/* MFG Date */}
           <GridItem>
             <Text mb="2px" fontSize="12px" fontWeight="medium" color="gray.600">Mfg Date</Text>
-            <Input
-              type="date" name="mfg_date"
-              value={formData.mfg_date} onChange={handleFormChange} sx={inputSx}
-            />
+            {/* <Input type="date" name="mfg_date" value={formData.mfg_date} onChange={handleFormChange} sx={inputSx} /> */}
+            <CustomDatePicker
+  name="mfg_date"
+  value={formData.mfg_date}
+  onChange={(val) => handleFormChange({ target: { name: "mfg_date", value: val } })}
+/>
           </GridItem>
 
           {/* Expiry Date */}
           <GridItem>
             <Text mb="2px" fontSize="12px" fontWeight="medium" color="gray.600">Exp Date</Text>
-            <Input
-              type="date" name="expiry_date"
-              value={formData.expiry_date} onChange={handleFormChange} sx={inputSx}
-            />
+            {/* <Input type="date" name="expiry_date" value={formData.expiry_date} onChange={handleFormChange} sx={inputSx} /> */}
+            <CustomDatePicker
+  name="expiry_date"
+  value={formData.expiry_date}
+  onChange={(val) => handleFormChange({ target: { name: "expiry_date", value: val } })}
+/>
           </GridItem>
         </Grid>
       </Box>

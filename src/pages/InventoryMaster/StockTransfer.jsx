@@ -137,6 +137,16 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
     return 0;
   };
 
+  const getSourceBatchesForItem = (sourceItems, itemId) => {
+  return sourceItems
+    .filter((s) => s.item_id === itemId && s.batch_no)
+    .map((s) => ({
+      batch_no: s.batch_no,
+      qty: s.qty,
+      rate: s.rate,
+    }));
+};
+
 
   const handleSourceChange = async (index, field, value) => {
     // Work on a fresh copy each time to avoid stale closure issues
@@ -267,109 +277,152 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
     });
 
     // ── ITEM SELECTED ──────────────────────────────────────────────────────
-    if (field === "item_id") {
-      setFormData((prev) => {
-        const updated = prev.destination_items.map((row, i) =>
-          i === index ? { ...row, loadingBatch: true } : row
-        );
-        return { ...prev, destination_items: updated };
-      });
+    // if (field === "item_id") {
+    //   setFormData((prev) => {
+    //     const updated = prev.destination_items.map((row, i) =>
+    //       i === index ? { ...row, loadingBatch: true } : row
+    //     );
+    //     return { ...prev, destination_items: updated };
+    //   });
 
-      const details = await fetchStockItemDetails(value);
+    //   const details = await fetchStockItemDetails(value);
 
-      setFormData((prev) => {
-        const updated = prev.destination_items.map((r, i) => {
-          if (i !== index) return r;
-          return {
-            ...r,
-            unit_id: details?.unit_id || "",
-            unit_name: details?.unit_name || "",
-            rate: r.rate || "",
-            loadingBatch: false,
-          };
-        });
-        return { ...prev, destination_items: updated };
-      });
+    //   setFormData((prev) => {
+    //     const updated = prev.destination_items.map((r, i) => {
+    //       if (i !== index) return r;
+    //       return {
+    //         ...r,
+    //         unit_id: details?.unit_id || "",
+    //         unit_name: details?.unit_name || "",
+    //         rate: r.rate || "",
+    //         loadingBatch: false,
+    //       };
+    //     });
+    //     return { ...prev, destination_items: updated };
+    //   });
 
-      // If godown already selected, fetch batches now
-      setFormData((prev) => {
-        const row = prev.destination_items[index];
-        if (row.godown_id) {
-          (async () => {
-            const batches = await fetchBatches(value, row.godown_id);
-            const stock = await fetchAvailableStock({
-              itemId: value,
-              godownId: row.godown_id,
-            });
-            setFormData((p) => {
-              const u = p.destination_items.map((r, i) =>
-                i === index
-                  ? { ...r, batches, available_qty: stock, batch_no: "", loadingBatch: false }
-                  : r
-              );
-              return { ...p, destination_items: u };
-            });
-          })();
-          return {
-            ...prev,
-            destination_items: prev.destination_items.map((r, i) =>
-              i === index ? { ...r, loadingBatch: true } : r
-            ),
-          };
-        }
-        return prev;
-      });
-    }
+    //   // If godown already selected, fetch batches now
+    //   setFormData((prev) => {
+    //     const row = prev.destination_items[index];
+    //     if (row.godown_id) {
+    //       (async () => {
+    //         const batches = await fetchBatches(value, row.godown_id);
+    //         const stock = await fetchAvailableStock({
+    //           itemId: value,
+    //           godownId: row.godown_id,
+    //         });
+    //         setFormData((p) => {
+    //           const u = p.destination_items.map((r, i) =>
+    //             i === index
+    //               ? { ...r, batches, available_qty: stock, batch_no: "", loadingBatch: false }
+    //               : r
+    //           );
+    //           return { ...p, destination_items: u };
+    //         });
+    //       })();
+    //       return {
+    //         ...prev,
+    //         destination_items: prev.destination_items.map((r, i) =>
+    //           i === index ? { ...r, loadingBatch: true } : r
+    //         ),
+    //       };
+    //     }
+    //     return prev;
+    //   });
+    // }
+
+    // ── ITEM SELECTED ──────────────────────────────────────────────────────
+if (field === "item_id") {
+  setFormData((prev) => {
+    const updated = prev.destination_items.map((row, i) =>
+      i === index ? { ...row, loadingBatch: true } : row
+    );
+    return { ...prev, destination_items: updated };
+  });
+
+  const details = await fetchStockItemDetails(value);
+
+  setFormData((prev) => {
+    const sourceBatches = getSourceBatchesForItem(prev.source_items, value);
+
+    const updated = prev.destination_items.map((r, i) => {
+      if (i !== index) return r;
+      return {
+        ...r,
+        unit_id: details?.unit_id || "",
+        unit_name: details?.unit_name || "",
+        rate: r.rate || "",
+        batches: sourceBatches,
+        batch_no: sourceBatches.length === 1 ? sourceBatches[0].batch_no : "",
+        available_qty: sourceBatches.length === 1 ? sourceBatches[0].qty : 0,
+        loadingBatch: false,
+      };
+    });
+    return { ...prev, destination_items: updated };
+  });
+}
 
     // ── GODOWN SELECTED ────────────────────────────────────────────────────
-    if (field === "godown_id") {
-      setFormData((prev) => {
-        const row = prev.destination_items[index];
-        if (row.item_id && value) {
-          (async () => {
-            const batches = await fetchBatches(row.item_id, value);
-            const stock = await fetchAvailableStock({
-              itemId: row.item_id,
-              godownId: value,
-            });
-            setFormData((p) => {
-              const u = p.destination_items.map((r, i) =>
-                i === index
-                  ? { ...r, batches, available_qty: stock, batch_no: "", loadingBatch: false }
-                  : r
-              );
-              return { ...p, destination_items: u };
-            });
-          })();
-          return {
-            ...prev,
-            destination_items: prev.destination_items.map((r, i) =>
-              i === index
-                ? { ...r, godown_id: value, loadingBatch: true }
-                : r
-            ),
-          };
-        }
-        return prev;
-      });
-    }
+    // if (field === "godown_id") {
+    //   setFormData((prev) => {
+    //     const row = prev.destination_items[index];
+    //     if (row.item_id && value) {
+    //       (async () => {
+    //         const batches = await fetchBatches(row.item_id, value);
+    //         const stock = await fetchAvailableStock({
+    //           itemId: row.item_id,
+    //           godownId: value,
+    //         });
+    //         setFormData((p) => {
+    //           const u = p.destination_items.map((r, i) =>
+    //             i === index
+    //               ? { ...r, batches, available_qty: stock, batch_no: "", loadingBatch: false }
+    //               : r
+    //           );
+    //           return { ...p, destination_items: u };
+    //         });
+    //       })();
+    //       return {
+    //         ...prev,
+    //         destination_items: prev.destination_items.map((r, i) =>
+    //           i === index
+    //             ? { ...r, godown_id: value, loadingBatch: true }
+    //             : r
+    //         ),
+    //       };
+    //     }
+    //     return prev;
+    //   });
+    // }
 
     // ── BATCH SELECTED ─────────────────────────────────────────────────────
-    if (field === "batch_no") {
-      const row = formData.destination_items[index];
-      const stock = await fetchAvailableStock({
-        itemId: row.item_id,
-        godownId: row.godown_id,
-        batchNo: value,
-      });
-      setFormData((prev) => {
-        const updated = prev.destination_items.map((r, i) =>
-          i === index ? { ...r, available_qty: stock } : r
-        );
-        return { ...prev, destination_items: updated };
-      });
-    }
-
+    // if (field === "batch_no") {
+    //   const row = formData.destination_items[index];
+    //   const stock = await fetchAvailableStock({
+    //     itemId: row.item_id,
+    //     godownId: row.godown_id,
+    //     batchNo: value,
+    //   });
+    //   setFormData((prev) => {
+    //     const updated = prev.destination_items.map((r, i) =>
+    //       i === index ? { ...r, available_qty: stock } : r
+    //     );
+    //     return { ...prev, destination_items: updated };
+    //   });
+    // }
+// ── BATCH SELECTED ─────────────────────────────────────────────────────
+if (field === "batch_no") {
+  setFormData((prev) => {
+    const row = prev.destination_items[index];
+    const match = prev.source_items.find(
+      (s) => s.item_id === row.item_id && s.batch_no === value
+    );
+    const updated = prev.destination_items.map((r, i) =>
+      i === index ? { ...r, available_qty: match?.qty || 0 } : r
+    );
+    return { ...prev, destination_items: updated };
+  });
+}
 
   };
 

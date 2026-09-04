@@ -102,7 +102,8 @@ const MaterialManufacturingLayout = () => {
                             stockItem={stockItem}
                             godown={godown}
                             ledger={ledger}
-                        />
+                            onRefreshStockItems={fetchStockItemDropdown}
+                            onRefreshLedgers={fetchLedgerDropdown}/>
                     </Box>
                 </Box>
             </Box>

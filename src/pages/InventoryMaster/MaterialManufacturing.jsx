@@ -132,6 +132,8 @@ const MaterialManufacturing = ({
   stockItem = [],
   godown = [],
   ledger = [],
+  onRefreshStockItems,
+  onRefreshLedgers
 }) => {
   const toast = useToast();
 
@@ -472,6 +474,17 @@ const MaterialManufacturing = ({
       });
       return;
     }
+    const invalidCoproductRow = coproducts.find(
+  (item) => item.item_id && !item.godown_id
+);
+if (invalidCoproductRow) {
+  toast({
+    title: "Validation Error",
+    description: "Please select a godown for every co-product/scrap item.",
+    status: "warning", duration: 3000, isClosable: true,
+  });
+  return;
+}
 
     if (totalAllocation > 100) {
       toast({
@@ -527,7 +540,8 @@ const MaterialManufacturing = ({
           .filter((item) => item.item_id)
           .map((item) => ({
             item_id: Number(item.item_id),
-            godown_id: Number(item.godown_id),
+            // godown_id: Number(item.godown_id),
+             godown_id: item.godown_id ? Number(item.godown_id) : null,
             qty: Number(item.qty || 0),
             cost_allocation_percent: Number(
               item.cost_allocation_percent || 0
@@ -558,7 +572,7 @@ const MaterialManufacturing = ({
     } catch (error) {
       toast({
         title: "Error",
-        description: error?.response?.data?.error || "Something went wrong",
+        description: error?.response?.data?.message || "Something went wrong",
         status: "error", duration: 3000, isClosable: true,
       });
     } finally {
@@ -628,7 +642,7 @@ const MaterialManufacturing = ({
               Name of Product
             </Text>
             <Select
-              name="finished_item_id"
+              name="finished_item_id" onFocus={onRefreshStockItems}
               value={formData.finished_item_id} onChange={handleFormChange} sx={selectSx}
             >
               <option value="">Select Item</option>
@@ -746,7 +760,7 @@ const MaterialManufacturing = ({
                   {/* Item */}
                   <Td minW="180px">
                     <Select
-                      value={row.item_id} sx={selectSx}
+                      value={row.item_id} sx={selectSx} onFocus={onRefreshStockItems}
                       onChange={(e) => handleComponentChange(index, "item_id", e.target.value)}
                     >
                       <option value="">Select</option>
@@ -858,7 +872,7 @@ const MaterialManufacturing = ({
                   {/* Item */}
                   <Td minW="180px">
                     <Select
-                      value={row.item_id} sx={selectSx}
+                      value={row.item_id} sx={selectSx} onFocus={onRefreshStockItems}
                       onChange={(e) => handleCoProductChange(index, "item_id", e.target.value)}
                     >
                       <option value="">Select</option>
@@ -872,8 +886,7 @@ const MaterialManufacturing = ({
                   <Td minW="150px">
                     <Select
                       value={row.godown_id} sx={selectSx}
-                      onChange={(e) => handleCoProductChange(index, "godown_id", e.target.value)}
-                    >
+                      onChange={(e) => handleCoProductChange(index, "godown_id", e.target.value)} >
                       <option value="">Select</option>
                       {godown.map((item) => (
                         <option key={item.id} value={item.id}>{item.godown_name}</option>
@@ -888,34 +901,25 @@ const MaterialManufacturing = ({
 
                   {/* % Cost Allocation */}
                   <Td minW="110px">
-                    <Input
-                      type="number" value={row.cost_allocation_percent} sx={inputSx}
-                      onChange={(e) => handleCoProductChange(index, "cost_allocation_percent", e.target.value)}
-                    />
+                    <Input type="number" value={row.cost_allocation_percent} sx={inputSx}
+                      onChange={(e) => handleCoProductChange(index, "cost_allocation_percent", e.target.value)} />
                   </Td>
 
                   {/* Qty */}
                   <Td minW="80px">
-                    <Input
-                      type="number" value={row.qty} sx={inputSx}
-                      onChange={(e) => handleCoProductChange(index, "qty", e.target.value)}
-                    />
+                    <Input type="number" value={row.qty} sx={inputSx}
+                      onChange={(e) => handleCoProductChange(index, "qty", e.target.value)} />
                   </Td>
 
                   {/* Unit (auto-filled from API) */}
                   <Td minW="80px">
-                    <Input
-                      value={row.unit_name} readOnly bg="gray.50" sx={inputSx}
-                      placeholder="—"
-                      textAlign="center"
-                    />
+                    <Input value={row.unit_name} readOnly bg="gray.50" sx={inputSx}
+                      placeholder="—" textAlign="center" />
                   </Td>
 
                   {/* Rate (auto-filled from API) */}
                   <Td minW="90px">
-                    <Input
-                      value={Number(row.rate).toFixed(2)} readOnly bg="gray.50" sx={inputSx}
-                    />
+                    <Input value={Number(row.rate).toFixed(2)} readOnly bg="gray.50" sx={inputSx} />
                   </Td>
 
                   {/* Amount */}
@@ -929,8 +933,7 @@ const MaterialManufacturing = ({
                       icon={<DeleteIcon />} size="xs" colorScheme="red"
                       variant="ghost" aria-label="Remove"
                       isDisabled={coproducts.length === 1}
-                      onClick={() => removeCoProductRow(index)}
-                    />
+                      onClick={() => removeCoProductRow(index)} />
                   </Td>
                 </Tr>
               ))}
@@ -956,9 +959,8 @@ const MaterialManufacturing = ({
                 <Tr key={index}>
                   <Td minW="260px">
                     <Select
-                      value={row.ledger_id} sx={selectSx}
-                      onChange={(e) => handleAdditionalCostChange(index, "ledger_id", e.target.value)}
-                    >
+                      value={row.ledger_id} sx={selectSx} onFocus={onRefreshLedgers}
+                      onChange={(e) => handleAdditionalCostChange(index, "ledger_id", e.target.value)} >
                       <option value="">Please Select</option>
                       {ledger.map((item) => (
                         <option key={item.id} value={item.id}>{item.ledger_name}</option>
@@ -1062,13 +1064,11 @@ const MaterialManufacturing = ({
       {/* ── ACTIONS ── */}
       <Flex justify="flex-end" gap={3} mt={6} alignItems="center">
         <Button variant="outline" onClick={handleReset} height="34px" fontSize="14px" border="1px solid #c8c5c5">Reset</Button>
-        <Button
-          bg="#237086" fontWeight="500"
+        <Button bg="#237086" fontWeight="500"
           fontSize="14px" color="white"
           _hover={{ bg: "#1B5A6B" }}
           px={8} borderRadius="12px" onClick={handleSubmit}
-          isLoading={submitting} loadingText="Saving…"
-        >
+          isLoading={submitting} loadingText="Saving…">
           Save Manufacturing
         </Button>
       </Flex>

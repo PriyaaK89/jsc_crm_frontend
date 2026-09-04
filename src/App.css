@@ -290,7 +290,10 @@ height: 50px !important;
 
 .stock_transfer_table tbody tr td{
   border-bottom: none;
-  padding: 9px 5px;
+  padding: 9px 3px;
+}
+.stock_transfer_table tbody tr td .chakra-select__wrapper{
+ padding: 0px 0px;
 }
 
 .stock_transfer_table thead tr th{

@@ -49,6 +49,17 @@ const createCostRow = () => ({
 const StockTransfer = ({ stockItem, godown, ledger }) => {
   const toast = useToast();
 
+  const inputStyle = {
+    size: "sm",
+    borderRadius: "6px",
+    borderColor: "#c8d0d8",
+    bg: "white",
+    fontSize: "12px",
+    height: "38px",
+    padding: "0px 6px",
+    _focus: { borderColor: "#3d7a52", boxShadow: "0 0 0 1px #3d7a52" },
+  };
+
   const [formData, setFormData] = useState({
     transfer_date: "",
     narration: "",
@@ -575,21 +586,17 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
             <Box flex="1" textAlign="left" fontWeight="500" color="white">
               Source (Consumption)
             </Box>
+           
             <AccordionIcon color="white" />
           </AccordionButton>
 
           <AccordionPanel padding={0}>
-            <HStack justify="flex-end" m={4}>
-              <Button
-                leftIcon={<AddIcon />}
-                size="sm" fontWeight="500"
-                background="#cf6b16" color="white"
-                onClick={addSourceRow}
-              >
+ <HStack justify="flex-end" m={2}>
+              <Button leftIcon={<AddIcon />}
+                size="sm" fontWeight="500" background="#cf6b16" color="white" onClick={addSourceRow}>
                 Add Row
               </Button>
             </HStack>
-
             <Box overflowX="auto" >
               <Table size="sm" className="stock_transfer_table">
                 <Thead bg="#e7e8e8">
@@ -611,9 +618,9 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
                     <Tr key={index}>
 
                       {/* Item */}
-                      <Td minW="220px">
-                        <Select
-                          value={row.item_id}
+                      <Td minW="190px">
+                        <Select p={0}
+                          value={row.item_id} {...inputStyle}
                           onChange={(e) =>
                             handleSourceChange(index, "item_id", e.target.value)
                           }
@@ -628,9 +635,9 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
                       </Td>
 
                       {/* Godown */}
-                      <Td minW="180px">
+                      <Td minW="140px">
                         <Select
-                          value={row.godown_id}
+                          value={row.godown_id} {...inputStyle}
                           onChange={(e) =>
                             handleSourceChange(
                               index,
@@ -649,12 +656,12 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
                       </Td>
 
                       {/* Batch — dropdown from fetched list */}
-                      <Td minW="180px">
+                      <Td minW="170px">
                         {row.loadingBatch ? (
                           <Spinner size="sm" />
                         ) : (
                           <Select
-                            value={row.batch_no}
+                            value={row.batch_no} {...inputStyle}
                             onChange={(e) =>
                               handleSourceChange(
                                 index,
@@ -675,35 +682,35 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
 
                       {/* Available Qty */}
                       <Td>
-                        <Input value={row.available_qty} readOnly />
+                        <Input value={row.available_qty} {...inputStyle} readOnly />
                       </Td>
 
                       {/* Qty */}
                       <Td>
                         <Input
-                          type="number"
+                          type="number" {...inputStyle}
                           value={row.qty}
                           onChange={(e) => handleSourceNumericChange(index, "qty", e.target.value)}
                         />
                       </Td>
 
                       {/* Unit — now shows unit_name */}
-                      <Td minW="80px">
-                        <Input value={row.unit_name} readOnly />
+                      <Td minW="50px">
+                        <Input value={row.unit_name} readOnly {...inputStyle} />
                       </Td>
 
                       {/* Rate */}
                       <Td>
                         <Input
                           type="number"
-                          value={row.rate}
+                          value={row.rate} {...inputStyle}
                           onChange={(e) => handleSourceNumericChange(index, "rate", e.target.value)}
                         />
                       </Td>
 
                       {/* Amount */}
                       <Td>
-                        <Input value={row.amount} readOnly />
+                        <Input value={row.amount} readOnly {...inputStyle} />
                       </Td>
 
                       {/* Delete */}
@@ -736,8 +743,10 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
             <AccordionIcon color="white" />
           </AccordionButton>
 
+
           <AccordionPanel padding={0}>
-            <HStack justify="flex-end" m={4}>
+
+            <HStack justify="flex-end" m={2}>
               <Button
                 leftIcon={<AddIcon />}
                 size="sm" fontWeight="500"
@@ -747,7 +756,6 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
                 Add Row
               </Button>
             </HStack>
-
             <Box overflowX="auto">
               <Table size="sm" className="stock_transfer_table">
                 <Thead bg="#e7e8e8">
@@ -769,8 +777,8 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
                     <Tr key={index}>
 
                       {/* Item */}
-                      <Td minW="220px">
-                        <Select
+                      <Td minW="190px">
+                        <Select {...inputStyle}
                           value={row.item_id}
                           onChange={(e) =>
                             handleDestinationChange(
@@ -790,8 +798,8 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
                       </Td>
 
                       {/* Godown */}
-                      <Td minW="180px">
-                        <Select
+                      <Td minW="140px">
+                        <Select {...inputStyle}
                           value={row.godown_id}
                           onChange={(e) =>
                             handleDestinationChange(
@@ -811,11 +819,11 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
                       </Td>
 
                       {/* Batch — dropdown (same pattern as source) */}
-                      <Td minW="180px">
+                      <Td minW="170px">
                         {row.loadingBatch ? (
                           <Spinner size="sm" />
                         ) : (
-                          <Select
+                          <Select {...inputStyle}
                             value={row.batch_no}
                             onChange={(e) =>
                               handleDestinationChange(
@@ -842,7 +850,7 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
 
                       {/* Qty */}
                       <Td>
-                        <Input
+                        <Input {...inputStyle}
                           type="number"
                           value={row.qty}
                           onChange={(e) =>
@@ -852,14 +860,14 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
                       </Td>
 
                       {/* Unit — shows unit_name */}
-                      <Td minW="80px">
-                        <Input value={row.unit_name} readOnly />
+                      <Td minW="60px">
+                        <Input value={row.unit_name} readOnly {...inputStyle} />
                       </Td>
 
                       {/* Rate */}
                       <Td>
                         <Input
-                          type="number"
+                          type="number" {...inputStyle}
                           value={row.rate}
                           onChange={(e) => handleDestinationNumericChange(index, "rate", e.target.value)}
                         //   onChange={(e) =>
@@ -874,7 +882,7 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
 
                       {/* Amount */}
                       <Td>
-                        <Input value={row.amount} readOnly />
+                        <Input value={row.amount} readOnly {...inputStyle} />
                       </Td>
 
                       {/* Delete */}
@@ -908,7 +916,7 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
           </AccordionButton>
 
           <AccordionPanel padding={0}>
-            <HStack justify="flex-end" m={4}>
+            <HStack justify="flex-end" m={2}>
               <Button size="sm" leftIcon={<AddIcon />} onClick={addCostRow}
                 fontWeight="500" background="#cf6b16" color="white">
                 Add Row
@@ -1204,7 +1212,7 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
         <Button
           bg="#237086" fontWeight="500"
           fontSize="14px" color="white"
-         
+
           px={8} borderRadius="12px"
           onClick={handleSubmit}
           isLoading={loading}
@@ -1212,7 +1220,7 @@ const StockTransfer = ({ stockItem, godown, ledger }) => {
           boxShadow="md"
           _hover={{
             transform: "translateY(-2px)",
-            boxShadow: "lg",bg: "#1B5A6B"
+            boxShadow: "lg", bg: "#1B5A6B"
           }}
           transition="0.2s"
         >

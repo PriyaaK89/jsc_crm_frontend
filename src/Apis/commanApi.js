@@ -142,13 +142,17 @@ export const fetchStockItemDetailsByID = async (itemId) => {
         unit_id: d?.unit_id || "",
         rate: Number(d?.opening_stock?.rate || 0),
         available_qty: Number(d?.opening_stock?.quantity || 0),
+
+         base_unit_value: Number(d?.base_unit_value || 1),
         alt_unit_id: d?.alt_unit_id || "",
-        alt_unit_qty: d?.alternative_unit_value || "",
+        alt_unit_value: Number(d?.alternative_unit_value || 0),
         alt_unit_name: d?.alternative_unit_name || "",
+
         bulk_unit_id: d?.bulk_unit_id || "",
-        bulk_unit_value: d?.bulk_unit_value || "",
+        bulk_unit_value: Number(d?.bulk_unit_value || 0),   // e.g. 1
+        bulk_base_value: Number(d?.bulk_base_value || 0),   // e.g. 20 — the missing piece
         bulk_unit_name: d?.bulk_unit_name || "",
-        calculated_alt_unit: d?.calculated_alt_unit || "",
+
         supercash_price: Number(d?.opening_stock?.supercash_price || 0),
         gst_applicable: Number(d?.gst_applicable || 0),
         rate_of_duty: Number(d?.rate_of_duty || 0),

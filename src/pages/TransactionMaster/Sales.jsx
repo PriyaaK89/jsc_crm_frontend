@@ -61,6 +61,9 @@ const emptyItem = () => ({
     supercash_price: 0,
     unit_id: "",
     unit_name: "",
+    base_unit_value: 1,
+    alt_unit_value: 0,
+    bulk_base_value: 0,
     alt_unit_id: "",
     alt_unit_qty: null,
     alt_unit_name: "",
@@ -69,6 +72,7 @@ const emptyItem = () => ({
     bulk_unit_value: null,
     bulk_unit_name: "",
     calculated_alt_unit: "",
+    calculated_bulk_unit: "",
 
     amount: 0,
     igst_percent: 0,
@@ -214,11 +218,62 @@ const SalesTransaction = () => {
 
     const [saving, setSaving] = useState(false);
 
+    const [dispatchDocPreview, setDispatchDocPreview] = useState(null);
+    const [billTPreview, setBillTPreview] = useState(null);
+
+    const {
+        isOpen: isImagePreviewOpen,
+        onOpen: openImagePreview,
+        onClose: closeImagePreview,
+    } = useDisclosure();
+    const [previewImageSrc, setPreviewImageSrc] = useState(null);
+    const [previewImageTitle, setPreviewImageTitle] = useState("");
+
+    const handleViewLarger = (src, title) => {
+        setPreviewImageSrc(src);
+        setPreviewImageTitle(title);
+        openImagePreview();
+    };
+
     // ─── Load on mount ────────────────────────────────────────────────────────
     useEffect(() => {
         loadDropdowns();
         loadVoucherNo();
     }, []);
+
+    const trimNum = (n) => {
+        const r = Number(n.toFixed(2));
+        return r; // "2.00" -> 2, "2.50" stays 2.5
+    };
+
+    // Recomputes alt-unit and bulk-unit display strings from billed_qty
+    const computeUnitConversions = (item) => {
+        const qty = Number(item.billed_qty || 0);
+        if (!qty) {
+            return { calculated_alt_unit: "", calculated_bulk_unit: "" };
+        }
+
+        let calculated_alt_unit = "";
+        if (item.alt_unit_value > 0 && item.base_unit_value > 0 && item.alt_unit_name) {
+            const altQty = (qty * item.alt_unit_value) / item.base_unit_value;
+            calculated_alt_unit = `${trimNum(altQty)} ${item.alt_unit_name}`;
+        }
+
+        let calculated_bulk_unit = "";
+        if (item.bulk_unit_value > 0 && item.bulk_base_value > 0 && item.bulk_unit_name) {
+            const bulkQtyRaw = (qty * item.bulk_unit_value) / item.bulk_base_value;
+            const wholeBulk = Math.floor(bulkQtyRaw);
+            const remainderBase = qty - (wholeBulk * item.bulk_base_value) / item.bulk_unit_value;
+
+            calculated_bulk_unit =
+                wholeBulk > 0
+                    ? `${wholeBulk} ${item.bulk_unit_name}` +
+                    (remainderBase > 0 ? ` ${trimNum(remainderBase)} ${item.unit_name}` : "")
+                    : `${trimNum(bulkQtyRaw)} ${item.bulk_unit_name}`;
+        }
+
+        return { calculated_alt_unit, calculated_bulk_unit };
+    };
 
     const loadDropdowns = async () => {
         try {
@@ -407,6 +462,35 @@ const SalesTransaction = () => {
                 sgstPercent = gstDuty / 2;
             }
 
+            // const newItem = {
+            //     ...emptyItem(),
+            //     stock_item_id: stockItemId,
+            //     total_qty: details.available_qty || 0,
+            //     rate: usedRate,
+            //     supercash_price: supercashRate,
+            //     unit_id: details.unit_id || "",
+            //     unit_name: details.unit_name || "",
+            //     alt_unit_id: details.alt_unit_id || null,
+            //     alt_unit_name: details.alt_unit_name || "",
+            //     alt_unit_qty: details.alt_unit_qty || "",
+            //     gst_applicable: details.gst_applicable || 0,
+            //     rate_of_duty: gstDuty,
+            //     bulk_unit_id: details.bulk_unit_id || null,
+            //     bulk_unit_value: details.bulk_unit_value || null,
+            //     bulk_unit_name: details.bulk_unit_name || "",
+            //     calculated_alt_unit: details.calculated_alt_unit,
+
+            //     igst_percent: igstPercent,
+            //     cgst_percent: cgstPercent,
+            //     sgst_percent: sgstPercent,
+            // };
+
+            // const computed = computeItemAmounts(newItem);
+            // const updated = [...items];
+            // updated[index] = { ...newItem, ...computed };
+            // setItems(updated);
+            // recalcTotals(updated, extraLedgers);
+
             const newItem = {
                 ...emptyItem(),
                 stock_item_id: stockItemId,
@@ -415,15 +499,19 @@ const SalesTransaction = () => {
                 supercash_price: supercashRate,
                 unit_id: details.unit_id || "",
                 unit_name: details.unit_name || "",
+
+                base_unit_value: details.base_unit_value || 1,
                 alt_unit_id: details.alt_unit_id || null,
                 alt_unit_name: details.alt_unit_name || "",
-                alt_unit_qty: details.alt_unit_qty || "",
-                gst_applicable: details.gst_applicable || 0,
-                rate_of_duty: gstDuty,
+                alt_unit_value: details.alt_unit_value || 0,
+
                 bulk_unit_id: details.bulk_unit_id || null,
                 bulk_unit_value: details.bulk_unit_value || null,
+                bulk_base_value: details.bulk_base_value || 0,
                 bulk_unit_name: details.bulk_unit_name || "",
-                calculated_alt_unit: details.calculated_alt_unit,
+
+                gst_applicable: details.gst_applicable || 0,
+                rate_of_duty: gstDuty,
 
                 igst_percent: igstPercent,
                 cgst_percent: cgstPercent,
@@ -431,10 +519,10 @@ const SalesTransaction = () => {
             };
 
             const computed = computeItemAmounts(newItem);
+            const unitConversions = computeUnitConversions(newItem);
             const updated = [...items];
-            updated[index] = { ...newItem, ...computed };
+            updated[index] = { ...newItem, ...computed, ...unitConversions };
             setItems(updated);
-            // recalcTotals(updated);
             recalcTotals(updated, extraLedgers);
         } catch (err) {
             console.error("handleStockItemSelect error:", err);
@@ -442,15 +530,27 @@ const SalesTransaction = () => {
     };
 
     // ─── Item field change ────────────────────────────────────────────────────
+    // const handleItemChange = (index, field, value) => {
+    //     const updated = [...items];
+    //     updated[index] = { ...updated[index], [field]: value };
+    //     const computed = computeItemAmounts(updated[index]);
+    //     updated[index] = { ...updated[index], ...computed };
+    //     setItems(updated);
+    //     // recalcTotals(updated);
+    //     recalcTotals(updated, extraLedgers);
+    // };
     const handleItemChange = (index, field, value) => {
         const updated = [...items];
         updated[index] = { ...updated[index], [field]: value };
+
         const computed = computeItemAmounts(updated[index]);
-        updated[index] = { ...updated[index], ...computed };
+        const unitConversions = computeUnitConversions(updated[index]);
+
+        updated[index] = { ...updated[index], ...computed, ...unitConversions };
         setItems(updated);
-        // recalcTotals(updated);
         recalcTotals(updated, extraLedgers);
     };
+
 
     // ─── Godown select → fetch batches + open modal ───────────────────────────
     const handleGodownSelect = async (index, godownId) => {
@@ -619,7 +719,7 @@ const SalesTransaction = () => {
 
                 narration,
             }).
-            forEach(([key, value]) => {formData.append( key, value ?? "");});
+                forEach(([key, value]) => { formData.append(key, value ?? ""); });
             formData.append(
                 "items",
                 JSON.stringify(
@@ -638,6 +738,7 @@ const SalesTransaction = () => {
                         bulk_unit_id: it.bulk_unit_id,
                         bulk_unit_value: it.bulk_unit_value,
                         calculated_alt_unit: it.calculated_alt_unit,
+                        calculated_bulk_unit: it.calculated_bulk_unit,
 
                         amount: it.amount,
                         igst_percent: it.igst_percent,
@@ -650,12 +751,12 @@ const SalesTransaction = () => {
                     }))
                 )
             );
-            const validExtraLedgers = extraLedgers.filter( ledger => ledger.ledger_id && Number(ledger.amount) > 0 );
+            const validExtraLedgers = extraLedgers.filter(ledger => ledger.ledger_id && Number(ledger.amount) > 0);
 
-            formData.append( "extra_ledgers", JSON.stringify(validExtraLedgers));
+            formData.append("extra_ledgers", JSON.stringify(validExtraLedgers));
             // formData.append( "extra_ledgers", JSON.stringify( extraLedgers ) );
-            if (dispatchDocImage) { formData.append( "dispatch_doc_image",  dispatchDocImage);}
-            if (billTImage) { formData.append( "bill_t_image", billTImage ); }
+            if (dispatchDocImage) { formData.append("dispatch_doc_image", dispatchDocImage); }
+            if (billTImage) { formData.append("bill_t_image", billTImage); }
 
 
             const res = await API.post(
@@ -740,6 +841,26 @@ const SalesTransaction = () => {
         });
         setSalesDate(new Date().toISOString().slice(0, 10));
     };
+
+    useEffect(() => {
+        if (!dispatchDocImage) {
+            setDispatchDocPreview(null);
+            return;
+        }
+        const url = URL.createObjectURL(dispatchDocImage);
+        setDispatchDocPreview(url);
+        return () => URL.revokeObjectURL(url);
+    }, [dispatchDocImage]);
+
+    useEffect(() => {
+        if (!billTImage) {
+            setBillTPreview(null);
+            return;
+        }
+        const url = URL.createObjectURL(billTImage);
+        setBillTPreview(url);
+        return () => URL.revokeObjectURL(url);
+    }, [billTImage]);
 
     // ─── Render ───────────────────────────────────────────────────────────────
     return (
@@ -1016,12 +1137,40 @@ const SalesTransaction = () => {
                         </Box>
 
                         <Box>
-                            <Text fontSize="11px" fontWeight="600" color="#555" mb={1}> Dispatch Doc Image</Text>
+                            <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>Dispatch Doc Image</Text>
                             <Input key={`dispatch-${fileResetKey}`}
                                 type="file"
                                 accept="image/*,.pdf"
                                 p={1}
-                                onChange={(e) => setDispatchDocImage( e.target.files?.[0] || null )} />
+                                onChange={(e) => setDispatchDocImage(e.target.files?.[0] || null)} />
+
+                            {dispatchDocImage && (
+                                <Flex mt={2} align="center" gap={2}>
+                                    {dispatchDocImage.type === "application/pdf" ? (
+                                        <Flex
+                                            align="center" justify="center"
+                                            w="50px" h="50px" bg="gray.100" borderRadius="4px"
+                                            border="1px solid #d0d7de" cursor="pointer"
+                                            onClick={() => window.open(dispatchDocPreview, "_blank")}>
+                                            <Text fontSize="10px" fontWeight="700" color="red.600">PDF</Text>
+                                        </Flex>
+                                    ) : (
+                                        <Box
+                                            as="img"
+                                            src={dispatchDocPreview}
+                                            alt="Dispatch doc preview"
+                                            w="50px" h="50px"
+                                            objectFit="cover"
+                                            borderRadius="4px"
+                                            border="1px solid #d0d7de"
+                                            cursor="pointer"
+                                            onClick={() => handleViewLarger(dispatchDocPreview, "Dispatch Doc Image")} />
+                                    )}
+                                    <Text fontSize="10px" color="gray.600" noOfLines={1} maxW="90px">
+                                        {dispatchDocImage.name}
+                                    </Text>
+                                </Flex>
+                            )}
                         </Box>
 
                         <Box>
@@ -1070,12 +1219,37 @@ const SalesTransaction = () => {
                         </Box>
 
                         <Box>
-                            <Text fontSize="11px" fontWeight="600" color="#555" mb={1} >
-                                Bill-T Image
-                            </Text>
-
+                            <Text fontSize="11px" fontWeight="600" color="#555" mb={1}>Bill-T Image</Text>
                             <Input key={`billt-${fileResetKey}`} type="file" accept="image/*,.pdf" p={1}
                                 onChange={(e) => setBillTImage(e.target.files?.[0] || null)} />
+
+                            {billTImage && (
+                                <Flex mt={2} align="center" gap={2}>
+                                    {billTImage.type === "application/pdf" ? (
+                                        <Flex
+                                            align="center" justify="center"
+                                            w="50px" h="50px" bg="gray.100" borderRadius="4px"
+                                            border="1px solid #d0d7de" cursor="pointer"
+                                            onClick={() => window.open(billTPreview, "_blank")}>
+                                            <Text fontSize="10px" fontWeight="700" color="red.600">PDF</Text>
+                                        </Flex>
+                                    ) : (
+                                        <Box
+                                            as="img"
+                                            src={billTPreview}
+                                            alt="Bill-T preview"
+                                            w="50px" h="50px"
+                                            objectFit="cover"
+                                            borderRadius="4px"
+                                            border="1px solid #d0d7de"
+                                            cursor="pointer"
+                                            onClick={() => handleViewLarger(billTPreview, "Bill-T Image")} />
+                                    )}
+                                    <Text fontSize="10px" color="gray.600" noOfLines={1} maxW="90px">
+                                        {billTImage.name}
+                                    </Text>
+                                </Flex>
+                            )}
                         </Box>
                         {[
 
@@ -1149,25 +1323,25 @@ const SalesTransaction = () => {
                             )}
                         </Text>
                         <HStack>
-                        <Button  size="xs"
-                            padding={3}
-                            fontWeight="500"
-                            marginRight="4px"
-                            leftIcon={<AddIcon fontSize="11px" />}
-                            colorScheme="whiteAlpha"
-                            variant="solid" _hover={{ bg: "#2d595a" }}><Link to={"/inventory/create-stock-item"}>Create Item</Link></Button>
-                        <Button
-                            size="xs"
-                            padding={3}
-                            fontWeight="500"
-                            marginRight="4px"
-                            leftIcon={<AddIcon fontSize="11px" />}
-                            colorScheme="whiteAlpha"
-                            variant="solid"
-                            onClick={addItemRow}
-                            _hover={{ bg: "#2d595a" }}>
-                            Add Item
-                        </Button>
+                            <Button size="xs"
+                                padding={3}
+                                fontWeight="500"
+                                marginRight="4px"
+                                leftIcon={<AddIcon fontSize="11px" />}
+                                colorScheme="whiteAlpha"
+                                variant="solid" _hover={{ bg: "#2d595a" }}><Link to={"/inventory/create-stock-item"}>Create Item</Link></Button>
+                            <Button
+                                size="xs"
+                                padding={3}
+                                fontWeight="500"
+                                marginRight="4px"
+                                leftIcon={<AddIcon fontSize="11px" />}
+                                colorScheme="whiteAlpha"
+                                variant="solid"
+                                onClick={addItemRow}
+                                _hover={{ bg: "#2d595a" }}>
+                                Add Item
+                            </Button>
                         </HStack>
                     </Flex>
 
@@ -1370,6 +1544,16 @@ const SalesTransaction = () => {
                                     <Td {...tdStyle}>
                                         <Input
                                             {...readonlyInputStyle}
+                                            value={item?.calculated_bulk_unit}
+                                            readOnly
+                                            textAlign="center"
+                                            minW="55px"
+                                        />
+                                    </Td>
+
+                                    {/* <Td {...tdStyle}>
+                                        <Input
+                                            {...readonlyInputStyle}
 
                                             value={
                                                 item.bulk_unit_value && item.bulk_unit_name
@@ -1378,7 +1562,7 @@ const SalesTransaction = () => {
                                             }
                                             readOnly
                                         />
-                                    </Td>
+                                    </Td> */}
 
                                     {/* Amount */}
                                     <Td {...tdStyle}>
@@ -1923,6 +2107,22 @@ const SalesTransaction = () => {
                                 SAVE
                             </Button>
                         </Flex>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+            <Modal isOpen={isImagePreviewOpen} onClose={closeImagePreview} size="xl" isCentered>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader fontSize="sm">{previewImageTitle}</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody pb={6} display="flex" justifyContent="center">
+                        <Box
+                            as="img"
+                            src={previewImageSrc}
+                            alt={previewImageTitle}
+                            maxW="100%"
+                            maxH="70vh"
+                            objectFit="contain" />
                     </ModalBody>
                 </ModalContent>
             </Modal>

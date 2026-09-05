@@ -498,10 +498,11 @@ function EditVoucher() {
             </FormLabel>
 
             <Input
-              type="date"
-              value={formData.voucher_start_date}
-              isDisabled
-            />
+    type="date"
+    name="voucher_start_date"
+    value={formData.voucher_start_date}
+    onChange={handleChange}
+  />
 
           </FormControl>
 
@@ -510,12 +511,12 @@ function EditVoucher() {
             <FormLabel>
               Voucher End Date
             </FormLabel>
-
-            <Input
-              type="date"
-              value={formData.voucher_end_date}
-              isDisabled
-            />
+ <Input
+    type="date"
+    name="voucher_end_date"
+    value={formData.voucher_end_date}
+    onChange={handleChange}
+  />
 
           </FormControl>
 

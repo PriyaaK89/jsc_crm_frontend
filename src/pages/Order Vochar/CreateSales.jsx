@@ -107,7 +107,7 @@ const SalesCreate = () => {
   };
 
   const loadGodownList = async () => setGodownList(await fetchGodownList());
-  const loadLedgerDropdown = async () => setLedgerList(await fetchAssignedLedgerDropdown());
+  const loadLedgerDropdown = async () => setLedgerList(await fetchLedgerDropdown());
 
   const loadSalesLedgerDropdown = async () => {
     const res = await API.get(API_ENDPOINTS.GET_SALES_LEDGER_DROPDOWN);

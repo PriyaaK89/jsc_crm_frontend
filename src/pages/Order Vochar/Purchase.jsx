@@ -14,7 +14,7 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import useUsersapi from "../../Apis/GetUsersapi";
 import {
-  fetchNextVoucherNo, fetchGodownList, fetchAssignedLedgerDropdown,
+  fetchNextVoucherNo, fetchGodownList, fetchAssignedLedgerDropdown, fetchLedgerDropdown,
   fetchLedgerDetailsByID, fetchStockItemDetailsByID,
 } from "../../Apis/commanApi";
 import { GoHomeFill } from "react-icons/go";
@@ -63,6 +63,7 @@ const PurchaseCreate = () => {
     purchaseNo: "",
     date: new Date().toISOString().split("T")[0],
     partyLedgerId: "",
+    employeeUnder: "",
     isConsignee: "No",
     dealerName: "", proprietorName: "", consigneeContactNo: "",
     consigneeAddress: "", consigneeGstnNo: "",
@@ -102,7 +103,7 @@ const PurchaseCreate = () => {
   };
 
   const loadGodownList = async () => setGodownList(await fetchGodownList());
-  const loadLedgerDropdown = async () => setLedgerList(await fetchAssignedLedgerDropdown());
+  const loadLedgerDropdown = async () => setLedgerList(await fetchLedgerDropdown());
 
   const loadPurchaseLedgerDropdown = async () => {
     const res = await API.get(API_ENDPOINTS.GET_PURCHASE_LEDGER_DROPDOWN);
@@ -306,6 +307,7 @@ const PurchaseCreate = () => {
 
     const payload = {
       supplier_ledger_id: formData.partyLedgerId,
+      employee_under: formData.employeeUnder,
       is_consignee: formData.isConsignee === "Yes" ? "1" : "0",
       dealer_name: formData.dealerName,
       proprietor_name: formData.proprietorName,
@@ -384,8 +386,8 @@ const PurchaseCreate = () => {
             <Input {...inputStyle} type="date" value={formData.date}
               onChange={e => setFormData(prev => ({ ...prev, date: e.target.value }))} />
           </GridItem>
-        
-         
+
+
           <GridItem>
             <Text {...labelStyle}>
               Party A/c Name <Text as="span" color="red.500">*</Text>
@@ -398,7 +400,17 @@ const PurchaseCreate = () => {
               ))}
             </Select>
           </GridItem>
-          
+          <GridItem>
+            <Text {...labelStyle}>Employee Under</Text>
+            <Select {...inputStyle} value={formData.employeeUnder} onChange={(e) => setFormData((prev) => ({ ...prev, employeeUnder: e.target.value }))}>
+              <option value="">-- Select --</option>
+              {(users || []).map((u) => (
+                <option key={u.id} value={u.id}>{u.name}</option>
+              ))}
+            </Select>
+          </GridItem>
+
+
           <GridItem>
             <Text {...labelStyle}>Is Consignee</Text>
             <Select {...inputStyle} value={formData.isConsignee}
@@ -407,7 +419,7 @@ const PurchaseCreate = () => {
               <option value="Yes">Yes</option>
             </Select>
           </GridItem>
-        
+
         </Grid>
       </Box>
 

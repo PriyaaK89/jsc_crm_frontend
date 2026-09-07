@@ -55,6 +55,7 @@ const Receipt = () => {
     const { isOpen: isWhatsappModalOpen, onOpen: onWhatsappModalOpen, onClose: onWhatsappModalClose, } = useDisclosure();
     const [sendingWhatsapp, setSendingWhatsapp] = useState(false);
     const [createdReceiptId, setCreatedReceiptId] = useState(null);
+    const [ledgerBalance, setLedgerBalance] = useState(null);
 
     const [submitting, setSubmitting] = useState(false);
     const [pendingBills, setPendingBills] = useState([]);
@@ -131,13 +132,6 @@ const Receipt = () => {
         setFormData((prev) => ({ ...prev, attachment: e.target.files[0] || null }));
     };
 
-    // const handleEntryChange = (index, field, value) => {
-    //     setFormData((prev) => {
-    //         const entries = [...prev.entries];
-    //         entries[index] = { ...entries[index], [field]: value };
-    //         return { ...prev, entries };
-    //     });
-    // };
     const handleEntryChange = (index, field, value) => {
         setFormData((prev) => {
             const entries = [...prev.entries];
@@ -264,7 +258,6 @@ const Receipt = () => {
     };
 
     // ── bill modal ───────────────────────────────────────────────────────────────
-
     const openBillModal = async (index, ledgerId) => {
         setBillLoading(true);
         setSelectedEntryIndex(index);
@@ -273,72 +266,58 @@ const Receipt = () => {
         try {
             const res = await API.get(`${API_ENDPOINTS.GET_PENDING_BILLS}/${ledgerId}`);
             if (res.status === 200) {
-                const serverBills = res.data.data;
-                // Store full pending bill objects so we can look up sales_bill_reference_id
+                const serverBills = res.data.data.bills;
+                const balance = res.data.ledger_balance;
                 setPendingBills(serverBills);
+                setLedgerBalance(balance);
 
                 const savedRefs = formData.entries[index]?.bill_references ?? [];
-
-                // if (savedRefs.length > 0) {
-                //     setBillReferenceData(
-                //         savedRefs.map((ref) => {
-                //             if (ref.reference_type === "AGST REF" && !ref.sales_bill_reference_id) {
-                //                 const matched = serverBills.find(
-                //                     (b) => b.reference_no === ref.reference_no
-                //                 );
-                //                 return matched
-                //                     ? { ...ref, sales_bill_reference_id: matched.id }
-                //                     : ref;
-                //             }
-                //             return ref;
-                //         })
-                //     );
-                // } else {
-                //     const entryAmount = formData.entries[index]?.amount || "";
-                //     setBillReferenceData([
-                //         {
-                //             reference_type: "AGST REF",
-                //             reference_no: "",
-                //             sales_bill_reference_id: null,
-                //             reference_amount: entryAmount,
-                //             due_date: "",
-                //             dr_cr: "Cr",
-                //         },
-                //     ]);
-
-                // }
+                const entryAmount = Number(formData.entries[index]?.amount || 0);
 
                 if (savedRefs.length > 0) {
                     const rehydrated = savedRefs.map((ref) => {
                         if (ref.reference_type === "AGST REF" && !ref.sales_bill_reference_id) {
+                            // Fallback only — reference_no may not be unique, so this can
+                            // mismatch. Prefer sales_bill_reference_id whenever it's already saved.
                             const matched = serverBills.find((b) => b.reference_no === ref.reference_no);
-                            return matched ? { ...ref, sales_bill_reference_id: matched.id } : ref;
+                            return matched
+                                ? { ...ref, sales_bill_reference_id: matched.id, due_date: String(matched.due_date || "").slice(0, 10) }
+                                : ref;
                         }
                         return ref;
                     });
-                    const entryAmount = formData.entries[index]?.amount || 0;
-                    setBillReferenceData(applyWaterfallAllocation(rehydrated, entryAmount, serverBills));
-                } else {
+                    // setBillReferenceData(autoFillRemainingBills(rehydrated, entryAmount, serverBills));
+                    // setBillReferenceData(autoCascadeBills(rehydrated, rehydrated.length - 1, entryAmount, serverBills));
+                    setBillReferenceData(addNextRowIfNeeded(rehydrated, rehydrated.length - 1, entryAmount, serverBills));
+                } else if (serverBills.length > 0) {
+                    // Bills exist — default row is AGST REF, empty selection.
+                    // Picking a bill triggers the cascade above.
                     setBillReferenceData([
                         { reference_type: "AGST REF", reference_no: "", sales_bill_reference_id: null, reference_amount: 0, due_date: "", dr_cr: "Cr" },
+                    ]);
+                } else {
+                    // No bill-wise references — fall back to ON ACCOUNT,
+                    // pre-filled with the ledger's current balance.
+                    setBillReferenceData([
+                        {
+                            reference_type: "ON ACCOUNT",
+                            reference_no: "",
+                            sales_bill_reference_id: null,
+                            reference_amount: entryAmount || balance?.amount || 0,
+                            due_date: "",
+                            dr_cr: balance?.balance_type || "Cr",
+                        },
                     ]);
                 }
             }
         } catch (err) {
             console.error("Error fetching pending bills", err);
-            toast({
-                title: "Error",
-                description: "Failed to load pending bills.",
-                status: "error",
-                duration: 3000,
-                isClosable: true,
-            });
+            toast({ title: "Error", description: "Failed to load pending bills.", status: "error", duration: 3000, isClosable: true });
             setBillReferenceData([]);
         } finally {
             setBillLoading(false);
         }
     };
-
     // Recomputes reference_amount for every row, top to bottom, using the
     // entry's OUTSIDE amount as the source of truth (never overwritten).
     const applyWaterfallAllocation = (rows, outsideAmount, billsList = pendingBills) => {
@@ -357,6 +336,95 @@ const Receipt = () => {
             remaining -= Number(row.reference_amount || 0);
             return row;
         });
+    };
+
+    // After a bill is picked in a row, if money is still left over,
+    // auto-append the next unused bill (from pendingBills, already due-date sorted)
+    // and keep going until the amount is used up or bills run out.
+// After a row's bill/amount changes, recompute allocation. If money is
+// still left over, add exactly ONE new empty AGST REF row for the user
+// to pick from — never auto-select a bill for them.
+const addNextRowIfNeeded = (rows, rowIndexJustChanged, outsideAmount, billsList = pendingBills) => {
+    // Drop any rows after the one just changed — they belonged to a
+    // previous state and need to be rebuilt from here.
+    let result = rows.slice(0, rowIndexJustChanged + 1);
+
+    // Recalculate allocated amounts for the rows we're keeping
+    result = applyWaterfallAllocation(result, outsideAmount, billsList);
+
+    const allocatedSoFar = result.reduce((sum, r) => sum + Number(r.reference_amount || 0), 0);
+    const remaining = Number(outsideAmount || 0) - allocatedSoFar;
+
+    const usedBillIds = new Set(
+        result.filter((r) => r.sales_bill_reference_id).map((r) => r.sales_bill_reference_id)
+    );
+    const hasUnusedBillsLeft = billsList.some((b) => !usedBillIds.has(b.id));
+
+    // Only add a new row if there's money left AND there's still an
+    // unused bill available to pick — otherwise there's nothing to add.
+    if (remaining > 0.01 && hasUnusedBillsLeft) {
+        result = [
+            ...result,
+            {
+                reference_type: "AGST REF",
+                reference_no: "",
+                sales_bill_reference_id: null,
+                reference_amount: 0,
+                due_date: "",
+                dr_cr: "Cr",
+            },
+        ];
+    }
+
+    return result;
+};
+
+    // Cascades forward from the row the user just touched — adds bills one
+    // after another until the outside amount is fully covered, or bills run out.
+    // Never reuses a bill that's already picked in another row.
+    const autoCascadeBills = (rows, rowIndexJustChanged, outsideAmount, billsList = pendingBills) => {
+        // Drop any rows after the one just changed — they were built for a
+        // previous state and are now stale.
+        let result = rows.slice(0, rowIndexJustChanged + 1);
+
+        // Recompute allocated amounts for the rows we're keeping
+        result = applyWaterfallAllocation(result, outsideAmount, billsList);
+
+        const usedBillIds = new Set(
+            result.filter((r) => r.sales_bill_reference_id).map((r) => r.sales_bill_reference_id)
+        );
+
+        const allocatedSoFar = result.reduce((sum, r) => sum + Number(r.reference_amount || 0), 0);
+        let remaining = Number(outsideAmount || 0) - allocatedSoFar;
+
+        // Safety cap — never loop more times than there are bills, so a bad
+        // amount value can't spin through every single bill unexpectedly.
+        let guard = billsList.length;
+
+        while (remaining > 0.01 && guard-- > 0) {
+            const nextBill = billsList.find((b) => !usedBillIds.has(b.id));
+            if (!nextBill) break; // no unused bills left — nothing more to auto-add
+
+            usedBillIds.add(nextBill.id);
+
+            const allocated = Math.min(remaining, Number(nextBill.pending_amount));
+
+            result = [
+                ...result,
+                {
+                    reference_type: "AGST REF",
+                    reference_no: nextBill.reference_no,
+                    sales_bill_reference_id: nextBill.id,
+                    reference_amount: allocated,
+                    due_date: nextBill.due_date ? String(nextBill.due_date).slice(0, 10) : "",
+                    dr_cr: "Cr",
+                },
+            ];
+
+            remaining -= allocated;
+        }
+
+        return result;
     };
 
     // ── When AGST REF dropdown changes, auto-fill amount + store sales_bill_reference_id ──
@@ -388,23 +456,30 @@ const Receipt = () => {
     //     });
     // };
 
-    const handleAgstRefSelect = (rowIndex, selectedReferenceNo) => {
-        const matchedBill = pendingBills.find((b) => b.reference_no === selectedReferenceNo);
-        const outsideAmount = formData.entries[selectedEntryIndex]?.amount || 0;
+const handleAgstRefSelect = (rowIndex, selectedBillId) => {
+    const matchedBill = pendingBills.find((b) => b.id === Number(selectedBillId));
+    const outsideAmount = Number(formData.entries[selectedEntryIndex]?.amount || 0);
 
-        setBillReferenceData((prev) => {
-            const updated = [...prev];
-            updated[rowIndex] = {
-                ...updated[rowIndex],
-                reference_no: selectedReferenceNo,
-                sales_bill_reference_id: matchedBill ? matchedBill.id : null,
-                due_date: matchedBill?.due_date ?? updated[rowIndex].due_date,
-            };
-            return applyWaterfallAllocation(updated, outsideAmount);
-            // NOTE: the old "sync total back to entry amount" block is gone —
-            // that was the bug that overwrote your typed amount.
+    if (!outsideAmount) {
+        toast({
+            title: "Enter an amount first",
+            description: "Type the amount in the entry row before picking bills.",
+            status: "warning",
+            duration: 2500,
         });
-    };
+    }
+
+    setBillReferenceData((prev) => {
+        const updated = [...prev];
+        updated[rowIndex] = {
+            ...updated[rowIndex],
+            reference_no: matchedBill?.reference_no ?? "",
+            sales_bill_reference_id: matchedBill ? matchedBill.id : null,
+            due_date: matchedBill?.due_date ? String(matchedBill.due_date).slice(0, 10) : updated[rowIndex].due_date,
+        };
+        return addNextRowIfNeeded(updated, rowIndex, outsideAmount);
+    });
+};
 
     // const handleBillReferenceChange = (rowIndex, field, value) => {
     //     setBillReferenceData((prev) => {
@@ -447,7 +522,7 @@ const Receipt = () => {
         const outsideAmount = formData.entries[selectedEntryIndex]?.amount || 0;
         setBillReferenceData((prev) =>
             applyWaterfallAllocation(
-                [...prev, { reference_type: "NEW REF", reference_no: "", sales_bill_reference_id: null, reference_amount: 0, due_date: "", dr_cr: "Cr" }],
+                [...prev, { reference_type: "AGST REF", reference_no: "", sales_bill_reference_id: null, reference_amount: 0, due_date: "", dr_cr: "Cr" }],
                 outsideAmount
             )
         );
@@ -590,7 +665,7 @@ const Receipt = () => {
                 });
 
                 setCreatedReceiptId(res.data.receipt_id); // <-- capture id
-            onWhatsappModalOpen();
+                onWhatsappModalOpen();
                 setFormData(emptyForm());
                 await loadVoucherNo();
             }
@@ -615,30 +690,30 @@ const Receipt = () => {
     };
 
     const handleSendReceiptWhatsapp = async () => {
-    if (!createdReceiptId) return;
-    try {
-        setSendingWhatsapp(true);
-        await API.post(API_ENDPOINTS.send_receipt_whatsapp(createdReceiptId));
-        toast({
-            title: "WhatsApp message sent",
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-        });
-    } catch (error) {
-        console.error("Send WhatsApp error:", error);
-        toast({
-            title: error?.response?.data?.message || "Failed to send WhatsApp message",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-        });
-    } finally {
-        setSendingWhatsapp(false);
-        onWhatsappModalClose();
-        setCreatedReceiptId(null);
-    }
-};
+        if (!createdReceiptId) return;
+        try {
+            setSendingWhatsapp(true);
+            await API.post(API_ENDPOINTS.send_receipt_whatsapp(createdReceiptId));
+            toast({
+                title: "WhatsApp message sent",
+                status: "success",
+                duration: 3000,
+                isClosable: true,
+            });
+        } catch (error) {
+            console.error("Send WhatsApp error:", error);
+            toast({
+                title: error?.response?.data?.message || "Failed to send WhatsApp message",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+        } finally {
+            setSendingWhatsapp(false);
+            onWhatsappModalClose();
+            setCreatedReceiptId(null);
+        }
+    };
 
     // ── derived ──────────────────────────────────────────────────────────────────
 
@@ -687,431 +762,449 @@ const Receipt = () => {
 
     return (
         <>
-        <WhatsappMessageModal
-  isWhatsappModalOpen={isWhatsappModalOpen}
-  onWhatsappModalClose={() => {
-    onWhatsappModalClose();
-    setCreatedReceiptId(null);
-  }}
-  onConfirm={handleSendReceiptWhatsapp}
-  isSending={sendingWhatsapp}
-/>
-        <Box p={5}>
+            <WhatsappMessageModal
+                isWhatsappModalOpen={isWhatsappModalOpen}
+                onWhatsappModalClose={() => {
+                    onWhatsappModalClose();
+                    setCreatedReceiptId(null);
+                }}
+                onConfirm={handleSendReceiptWhatsapp}
+                isSending={sendingWhatsapp}
+            />
+            <Box p={5}>
 
-            {/* ── TOP FORM ── */}
-            <Grid templateColumns="repeat(2, 1fr)" gap={5} mb={6}>
-                <GridItem>
-                    <FormControl>
-                        <FormLabel>Receipt No.</FormLabel>
-                        <Input {...readonlyInputStyle}
-                            value={formData.voucher_no || ""}
-                            readOnly
-                            bg="gray.50"
-                            fontWeight="semibold"
-                        />
-                    </FormControl>
-                </GridItem>
+                {/* ── TOP FORM ── */}
+                <Grid templateColumns="repeat(2, 1fr)" gap={5} mb={6}>
+                    <GridItem>
+                        <FormControl>
+                            <FormLabel>Receipt No.</FormLabel>
+                            <Input {...readonlyInputStyle}
+                                value={formData.voucher_no || ""}
+                                readOnly
+                                bg="gray.50"
+                                fontWeight="semibold"
+                            />
+                        </FormControl>
+                    </GridItem>
 
-                <GridItem>
-                    <FormControl isRequired>
-                        <FormLabel>Date</FormLabel>
-                        <Input {...inputStyle}
-                            type="date"
-                            name="receipt_date"
-                            value={formData.receipt_date}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-                </GridItem>
+                    <GridItem>
+                        <FormControl isRequired>
+                            <FormLabel>Date</FormLabel>
+                            <Input {...inputStyle}
+                                type="date"
+                                name="receipt_date"
+                                value={formData.receipt_date}
+                                onChange={handleChange}
+                            />
+                        </FormControl>
+                    </GridItem>
 
-                <GridItem>
-                    <FormControl isRequired>
-                        <FormLabel>Account</FormLabel>
-                        <Select {...inputStyle}
-                            name="account_ledger_id"
-                            value={formData.account_ledger_id}
-                            onChange={handleAccountSelect}
-                            placeholder="Select Account"
-                        >
-                            {account.map((item) => (
-                                <option key={item.id} value={item.id}>
-                                    {item.ledger_name}
-                                </option>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </GridItem>
+                    <GridItem>
+                        <FormControl isRequired>
+                            <FormLabel>Account</FormLabel>
+                            <Select {...inputStyle}
+                                name="account_ledger_id"
+                                value={formData.account_ledger_id}
+                                onChange={handleAccountSelect}
+                                placeholder="Select Account"
+                            >
+                                {account.map((item) => (
+                                    <option key={item.id} value={item.id}>
+                                        {item.ledger_name}
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </GridItem>
 
-                <GridItem>
-                    <FormControl>
-                        <FormLabel>Employee Under</FormLabel>
-                        <Select {...inputStyle}
-                            name="employee_under_id"
-                            value={formData.employee_under_id}
-                            onChange={handleChange}
-                            placeholder="--Please Select--"
-                        >
-                            {users?.map((item) => (
-                                <option key={item.id} value={item.id}>
-                                    {item.name}
-                                </option>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </GridItem>
+                    <GridItem>
+                        <FormControl>
+                            <FormLabel>Employee Under</FormLabel>
+                            <Select {...inputStyle}
+                                name="employee_under_id"
+                                value={formData.employee_under_id}
+                                onChange={handleChange}
+                                placeholder="--Please Select--"
+                            >
+                                {users?.map((item) => (
+                                    <option key={item.id} value={item.id}>
+                                        {item.name}
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </GridItem>
 
-                <GridItem>
-                    <FormControl>
-                        <FormLabel>Current Balance</FormLabel>
-                        <Input {...readonlyInputStyle}
-                            value={Number(formData.current_balance || 0).toFixed(2)}
-                            readOnly
-                            bg="gray.50"
-                            fontWeight="semibold"
-                        />
-                    </FormControl>
-                </GridItem>
-            </Grid>
+                    <GridItem>
+                        <FormControl>
+                            <FormLabel>Current Balance</FormLabel>
+                            <Input {...readonlyInputStyle}
+                                value={Number(formData.current_balance || 0).toFixed(2)}
+                                readOnly
+                                bg="gray.50"
+                                fontWeight="semibold"
+                            />
+                        </FormControl>
+                    </GridItem>
+                </Grid>
 
-            {/* ── ENTRIES TABLE ── */}
-            <Box borderWidth="1px" borderRadius="md" overflowX="auto" mb={5}>
-                <Table
-                    variant="simple"
-                    size="sm"
-                    style={{ borderCollapse: "separate", borderSpacing: 0 }}
-                    className="material_mfg"
-                >
-                    <Thead bg="gray.100">
-                        <Tr>
-                            <Th>Particulars (Ledger)</Th>
-                            <Th isNumeric>Current Balance</Th>
-                            <Th isNumeric>Amount</Th>
-                            <Th>Transaction Type</Th>
-                            <Th>Txn/Cheque No.</Th>
-                            <Th>Bank Name</Th>
-                            <Th>Bill Refs</Th>
-                            <Th>Action</Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {formData.entries.map((entry, index) => (
-                            <Tr key={index}>
-                                {/* PARTICULARS LEDGER */}
-                                <Td minW="170px">
-                                    <Select {...inputStyle}
-                                        size="sm"
-                                        value={entry.ledger_id}
-                                        onChange={(e) => handleLedgerSelect(index, e.target.value)}
-                                        placeholder="End Of List"
-                                    >
-                                        {ledger.map((item) => (
-                                            <option key={item.id} value={item.id}>
-                                                {item.ledger_name}
-                                            </option>
-                                        ))}
-                                    </Select>
-                                </Td>
-
-                                {/* CURRENT BALANCE */}
-                                <Td isNumeric>
-                                    <Input
-                                        size="sm" {...readonlyInputStyle}
-                                        value={Number(entry.current_balance).toFixed(2)}
-                                        readOnly
-                                        bg="gray.50"
-                                        w="90px"
-                                        textAlign="right"
-                                    />
-                                </Td>
-
-                                {/* AMOUNT */}
-                                <Td>
-                                    <Input {...inputStyle}
-                                        size="sm"
-                                        type="number"
-                                        min={0}
-                                        value={entry.amount}
-                                        onChange={(e) => handleEntryChange(index, "amount", e.target.value)}
-                                        w="90px"
-                                    />
-                                </Td>
-
-                                {/* TRANSACTION TYPE */}
-                                <Td minW="150px">
-                                    <Select {...inputStyle}
-                                        size="sm"
-                                        value={entry.transaction_type}
-                                        onChange={(e) => handleTransactionTypeChange(index, e.target.value)}
-                                        minW="120px"
-                                        isDisabled={!entry.ledger_id}
-                                        placeholder="Please select" >
-                                        <option value="Cash">Cash</option>
-                                        <option value="Cheque/DD">Cheque/DD</option>
-                                        <option value="E-Fund Transfer">E-Fund Transfer</option>
-                                        <option value="Others">Others</option>
-                                    </Select>
-                                </Td>
-
-                                {/* TXN / CHEQUE NO */}
-                                <Td>
-                                    <Input {...inputStyle} size="sm" value={entry.transaction_no}
-                                        onChange={(e) => handleEntryChange(index, "transaction_no", e.target.value)}
-                                        w="120px" />
-                                </Td>
-
-                                {/* BANK NAME */}
-                                <Td>
-                                    <Select {...inputStyle} size="sm" value={entry.bank_name}
-                                        onChange={(e) => handleEntryChange(index, "bank_name", e.target.value)}
-                                        placeholder="Select Bank"
-                                        w="180px" >
-                                        {account.map((item) => (
-                                            <option key={item.id} value={item.ledger_name}> {item.ledger_name} </option>
-                                        ))}
-                                    </Select>
-                                </Td>
-
-                                {/* BILL REFS INDICATOR */}
-                                <Td textAlign="center">
-                                    {entry.bill_references.length > 0 ? (
-                                        <Badge
-                                            colorScheme="green"
-                                            cursor="pointer"
-                                            onClick={() => entry.ledger_id && openBillModal(index, entry.ledger_id)}>
-                                            {entry.bill_references.length} ref
-                                            {entry.bill_references.length > 1 ? "s" : ""}
-                                        </Badge>
-                                    ) : (
-                                        <Button
-                                            size="xs"
-                                            variant="outline"
-                                            isDisabled={!entry.ledger_id || entry.maintain_bill_by_bill !== 1}
-                                            onClick={() => entry.ledger_id && openBillModal(index, entry.ledger_id)} >
-                                            Bill
-                                        </Button>
-                                    )}
-                                </Td>
-
-                                {/* ADD / REMOVE */}
-                                <Td>
-                                    <Flex gap={2}>
-                                        <Button size="sm" padding="0px" colorScheme="green" onClick={addEntryRow}> + </Button>
-                                        {formData.entries.length > 1 && (
-                                            <Button padding={0} size="sm" colorScheme="red" onClick={() => removeEntryRow(index)} > − </Button>
-                                        )}
-                                    </Flex>
-                                </Td>
+                {/* ── ENTRIES TABLE ── */}
+                <Box borderWidth="1px" borderRadius="md" overflowX="auto" mb={5}>
+                    <Table
+                        variant="simple"
+                        size="sm"
+                        style={{ borderCollapse: "separate", borderSpacing: 0 }}
+                        className="material_mfg"
+                    >
+                        <Thead bg="gray.100">
+                            <Tr>
+                                <Th>Particulars (Ledger)</Th>
+                                <Th isNumeric>Current Balance</Th>
+                                <Th isNumeric>Amount</Th>
+                                <Th>Transaction Type</Th>
+                                <Th>Txn/Cheque No.</Th>
+                                <Th>Bank Name</Th>
+                                <Th>Bill Refs</Th>
+                                <Th>Action</Th>
                             </Tr>
-                        ))}
-                    </Tbody>
-                </Table>
-            </Box>
-
-            {/* ── UPLOAD ── */}
-            <Box mb={5}>
-                <FormControl>
-                    <FormLabel>Upload Document</FormLabel>
-                    <Input {...inputStyle} type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={handleFileChange} p={1} />
-                </FormControl>
-            </Box>
-
-            {/* ── TOTAL AMOUNT ── */}
-            <FormControl mb={3}>
-                <FormLabel>Total Amount</FormLabel>
-                <Input {...readonlyInputStyle} value={formData.total_amount.toFixed(2)} readOnly bg="gray.50" fontWeight="semibold" />
-            </FormControl>
-
-            {/* ── NARRATION ── */}
-            <Box mb={5}>
-                <FormControl>
-                    <FormLabel>Narration</FormLabel>
-                    <Textarea name="narration" value={formData.narration} onChange={handleChange} />
-                </FormControl>
-            </Box>
-
-            {/* ── SAVE ── */}
-            <Flex justify="flex-end" mt={6}>
-                <Button
-                    bg="#237086"
-                    fontWeight="500"
-                    fontSize="14px"
-                    color="white"
-                    _hover={{ bg: "#1B5A6B" }}
-                    px={8}
-                    borderRadius="12px"
-                    onClick={handleSave}
-                    isLoading={submitting}
-                    loadingText="Saving…" >
-                    Save Receipt
-                </Button>
-            </Flex>
-
-            {/* ── BILL WISE MODAL ── */}
-            <Modal isOpen={billModal}
-                onClose={() => setBillModal(false)}
-                size="5xl" scrollBehavior="inside" >
-                <ModalOverlay />
-                <ModalContent borderRadius="12px">
-                    <ModalHeader bg="#b0d1cf" borderRadius="12px 12px 0px 0px" padding="21px" >
-                        <HStack gap={0}>
-                            <Text fontSize="16px">Bill Wise Details</Text>
-                            {selectedEntryIndex !== null &&
-                                formData.entries[selectedEntryIndex]?.ledger_id && (
-                                    <Text as="span" fontWeight="normal" fontSize="13px" ml={2} color="gray.600" >
-                                        —{" "}
-                                        {
-                                            ledger.find(
-                                                (l) => String(l.id) ===
-                                                    String(formData.entries[selectedEntryIndex].ledger_id)
-                                            )?.ledger_name
-                                        }
-                                    </Text>
-                                )}
-                        </HStack>
-                        <ModalCloseButton />
-                    </ModalHeader>
-
-                    <ModalBody>
-                        {billLoading ? (
-                            <Flex justify="center" py={8}>
-                                <Spinner size="lg" />
-                            </Flex>
-                        ) : (
-                            <>
-                                {/* Summary bar */}
-                                <Flex gap={6} mb={4} p={3} bg="gray.50" borderRadius="md" fontSize="sm" >
-                                    <Box>
-                                        <Text color="gray.500">Entry Amount</Text>
-                                        <Text fontWeight="semibold">{entryAmount.toFixed(2)}</Text>
-                                    </Box>
-                                    <Box>
-                                        <Text color="gray.500">Allocated</Text>
-                                        <Text fontWeight="semibold">
-                                            {billModalTotal.toFixed(2)}
-                                        </Text>
-                                    </Box>
-                                    <Box>
-                                        <Text color="gray.500">Difference</Text>
-                                        <Text fontWeight="semibold"
-                                            color={billDiff === 0 ? "green.600" : billDiff < 0 ? "red.600" : "orange.600"} >
-                                            {billDiff.toFixed(2)}
-                                        </Text>
-                                    </Box>
-                                </Flex>
-
-                                <Box overflowX="auto">
-                                    <Table size="sm" variant="simple">
-                                        <Thead bg="gray.100">
-                                            <Tr>
-                                                <Th>Type of Ref</Th>
-                                                <Th>Name / Reference No</Th>
-                                                <Th>Due Date (limit)</Th>
-                                                <Th isNumeric>Amount</Th>
-                                                <Th>Dr/Cr</Th>
-                                                <Th>Delete</Th>
-                                                <Th>Add</Th>
-                                            </Tr>
-                                        </Thead>
-                                        <Tbody>
-                                            {billReferenceData.map((bill, rowIndex) => (
-                                                <Tr key={rowIndex}>
-                                                    {/* TYPE OF REF */}
-                                                    <Td minW="130px">
-                                                        <Select size="sm" value={bill.reference_type}
-                                                            onChange={(e) => handleBillReferenceChange(rowIndex, "reference_type", e.target.value)}>
-                                                            <option value="AGST REF">Agst Ref</option>
-                                                            <option value="ADVANCE">Advance</option>
-                                                            {/* <option value="NEW REF">New Ref</option> */}
-                                                            <option value="ON ACCOUNT">On Account</option>
-                                                        </Select>
-                                                    </Td>
-
-                                                    {/* REFERENCE NO / NAME */}
-                                                    <Td minW="220px">
-                                                        {bill.reference_type === "ON ACCOUNT" ||
-                                                            bill.reference_type === "ADVANCE" ? (
-                                                            <Input size="sm"
-                                                                placeholder={bill.reference_type === "ON ACCOUNT" ? "On Account ref…" : "Advance ref…"}
-                                                                value={bill.reference_no}
-                                                                onChange={(e) => handleBillReferenceChange(rowIndex, "reference_no", e.target.value)} />
-                                                        ) : bill.reference_type === "NEW REF" ? (
-                                                            <Input size="sm" placeholder="New reference no…" value={bill.reference_no}
-                                                                onChange={(e) => handleBillReferenceChange(rowIndex, "reference_no", e.target.value)} />
-                                                        ) : (
-                                                            /* AGST REF — dropdown of pending bills
-                                                               On select: auto-fills amount + stores sales_bill_reference_id */
-                                                            <Select size="sm" value={bill.reference_no}
-                                                                onChange={(e) => handleAgstRefSelect(rowIndex, e.target.value)} >
-                                                                <option value="">-- Select --</option>
-                                                                {pendingBills.map((pb) => (
-                                                                    <option key={pb.id} value={pb.reference_no} >
-                                                                        {pb.reference_no} — {pb.pending_amount} Cr
-                                                                    </option>
-                                                                ))}
-                                                            </Select>
-                                                        )}
-                                                    </Td>
-
-                                                    {/* DUE DATE */}
-                                                    <Td minW="140px">
-                                                        <Input size="sm" type="date" value={bill.due_date || ""}
-                                                            onChange={(e) => handleBillReferenceChange(rowIndex, "due_date", e.target.value)} />
-                                                    </Td>
-
-                                                    {/* AMOUNT */}
-                                                    <Td>
-
-                                                        <Input size="sm" type="number" min={0} value={bill.reference_amount} isReadOnly={bill.reference_type === "AGST REF"}
-                                                            bg={bill.reference_type === "AGST REF" ? "gray.50" : "white"}
-                                                            onChange={(e) => handleBillReferenceChange(rowIndex, "reference_amount", e.target.value)}
-                                                            w="100px" textAlign="right" />
-                                                    </Td>
-
-                                                    {/* DR/CR — always Cr for receipts */}
-                                                    <Td>
-                                                        <Input size="sm" {...readonlyInputStyle} value={bill.dr_cr || "Cr"} readOnly w="50px" bg="gray.50" />
-                                                    </Td>
-
-                                                    {/* DELETE */}
-                                                    <Td textAlign="center">
-                                                        <Button size="xs" colorScheme="red" variant="outline" onClick={() => removeBillRow(rowIndex)} > ✕ </Button>
-                                                    </Td>
-
-                                                    {/* ADD — only on last row */}
-                                                    <Td textAlign="center">
-                                                        {rowIndex === billReferenceData.length - 1 && (
-                                                            <Button size="xs" colorScheme="green" onClick={addBillRow}> + </Button>
-                                                        )}
-                                                    </Td>
-                                                </Tr>
+                        </Thead>
+                        <Tbody>
+                            {formData.entries.map((entry, index) => (
+                                <Tr key={index}>
+                                    {/* PARTICULARS LEDGER */}
+                                    <Td minW="170px">
+                                        <Select {...inputStyle}
+                                            size="sm"
+                                            value={entry.ledger_id}
+                                            onChange={(e) => handleLedgerSelect(index, e.target.value)}
+                                            placeholder="End Of List"
+                                        >
+                                            {ledger.map((item) => (
+                                                <option key={item.id} value={item.id}>
+                                                    {item.ledger_name}
+                                                </option>
                                             ))}
+                                        </Select>
+                                    </Td>
 
-                                            {billReferenceData.length === 0 && (
-                                                <Tr>
-                                                    <Td colSpan={7} textAlign="center" color="gray.400" py={6}>
-                                                        No pending bills found.{" "}
-                                                        <Button size="xs" onClick={addBillRow} ml={2}> Add row </Button>
-                                                    </Td>
-                                                </Tr>
+                                    {/* CURRENT BALANCE */}
+                                    <Td isNumeric>
+                                        <Input
+                                            size="sm" {...readonlyInputStyle}
+                                            value={Number(entry.current_balance).toFixed(2)}
+                                            readOnly
+                                            bg="gray.50"
+                                            w="90px"
+                                            textAlign="right"
+                                        />
+                                    </Td>
+
+                                    {/* AMOUNT */}
+                                    <Td>
+                                        <Input {...inputStyle}
+                                            size="sm"
+                                            type="number"
+                                            min={0}
+                                            value={entry.amount}
+                                            onChange={(e) => handleEntryChange(index, "amount", e.target.value)}
+                                            w="90px"
+                                        />
+                                    </Td>
+
+                                    {/* TRANSACTION TYPE */}
+                                    <Td minW="150px">
+                                        <Select {...inputStyle}
+                                            size="sm"
+                                            value={entry.transaction_type}
+                                            onChange={(e) => handleTransactionTypeChange(index, e.target.value)}
+                                            minW="120px"
+                                            isDisabled={!entry.ledger_id}
+                                            placeholder="Please select" >
+                                            <option value="Cash">Cash</option>
+                                            <option value="Cheque/DD">Cheque/DD</option>
+                                            <option value="E-Fund Transfer">E-Fund Transfer</option>
+                                             <option value="UPI">UPI</option>
+                                            <option value="Others">Others</option>
+                                        </Select>
+                                    </Td>
+
+                                    {/* TXN / CHEQUE NO */}
+                                    <Td>
+                                        <Input {...inputStyle} size="sm" value={entry.transaction_no}
+                                            onChange={(e) => handleEntryChange(index, "transaction_no", e.target.value)}
+                                            w="120px" />
+                                    </Td>
+
+                                    {/* BANK NAME */}
+                                    <Td>
+                                        <Select {...inputStyle} size="sm" value={entry.bank_name}
+                                            onChange={(e) => handleEntryChange(index, "bank_name", e.target.value)}
+                                            placeholder="Select Bank"
+                                            w="180px" >
+                                            {account.map((item) => (
+                                                <option key={item.id} value={item.ledger_name}> {item.ledger_name} </option>
+                                            ))}
+                                        </Select>
+                                    </Td>
+
+                                    {/* BILL REFS INDICATOR */}
+                                    <Td textAlign="center">
+                                        {entry.bill_references.length > 0 ? (
+                                            <Badge
+                                                colorScheme="green"
+                                                cursor="pointer"
+                                                onClick={() => entry.ledger_id && openBillModal(index, entry.ledger_id)}>
+                                                {entry.bill_references.length} ref
+                                                {entry.bill_references.length > 1 ? "s" : ""}
+                                            </Badge>
+                                        ) : (
+                                            <Button
+                                                size="xs"
+                                                variant="outline"
+                                                isDisabled={!entry.ledger_id || entry.maintain_bill_by_bill !== 1}
+                                                onClick={() => entry.ledger_id && openBillModal(index, entry.ledger_id)} >
+                                                Bill
+                                            </Button>
+                                        )}
+                                    </Td>
+
+                                    {/* ADD / REMOVE */}
+                                    <Td>
+                                        <Flex gap={2}>
+                                            <Button size="sm" padding="0px" colorScheme="green" onClick={addEntryRow}> + </Button>
+                                            {formData.entries.length > 1 && (
+                                                <Button padding={0} size="sm" colorScheme="red" onClick={() => removeEntryRow(index)} > − </Button>
                                             )}
-                                        </Tbody>
-                                    </Table>
-                                </Box>
-                            </>
-                        )}
-                    </ModalBody>
+                                        </Flex>
+                                    </Td>
+                                </Tr>
+                            ))}
+                        </Tbody>
+                    </Table>
+                </Box>
+
+                {/* ── UPLOAD ── */}
+                <Box mb={5}>
+                    <FormControl>
+                        <FormLabel>Upload Document</FormLabel>
+                        <Input {...inputStyle} type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={handleFileChange} p={1} />
+                    </FormControl>
+                </Box>
+
+                {/* ── TOTAL AMOUNT ── */}
+                <FormControl mb={3}>
+                    <FormLabel>Total Amount</FormLabel>
+                    <Input {...readonlyInputStyle} value={formData.total_amount.toFixed(2)} readOnly bg="gray.50" fontWeight="semibold" />
+                </FormControl>
+
+                {/* ── NARRATION ── */}
+                <Box mb={5}>
+                    <FormControl>
+                        <FormLabel>Narration</FormLabel>
+                        <Textarea name="narration" value={formData.narration} onChange={handleChange} />
+                    </FormControl>
+                </Box>
+
+                {/* ── SAVE ── */}
+                <Flex justify="flex-end" mt={6}>
+                    <Button
+                        bg="#237086"
+                        fontWeight="500"
+                        fontSize="14px"
+                        color="white"
+                        _hover={{ bg: "#1B5A6B" }}
+                        px={8}
+                        borderRadius="12px"
+                        onClick={handleSave}
+                        isLoading={submitting}
+                        loadingText="Saving…" >
+                        Save Receipt
+                    </Button>
+                </Flex>
+
+                {/* ── BILL WISE MODAL ── */}
+                <Modal isOpen={billModal}
+                    onClose={() => setBillModal(false)}
+                    size="5xl" scrollBehavior="inside" >
+                    <ModalOverlay />
+                    <ModalContent borderRadius="12px">
+                        <ModalHeader bg="#b0d1cf" borderRadius="12px 12px 0px 0px" padding="21px" >
+                            <HStack gap={0}>
+                                <Text fontSize="16px">Bill Wise Details</Text>
+                                {selectedEntryIndex !== null &&
+                                    formData.entries[selectedEntryIndex]?.ledger_id && (
+                                        <Text as="span" fontWeight="normal" fontSize="13px" ml={2} color="gray.600" >
+                                            —{" "}
+                                            {
+                                                ledger.find(
+                                                    (l) => String(l.id) ===
+                                                        String(formData.entries[selectedEntryIndex].ledger_id)
+                                                )?.ledger_name
+                                            }
+                                        </Text>
+                                    )}
+                            </HStack>
+                            <ModalCloseButton />
+                        </ModalHeader>
+
+                        <ModalBody>
+                            {billLoading ? (
+                                <Flex justify="center" py={8}>
+                                    <Spinner size="lg" />
+                                </Flex>
+                            ) : (
+                                <>
+                                    {/* Summary bar */}
+                                    <Flex gap={6} mb={4} p={3} bg="gray.50" borderRadius="md" fontSize="sm" >
+                                        <Box>
+                                            <Text color="gray.500">Entry Amount</Text>
+                                            <Text fontWeight="semibold">{entryAmount.toFixed(2)}</Text>
+                                        </Box>
+                                        <Box>
+                                            <Text color="gray.500">Allocated</Text>
+                                            <Text fontWeight="semibold">
+                                                {billModalTotal.toFixed(2)}
+                                            </Text>
+                                        </Box>
+                                        <Box>
+                                            <Text color="gray.500">Difference</Text>
+                                            <Text fontWeight="semibold"
+                                                color={billDiff === 0 ? "green.600" : billDiff < 0 ? "red.600" : "orange.600"} >
+                                                {billDiff.toFixed(2)}
+                                            </Text>
+                                        </Box>
+                                    </Flex>
+
+                                    <Box overflowX="auto">
+                                        <Table size="sm" variant="simple">
+                                            <Thead bg="gray.100">
+                                                <Tr>
+                                                    <Th>Type of Ref</Th>
+                                                    <Th>Name / Reference No</Th>
+                                                    <Th>Due Date (limit)</Th>
+                                                    <Th isNumeric>Amount</Th>
+                                                    <Th>Dr/Cr</Th>
+                                                    <Th>Delete</Th>
+                                                    <Th>Add</Th>
+                                                </Tr>
+                                            </Thead>
+                                            <Tbody>
+                                                {billReferenceData.map((bill, rowIndex) => (
+                                                    <Tr key={rowIndex}>
+                                                        {/* TYPE OF REF */}
+                                                        <Td minW="130px">
+                                                            <Select size="sm" value={bill.reference_type}
+                                                                onChange={(e) => handleBillReferenceChange(rowIndex, "reference_type", e.target.value)}>
+                                                                <option value="AGST REF">Agst Ref</option>
+                                                                <option value="ADVANCE">Advance</option>
+                                                                <option value="NEW REF">New Ref</option>
+                                                                <option value="ON ACCOUNT">On Account</option>
+                                                            </Select>
+                                                        </Td>
+
+                                                        {/* REFERENCE NO / NAME */}
+                                                        {/* REFERENCE NO / NAME */}
+                                                        <Td minW="260px">
+                                                            {bill.reference_type === "ON ACCOUNT" || bill.reference_type === "ADVANCE" ? (
+                                                                <Input size="sm"
+                                                                    placeholder={bill.reference_type === "ON ACCOUNT" ? "On Account ref…" : "Advance ref…"}
+                                                                    value={bill.reference_no}
+                                                                    onChange={(e) => handleBillReferenceChange(rowIndex, "reference_no", e.target.value)} />
+                                                            ) : bill.reference_type === "NEW REF" ? (
+                                                                <Input size="sm" placeholder="New reference no…" value={bill.reference_no}
+                                                                    onChange={(e) => handleBillReferenceChange(rowIndex, "reference_no", e.target.value)} />
+                                                            ) : pendingBills.length > 0 ? (
+                                                                <Select size="sm" value={bill.sales_bill_reference_id || ""}
+    onChange={(e) => handleAgstRefSelect(rowIndex, e.target.value)}>
+    <option value="">-- Select Bill --</option>
+    {pendingBills
+        .filter((pb) =>
+            pb.id === bill.sales_bill_reference_id ||
+            !billReferenceData.some((r) => r.sales_bill_reference_id === pb.id)
+        )
+        .map((pb) => (
+            <option key={pb.id} value={pb.id}>
+                {pb.voucher_no || pb.reference_no}
+                {pb.bill_date ? ` — ${new Date(pb.bill_date).toLocaleDateString("en-GB")}` : ""}
+                {` — Bill: ₹${Number(pb.bill_amount).toFixed(2)}`}
+                {` — Pending: ₹${Number(pb.pending_amount).toFixed(2)}`}
+            </option>
+        ))}
+</Select>
+                                                            ) : (
+                                                                <Text fontSize="xs" color="gray.600">
+                                                                    {(() => {
+                                                                        const ledgerName = ledger.find(
+                                                                            (l) => String(l.id) === String(formData.entries[selectedEntryIndex]?.ledger_id)
+                                                                        )?.ledger_name;
+                                                                        return ledgerBalance
+                                                                            ? `${ledgerName || "Ledger"} — Balance: ₹${ledgerBalance.amount.toFixed(2)} ${ledgerBalance.balance_type}`
+                                                                            : `${ledgerName || "Ledger"} — No pending bills / balance`;
+                                                                    })()}
+                                                                </Text>
+                                                            )}
+                                                        </Td>
+
+                                                        {/* DUE DATE */}
+                                                        <Td minW="140px">
+                                                            <Input size="sm" type="date" value={bill.due_date || ""}
+                                                                onChange={(e) => handleBillReferenceChange(rowIndex, "due_date", e.target.value)} />
+                                                        </Td>
+
+                                                        {/* AMOUNT */}
+                                                        <Td>
+
+                                                            <Input size="sm" type="number" min={0} value={bill.reference_amount} isReadOnly={bill.reference_type === "AGST REF"}
+                                                                bg={bill.reference_type === "AGST REF" ? "gray.50" : "white"}
+                                                                onChange={(e) => handleBillReferenceChange(rowIndex, "reference_amount", e.target.value)}
+                                                                w="100px" textAlign="right" />
+                                                        </Td>
+
+                                                        {/* DR/CR — always Cr for receipts */}
+                                                        <Td>
+                                                            <Input size="sm" {...readonlyInputStyle} value={bill.dr_cr || "Cr"} readOnly w="50px" bg="gray.50" />
+                                                        </Td>
+
+                                                        {/* DELETE */}
+                                                        <Td textAlign="center">
+                                                            <Button size="xs" colorScheme="red" variant="outline" onClick={() => removeBillRow(rowIndex)} > ✕ </Button>
+                                                        </Td>
+
+                                                        {/* ADD — only on last row */}
+                                                        <Td textAlign="center">
+                                                            {rowIndex === billReferenceData.length - 1 && (
+                                                                <Button size="xs" colorScheme="green" onClick={addBillRow}> + </Button>
+                                                            )}
+                                                        </Td>
+                                                    </Tr>
+                                                ))}
+
+                                                {billReferenceData.length === 0 && (
+                                                    <Tr>
+                                                        <Td colSpan={7} textAlign="center" color="gray.400" py={6}>
+                                                            No pending bills found.{" "}
+                                                            <Button size="xs" onClick={addBillRow} ml={2}> Add row </Button>
+                                                        </Td>
+                                                    </Tr>
+                                                )}
+                                            </Tbody>
+                                        </Table>
+                                    </Box>
+                                </>
+                            )}
+                        </ModalBody>
 
 
-                    <ModalFooter gap={3} flexDirection="column" alignItems="stretch">
-                        {billModalError && (<Text color="red.500" fontSize="sm" mb={2} textAlign="right"> {billModalError} </Text>)}
-                        <Flex justify="flex-end" gap={3}>
-                            <Button variant="outline" onClick={() => setBillModal(false)}> Cancel </Button>
-                            <Button colorScheme="blue" onClick={saveBillAllocation} isDisabled={isSaveDisabled} > Save </Button>
-                        </Flex>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-        </Box>
+                        <ModalFooter gap={3} flexDirection="column" alignItems="stretch">
+                            {billModalError && (<Text color="red.500" fontSize="sm" mb={2} textAlign="right"> {billModalError} </Text>)}
+                            <Flex justify="flex-end" gap={3}>
+                                <Button variant="outline" onClick={() => setBillModal(false)}> Cancel </Button>
+                                <Button colorScheme="blue" onClick={saveBillAllocation} isDisabled={isSaveDisabled} > Save </Button>
+                            </Flex>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
+            </Box>
         </>
     );
 };

@@ -23,6 +23,7 @@ import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { AuthContext } from "../../context/AuthContext";
+import useUsersapi from "../../Apis/GetUsersapi";
 
 // ── Design tokens (matched to SalesCreate) ──
 const sectionStyle = { bg: "white", border: "1px solid #d0d7de", borderRadius: "6px", p: 0, mb: 3, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" };
@@ -46,6 +47,7 @@ const ReceiptOrderRequest = () => {
   const toast = useToast();
   const { auth } = useContext(AuthContext);
   const userID = auth?.user?.id;
+  const { users } = useUsersapi();
 
   const [receiptNo, setReceiptNo] = useState("");
   const [ledger, setLedger] = useState([]);
@@ -56,6 +58,8 @@ const ReceiptOrderRequest = () => {
   const [narration, setNarration] = useState("");
   const [attachment, setAttachment] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [employeeUnder, setEmployeeUnder] = useState(false);
+  const [accountBalance, setAccountBalance] = useState(0);
 
   const totalAmount = entries.reduce((sum, e) => sum + Number(e.amount || 0), 0);
 
@@ -92,7 +96,7 @@ const ReceiptOrderRequest = () => {
 
   const fetchLedgerDropdownList = async () => {
     try {
-      const res = await API.get(API_ENDPOINTS.GET_ASSIGNED_LEDGERS_LIST);
+      const res = await API.get(API_ENDPOINTS.GET_LEDGER_DROPDOWN);
       if (res.status === 200) setLedger(res.data.data);
     } catch (err) {
       console.error("Error fetching ledgers", err);
@@ -127,7 +131,7 @@ const ReceiptOrderRequest = () => {
       updated[index] = {
         ...updated[index],
         ledger_id: ledgerId,
-        employee_under: match?.employee_under ?? "",
+        // employee_under: match?.employee_under ?? "",
         current_balance: 0,
       };
       return updated;
@@ -190,7 +194,8 @@ const ReceiptOrderRequest = () => {
       fd.append("total_amount", totalAmount);
 
       // employee_under sent top-level, taken from the first entry's ledger
-      fd.append("employee_under_id", entries[0]?.employee_under || "");
+      // fd.append("employee_under_id", entries[0]?.employee_under || "");
+      fd.append("employee_under_id", employeeUnder || "");
 
       fd.append(
         "entries",
@@ -243,6 +248,27 @@ const ReceiptOrderRequest = () => {
     }
   };
 
+  const handleAccountSelect = async (ledgerId) => {
+  setAccountLedgerId(ledgerId);
+  setAccountBalance(0);
+
+  if (!ledgerId) return;
+
+  try {
+    const res = await API.get(`${API_ENDPOINTS.get_ledger_by_id}/${ledgerId}`);
+    if (res.status === 200) {
+      const { current_balance, balance_type } = res.data.data;
+      const balance =
+        balance_type === "Cr"
+          ? -Math.abs(Number(current_balance))
+          : Math.abs(Number(current_balance));
+      setAccountBalance(balance);
+    }
+  } catch (err) {
+    console.error("Error fetching account ledger details", err);
+  }
+};
+
   return (
     <Box>
       {/* Section 1: Receipt Details */}
@@ -263,7 +289,8 @@ const ReceiptOrderRequest = () => {
               {...inputStyle}
               placeholder="Select Account"
               value={accountLedgerId}
-              onChange={(e) => setAccountLedgerId(e.target.value)}
+              // onChange={(e) => setAccountLedgerId(e.target.value)}
+              onChange={(e) => handleAccountSelect(e.target.value)}
             >
               {account.map((item) => (
                 <option key={item.id} value={item.id}>
@@ -272,6 +299,25 @@ const ReceiptOrderRequest = () => {
               ))}
             </Select>
           </GridItem>
+           <GridItem>
+                      <Text {...labelStyle}>Employee Under</Text>
+                      <Select {...inputStyle} value={employeeUnder} onChange={(e) => setEmployeeUnder(e.target.value)}>
+                        <option value="">-- Select --</option>
+                        {(users || []).map((u) => (
+                          <option key={u.id} value={u.id}>{u.name}</option>
+                        ))}
+                      </Select>
+                    </GridItem>
+                    <GridItem>
+  <Text {...labelStyle}>Account Balance</Text>
+  <Input
+    {...readonlyInputStyle}
+    type="number"
+    value={Number(accountBalance || 0).toFixed(2)}
+    readOnly
+    textAlign="right"
+  />
+</GridItem>
         </Grid>
       </Box>
 

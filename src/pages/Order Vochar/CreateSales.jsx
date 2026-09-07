@@ -461,6 +461,16 @@ const SalesCreate = () => {
               )}
             </Flex>
           </GridItem>
+          <GridItem>
+            <Text {...labelStyle}>Employee Under</Text>
+            <Select {...inputStyle} value={formData.employeeUnder} onChange={(e) => setFormData((prev) => ({ ...prev, employeeUnder: e.target.value }))}>
+              <option value="">-- Select --</option>
+              {(users || []).map((u) => (
+                <option key={u.id} value={u.id}>{u.name}</option>
+              ))}
+            </Select>
+          </GridItem>
+          
           <GridItem colSpan={{ base: 1, md: 2 }}>
             <Flex align="center" gap={3}>
               <Checkbox isChecked={formData.setOverdueReminder} colorScheme="teal" size="sm"
@@ -468,6 +478,7 @@ const SalesCreate = () => {
               <Text fontSize="12px" color="green.600" fontWeight="500">Set Default OverDue Reminder</Text>
             </Flex>
           </GridItem>
+
 
         </Grid>
       </Box>
@@ -530,23 +541,23 @@ const SalesCreate = () => {
         <Box {...sectionHeaderStyle}>
           <HStack justifyContent="space-between">
             <Text fontWeight="500" fontSize="sm">Stock Items</Text>
-<HStack>
-            <Button size="xs"
-              leftIcon={<AddIcon />}
-              variant="outline"
-              colorScheme="white"
-              fontSize="11px" _hover={{ bg: "#2d595a" }}><Link to={"/inventory/create-stock-item"}>Create Item</Link></Button>
+            <HStack>
+              <Button size="xs"
+                leftIcon={<AddIcon />}
+                variant="outline"
+                colorScheme="white"
+                fontSize="11px" _hover={{ bg: "#2d595a" }}><Link to={"/inventory/create-stock-item"}>Create Item</Link></Button>
 
-            <Button
-              size="xs"
-              leftIcon={<AddIcon />}
-              variant="outline"
-              colorScheme="white"
-              fontSize="11px"
-              onClick={addRow}
-            >
-              Add Row
-            </Button></HStack>
+              <Button
+                size="xs"
+                leftIcon={<AddIcon />}
+                variant="outline"
+                colorScheme="white"
+                fontSize="11px"
+                onClick={addRow}
+              >
+                Add Row
+              </Button></HStack>
           </HStack>
         </Box>
         <Box overflowX="auto">

@@ -138,7 +138,7 @@ console.log(location.pathname ,"pathname")
       0
     );
 
-    const grossTotal = itemsTotal + taxTotal + extraLedgersTotal;
+    const grossTotal = itemsTotal + taxTotal - extraLedgersTotal;
     const finalTotal = Math.round(grossTotal);
     const roundOff = finalTotal - grossTotal;
 

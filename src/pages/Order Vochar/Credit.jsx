@@ -14,6 +14,7 @@ import {
   fetchStockItemDetailsByID,
   fetchAssignedLedgerDropdown,
 } from "../../Apis/commanApi";
+import useUsersapi from "../../Apis/GetUsersapi";
 
 const round2 = (n) => Math.round((Number(n || 0) + Number.EPSILON) * 100) / 100;
 
@@ -50,6 +51,8 @@ const Credit = () => {
   const [creditNoteNo, setCreditNoteNo] = useState("");
   const [voucherTypeId, setVoucherTypeId] = useState(null);
   const [orderNo, setOrderNo] = useState("");
+  const { users } = useUsersapi();
+const [employeeUnder, setEmployeeUnder] = useState("");
 
   // ── Mode: "fromSales" | "manual" | null ──
   const [mode, setMode] = useState(null);
@@ -398,6 +401,7 @@ const Credit = () => {
     formDataObj.append("total_amount", totals.totalAmount);
     formDataObj.append("items", JSON.stringify(normalizedItems));
     formDataObj.append("bill_references", JSON.stringify([]));
+    formDataObj.append("employee_under_id", employeeUnder || "");
 
     if (formData.billTImageFile) {
       formDataObj.append("bill_t_image", formData.billTImageFile);
@@ -417,6 +421,7 @@ const Credit = () => {
       if (res?.data?.success) {
         toast({ title: "Credit note submitted for approval", status: "success", duration: 3000, isClosable: true });
         navigate(-1);
+        setEmployeeUnder("");
       } else {
         toast({ title: "Error", description: res?.data?.message || "Failed to submit", status: "error", duration: 3000, isClosable: true });
       }
@@ -490,6 +495,19 @@ const Credit = () => {
               ))}
             </Select>
           </GridItem>
+<GridItem>
+    <Text {...labelStyle}>Employee Under</Text>
+    <Select
+      {...inputStyle}
+      value={employeeUnder}
+      onChange={(e) => setEmployeeUnder(e.target.value)}
+    >
+      <option value="">-- Select --</option>
+      {(users || []).map((u) => (
+        <option key={u.id} value={u.id}>{u.name}</option>
+      ))}
+    </Select>
+  </GridItem>
           <GridItem>
             <Text {...labelStyle}>Is Consignee</Text>
             <Select

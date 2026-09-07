@@ -133,12 +133,13 @@ console.log(location.pathname ,"pathname")
     );
 
     // Extra ledger amounts (e.g. freight, discount, etc.)
-    const extraLedgersTotal = extraLedgers.reduce(
-      (sum, el) => sum + parseFloat(el.amount || 0),
-      0
-    );
+ 
 
-    const grossTotal = itemsTotal + taxTotal - extraLedgersTotal;
+    const extraLedgersTotal =
+  invoice.extraLedgersNet ??
+  extraLedgers.reduce((sum, el) => sum + parseFloat(el.signed_amount ?? el.amount ?? 0), 0);
+
+const grossTotal = itemsTotal + taxTotal + extraLedgersTotal;
     const finalTotal = Math.round(grossTotal);
     const roundOff = finalTotal - grossTotal;
 
@@ -397,15 +398,19 @@ console.log(location.pathname ,"pathname")
                 </Tr>
               </Thead>
               <Tbody>
-                {extraLedgers.map((el, index) => (
-                  <Tr key={el.id} borderBottom="1px solid #ccc">
-                    <Td fontSize="10px">{index + 1}</Td>
-                    <Td fontSize="10px">{el.ledger_name}</Td>
-                    <Td fontSize="10px" textAlign="right">
-                      {parseFloat(el.amount || 0).toFixed(2)}
-                    </Td>
-                  </Tr>
-                ))}
+                {extraLedgers.map((el, index) => {
+  const isPlus = el.operation === "PLUS";
+  const amt = parseFloat(el.amount || 0);
+  return (
+    <Tr key={el.id} borderBottom="1px solid #ccc">
+      <Td fontSize="10px">{index + 1}</Td>
+      <Td fontSize="10px">{el.ledger_name}</Td>
+      <Td fontSize="10px" textAlign="right" color={isPlus ? "green.600" : "red.600"}>
+        {isPlus ? "+" : "-"}{amt.toFixed(2)}
+      </Td>
+    </Tr>
+  );
+})}
               </Tbody>
             </Table>
           </Box>

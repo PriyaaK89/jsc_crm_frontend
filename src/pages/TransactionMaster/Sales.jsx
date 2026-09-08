@@ -862,6 +862,26 @@ const SalesTransaction = () => {
         return () => URL.revokeObjectURL(url);
     }, [billTImage]);
 
+    useEffect(() => {
+    setItems((prev) => {
+        const updated = prev.map((item) => {
+            if (!item.stock_item_id) return item;
+            const gstDuty = Number(item.rate_of_duty || 0);
+            let igst_percent = 0, cgst_percent = 0, sgst_percent = 0;
+            if (taxMode === "IGST") {
+                igst_percent = gstDuty;
+            } else {
+                cgst_percent = gstDuty / 2;
+                sgst_percent = gstDuty / 2;
+            }
+            const merged = { ...item, igst_percent, cgst_percent, sgst_percent };
+            return { ...merged, ...computeItemAmounts(merged) };
+        });
+        recalcTotals(updated, extraLedgers);
+        return updated;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [taxMode]);
     // ─── Render ───────────────────────────────────────────────────────────────
     return (
         <>
@@ -1402,9 +1422,14 @@ const SalesTransaction = () => {
                                 <Th {...thStyle} minW="60px">
                                     Amount
                                 </Th>
-                                <Th {...thStyle} minW="50px">
-                                    IGST %
-                                </Th>
+                                {taxMode === "IGST" ? (
+    <Th {...thStyle} minW="50px">IGST %</Th>
+) : (
+    <>
+        <Th {...thStyle} minW="50px">CGST %</Th>
+        <Th {...thStyle} minW="50px">SGST %</Th>
+    </>
+)}
                                 <Th {...thStyle} minW="60px">
                                     Tax Amt.
                                 </Th>
@@ -1576,29 +1601,54 @@ const SalesTransaction = () => {
                                     </Td>
 
                                     {/* IGST % */}
-                                    <Td {...tdStyle}>
-                                        <Input
-                                            {...inputStyle}
-                                            type="number"
-                                            value={item.igst_percent}
-                                            onChange={(e) =>
-                                                handleItemChange(index, "igst_percent", e.target.value)
-                                            }
-                                            textAlign="right"
-                                            minW="50px"
-                                        />
-                                    </Td>
-
-                                    {/* Tax Amount */}
-                                    <Td {...tdStyle}>
-                                        <Input
-                                            {...readonlyInputStyle}
-                                            value={Number(item.igst_amount || 0).toFixed(2)}
-                                            readOnly
-                                            textAlign="right"
-                                            minW="60px"
-                                        />
-                                    </Td>
+                                {taxMode === "IGST" ? (
+    <Td {...tdStyle}>
+        <Input
+            {...inputStyle}
+            type="number"
+            value={item.igst_percent}
+            onChange={(e) => handleItemChange(index, "igst_percent", e.target.value)}
+            textAlign="right"
+            minW="50px"
+        />
+    </Td>
+) : (
+    <>
+        <Td {...tdStyle}>
+            <Input
+                {...inputStyle}
+                type="number"
+                value={item.cgst_percent}
+                onChange={(e) => handleItemChange(index, "cgst_percent", e.target.value)}
+                textAlign="right"
+                minW="50px"
+            />
+        </Td>
+        <Td {...tdStyle}>
+            <Input
+                {...inputStyle}
+                type="number"
+                value={item.sgst_percent}
+                onChange={(e) => handleItemChange(index, "sgst_percent", e.target.value)}
+                textAlign="right"
+                minW="50px"
+            />
+        </Td>
+    </>
+)}
+<Td {...tdStyle}>
+    <Input
+        {...readonlyInputStyle}
+        value={(
+            Number(item.igst_amount || 0) +
+            Number(item.cgst_amount || 0) +
+            Number(item.sgst_amount || 0)
+        ).toFixed(2)}
+        readOnly
+        textAlign="right"
+        minW="60px"
+    />
+</Td>
 
                                     {/* Total Amount */}
                                     <Td {...tdStyle}>

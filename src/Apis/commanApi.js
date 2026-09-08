@@ -131,31 +131,76 @@ export const fetchSupplierDropdown = async () => {
   }
 };
 
+// export const fetchStockItemDetailsByID = async (itemId) => {
+//   if (!itemId) return null;
+//   try {
+//     const res = await API.get(`${API_ENDPOINTS.getStockItemById}/${itemId}`);
+//     if (res?.status === 200) {
+//       const d = res?.data?.data;
+//       return {
+//         unit_name: d?.base_unit_name || "",
+//         unit_id: d?.unit_id || "",
+//         rate: Number(d?.opening_stock?.rate || 0),
+//         available_qty: Number(d?.opening_stock?.quantity || 0),
+
+//          base_unit_value: Number(d?.base_unit_value || 1),
+//         alt_unit_id: d?.alt_unit_id || "",
+//         alt_unit_value: Number(d?.alternative_unit_value || 0),
+//         alt_unit_name: d?.alternative_unit_name || "",
+
+//         bulk_unit_id: d?.bulk_unit_id || "",
+//         bulk_unit_value: Number(d?.bulk_unit_value || 0),   // e.g. 1
+//         bulk_base_value: Number(d?.bulk_base_value || 0),   // e.g. 20 — the missing piece
+//         bulk_unit_name: d?.bulk_unit_name || "",
+
+//         supercash_price: Number(d?.opening_stock?.supercash_price || 0),
+//         gst_applicable: Number(d?.gst_applicable || 0),
+//         rate_of_duty: Number(d?.rate_of_duty || 0),
+//       };
+//     }
+//   } catch (err) {
+//     console.error("Stock item details fetch error", err);
+//   }
+//   return null;
+// };
+
 export const fetchStockItemDetailsByID = async (itemId) => {
   if (!itemId) return null;
   try {
     const res = await API.get(`${API_ENDPOINTS.getStockItemById}/${itemId}`);
     if (res?.status === 200) {
       const d = res?.data?.data;
+      const gst = d?.gst_details;
+
+      // Prefer gst_details.integrated_tax (source of truth); fall back to rate_of_duty
+      const rateOfDuty = Number(
+        gst?.integrated_tax ?? d?.rate_of_duty ?? 0
+      );
+
       return {
         unit_name: d?.base_unit_name || "",
         unit_id: d?.unit_id || "",
         rate: Number(d?.opening_stock?.rate || 0),
         available_qty: Number(d?.opening_stock?.quantity || 0),
 
-         base_unit_value: Number(d?.base_unit_value || 1),
-        alt_unit_id: d?.alt_unit_id || "",
+        base_unit_value: Number(d?.base_unit_value || 1),
+        alt_unit_id: d?.alternative_unit_id || "",
         alt_unit_value: Number(d?.alternative_unit_value || 0),
         alt_unit_name: d?.alternative_unit_name || "",
 
         bulk_unit_id: d?.bulk_unit_id || "",
-        bulk_unit_value: Number(d?.bulk_unit_value || 0),   // e.g. 1
-        bulk_base_value: Number(d?.bulk_base_value || 0),   // e.g. 20 — the missing piece
+        bulk_unit_value: Number(d?.bulk_unit_value || 0),
+        bulk_base_value: Number(d?.bulk_base_value || 0),
         bulk_unit_name: d?.bulk_unit_name || "",
 
         supercash_price: Number(d?.opening_stock?.supercash_price || 0),
         gst_applicable: Number(d?.gst_applicable || 0),
-        rate_of_duty: Number(d?.rate_of_duty || 0),
+        rate_of_duty: rateOfDuty,
+
+        // optional: keep the split values available directly too,
+        // useful if integrated_tax and (central+state) ever diverge
+        cgst_rate: Number(gst?.central_tax || rateOfDuty / 2),
+        sgst_rate: Number(gst?.state_tax || rateOfDuty / 2),
       };
     }
   } catch (err) {
@@ -163,8 +208,6 @@ export const fetchStockItemDetailsByID = async (itemId) => {
   }
   return null;
 };
-
-
 
 export const fetchLedgerDetailsByID = async (ledgerId) => {
   if (!ledgerId) return null;

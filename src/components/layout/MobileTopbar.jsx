@@ -92,6 +92,7 @@ import {
   MdAttractions,
   MdPayment,
   MdCardTravel,
+  MdOutlinePayments,
 } from "react-icons/md";
 
 import {
@@ -203,6 +204,7 @@ const MobileTopbar = () => {
         {label: "Create Job Role", path: "/hr-mgmt/roles/add-job-role",icon: HiUserGroup,},
         {label: "Create Department",path: "/hr-mgmt/dept/add-department",icon: MdAccountTree,},
         {label: "Upload Employee Expenses", path: "/hr-mgmt/upload-employee-expenses", icon: MdUploadFile },
+        { label: "Employee Payment Hold", path: "/hr-mgmt/emp-payment-hold", icon: MdOutlinePayments },
         {label:"Upload Salary Slip",path:'/hr-mgmt/upload-emp-salary',icon: RiFileList3Line,},
        {label:"Change Password", path:"/hr-mgmt/change-password", icon:FaKey}
 

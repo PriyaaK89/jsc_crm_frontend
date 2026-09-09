@@ -127,10 +127,14 @@ const EmpSalaryReport = () => {
   const totalTravellingAllowance = dailySalry.reduce((total, emp) => {
     return total + Number(emp.travelling_allowance || 0);
   }, 0).toFixed(2);
-  // ------------------------------------------daily allowance-----------
-  const totalDailyAllowance = dailySalry.reduce((total, emp) => {
-    return total + Number(emp.daily_allowance || 0);
-  }, 0).toFixed(2);
+// ------------------------------------------daily allowance with doc-----------
+const totalDailyAllowanceWithDoc = dailySalry.reduce((total, emp) => {
+  return total + Number(emp.daily_allowance_with_doc || 0);
+}, 0).toFixed(2);
+// ------------------------------------------daily allowance without doc-----------
+const totalDailyAllowanceWithoutDoc = dailySalry.reduce((total, emp) => {
+  return total + Number(emp.daily_allowance_without_doc || 0);
+}, 0).toFixed(2);
   // ------------------------------------------gross salary-----------
   const totalGrossSalary = dailySalry.reduce((total, emp) => {
     return total + Number(emp.gross_salary || 0);
@@ -165,13 +169,13 @@ const EmpSalaryReport = () => {
     const worksheet = workbook.addWorksheet("Salary Report");
 
     //  TITLE
-    worksheet.mergeCells("A1:K1");
+    worksheet.mergeCells("A1:L1");
     worksheet.getCell("A1").value = "Employee Salary Report";
     worksheet.getCell("A1").font = { size: 16, bold: true };
     worksheet.getCell("A1").alignment = { horizontal: "center" };
 
     //  Filters info
-    worksheet.mergeCells("A2:K2");
+    worksheet.mergeCells("A2:L2");
     worksheet.getCell("A2").value = `Date: ${filters.startDate || "-"} to ${filters.endDate || "-"}`;
     worksheet.getCell("A2").alignment = { horizontal: "center" };
 
@@ -184,7 +188,8 @@ const EmpSalaryReport = () => {
       "Per Day Salary",
       "Basic Salary",
       "Travelling Allowance",
-      "Daily Allowance",
+       "DA (With Doc)",
+  "DA (Without Doc)",
       "Gross Salary",
       "Net Salary",
       "Created At",
@@ -213,7 +218,8 @@ const EmpSalaryReport = () => {
         Number(emp.per_day_salary),
         Number(emp.basic_salary),
         Number(emp.travelling_allowance),
-        Number(emp.daily_allowance),
+         Number(emp.daily_allowance_with_doc),
+    Number(emp.daily_allowance_without_doc),
         Number(emp.gross_salary),
         Number(emp.net_salary),
         formatDate(emp.created_at),
@@ -229,7 +235,8 @@ const EmpSalaryReport = () => {
       Number(totalPerDaySalary),
       Number(totalBasicSalary),
       Number(totalTravellingAllowance),
-      Number(totalDailyAllowance),
+     Number(totalDailyAllowanceWithDoc),
+  Number(totalDailyAllowanceWithoutDoc),
       Number(totalGrossSalary),
       Number(totalNetSalary),
       "",
@@ -240,9 +247,9 @@ const EmpSalaryReport = () => {
     });
 
     //  Currency format
-    ["E", "F", "G", "H", "I", "J"].forEach((col) => {
-      worksheet.getColumn(col).numFmt = "₹#,##0.00";
-    });
+    ["E", "F", "G", "H", "I", "J", "K"].forEach((col) => {
+  worksheet.getColumn(col).numFmt = "₹#,##0.00";
+});
 
     //  Column Width
     worksheet.columns.forEach((col) => {
@@ -288,35 +295,25 @@ const EmpSalaryReport = () => {
             <Select
               placeholder="Select User"
               value={filters.userId}
-              onChange={(e) => setFilters({ ...filters, userId: e.target.value })}
-            >
+              onChange={(e) => setFilters({ ...filters, userId: e.target.value })} >
               {users.map((user) => (
                 <option key={user.id} value={user.id}>
                   {user.name}
                 </option>
               ))}
             </Select>
-
-
           </FormControl>
 
           <FormControl isInvalid={!!errors.startDate}>
             <FormLabel {...labelStyles}>Start Date</FormLabel>
-            <Input
-              type="date"
-              value={filters.startDate}
-              onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-            />
-
+            <Input type="date" value={filters.startDate}
+              onChange={(e) => setFilters({ ...filters, startDate: e.target.value })} />
           </FormControl>
 
           <FormControl isInvalid={!!errors.endDate}>
             <FormLabel {...labelStyles}>End Date</FormLabel>
-            <Input
-              type="date"
-              value={filters.endDate}
-              onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-            />
+            <Input type="date" value={filters.endDate}
+              onChange={(e) => setFilters({ ...filters, endDate: e.target.value })} />
           </FormControl>
 
           <Button
@@ -324,10 +321,8 @@ const EmpSalaryReport = () => {
             isLoading={loading}
             onClick={handleSearchClick}
             w="full" fontWeight="500" fontSize="14px"
-            p={{ base: "2px", md: "1px" }}
-          >
+            p={{ base: "2px", md: "1px" }} >
             View Report
-
           </Button>
         </SimpleGrid>
 
@@ -342,34 +337,18 @@ const EmpSalaryReport = () => {
               <Box>
 
                 <Box textAlign="end" mr={5}>
-                  <Button
-                    rightIcon={<FiUpload />}
-                    colorScheme="green" 
-                    onClick={downloadExcel}
-
-                  >
+                  <Button rightIcon={<FiUpload />} colorScheme="green"  onClick={downloadExcel}>
                     Export
                   </Button>
                 </Box>
 
-                <Box
-                  borderWidth="1px"
-                  borderColor="gray.300"
-                  borderRadius="lg"
-                  mt={5}
-                  maxW="100%"
-                  overflowX="auto"
-                >
-
+                <Box borderWidth="1px" borderColor="gray.300" borderRadius="lg"
+                  mt={5} maxW="100%" overflowX="auto">
 
                   <TableContainer overflowX="auto" whiteSpace="nowrap" sx={{
                     "&::-webkit-scrollbar": { width: "8px", height: '8px' },
-                    "&::-webkit-scrollbar-thumb": {
-                      width: "8px", backgroundColor: "#7A7A7A", borderRadius: "4px",
-                    },
-                    "&::-webkit-scrollbar-track": {
-                      background: "#E8E8E8", borderRadius: "4px",
-                    },
+                    "&::-webkit-scrollbar-thumb": { width: "8px", backgroundColor: "#7A7A7A", borderRadius: "4px", },
+                    "&::-webkit-scrollbar-track": { background: "#E8E8E8", borderRadius: "4px", },
                   }}>
 
                     <Table
@@ -377,28 +356,27 @@ const EmpSalaryReport = () => {
                       minW="1000px"
                       variant="simple"
                       whiteSpace="nowrap"
-                      overflowX="auto" className="productsTable"
-
-                    >
+                      overflowX="auto" className="productsTable" >
 
                       <Thead bg="gray.50" >
                         <Tr >
                           {[
-                            "Employee Id",
+                            "Emp Id",
                             "Salary Date",
                             "Attendance Type",
                             "Working Hours",
                             "Per Day Salary",
                             "Basic Salary",
                             "Travelling Allowance",
-                            "Daily Allowance",
+                            "DA (With Doc)",
+                            "DA (Without Doc)",
                             "Gross Salary",
                             "Net Salary",
                             "Created At"
                           ].map((header, index) => (
                             <Th key={index} p={5} color='#2C2D33'  >
                               <Flex align="center" gap="4px">
-                                <Text fontSize={{ base: "14px", md: "14px" }} fontWeight='500'>{header}</Text>
+                                <Text fontSize={{ base: "12px", md: "13px" }} fontWeight='500'>{header}</Text>
                                 <Img src={sort_icon} alt="sort" />
                               </Flex>
                             </Th>
@@ -417,7 +395,8 @@ const EmpSalaryReport = () => {
                                 <Td>{emp.per_day_salary}</Td>
                                 <Td>{emp.basic_salary}</Td>
                                 <Td>{emp.travelling_allowance}</Td>
-                                <Td>{emp.daily_allowance}</Td>
+                                <Td>{emp.daily_allowance_with_doc}</Td>
+                                <Td>{emp.daily_allowance_without_doc}</Td>
                                 <Td>{emp.gross_salary}</Td>
                                 <Td>{emp.net_salary}</Td>
                                 <Td>{formatDate(emp.created_at)}</Td>
@@ -431,7 +410,8 @@ const EmpSalaryReport = () => {
                               <Td fontWeight="bold"> ₹ {totalPerDaySalary}</Td>
                               <Td fontWeight="bold"> ₹ {totalBasicSalary} </Td>
                               <Td fontWeight="bold"> ₹ {totalTravellingAllowance}</Td>
-                              <Td fontWeight="bold"> ₹ {totalDailyAllowance}</Td>
+                              <Td fontWeight="bold">₹ {totalDailyAllowanceWithDoc}</Td>
+  <Td fontWeight="bold">₹ {totalDailyAllowanceWithoutDoc}</Td>
                               <Td fontWeight="bold">₹ {totalGrossSalary}</Td>
                               <Td fontWeight="bold"> ₹ {totalNetSalary}</Td>
                               <Td colSpan={5}></Td>

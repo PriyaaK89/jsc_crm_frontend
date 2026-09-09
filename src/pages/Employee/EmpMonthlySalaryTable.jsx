@@ -14,7 +14,8 @@ const EmpMonthlySalaryTable = () => {
     const [totals, setTotals] = useState({
         salary: 0,
         ta: 0,
-        da: 0,
+        da_with_doc: 0,
+        da_without_doc: 0,
         hotel: 0,
         other: 0,
         toll: 0,
@@ -312,13 +313,17 @@ const EmpMonthlySalaryTable = () => {
                 </Box>
 
                 <Box p={3} borderWidth="1px" borderRadius="md" minW="120px">
-                    <Text fontSize="sm"> Total T.A </Text>
+                    <Text fontSize="sm"> Total TA </Text>
                     <Text fontWeight="bold"> ₹ {totals.ta} </Text>
                 </Box>
 
                 <Box p={3} borderWidth="1px" borderRadius="md" minW="120px">
-                    <Text fontSize="sm"> Total D.A </Text>
-                    <Text fontWeight="bold"> ₹ {totals.da} </Text>
+                    <Text fontSize="sm"> Total DA (With Doc) </Text>
+                    <Text fontWeight="bold"> ₹ {totals.da_with_doc} </Text>
+                </Box>
+                <Box p={3} borderWidth="1px" borderRadius="md" minW="120px">
+                    <Text fontSize="sm"> Total DA (Without Doc) </Text>
+                    <Text fontWeight="bold"> ₹ {totals.da_without_doc} </Text>
                 </Box>
 
                 <Box p={3} borderWidth="1px" borderRadius="md" minW="150px">
@@ -364,7 +369,8 @@ const EmpMonthlySalaryTable = () => {
                             <Th>Salary</Th>
                             <Th>Total Reading</Th>
                             <Th>T.A</Th>
-                            <Th>D.A</Th>
+                            <Th>DA (With Doc)</Th>
+                            <Th>DA (Without Doc)</Th>
                             <Th>Hotel Expense</Th>
                             <Th>Other Expense</Th>
                             <Th>Bus/Train/Toll</Th>
@@ -406,7 +412,8 @@ const EmpMonthlySalaryTable = () => {
 
                                         <Td>₹ {item.ta}</Td>
 
-                                        <Td>₹ {item.da}</Td>
+                                        <Td>₹ {item.da_with_doc}</Td>
+                                        <Td>₹ {item.da_without_doc}</Td>
 
                                         <Td>
                                             {Number(item.hotel_expense) > 0 &&
@@ -480,7 +487,8 @@ const EmpMonthlySalaryTable = () => {
                                     <Td>₹ {totals.salary || 0}</Td>
                                     <Td>-</Td>
                                     <Td>₹ {totals.ta || 0}</Td>
-                                    <Td>₹ {totals.da || 0}</Td>
+                                    <Td>₹ {totals.da_with_doc || 0}</Td>
+                                    <Td>₹ {totals.da_without_doc || 0}</Td>
                                     <Td>₹ {totals.hotel || 0}</Td>
                                     <Td>₹ {totals.other || 0}</Td>
                                     <Td>₹ {totals.toll || 0}</Td>
@@ -492,63 +500,9 @@ const EmpMonthlySalaryTable = () => {
             </Box>
 
             <Flex justify="space-between" align="center" mt={5} flexWrap="wrap" gap={3}>
-
                 <Text fontSize="sm">
-                    Total Records :{" "}
-                    <b> {pagination.total_records} </b>
+                    Total Records :{" "} <b> {pagination.total_records} </b>
                 </Text>
-
-                {/* <HStack>
-
-                    <Button
-                        size="sm"
-                        isDisabled={
-                            pagination.current_page ===
-                            1
-                        }
-                        onClick={() =>
-                            setFilters((prev) => ({
-                                ...prev,
-                                page:
-                                    prev.page - 1,
-                            }))
-                        }
-                    >
-                        Previous
-                    </Button>
-
-                    <Text fontSize="sm">
-
-                        Page{" "}
-                        <b>
-                            { pagination.current_page }
-                        </b>{" "}
-                        of{" "}
-                        <b>
-                            { pagination.total_pages }
-                        </b>
-
-                    </Text>
-
-                    <Button
-                        size="sm"
-                        isDisabled={
-                            pagination.current_page ===
-                            pagination.total_pages
-                        }
-                        onClick={() =>
-                            setFilters((prev) => ({
-                                ...prev,
-                                page:
-                                    prev.page + 1,
-                            }))
-                        }
-                    >
-                        Next
-                    </Button>
-
-                </HStack> */}
-
             </Flex>
 
         </Box>

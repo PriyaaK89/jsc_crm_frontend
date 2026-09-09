@@ -44,13 +44,14 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 const LABELS = {
   SALARY: "Salary",
   TA: "TA",
-  DA: "DA",
+  DA_WITH_DOC: "DA (With Doc)",
+  DA_WITHOUT_DOC: "DA (Without Doc)",
   HOTEL: "Hotel Expense",
   OTHER: "Other Expense",
   BUS_TRAIN_TOLL: "Bus/Train/Toll Expense",
 };
 
-const TYPE_ORDER = ["SALARY", "TA", "DA", "HOTEL", "OTHER", "BUS_TRAIN_TOLL"];
+const TYPE_ORDER = ["SALARY", "TA", "DA_WITH_DOC", "DA_WITHOUT_DOC", "HOTEL", "OTHER", "BUS_TRAIN_TOLL"];
 
 // Modal step machine:
 // action: 'EDIT' | 'HOLD' | 'UNHOLD'

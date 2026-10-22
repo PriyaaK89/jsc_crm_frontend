@@ -1,26 +1,7 @@
 import React, { useEffect, useState } from "react";
-
-import {
-  Box,
-  Button,
-  Divider,
-  Flex,
-  FormControl,
-  FormLabel,
-  Grid,
-  GridItem,
-  Heading,
-  Input,
-  Select,
-  Textarea,
-  useToast,
-  VStack,
-  Text,
-  HStack,
-} from "@chakra-ui/react";
-
+import { Box, Button, Divider, Flex, FormControl, FormLabel, Grid, GridItem, Input,
+  Select, useToast, VStack, Text, HStack,} from "@chakra-ui/react";
 import { useNavigate, useParams } from "react-router-dom";
-
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 
@@ -29,25 +10,21 @@ const EditStockItem = () => {
   const { id } = useParams();
 
   const toast = useToast();
-
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(false);
-
   const [stockGroups, setStockGroups] = useState([]);
   const [stockCategories, setStockCategories] = useState([]);
   const [units, setUnits] = useState([]);
   const [godowns, setGodowns] = useState([]);
-
   const [selectedGroup, setSelectedGroup] = useState("");
+  const [crops, setCrops] = useState([]);
+  const [currentCrop, setCurrentCrop] = useState(null);
 
   const [formData, setFormData] = useState({
-
     item_name: "",
-
     stock_group_id: "",
     stock_category_id: "",
-
+    crop_id: "",
     unit_id: "",
 
     alternative_unit_id: "",
@@ -72,6 +49,8 @@ const EditStockItem = () => {
     rate_of_duty: "",
 
     description: "",
+    is_returnable: 0,
+    returnable_percentage: "",
 
     gst_details: {
       gst_description: "",
@@ -103,26 +82,19 @@ const EditStockItem = () => {
   const getStockDetailsById = async () => {
 
     try {
-
       setLoading(true);
-
-      const response = await API.get(
-        `${API_ENDPOINTS.getStockItemById}/${id}`
-      );
+      const response = await API.get(`${API_ENDPOINTS.getStockItemById}/${id}`);
 
       if (response?.status === 200) {
-
         const data = response?.data?.data;
-
+        setCurrentCrop(data?.crop_id ? { id: data.crop_id, crop_name: data.crop_name } : null);
         setSelectedGroup(data?.stock_group_id);
 
         setFormData({
-
           item_name: data?.item_name || "",
-
           stock_group_id: data?.stock_group_id || "",
           stock_category_id: data?.stock_category_id || "",
-
+          crop_id: data?.crop_id ? String(data.crop_id) : "",
           unit_id: data?.unit_id || "",
 
           alternative_unit_id: data?.alternative_unit_id || "",
@@ -136,44 +108,26 @@ const EditStockItem = () => {
           maintain_in_batches: data?.maintain_in_batches || 0,
           track_mfg_date: data?.track_mfg_date || 0,
           use_expiry_dates: data?.use_expiry_dates || 0,
-
           set_standard_rates: data?.set_standard_rates || 0,
           enable_cost_tracking: data?.enable_cost_tracking || 0,
-
           gst_applicable: data?.gst_applicable || 0,
           set_gst_details: data?.set_gst_details || 0,
-
           type_of_supply: data?.type_of_supply || "Goods",
-
           rate_of_duty: data?.rate_of_duty || "",
-
           description: data?.description || "",
+          is_returnable: data?.is_returnable || 0,
+          returnable_percentage: data?.returnable_percentage ?? "",
 
           gst_details: {
+            gst_description: data?.gst_details?.description || "",
+            hsn_sac: data?.gst_details?.hsn_sac || "",
+            is_non_gst_goods: data?.gst_details?.is_non_gst_goods || 0,
+            calculation_type: data?.gst_details?.calculation_type || "On Value",
+            taxability: data?.gst_details?.taxability || "Taxable",
+            integrated_tax: data?.gst_details?.integrated_tax || "",
+            central_tax: data?.gst_details?.central_tax || "",
+            state_tax: data?.gst_details?.state_tax || "",
 
-            gst_description:
-              data?.gst_details?.description || "",
-
-            hsn_sac:
-              data?.gst_details?.hsn_sac || "",
-
-            is_non_gst_goods:
-              data?.gst_details?.is_non_gst_goods || 0,
-
-            calculation_type:
-              data?.gst_details?.calculation_type || "On Value",
-
-            taxability:
-              data?.gst_details?.taxability || "Taxable",
-
-            integrated_tax:
-              data?.gst_details?.integrated_tax || "",
-
-            central_tax:
-              data?.gst_details?.central_tax || "",
-
-            state_tax:
-              data?.gst_details?.state_tax || "",
 
             // cess:
             //   data?.gst_details?.cess || "",
@@ -194,9 +148,7 @@ const EditStockItem = () => {
       }
 
     } catch (error) {
-
       console.log(error);
-
       toast({
         title: "Error",
         description: "Failed to fetch stock item details",
@@ -205,74 +157,52 @@ const EditStockItem = () => {
         isClosable: true,
       });
 
-    } finally {
-
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   // ========================= GET DROPDOWN DATA =========================
 
   const getStockGroups = async () => {
-
     try {
-
-      const response = await API.get(
-        API_ENDPOINTS.stock_group_list
-      );
-
+      const response = await API.get(API_ENDPOINTS.stock_group_list);
       setStockGroups(response?.data?.data || []);
-
     } catch (error) {
-
       console.log(error);
     }
   };
 
   const getStockCategories = async () => {
-
     try {
-
-      const response = await API.get(
-        `${API_ENDPOINTS.get_categories_by_stock_group}/${selectedGroup}`
-      );
-
+      const response = await API.get(`${API_ENDPOINTS.get_categories_by_stock_group}/${selectedGroup}`);
       setStockCategories(response?.data?.data || []);
-
     } catch (error) {
-
       console.log(error);
     }
   };
 
   const getUnits = async () => {
-
     try {
-
-      const response = await API.get(
-        API_ENDPOINTS.getUnitList
-      );
-
+      const response = await API.get(API_ENDPOINTS.getUnitList);
       setUnits(response?.data?.data || []);
-
     } catch (error) {
-
       console.log(error);
     }
   };
 
   const getGodowns = async () => {
-
     try {
-
-      const response = await API.get(
-        API_ENDPOINTS.godown_list
-      );
-
+      const response = await API.get(API_ENDPOINTS.godown_list);
       setGodowns(response?.data?.data || []);
-
     } catch (error) {
+      console.log(error);
+    }
+  };
 
+  const getCrops = async () => {
+    try {
+      const response = await API.get(API_ENDPOINTS.get_crops_list);
+      setCrops(response?.data?.data || []);
+    } catch (error) {
       console.log(error);
     }
   };
@@ -302,94 +232,90 @@ const EditStockItem = () => {
 
   const handleNestedChange = (section, e) => {
 
-  const { name, value } = e.target;
+    const { name, value } = e.target;
 
-  setFormData((prev) => {
+    setFormData((prev) => {
 
-    const updatedSection = {
-      ...prev[section],
-      [name]: value,
-    };
+      const updatedSection = {
+        ...prev[section],
+        [name]: value,
+      };
 
-    // Auto calculate amount
-    if (
-      section === "opening_stock" &&
-      (name === "quantity" || name === "rate")
-    ) {
+      // Auto calculate amount
+      if (
+        section === "opening_stock" &&
+        (name === "quantity" || name === "rate")
+      ) {
 
-      const quantity =
-        Number(
-          name === "quantity"
-            ? value
-            : updatedSection.quantity
-        ) || 0;
+        const quantity = Number(name === "quantity" ? value : updatedSection.quantity) || 0;
 
-      const rate =
-        Number(
-          name === "rate"
-            ? value
-            : updatedSection.rate
-        ) || 0;
+        const rate = Number(name === "rate" ? value : updatedSection.rate) || 0;
 
-      updatedSection.amount = quantity * rate;
-    }
+        updatedSection.amount = quantity * rate;
+      }
 
-    return {
-      ...prev,
-      [section]: updatedSection,
-    };
-  });
-};
+      return {
+        ...prev,
+        [section]: updatedSection,
+      };
+    });
+  };
 
   // ========================= UPDATE STOCK ITEM =========================
 
   const handleEditStockItem = async () => {
-
+    if (!formData.crop_id) {
+      toast({
+        title: "Required Field",
+        description: "Please select a crop.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return;
+    }
+    if (Number(formData.is_returnable) === 1) {
+      const pct = Number(formData.returnable_percentage);
+      if (formData.returnable_percentage === "" || pct < 0 || pct > 100) {
+        toast({
+          title: "Invalid Value",
+          description: "Returnable percentage must be between 0 and 100.",
+          status: "warning",
+          duration: 3000,
+          isClosable: true,
+          position: "top-right",
+        });
+        return;
+      }
+    }
     try {
 
       setLoading(true);
 
       const payload = {
-
         ...formData,
-
-        maintain_in_batches:
-          Number(formData.maintain_in_batches),
-
-        track_mfg_date:
-          Number(formData.track_mfg_date),
-
-        use_expiry_dates:
-          Number(formData.use_expiry_dates),
-
-        set_standard_rates:
-          Number(formData.set_standard_rates),
-
-        enable_cost_tracking:
-          Number(formData.enable_cost_tracking),
-
-        gst_applicable:
-          Number(formData.gst_applicable),
-
-        set_gst_details:
-          Number(formData.set_gst_details),
+        crop_id: formData.crop_id === "" ? null : Number(formData.crop_id),
+        maintain_in_batches: Number(formData.maintain_in_batches),
+        track_mfg_date: Number(formData.track_mfg_date),
+        use_expiry_dates: Number(formData.use_expiry_dates),
+        set_standard_rates: Number(formData.set_standard_rates),
+        enable_cost_tracking: Number(formData.enable_cost_tracking),
+        gst_applicable: Number(formData.gst_applicable),
+        set_gst_details: Number(formData.set_gst_details),
+        is_returnable: Number(formData.is_returnable),
+        returnable_percentage: formData.returnable_percentage === "" ? null : Number(formData.returnable_percentage),
 
         gst_details: {
-
           ...formData.gst_details,
+          is_non_gst_goods: Number(formData.gst_details.is_non_gst_goods),
 
-          is_non_gst_goods:
-            Number(formData.gst_details.is_non_gst_goods),
         },
       };
 
-      const response = await API.put(
-        `${API_ENDPOINTS.updateStockItem}/${id}`,
-        payload
-      );
+      const response = await API.put(`${API_ENDPOINTS.updateStockItem}/${id}`, payload);
 
       if (response?.status === 200) {
-
         toast({
           title: "Success",
           description: "Stock item updated successfully",
@@ -424,14 +350,11 @@ const EditStockItem = () => {
   // ========================= USE EFFECT =========================
 
   useEffect(() => {
-
     getStockDetailsById();
-
     getStockGroups();
-
     getUnits();
-
     getGodowns();
+    getCrops();
 
   }, []);
 
@@ -550,6 +473,26 @@ const EditStockItem = () => {
               </FormControl>
 
             </GridItem>
+            <GridItem>
+              <FormControl>
+                <FormLabel>Crop</FormLabel>
+                <Select
+                  placeholder="Select Crop (optional)"
+                  name="crop_id"
+                  value={formData.crop_id}
+                  onChange={handleChange}
+                >
+                  {currentCrop && !crops.some((c) => String(c.id) === String(currentCrop.id)) && (
+                    <option value={currentCrop.id}>{currentCrop.crop_name} (inactive)</option>
+                  )}
+                  {crops?.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.crop_name}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+            </GridItem>
 
             <GridItem>
 
@@ -601,53 +544,41 @@ const EditStockItem = () => {
 
             <FormControl>
 
-              <FormLabel>
-                Alternative Unit
-              </FormLabel>
+              <FormLabel> Alternative Unit </FormLabel>
 
-              <Select
-                name="alternative_unit_id"
+              <Select name="alternative_unit_id"
                 value={formData.alternative_unit_id}
-                onChange={handleChange}
-              >
+                onChange={handleChange} >
 
-                <option value="">
-                  Select Alternative Unit
-                </option>
+                <option value=""> Select Alternative Unit </option>
 
                 {units?.map((item) => (
-                  <option
-                    key={item.id}
-                    value={item.id}
-                  >
-                    {item.symbol}
-                  </option>
+                  <option key={item.id} value={item.id} > {item.symbol} </option>
                 ))}
 
               </Select>
-
             </FormControl>
             <HStack>
 
-            <Text fontSize="14px" color="gray.700" marginTop="20px">Where</Text>
+              <Text fontSize="14px" color="gray.700" marginTop="20px">Where</Text>
 
-            <FormControl>
+              <FormControl>
 
-              <FormLabel>
-                Alternative Unit Value
-              </FormLabel>
+                <FormLabel>
+                  Alternative Unit Value
+                </FormLabel>
 
-              <Input
-                type="number"
-                placeholder="Enter alternative unit value"
-                name="alternative_unit_value"
-                value={formData.alternative_unit_value}
-                onChange={handleChange}
-              />
+                <Input
+                  type="number"
+                  placeholder="Enter alternative unit value"
+                  name="alternative_unit_value"
+                  value={formData.alternative_unit_value}
+                  onChange={handleChange}
+                />
 
-            </FormControl>
-            <Text fontSize="14px" color="gray.700" marginTop="20px">=</Text>
-         </HStack>
+              </FormControl>
+              <Text fontSize="14px" color="gray.700" marginTop="20px">=</Text>
+            </HStack>
 
             <FormControl>
 
@@ -664,6 +595,7 @@ const EditStockItem = () => {
               />
 
             </FormControl>
+
 
           </Grid>
 
@@ -710,27 +642,27 @@ const EditStockItem = () => {
 
             </FormControl>
 
-<HStack>
-    <Text fontSize="14px" color="gray.700" marginTop="20px">Where</Text>
-     <FormControl>
+            <HStack>
+              <Text fontSize="14px" color="gray.700" marginTop="20px">Where</Text>
+              <FormControl>
 
-              <FormLabel>
-                Bulk Unit Value
-              </FormLabel>
+                <FormLabel>
+                  Bulk Unit Value
+                </FormLabel>
 
-              <Input
-                type="number"
-                placeholder="Enter bulk unit value"
-                name="bulk_unit_value"
-                value={formData.bulk_unit_value}
-                onChange={handleChange}
-              />
+                <Input
+                  type="number"
+                  placeholder="Enter bulk unit value"
+                  name="bulk_unit_value"
+                  value={formData.bulk_unit_value}
+                  onChange={handleChange}
+                />
 
-            </FormControl>
-    <Text fontSize="14px" color="gray.700" marginTop="20px">=</Text>
+              </FormControl>
+              <Text fontSize="14px" color="gray.700" marginTop="20px">=</Text>
 
-</HStack>
-           
+            </HStack>
+
 
             <FormControl>
 
@@ -954,6 +886,37 @@ const EditStockItem = () => {
               </Select>
 
             </FormControl>
+            <FormControl>
+              <FormLabel>Item is Returnable</FormLabel>
+              <Select
+                name="is_returnable"
+                value={formData.is_returnable}
+                onChange={(e) => {
+                  handleChange(e);
+                  if (Number(e.target.value) === 0) {
+                    setFormData((prev) => ({ ...prev, returnable_percentage: "" }));
+                  }
+                }}
+              >
+                <option value={1}>Yes</option>
+                <option value={0}>No</option>
+              </Select>
+            </FormControl>
+
+            {Number(formData.is_returnable) === 1 && (
+              <FormControl isRequired>
+                <FormLabel>Returnable Percentage</FormLabel>
+                <Input
+                  type="number"
+                  name="returnable_percentage"
+                  value={formData.returnable_percentage}
+                  onChange={handleChange}
+                  placeholder="Enter percentage"
+                  min={0}
+                  max={100}
+                />
+              </FormControl>
+            )}
 
           </Grid>
 
@@ -1234,58 +1197,32 @@ const EditStockItem = () => {
                 Quantity
               </FormLabel>
 
-              <Input
-                type="number"
-                placeholder="Enter quantity"
-                name="quantity"
-                value={formData.opening_stock.quantity}
-                onChange={(e) =>
-                  handleNestedChange("opening_stock", e)
-                }
-              />
-
+              <Input type="number" placeholder="Enter quantity"
+                name="quantity" value={formData.opening_stock.quantity}
+                onChange={(e) => handleNestedChange("opening_stock", e) } />
             </FormControl>
 
             <FormControl>
               <FormLabel> Rate </FormLabel>
-              <Input
-                type="number"
-                placeholder="Enter rate"
-                name="rate"
-                value={formData.opening_stock.rate}
-                onChange={(e) =>
-                  handleNestedChange("opening_stock", e)
-                }
-              />
+              <Input type="number" placeholder="Enter rate"
+                name="rate" value={formData.opening_stock.rate}
+                onChange={(e) => handleNestedChange("opening_stock", e) } />
             </FormControl>
 
             <FormControl>
               <FormLabel> Supercash Price </FormLabel>
-              <Input
-                type="number"
-                placeholder="Enter Supercash Price"
-                name="supercash_price"
-                value={formData.opening_stock.supercash_price}
-                onChange={(e) =>
-                  handleNestedChange("opening_stock", e)
-                }
-              />
+              <Input type="number" placeholder="Enter Supercash Price"
+                name="supercash_price" value={formData.opening_stock.supercash_price}
+                onChange={(e) => handleNestedChange("opening_stock", e) } />
             </FormControl>
 
             <FormControl>
               <FormLabel>Amount</FormLabel>
-              <Input 
-              type="number"
-              name="amount"
-              value={formData.opening_stock.amount}
-              readOnly
-              />
+              <Input type="number" name="amount"
+                value={formData.opening_stock.amount} readOnly />
             </FormControl>
-
           </Grid>
-
         </Box>
-
         <Divider />
 
         {/* ================= DESCRIPTION ================= */}
@@ -1300,26 +1237,13 @@ const EditStockItem = () => {
         {/* ================= BUTTON ================= */}
 
         <Flex justify="flex-end">
-
-          <Button
-            colorScheme="blue"
-            onClick={handleEditStockItem}
-            isLoading={loading}
-             bg="#237086"
-                        fontWeight="500"
-                        fontSize="14px"
-                        color="white"
-                        _hover={{ bg: "#1B5A6B", }}
-                        px={8}
-                        borderRadius="12px"
-          >
+          <Button colorScheme="blue" onClick={handleEditStockItem} isLoading={loading}
+            bg="#237086" fontWeight="500" fontSize="14px" color="white"
+            _hover={{ bg: "#1B5A6B", }} px={8} borderRadius="12px" >
             Update Stock Item
           </Button>
-
         </Flex>
-
       </VStack>
-
     </Box>
   );
 };

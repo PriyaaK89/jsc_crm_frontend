@@ -120,12 +120,22 @@ import EmPaymentHoldLayout from "../components/layout/HRMaster/EmPaymentHoldLayo
 import TransactionDocuments from "../components/layout/MiscActions/TransactionDocuments";
 import PurchaseApprovalLayout from "../components/layout/OrderVoucher/PurchaseApprovalLayout";
 import PenaltyLayout from "../components/layout/MiscActions/PenalityLayout";
+import HolidayCalendarLayout from "../components/layout/HRMaster/HolidayCalendarLayout";
+import YearlyHolidayCalendarLayout from "../pages/HrMgmt/YearlyHolidayCalenderList";
+import ViewDemoRequestLayout from "../pages/ProductDemo/ViewDemoRequest";
+import CreateCropLayout from "../components/ProductDemo/Crop/CreateCropLayout";
+import DemoResultsLayout from "../components/ProductDemo/DemoResultsLayout";
+import DemoResultsList from "../pages/ProductDemo/DemoResultsList";
+import DemoResultsView from "../pages/ProductDemo/DemoResultsView";
+import ViewAllIndividualTargetsLayout from "../components/layout/BusinessDevelopment/ViewAllIndividualTragetslayout";
+import AssignTaskToEmployeeLayout from "../components/layout/MiscActions/AssignTaskToEmployeeLayout";
+import AssignAreaToEmployeeLayout from "../components/layout/MiscActions/AssignAreaLayout";
 
 
 function App() {
   return (
     <Router>
-        <ToastContainer />
+      <ToastContainer />
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<UserLogin />} />
@@ -136,9 +146,11 @@ function App() {
         <Route path="/hr-mgmt/roles/add-job-role" element={<JobRoleLayout />} />
         <Route path="/hr-mgmt/view-employee-list" element={<EmployeeListLayout />} />
         <Route path="/hr-mgmt/upload-emp-salary" element={<UploadSalarySlipLayout />} />
-        <Route path="/hr-mgmt/emp-payment-hold" element={<EmPaymentHoldLayout/>}/>
+        <Route path="/hr-mgmt/emp-payment-hold" element={<EmPaymentHoldLayout />} />
         <Route path="/upload-documents" element={<UploadEmpDocumentsLayout />} />
         <Route path='/hr-mgmt/emp-salary-report' element={<EmployeeSalaryReportLayout />} />
+        <Route path='/hr-mgmt/holiday-calendar' element={<HolidayCalendarLayout />} />
+        <Route path='/hr-mgmt/yearly-holiday-calendar-list' element={<YearlyHolidayCalendarLayout />} />
 
         <Route path="/edit-employee-details/:empId" element={<EditEmployeePage />} />
         <Route path="/view-employee-details/:id" element={<ViewEmpDetailsLayout />} />
@@ -181,8 +193,9 @@ function App() {
         <Route path="/business-development/assign-target-rsm" element={<AssignTargetRSMLayout />} />
         <Route path="/business-development/view-assigned-targets" element={<ViewAssignedTargets />} />
         <Route path="/business-development/view-employee-targets" element={<ViewEmployeeTargets />} />
-        <Route path="/business-development/view-visit-target" element={<VisitTargetAssignmentLayout/>}/>
-        <Route path="/business-development/visit-progress-history" element={<ProgressHistory/>}/>
+        <Route path="/business-development/view-visit-target" element={<VisitTargetAssignmentLayout />} />
+        <Route path="/business-development/visit-progress-history" element={<ProgressHistory />} />
+        <Route path="/business-development/view-individual-target-list" element={<ViewAllIndividualTargetsLayout/>} />
 
         <Route path="/company-master/create-company" element={<CreateCompanyLayout />} />
         <Route path="/company-master/comapny-list" element={<CompanyListLayout />} />
@@ -211,17 +224,17 @@ function App() {
         <Route path="/order-vochor/payment" element={<PaymentLayout />} />
         <Route path="/order-vochor/purchase" element={<PurchaseLayout />} />
         <Route path="/order-voucher/sales/:approvalId" element={<SalesLayout />} />
-        <Route path="/order-voucher/receipt/:approvalId" element={<OrderVoucherReceiptLayout/>} />
-        <Route path="/order-voucher/credit-note/:approvalId" element={<CreditNoteApprovalLayout/>} />
-        <Route path="/order-voucher/purchase/:approvalId" element={<PurchaseApprovalLayout/>} />
+        <Route path="/order-voucher/receipt/:approvalId" element={<OrderVoucherReceiptLayout />} />
+        <Route path="/order-voucher/credit-note/:approvalId" element={<CreditNoteApprovalLayout />} />
+        <Route path="/order-voucher/purchase/:approvalId" element={<PurchaseApprovalLayout />} />
 
-        <Route path="/order-voucher/receipt-request" element={<Receipt/>} />
+        <Route path="/order-voucher/receipt-request" element={<Receipt />} />
         <Route path="/order-vochor/credit" element={<CreditLayout />} />
         <Route path="/order-vochor/debit" element={<DebitLayout />} />
         <Route path="/esign-success" element={<ESignSuccess />} />
         <Route path="/esign-error" element={<ESignError />} />
 
-        <Route path="/order-voucher/create-sales" element={<CreateSalesLayout/>}/>
+        <Route path="/order-voucher/create-sales" element={<CreateSalesLayout />} />
 
         {/* reports */}
         <Route path="/report/emp-attendance-report" element={<EmpAttendanceLayout />} />
@@ -254,21 +267,42 @@ function App() {
         <Route path="/misc/voucher-action" element={<ActivateVoucherLayout />} />
         <Route path="/misc/create-retailer" element={<CreateRetailerLayout />} />
         <Route path="/misc/view-retailers" element={<ViewRetailerLayout />} />
-        <Route path="/misc/transaction-approval" element={<TransactionApprovalLayout/>}/>
-        <Route path="/misc/transaction-documents" element={<TransactionDocuments/>}/>
-        <Route path="/misc/emp-penalty" element={<PenaltyLayout/>}/>
+        <Route path="/misc/transaction-approval" element={<TransactionApprovalLayout />} />
+        <Route path="/misc/transaction-documents" element={<TransactionDocuments />} />
+        <Route path="/misc/emp-penalty" element={<PenaltyLayout />} />
+        <Route path="/misc/assign-task-to-employee" element={<AssignTaskToEmployeeLayout/>}/>
+        <Route path="/misc/assign-areas-to-employee" element={<AssignAreaToEmployeeLayout/>}/>
 
         <Route path="/transaction-master/purchase" element={<PurchaseTxnMasterLayout />} />
         <Route path="/transaction-master/payment" element={<PaymentTxnMasterLayout />} />
         <Route path="/transaction-master/sale" element={<SalesTxnMasterLayout />} />
-        <Route path="/transaction-master/receipt" element={<ReceiptTxnMasterLayout/>}/>
-        <Route path="/transaction-master/credit-note" element={<CreditNoteTxnMasterLayout/>}/>
-        <Route path="/transaction-master/debit-note" element={<DebitNoteTxnMasterLayout/>}/>
-        <Route path="/transaction-master/contra" element={<ContraTxnMasterLayout/>}/>
-        <Route path="/transaction-master/journal" element={<JournalTxnMasterLayout/>}/>
+        <Route path="/transaction-master/receipt" element={<ReceiptTxnMasterLayout />} />
+        <Route path="/transaction-master/credit-note" element={<CreditNoteTxnMasterLayout />} />
+        <Route path="/transaction-master/debit-note" element={<DebitNoteTxnMasterLayout />} />
+        <Route path="/transaction-master/contra" element={<ContraTxnMasterLayout />} />
+        <Route path="/transaction-master/journal" element={<JournalTxnMasterLayout />} />
 
         <Route path="/print/purchase/:id" element={<PurchaseInvoice />} />
         <Route path="/print/payment/:id" element={<PaymentInvoice />} />
+
+        <Route path="/product-demo/view-demo-request/:id" element={<ViewDemoRequestLayout />} />
+        <Route path="/product-demo/crop/create-crop" element={<CreateCropLayout />} />
+        <Route
+          path="/product-demo/demo-results"
+          element={
+            <DemoResultsLayout crumbs={[{ label: "Demo Results" }]}>
+              <DemoResultsList />
+            </DemoResultsLayout>
+          }
+        />
+        <Route
+          path="/product-demo/demo-results/:id"
+          element={
+            <DemoResultsLayout crumbs={[{ label: "Demo Results", to: "/product-demo/demo-results" }, { label: "View Results" }]}>
+              <DemoResultsView />
+            </DemoResultsLayout>
+          }
+        />
 
       </Routes>
     </Router>

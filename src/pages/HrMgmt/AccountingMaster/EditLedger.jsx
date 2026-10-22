@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Box, Flex, SimpleGrid, Text, Input, Select, Textarea, Button, Switch, FormControl, FormLabel, FormErrorMessage, Tabs, TabList, Tab, TabPanels, TabPanel, Badge, Spinner, Center, Divider, HStack, VStack, useToast, IconButton, Heading, Breadcrumb, BreadcrumbItem, BreadcrumbLink, } from "@chakra-ui/react";
+import { Box, Flex, SimpleGrid, Text, Input, Select, Textarea, Button, Switch, FormControl, FormLabel, FormErrorMessage, Tabs, TabList, Tab, TabPanels, TabPanel, Badge, Spinner, Center, Divider, HStack, VStack, useToast, IconButton, Heading, Breadcrumb, BreadcrumbItem, BreadcrumbLink, InputGroup, InputLeftElement, InputRightElement, Tooltip, } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
 import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import { GROUP_CONFIG, DEFAULT_GROUP_CONFIG } from "../../HrMgmt/AccountingMaster/LedgerGroupConfig";
+import { FiCheckCircle } from "react-icons/fi";
 
 const TABS = [
     { id: "basic", label: "Basic Info", icon: "📋" },
@@ -77,7 +78,7 @@ function Field({ label, required, error, children }) {
 
 // ─── Tab: Basic Info ──────────────────────────────────────────────────────────
 // FIX: added `employees` prop, employee_under is now a Select bound to id
-function BasicInfoTab({ ledger, onChange, errors, config, employees }) {
+function BasicInfoTab({ ledger, onChange, errors, config, employees, onVerifyGst, gstVerifying }) {
     return (
         <>
             <SectionCard>
@@ -124,8 +125,45 @@ function BasicInfoTab({ ledger, onChange, errors, config, employees }) {
                             <Field label="PAN No.">
                                 <Input value={val(ledger.pan_no)} onChange={(e) => onChange("pan_no", e.target.value.toUpperCase())} placeholder="ABCDE1234F" size="sm" borderRadius="lg" />
                             </Field>)}
+
                         <Field label="GST No.">
-                            <Input value={val(ledger.gst_no)} onChange={(e) => onChange("gst_no", e.target.value.toUpperCase())} placeholder="22AAAAA0000A1Z5" size="sm" borderRadius="lg" />
+                            <InputGroup size="sm">
+                                {ledger.gst_status && (
+                                    <InputLeftElement width="auto" ml={2}>
+                                        <Badge
+                                            colorScheme={
+                                                ledger.gst_status === "active" ? "green"
+                                                    : ledger.gst_status === "suspended" ? "red"
+                                                    : ledger.gst_status === "cancelled" ? "orange"
+                                                    : "gray"
+                                            }
+                                            fontSize="0.65em" px={2} py={0.5} borderRadius="full"
+                                        >
+                                            {ledger.gst_status.toUpperCase()}
+                                        </Badge>
+                                    </InputLeftElement>
+                                )}
+                                <Input
+                                    value={val(ledger.gst_no)}
+                                    onChange={(e) => onChange("gst_no", e.target.value.toUpperCase())}
+                                    placeholder="22AAAAA0000A1Z5"
+                                    borderRadius="lg"
+                                    pl={ledger.gst_status ? "85px" : "12px"}
+                                />
+                                <InputRightElement>
+                                    <Tooltip label="Verify GST">
+                                        <IconButton
+                                            size="sm"
+                                            colorScheme="blue"
+                                            icon={<FiCheckCircle />}
+                                            isLoading={gstVerifying}
+                                            isDisabled={!ledger.gst_no || ledger.gst_no.length !== 15}
+                                            onClick={onVerifyGst}
+                                            aria-label="Verify GST"
+                                        />
+                                    </Tooltip>
+                                </InputRightElement>
+                            </InputGroup>
                         </Field>
                     </SimpleGrid>
                 </SectionCard>
@@ -453,6 +491,16 @@ const EditLedger = () => {
     const [saving, setSaving] = useState(false);
     const [errors, setErrors] = useState({});
     const [employees, setEmployees] = useState([]); // FIX: added
+    const [gstVerifying, setGstVerifying] = useState(false);
+
+    const toIsoDate = (ddmmyyyy) => {
+  if (!ddmmyyyy || typeof ddmmyyyy !== "string") return null;
+  const parts = ddmmyyyy.split("/");
+  if (parts.length !== 3) return null;
+  const [dd, mm, yyyy] = parts;
+  if (dd.length !== 2 || mm.length !== 2 || yyyy.length !== 4) return null;
+  return `${yyyy}-${mm}-${dd}`;
+};
 
     const [ledger, setLedger] = useState({
         ledger_name: "",
@@ -468,6 +516,8 @@ const EditLedger = () => {
         pincode: "",
         pan_no: "",
         gst_no: "",
+        gst_verified: 0,     
+    gst_status: "",
         maintain_bill_by_bill: 0,
         default_credit_period: 0,
         check_credit_days: 0,
@@ -560,6 +610,8 @@ const EditLedger = () => {
                 pincode: val(d.pincode),
                 pan_no: val(d.pan_no),
                 gst_no: val(d.gst_no),
+                gst_verified: val(d.gst_verified, 0), 
+gst_status: val(d.gst_status),  
                 maintain_bill_by_bill: val(d.maintain_bill_by_bill, 0),
                 default_credit_period: val(d.default_credit_period, 0),
                 check_credit_days: val(d.check_credit_days, 0),
@@ -661,6 +713,11 @@ const EditLedger = () => {
     useEffect(() => { fetchLedger(); }, [fetchLedger]);
 
     const handleLedgerChange = (key, value) => {
+         if (key === "gst_no") {
+        setLedger((prev) => ({ ...prev, gst_no: value, gst_verified: 0, gst_status: "" }));
+        if (errors[key]) setErrors((e) => ({ ...e, [key]: undefined }));
+        return;
+    }
         setLedger((prev) => ({ ...prev, [key]: value }));
         if (errors[key]) setErrors((e) => ({ ...e, [key]: undefined }));
     };
@@ -683,6 +740,56 @@ const EditLedger = () => {
         setErrors(errs);
         return Object.keys(errs).length === 0;
     };
+
+    const handleGstVerification = async () => {
+    if (!ledger.gst_no) {
+        showToast("error", "Enter a GST number");
+        return;
+    }
+    try {
+        setGstVerifying(true);
+        const res = await API.post(API_ENDPOINTS.Gst_verify, { gst_number: ledger.gst_no });
+        const data = res?.data;
+
+        if (!data?.success) {
+            showToast("error", data?.message || "GST verification failed");
+            return;
+        }
+
+        const status = (data.status || "unknown").toLowerCase();
+
+        setLedger((prev) => ({
+            ...prev,
+            gst_verified: data.isVerified ? 1 : 0,
+            gst_status: status,
+            state: data.address?.state || prev.state,
+            pincode: data.address?.pincode || prev.pincode,
+            country: "India",
+        }));
+
+        // optional: auto-fill Party Details tab too, same as CreateLedger
+        setCrm((prev) => ({
+            ...prev,
+            firm_name: data.business_name || data.legal_name || prev.firm_name,
+            customer_name: data.legal_name || prev.customer_name,
+            address: [data.address?.building, data.address?.street, data.address?.location]
+                .filter(Boolean)
+                .join(", "),
+            district: data.address?.district || prev.district,
+            state: data.address?.state || prev.state,
+            pincode: data.address?.pincode || prev.pincode,
+            firm_since: toIsoDate(data.reg_date) || prev.firm_since,
+        }));
+
+        showToast(data.isVerified ? "success" : "error", `GST ${status.toUpperCase()}`);
+    } catch (err) {
+        console.error("GST verify error:", err);
+        setLedger((prev) => ({ ...prev, gst_verified: 0, gst_status: "error" }));
+        showToast("error", "GST verification failed");
+    } finally {
+        setGstVerifying(false);
+    }
+};
 
     const handleUpdate = async () => {
         if (!validate()) {
@@ -762,7 +869,7 @@ const EditLedger = () => {
                             <BreadcrumbLink isCurrentPage color="#8B8D97" fontSize="13px"> Edit Ledger </BreadcrumbLink>
                         </BreadcrumbItem>
                     </Breadcrumb>
-                    <Heading size="md" color="#1A202C"> Edit Ledger </Heading>
+                    <Heading size="md" color="#1A202C"> Edit Ledger</Heading>
                 </Box>
             </Flex>
 
@@ -789,7 +896,8 @@ const EditLedger = () => {
         {visibleTabs.map((tab) => (
             <TabPanel key={tab.id} p={0}>
                 {tab.id === "basic" && (
-                    <BasicInfoTab ledger={ledger} onChange={handleLedgerChange} errors={errors} config={activeConfig} employees={employees} />
+                    <BasicInfoTab ledger={ledger} onChange={handleLedgerChange} errors={errors} config={activeConfig} employees={employees}  onVerifyGst={handleGstVerification}
+        gstVerifying={gstVerifying}/>
                 )}
                 {tab.id === "bank" && (
                     <BankTab bank={bank} onChange={handleBankChange} />

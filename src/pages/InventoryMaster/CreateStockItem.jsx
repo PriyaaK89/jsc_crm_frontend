@@ -13,11 +13,13 @@ const CreateStockItem = () => {
     const [units, setUnits] = useState([]);
     const [godowns, setGodowns] = useState([]);
     const [selectedGroup, setSelectedGroup] = useState();
+    const [crops, setCrops] = useState([]);
 
     const initialFormData = {
         item_name: "",
         stock_group_id: "",
         stock_category_id: "",
+        crop_id: "",
         unit_id: "",
 
         gst_applicable: "",
@@ -230,12 +232,16 @@ const CreateStockItem = () => {
         }
     };
 
-    // =========================
-    // CREATE STOCK ITEM
-    // =========================
+    const getCrops = async () => {
+    try {
+        const response = await API.get(API_ENDPOINTS.get_crops_list);
+        setCrops(response?.data?.data || []);
+    } catch (error) {
+        console.log(error);
+    }
+};
 
     const handleCreateStockItem = async () => {
-
         if (!formData.stock_category_id) {
             toast({
                 title: "Required Field",
@@ -248,7 +254,7 @@ const CreateStockItem = () => {
             return;
         }
 
-      
+
 
         if (!formData.bulk_unit_id) {
             toast({
@@ -359,10 +365,23 @@ const CreateStockItem = () => {
             return;
         }
 
+        if (!formData.crop_id) {
+    toast({
+        title: "Required Field",
+        description: "Please select a crop.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+    });
+    return;
+}
+
         try {
             setLoading(true);
             const payload = {
                 ...formData,
+                crop_id: formData.crop_id === "" ? null : Number(formData.crop_id),
                 gst_applicable: Number(formData.gst_applicable),
                 set_gst_details: Number(formData.set_gst_details),
                 maintain_in_batches: Number(formData.maintain_in_batches),
@@ -414,6 +433,7 @@ const CreateStockItem = () => {
         getStockGroups();
         getUnits();
         getGodowns();
+        getCrops();
     }, []);
 
     useEffect(() => {
@@ -438,7 +458,7 @@ const CreateStockItem = () => {
                     </BreadcrumbItem>
                 </Breadcrumb>
             </HStack>
-            <Heading size="md" color="gray.600" fontSize="18px" mb={6}> Create Stock Item </Heading>
+            <Heading size="md" color="gray.600" fontSize="18px" mb={6}> Create Stock Item</Heading>
 
             <VStack spacing={6} align="stretch">
                 <Box>
@@ -512,6 +532,7 @@ const CreateStockItem = () => {
                                 </Select>
                             </FormControl>
                         </GridItem>
+
                         {
                             formData.unit_id && (
 
@@ -539,18 +560,12 @@ const CreateStockItem = () => {
                                             <GridItem>
 
                                                 <FormControl>
-                                                    <FormLabel>
-                                                        Alternative Unit
-                                                    </FormLabel>
-
+                                                    <FormLabel> Alternative Unit </FormLabel>
                                                     <Select
                                                         name="alternative_unit_id"
                                                         value={formData.alternative_unit_id}
-                                                        onChange={handleChange}
-                                                    >
-                                                        <option value="">
-                                                            Select Unit
-                                                        </option>
+                                                        onChange={handleChange}>
+                                                        <option value=""> Select Unit </option>
 
                                                         {units?.map((item) => (
 
@@ -719,6 +734,23 @@ const CreateStockItem = () => {
                                 </GridItem>
                             )
                         }
+                        <GridItem>
+    <FormControl>
+        <FormLabel>Crop</FormLabel>
+        <Select
+            placeholder="Select Crop (optional)"
+            name="crop_id"
+            value={formData.crop_id}
+            onChange={handleChange}
+        >
+            {crops?.map((item) => (
+                <option key={item.id} value={item.id}>
+                    {item.crop_name}
+                </option>
+            ))}
+        </Select>
+    </FormControl>
+</GridItem>
 
                         <GridItem colSpan={2}>
 

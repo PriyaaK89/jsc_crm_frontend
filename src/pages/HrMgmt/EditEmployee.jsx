@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack,} from "@chakra-ui/react";
+import { Box, Button, Input, Select, Text, SimpleGrid, VStack, useToast, FormControl, FormLabel, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack, } from "@chakra-ui/react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import CustomDatePicker from "../../components/common/CustomDatepicker";
@@ -16,7 +16,7 @@ const EditEmployee = () => {
     const [departments, setDepartments] = useState([]);
     const [jobRole, setJobRole] = useState([]);
     const { users = [], fetchUsers } = useUsersapi();
-    const [profilePhoto, setProfilePhoto] = useState(null); 
+    const [profilePhoto, setProfilePhoto] = useState(null);
     const [formData, setFormData] = useState({
         approver_id: "",
         reporting_id: "",
@@ -101,9 +101,9 @@ const EditEmployee = () => {
                     week_off: data.week_off || "Sunday",
 
                 });
-                   if (data.department_id) {
-                fetchRoleList(data.department_id);
-            }
+                if (data.department_id) {
+                    fetchRoleList(data.department_id);
+                }
             }
         } catch (err) {
             toast({
@@ -121,7 +121,7 @@ const EditEmployee = () => {
 
         if (file) {
             setProfilePhoto(file);
-            
+
         }
     };
     /* ---------------- FETCH DEPARTMENTS ---------------- */
@@ -131,25 +131,25 @@ const EditEmployee = () => {
     };
 
     /* ---------------- FETCH ROLES ---------------- */
- 
-    const fetchRoleList = async (deptId) => {
-    try {
-        const res = await API.get(
-            `${API_ENDPOINTS.get_jobRole_list}/${deptId}`
-        );
-        setJobRole(res.data);
 
-        if (res.data?.length === 1) {
-            setFormData(prev => ({
-                ...prev,
-                job_role_id: res.data[0].id,
-                job_role_name: res.data[0].name,
-            }));
+    const fetchRoleList = async (deptId) => {
+        try {
+            const res = await API.get(
+                `${API_ENDPOINTS.get_jobRole_list}/${deptId}`
+            );
+            setJobRole(res.data);
+
+            if (res.data?.length === 1) {
+                setFormData(prev => ({
+                    ...prev,
+                    job_role_id: res.data[0].id,
+                    job_role_name: res.data[0].name,
+                }));
+            }
+        } catch (err) {
+            toast({ title: "Failed to load job roles", status: "error", duration: 3000 });
         }
-    } catch (err) {
-        toast({ title: "Failed to load job roles", status: "error", duration: 3000 });
-    }
-};
+    };
 
     useEffect(() => {
         fetchEmployeeDetails();
@@ -190,7 +190,7 @@ const EditEmployee = () => {
             ...prev,
             department_id: deptId,
             job_role_id: "",
-             job_role_name: "",
+            job_role_name: "",
         }));
 
         if (deptId) {
@@ -212,6 +212,7 @@ const EditEmployee = () => {
                 date_of_birth: formatDateForApi(formData.date_of_birth),
                 date_of_joining: formatDateForApi(formData.date_of_joining),
                 approver_name: formData.approver_name,
+                contact_no: formData.contact_no || "",
                 // reporting_under: formData.reporting_under,
                 login_time: formData.login_time || "10:00",
                 logout_time: formData.logout_time || "06:00",
@@ -239,13 +240,17 @@ const EditEmployee = () => {
 
                     // Agar value null, undefined, empty string (""), ya NaN NAHI hai, 
                     // tabhi usko FormData me set karo.
+                    if (key === "contact_no") {
+                        formPayload.set(key, value ?? "");
+                        return;
+                    }
                     if (
                         value !== null &&
                         value !== undefined &&
                         value !== "" &&
                         !Number.isNaN(value)
                     ) {
-                      
+
                         if ((key === "department_id" || key === "job_role_id") && value === 0) {
                             return; // Skip 0 values for IDs
                         }
@@ -278,7 +283,7 @@ const EditEmployee = () => {
                 });
                 navigate(-1);
             }
-            
+
         } catch (error) {
             toast({
                 title: "Update failed",
@@ -367,7 +372,7 @@ const EditEmployee = () => {
                                 onChange={handleImageChange}
                             />
 
-                        
+
                         </FormControl>
                     </SimpleGrid>
                 </SimpleGrid>
@@ -582,7 +587,8 @@ const EditEmployee = () => {
 
                                 setFormData((prev) => ({
                                     ...prev,
-                                   reporting_under: Number(e.target.value) || null                                }));
+                                    reporting_under: Number(e.target.value) || null
+                                }));
                             }}
                         >
                             {users.map((user) => (
@@ -612,9 +618,9 @@ const EditEmployee = () => {
                     </FormControl>
 
                     <FormControl>
-              <FormLabel>Visit UpTo</FormLabel>
-              <Input type="time" name="visit_upto" value={formData.visit_upto} onChange={handleChange} />
-            </FormControl>
+                        <FormLabel>Visit UpTo</FormLabel>
+                        <Input type="time" name="visit_upto" value={formData.visit_upto} onChange={handleChange} />
+                    </FormControl>
 
                     <FormControl>
                         <FormLabel {...labelStyles}>Authentication Amount</FormLabel>
@@ -642,7 +648,7 @@ const EditEmployee = () => {
                     Update Employee
                 </Button>
             </VStack>
-       
+
         </Box>
     );
 };

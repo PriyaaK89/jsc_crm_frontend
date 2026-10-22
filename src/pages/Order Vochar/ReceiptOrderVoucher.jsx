@@ -1,24 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  Box,
-  Grid,
-  GridItem,
-  Text,
-  Input,
-  Select,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Button,
-  Flex,
-  Textarea,
-  useToast,
-  IconButton,
-  HStack,
-} from "@chakra-ui/react";
+import { Box, Grid, GridItem, Text, Input,
+  Select, Table, Thead, Tbody, Tr, Th, Td, Button, Flex, Textarea, useToast, IconButton, HStack,} from "@chakra-ui/react";
 import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
@@ -366,8 +348,7 @@ const ReceiptOrderRequest = () => {
                       placeholder="End Of List"
                       value={entry.ledger_id}
                       onChange={(e) => handleLedgerSelect(index, e.target.value)}
-                      minW="190px"
-                    >
+                      minW="190px">
                       {ledger.map((item) => (
                         <option key={item.id} value={item.id}>
                           {item.ledger_name}
@@ -381,9 +362,7 @@ const ReceiptOrderRequest = () => {
                       {...readonlyInputStyle}
                       type="number"
                       value={Number(entry.current_balance || 0).toFixed(2)}
-                      readOnly
-                      textAlign="right"
-                    />
+                      readOnly textAlign="right" />
                   </Td>
 
                   <Td {...tdStyle}>
@@ -392,8 +371,7 @@ const ReceiptOrderRequest = () => {
                       type="number"
                       value={entry.amount}
                       onChange={(e) => handleEntryChange(index, "amount", e.target.value)}
-                      textAlign="right"
-                    />
+                      textAlign="right" />
                   </Td>
 
                   <Td {...tdStyle}>
@@ -401,10 +379,7 @@ const ReceiptOrderRequest = () => {
                       {...inputStyle}
                       placeholder="Please select"
                       value={entry.transaction_type}
-                      onChange={(e) =>
-                        handleEntryChange(index, "transaction_type", e.target.value)
-                      }
-                    >
+                      onChange={(e) => handleEntryChange(index, "transaction_type", e.target.value) } >
                       <option value="Cash">Cash</option>
                       <option value="Cheque/DD">Cheque/DD</option>
                       <option value="E-Fund Transfer">e-Fund Transfer</option>
@@ -417,8 +392,7 @@ const ReceiptOrderRequest = () => {
                       {...inputStyle}
                       placeholder="Select Bank"
                       value={entry.bank_name}
-                      onChange={(e) => handleEntryChange(index, "bank_name", e.target.value)}
-                    >
+                      onChange={(e) => handleEntryChange(index, "bank_name", e.target.value)} >
                       {account.map((item) => (
                         <option key={item.id} value={item.ledger_name}>
                           {item.ledger_name}
@@ -499,8 +473,7 @@ const ReceiptOrderRequest = () => {
           fontSize="14px" fontWeight="500"
           onClick={handleSave}
           isLoading={submitting}
-          loadingText="Saving…"
-        >
+          loadingText="Saving…" >
           SAVE
         </Button>
       </Flex>

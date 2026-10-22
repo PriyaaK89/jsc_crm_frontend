@@ -4,7 +4,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
 import { MdAssignmentInd, MdAttractions, MdCardTravel, MdOutlineAssignmentReturn, MdOutlineInventory2, MdOutlinePayments, MdOutlineTour, MdOutlineTrackChanges, MdPayment, MdTour, MdTravelExplore } from "react-icons/md";
 import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
-import { FaCommentsDollar, FaExchangeAlt, FaListAlt, FaMoneyBill, FaRupeeSign, FaTable, FaUserAlt, FaUserCheck, FaUserTie, FaWarehouse } from 'react-icons/fa';
+import { FaArchive, FaCommentsDollar, FaExchangeAlt, FaListAlt, FaMoneyBill, FaRupeeSign, FaTable, FaTasks, FaUserAlt, FaUserCheck, FaUserTie, FaWarehouse } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
 import { MdCorporateFare, MdGroupAdd } from "react-icons/md";
 import { HiOfficeBuilding, HiOutlineDocumentReport } from "react-icons/hi";
@@ -14,7 +14,7 @@ import { MdInventory, MdAddBox, MdViewList, MdDelete } from "react-icons/md";
 import { MdCategory } from "react-icons/md";
 import { MdAddCircleOutline, MdAccountTree } from "react-icons/md";
 import { FaFileInvoice } from "react-icons/fa";
-import { FiMapPin, FiTarget } from "react-icons/fi";
+import { FiCrop, FiMapPin, FiTarget } from "react-icons/fi";
 import { FaProjectDiagram } from "react-icons/fa";
 import { FaClipboardList, FaCalculator, FaWallet, FaList, FaTrash, FaFileInvoiceDollar, FaBookOpen, FaMoneyCheckAlt } from "react-icons/fa";
 import { FaEdit, FaStore } from "react-icons/fa";
@@ -139,8 +139,10 @@ const Newsidebar = () => {
         { label: "Upload Employee Expenses", path: "/hr-mgmt/upload-employee-expenses", icon: MdUploadFile },
         { label: "Employee Payment Hold", path: "/hr-mgmt/emp-payment-hold", icon: MdOutlinePayments },
         { label: "Upload Salary Slip", path: '/hr-mgmt/upload-emp-salary', icon: RiFileList3Line, },
-        { label: "Change Password", path: "/hr-mgmt/change-password", icon: FaKey }
-
+        { label: "Change Password", path: "/hr-mgmt/change-password", icon: FaKey },
+        { label: "Holiday Calendar", path: "/hr-mgmt/holiday-calendar", icon: FaKey },
+        { label: "Calendar List", path: "/hr-mgmt/yearly-holiday-calendar-list", icon: FaKey },
+        { label: "Employee Penalty", path: "/misc/emp-penalty", icon: FaCommentsDollar },
       ],
     },
 
@@ -155,6 +157,7 @@ const Newsidebar = () => {
         { label: "Assign Visit Target", path: "/business-development/view-visit-target", icon: MdCardTravel, },
         { label: "View Teams", path: "/business-development/view-teams", icon: RiTeamFill, },
         { label: "View Assigned Targets", path: "/business-development/view-assigned-targets", icon: FiTarget, },
+        { label: "View Individual Targets List", path: "/business-development/view-individual-target-list", icon: MdCardTravel, },
         { label: "View Employee Targets", path: "/business-development/view-employee-targets", icon: FaUserAlt, },
 
       ],
@@ -274,7 +277,10 @@ const Newsidebar = () => {
         { label: "View Retailer", path: "/misc/view-retailers", icon: IoCreate },
         { label: "Transaction Approval", path: "/misc/transaction-approval", icon: FaUserCheck },
         { label: "Transaction Documents", path: "/misc/transaction-documents", icon: IoDocumentTextSharp },
-        { label: "Employee Penalty", path: "/misc/emp-penalty", icon: FaCommentsDollar  },
+        { label: "Crop", path: "/product-demo/crop/create-crop", icon: FiCrop },
+        { label: "Product Demo", path: "/product-demo/demo-results", icon: FaClipboardList,},
+        {label: "Assign Task", path: "/misc/assign-task-to-employee", icon: FaTasks},
+        {label: "Assign Area", path: "/misc/assign-areas-to-employee", icon: FaArchive}
       ]
     },
     {
@@ -353,7 +359,7 @@ const Newsidebar = () => {
         display="flex"
         alignItems="center"
       >
-      <Link to="/dashboard">  <Image src={logo} alt="Company Logo" h="68px" pl="2rem" loading="eager" fetchpriority="high" /></Link>
+        <Link to="/dashboard">  <Image src={logo} alt="Company Logo" h="68px" pl="2rem" loading="eager" fetchpriority="high" /></Link>
       </Box>
 
       <VStack spacing={0} align="stretch" mt="72px" pt={3} px={3} pb={4}>

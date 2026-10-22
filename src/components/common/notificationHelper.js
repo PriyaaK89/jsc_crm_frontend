@@ -34,3 +34,4 @@ export const STATUS_COLORS = {
 
 export const getStatusColor = (status) =>
   STATUS_COLORS[(status || "").toUpperCase()] || "gray";
+

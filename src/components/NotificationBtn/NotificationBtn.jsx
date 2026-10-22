@@ -4,6 +4,7 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import NotificationModal from "../models/transaction-flow/NotificationModal";
 import AlertTabModal from "../models/transaction-flow/AlertModal";
+import DemoNotificationModal from "../models/transaction-flow/DemoNotificationModal";
 
 // Central config: add a new module here and it "just works" everywhere
 const NOTIFICATION_MODULES = {
@@ -60,16 +61,43 @@ const NOTIFICATION_MODULES = {
 const NotificationBtn = () => {
   const [counts, setCounts] = useState({
     sales: 0, purchase: 0, payment: 0, receipt: 0,
-    credit_note: 0, debit_note: 0, alert: 0,
+    credit_note: 0, debit_note: 0, alert: 0,  demo: 0,
   });
 
   // Single piece of state instead of one boolean per modal
   const [activeModal, setActiveModal] = useState(null); // e.g. "SALES" | "RECEIPT" | null
   const [alertModalOpen, setAlertModalOpen] = useState(false);
+    const [demoModalOpen, setDemoModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCounts();
+    fetchDemoCount();
+
+    // const refresh = () => fetchDemoCount();
+    // const timer = setInterval(refresh, 60000);            // poll every minute
+    // window.addEventListener("focus", refresh);            // refresh on returning to the tab
+    // window.addEventListener("demo-count-refresh", refresh); // refresh right after approve/reject
+
+    // return () => {
+    //   clearInterval(timer);
+    //   window.removeEventListener("focus", refresh);
+    //   window.removeEventListener("demo-count-refresh", refresh);
+    // };
   }, []);
+
+
+
+  const fetchDemoCount = async () => {
+  try {
+    const res = await API.get(API_ENDPOINTS.pending_approval_count);
+    const d = res.data || {};
+    // tolerant of the response shape, see note below
+    const n = Number(d.pending_count ?? d.count ?? d.data ?? 0) || 0;
+    setCounts((prev) => ({ ...prev, demo: n }));
+  } catch (err) {
+    console.log(err);
+  }
+};
 
   const fetchCounts = async () => {
     try {
@@ -90,11 +118,14 @@ const NotificationBtn = () => {
         if (item.module_type === "DEBIT_NOTE" && item.notification_category === "APPROVAL") result.debit_note = item.total;
       });
 
-      setCounts(result);
+      // setCounts(result);
+      setCounts((prev) => ({ ...prev, ...result }));
     } catch (err) {
       console.log(err);
     }
   };
+
+
 
   const buttons = [
     { label: "Open MailBox" },
@@ -105,6 +136,7 @@ const NotificationBtn = () => {
     { label: "Sale Order", count: counts.sales, moduleKey: "SALES" },
     { label: "Purchase Order", count: counts.purchase, moduleKey: "PURCHASE" },
     { label: "Alert", count: counts.alert },
+    { label: "Demo Request", count: counts.demo },
     { label: "E-Way Bill" },
     { label: "Whatsapp" },
   ];
@@ -135,11 +167,19 @@ const NotificationBtn = () => {
 
       <AlertTabModal isOpen={alertModalOpen} onClose={() => setAlertModalOpen(false)} />
 
+ 
+
+       <DemoNotificationModal
+        isOpen={demoModalOpen}
+        onClose={() => { setDemoModalOpen(false); }}
+        onCountChange={fetchDemoCount}
+      />
+
       {buttons.map((btn, i) => (
         <Box key={i} position="relative">
           <Button
             color="white" height={{ base: "34px", sm: "34px", md: "38px" }}
-            px={{ base: "6px", sm: "8px", md: "16px" }}
+            px={{ base: "6px", sm: "8px", md: "11px" }}
             bgGradient="linear(45deg, #325180, #8993b3)"
             transition="transform 0.6s ease-in-out"
             _hover={{
@@ -149,10 +189,11 @@ const NotificationBtn = () => {
             }}
             variant="outline"
             borderRadius="lg"
-            fontSize={{ sm: "10px", base: "9px", md: "12px" }}
+            fontSize={{ sm: "10px", base: "9px", md: "11px" }}
             onClick={() => {
               if (btn.moduleKey) { setActiveModal(btn.moduleKey); return; }
               if (btn.label === "Alert") { setAlertModalOpen(true); }
+                if (btn.label === "Demo Request") { setDemoModalOpen(true); return; } 
               if (btn.label === "E-Way Bill") { window.open("https://ewaybillgst.gov.in/", "_blank"); }
               if (btn.label === "Open MailBox") { window.open("http://jamidaraseeds.com/webmail", "_blank"); }
               if (btn.label === "Whatsapp") { window.open("https://web.whatsapp.com/send", "_blank"); }

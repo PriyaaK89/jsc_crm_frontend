@@ -276,6 +276,49 @@ export const API_ENDPOINTS = {
 
   send_penalty_message: "/send-penalty-notice",
 
+  add_company_holidays: "/add-holidays",
+  get_company_holidays: "/get-holidays",
+  update_company_holidays: "/update-holidays",
+  delete_company_hoildays: "/delete-holidays",
+  festival_suggestions: "/festival-suggestions",
+  get_yearly_holidays: "/get-holidays-yearly",
+
+  get_demo_request_notification: "/get-demo-notifications",
+  get_demo_request_notification_unread_count: "/product-demo/notifications/unread-count",
+  mark_demo_notification_read: (id) => `/product-demo/notifications/${id}/read`,
+  mark_all_demo_notifications_read: "/product-demo/notifications/read-all",
+  pending_approval_count: "/pending-approval-count",
+
+  get_demo_requests_list: "/get-demo-request-list",
+  get_demo_request_details: (id) => `/get-demo-request-details/${id}`,
+  update_demo_request: (id) => `/${id}`,
+  approve_demo_request: (id) => `/${id}/approve`,
+  reject_demo_request: (id) => `/${id}/reject`,
+  get_demo_field_officers: "/field-officers",
+  get_demo_party_dropdown: "/get-customers",
+
+  demo_tracks: (id) => `/${id}/tracks`,
+  demo_track_detail: (trackId, maxPoints = 2000) =>
+    `/tracking/${trackId}?max_points=${maxPoints}`,
+
+  get_crops_list: "/get-crops-list",
+  create_crops: "/create-crops",
+  update_crop: "/update-crops",                       // + /:id
+  set_crop_active: "/set-crops-active",               // + /:id
+  get_crop_growth_form: "/get-crop-growth-form",      // + /:id
+  get_unmapped_fields_for_crop: "/get-list-unmapped-fields-for-crops", // + /:id
+
+  growth_fields_list: "/crop-growth-fields-list",
+  create_growth_field: "/create-crop-growth-fields",
+  update_growth_field: "/update-crop-growth-fields",  // + /:id
+  set_growth_field_active: (id) => `/set-crop-growth-fields-active/${id}/active`,
+
+  field_options: (fieldId) => `/crop-growth-fields/${fieldId}/options`,
+  set_field_option_active: (optionId) => `/crop-growth-field-options/${optionId}/active`,
+
+  map_field_to_crop: (cropId) => `/crops/${cropId}/fields`,
+  unmap_field_from_crop: (mappingId) => `/crop-field-mappings/${mappingId}/unmap`,
+
   send_ledger_whatsapp: (ledgerId) => `/${ledgerId}/send-whatsapp`,
   send_sale_order_whatsapp: (approvalId) => `/${approvalId}/send-whatsapp-confirmation`,
   send_receipt_whatsapp: (id) => `/${id}/send-receipt-whatsapp`,
@@ -293,5 +336,22 @@ export const API_ENDPOINTS = {
   UNHOLD_TEMPLATE: (id) => `/visit-targets/templates/${id}/unhold`,
   DELETE_TEMPLATE_PERMANENT: (id) => `/visit-targets/templates/${id}/permanent-delete`,
   SEND_CREDIT_NOTE_WHATSAPP: (id) => `/send-credit-note-whatsapp/${id}`,
+
+  get_all_targets: "/all-targets",
+  TASK_ASSIGNABLE_ROLES: "/get-assignable-roles",
+  TASK_ASSIGNABLE_USERS: "/get-assignable-users",
+  CREATE_TASK: "/assign-task",
+  TASKS_ASSIGNED_BY_ME: "/get-task-assigned-by-me",
+
+    COLLECTION_AREA_CONFIG: "/collection-area-config",
+  COLLECTION_AREA_EMPLOYEES: "/collection-area-employees",
+  ASSIGN_COLLECTION_AREAS: "/assign-collection-areas",
+  EMPLOYEE_COLLECTION_AREAS: (id) => `/employee-collection-areas/${id}`,
+  GEO_STATES: "/geo/states",
+  GEO_DISTRICTS: "/geo/districts",
+  GEO_TEHSILS: "/geo/tehsils",
+  GEO_VILLAGES: "/geo/villages",
+
+    EMPLOYEE_COLLECTION_AREAS: (id) => `/employee-collection-areas/${id}`,
 };
 // 

@@ -237,10 +237,10 @@ function PartyLedgerReport() {
                   <Td fontWeight="bold" color="blue.600"> {" "} Opening Balance{" "} </Td>
                   <Td>-</Td>
                   <Td>-</Td>
-                  <Td isNumeric>{openingBalance?.type === "Dr" ? Number(openingBalance?.amount || 0).toFixed(2) : "-"} </Td>
-                  <Td isNumeric> {openingBalance?.type === "Cr" ? Number(openingBalance?.amount || 0).toFixed(2) : "-"} </Td>
+                  <Td isNumeric color={openingBalance?.type === "Dr" ? 'red' : 'green'}>{openingBalance?.type === "Dr" ? Number(openingBalance?.amount || 0).toFixed(2) : "-"} </Td>
+                  <Td isNumeric color={openingBalance?.type === "Cr" ? "green.500" : "red.500"}> {openingBalance?.type === "Cr" ? Number(openingBalance?.amount || 0).toFixed(2) : "-"} </Td>
                   <Td isNumeric>
-                    <Text color={openingBalance?.type === "Cr" ? "red.500" : "green.500"} fontWeight="bold">
+                    <Text color={openingBalance?.type === "Cr" ? "green" : "red.500"} fontWeight="bold">
                       {Number(openingBalance?.amount || 0).toFixed(2)}{" "}
                       {openingBalance?.type}
                     </Text>
@@ -280,7 +280,7 @@ function PartyLedgerReport() {
 
                       <Td isNumeric>
                         <Text
-                          color={item.balance_type === "Cr" ? "red.500" : "green.500"}
+                          color={item.balance_type === "Cr" ? "green.500" : "red.500"}
                           fontWeight="bold">
                           {Number(item.balance || 0).toFixed(2)}{" "}
                           {item.balance_type}
@@ -311,7 +311,7 @@ function PartyLedgerReport() {
                 <Flex gap={8}>
                   <Text fontWeight="bold"> Closing Balance:</Text>
                   <Text
-                    color={totals.closing_type === "Cr" ? "red.500" : "green.500"}
+                    color={totals.closing_type === "Cr" ? "green.500" : "red.500"}
                     fontWeight="bold">
                     {Number(totals.closing_balance || 0).toFixed(2)}{" "}
                     {totals.closing_type}

@@ -46,7 +46,7 @@ import {
   RiTeamFill,
 } from "react-icons/ri";
 
-import { FaBookOpen, FaCity, FaCommentsDollar, FaExchangeAlt, FaListAlt, FaMoneyBill, FaProjectDiagram, FaTable, FaUserAlt, FaUserCheck, FaUsers, FaWarehouse } from "react-icons/fa";
+import { FaBookOpen, FaCity, FaClipboardList, FaCommentsDollar, FaExchangeAlt, FaListAlt, FaMoneyBill, FaProjectDiagram, FaTable, FaTasks, FaUserAlt, FaUserCheck, FaUsers, FaWarehouse } from "react-icons/fa";
 
 import {
   FaChartLine,
@@ -102,7 +102,7 @@ import {
   HiOutlineDocumentReport,
 } from "react-icons/hi";
 
-import { FiMapPin, FiTarget, FiLogOut } from "react-icons/fi";
+import { FiMapPin, FiTarget, FiLogOut, FiCrop } from "react-icons/fi";
 
 import { BiPurchaseTagAlt, BiSolidPurchaseTag, BiSolidReport } from "react-icons/bi";
 
@@ -127,7 +127,7 @@ import {
 import logo from "../../assets/images/jamidaralogo_adminpannel.jpeg";
 import { RxComponent1 } from "react-icons/rx";
 import { IoMdPersonAdd } from "react-icons/io";
-import { IoBarChart, IoCreate, IoReceipt } from "react-icons/io5";
+import { IoBarChart, IoCreate, IoDocumentTextSharp, IoReceipt } from "react-icons/io5";
 import { LuPanelRightClose, LuPanelRightOpen } from "react-icons/lu";
 
 const MobileTopbar = () => {
@@ -199,156 +199,164 @@ const MobileTopbar = () => {
       key: "users",
       icon: FaUser,
       children: [
-        {label: "Add Employee", path: "/hr-mgmt/add-employee",icon: FaUserPlus},
-        {label: "Employee List", path: "/hr-mgmt/view-employee-list",icon: RiUser3Line,},
-        {label: "Create Job Role", path: "/hr-mgmt/roles/add-job-role",icon: HiUserGroup,},
-        {label: "Create Department",path: "/hr-mgmt/dept/add-department",icon: MdAccountTree,},
-        {label: "Upload Employee Expenses", path: "/hr-mgmt/upload-employee-expenses", icon: MdUploadFile },
+        { label: "Add Employee", path: "/hr-mgmt/add-employee", icon: FaUserPlus },
+        { label: "Employee List", path: "/hr-mgmt/view-employee-list", icon: RiUser3Line, },
+        { label: "Create Job Role", path: "/hr-mgmt/roles/add-job-role", icon: HiUserGroup, },
+        { label: "Create Department", path: "/hr-mgmt/dept/add-department", icon: MdAccountTree, },
+        { label: "Upload Employee Expenses", path: "/hr-mgmt/upload-employee-expenses", icon: MdUploadFile },
         { label: "Employee Payment Hold", path: "/hr-mgmt/emp-payment-hold", icon: MdOutlinePayments },
-        {label:"Upload Salary Slip",path:'/hr-mgmt/upload-emp-salary',icon: RiFileList3Line,},
-       {label:"Change Password", path:"/hr-mgmt/change-password", icon:FaKey}
+        { label: "Upload Salary Slip", path: '/hr-mgmt/upload-emp-salary', icon: RiFileList3Line, },
+        { label: "Change Password", path: "/hr-mgmt/change-password", icon: FaKey }
 
-      ],},
+      ],
+    },
 
     {
       label: "Business Development",
       key: "business",
       icon: FaChartLine,
       children: [
-        {label: "Create Team",path: "/business-development/create-team",icon: FaUserPlus, },
-        {label: "Create Sub Team",path: "/business-development/create-sub-team",icon: HiUserGroup,},
-        { label: "Assign Target", path: "/business-development/assign-target",  icon: MdAssignmentInd,},
-         { label: "Assign Visit Target", path: "/business-development/view-visit-target", icon: MdCardTravel, },
-        { label: "View Teams", path: "/business-development/view-teams",  icon: RiTeamFill ,},
-        { label: "View Assigned Targets", path: "/business-development/view-assigned-targets",  icon: FiTarget  ,},
-        { label: "View Employee Targets", path: "/business-development/view-employee-targets",  icon: FaUserAlt   ,},
+        { label: "Create Team", path: "/business-development/create-team", icon: FaUserPlus, },
+        { label: "Create Sub Team", path: "/business-development/create-sub-team", icon: HiUserGroup, },
+        { label: "Assign Team Target", path: "/business-development/assign-target", icon: MdAssignmentInd, },
+        { label: "Assign Visit Target", path: "/business-development/view-visit-target", icon: MdCardTravel, },
+        { label: "View Teams", path: "/business-development/view-teams", icon: RiTeamFill, },
+        { label: "View Assigned Targets", path: "/business-development/view-assigned-targets", icon: FiTarget, },
+        { label: "View Individual Targets List", path: "/business-development/view-individual-target-list", icon: MdCardTravel, },
+        { label: "View Employee Targets", path: "/business-development/view-employee-targets", icon: FaUserAlt, },
 
       ],
     },
-    {   label: "Distributor Argeement",
+    {
+      label: "Distributor Argeement",
       key: "distributor",
       icon: FaProjectDiagram,
-       children: [
-              {label:"ON Boarding Ledger",path:"/distributor/onboarding-ledger", icon:FaBookOpen},
-              {label: "Distributor List", path: "/distributor/distributorlist", icon: FaUsers },
+      children: [
+        { label: "ON Boarding Ledger", path: "/distributor/onboarding-ledger", icon: FaBookOpen },
+        { label: "Distributor List", path: "/distributor/distributorlist", icon: FaUsers },
       ],
-      
+
     },
     {
       label: "Accounting  Master",
       key: "accounting-master",
       icon: FaWallet,
       children: [
-        {label:"Create Group", path:"/accounting-master/create-group",icon:MdGroupAdd},
-        {label:"View Group",path:"/accounting-master/view-group",icon:FaList},
-        {label:"Create Ledger",path:"/accounting-master/create-ledger", icon:FaFileInvoiceDollar},
-        {label:"View Ledger",path:"/accounting-master/view-ledger", icon:FaFileInvoice},
-        {label:"Create Voucher",path:"/accounting-master/create-voucher", icon:FaMoneyCheckAlt},
-        {label:"View Voucher", path:"/accounting-master/view-voucher", icon:FaFileInvoice },
-        {label:"Edit Ledger Assignment",path:"/accounting-master/edit-ledger-assignment",  icon:FaEdit },
-        {label:"Retail Assignment" ,path:"/accounting-master/retail-assignment", icon:FaStore },
-      ] },
-      {
-          label: "Comapny Master",
+        { label: "Create Group", path: "/accounting-master/create-group", icon: MdGroupAdd },
+        { label: "View Group", path: "/accounting-master/view-group", icon: FaList },
+        { label: "Create Ledger", path: "/accounting-master/create-ledger", icon: FaFileInvoiceDollar },
+        { label: "View Ledger", path: "/accounting-master/view-ledger", icon: FaFileInvoice },
+        { label: "Create Voucher", path: "/accounting-master/create-voucher", icon: FaMoneyCheckAlt },
+        { label: "View Voucher", path: "/accounting-master/view-voucher", icon: FaFileInvoice },
+        { label: "Edit Ledger Assignment", path: "/accounting-master/edit-ledger-assignment", icon: FaEdit },
+        { label: "Retail Assignment", path: "/accounting-master/retail-assignment", icon: FaStore },
+      ]
+    },
+    {
+      label: "Comapny Master",
       key: "company-master",
       icon: MdCorporateFare,
       children: [
-        {label:"Create Company",path:"/company-master/create-company",icon:HiOfficeBuilding},
-        {label:"Company List",path:"/company-master/comapny-list",icon:FaCity},        
+        { label: "Create Company", path: "/company-master/create-company", icon: HiOfficeBuilding },
+        { label: "Company List", path: "/company-master/comapny-list", icon: FaCity },
       ]
-      },
-            {
-        label:"Inventory Master",key:"inventory",icon:MdInventory,
-        children:[
-          {label:"Create Stock Group",path:"/inventory/create-stock-group",icon:MdAddBox},
-          {label:"View Stock Group",path:"/inventory/view-stock-group",icon:MdViewList},
-          {label:"Create Stock Category",path:"/inventory/create-stock-category",icon:MdCategory},
-          {label:"View Stock Category",path:"/inventory/view-stock-category",icon:MdAddCircleOutline},
-          {label:"Create Stock Item",path:"/inventory/create-stock-item",icon:MdOutlineInventory2  },
-          {label:"View Stock Item",path:"/inventory/view-stock-item",icon:MdOutlineInventory2  },
-          {label:"Create Godown",path:"/inventory/create-godown",icon:FaWarehouse},
-          {label:"View Godown",path:"/inventory/view-godown-list",icon:FaListAlt  },
-          {label:"Create Unit of Measure",path:"/inventory/create-unitOfMeasure",icon:RxComponent1  },
-          {label:"View Unit of Measure ",path:"/inventory/unit-list",icon:FaTable   },
-          {label:"Material Manufacturing",path:"/inventory/material-manufacturing",icon:MdAddCircleOutline   },
-          {label:"Stock Transfer",path:"/inventory/stock-transfer",icon:FaCity   },
-        ]
-      },
-      
+    },
     {
-        label:"Order Vochor",key:"order-vochor",icon:FaFileInvoice,
-         children:[
-          {label:"Payment",path:"/order-vochor/payment",icon:FiMapPin},
-          {label:"Purchase",path:"/order-vochor/purchase",icon:BiPurchaseTagAlt},
-          {label:"Sales",path:"/order-voucher/create-sales",icon:FaShoppingCart},
-          {label:"Receipt",path:"/order-voucher/receipt-request",icon:FaReceipt},
-          {label:"Credit",path:"/order-vochor/credit",icon:BsCreditCard2Front},
-          {label:"Debit",path:"/order-vochor/debit",icon:FaMoneyBillWave},
-         ]
-      },
-      {
-        label: "Transaction Master", key: "transaction-master", icon: FaExchangeAlt,
-        children: [
-          {label: "Purchase", path: "/transaction-master/purchase" , icon: BiSolidPurchaseTag},
-          {label: "Payment", path: "/transaction-master/payment" , icon: MdPayment},
-          {label: "Sale", path: "/transaction-master/sale" , icon: IoBarChart },
-          {label: "Receipt", path: "/transaction-master/receipt" , icon: IoReceipt },
-          {label: "Credit Note", path: "/transaction-master/credit-note" , icon: LuPanelRightOpen   },
-          {label: "Debit Note", path: "/transaction-master/debit-note" , icon: LuPanelRightClose   },
-          {label: "Contra", path: "/transaction-master/contra" , icon: BsBank  },
-          {label: "Journal", path: "/transaction-master/journal" , icon: BsJournalBookmarkFill  },
-        ]
-      },
-     
-         {
-          label:"Reports",key:"Reports",icon:BiSolidReport ,path:"/report",
-          children:[
-            {label:"Attendance Report",path:"/report/emp-attendance-report",icon:CalendarCheck2},
-            {label:"Employee Visit Report",path:"/report/emp-visit-report",icon:HiOutlineDocumentReport},
-            {label:" Employee Expense Report",path:"/report/get-emp-expense-report",icon:Receipt},
-            {label:"Daily Salary Report",path:"/report/emp-salary-report",icon:DollarSign},
-            {label:"Monthly Salary Report",path:"/report/emp-monthly-salary-report",icon:DollarSign},
-            {label:"Track Employee",path:"/report/track-employee",icon:FiMapPin},
-            {label:"Party Ledger Report",path:"/report/party-ledger-report",icon:BookText},
-            {label:"Party Transaction Report",path:"/report/party-transaction-report",icon:Handshake},
-            {label:"Scheduling & Alert Report",path:"/report/scheduling-alert-report",icon:BellRing },
-            {label:"Credit Days Reminder Report",path:"/report/credit-days-reminder-report",icon:Clock},
-            {label:"Employee Balance Sheet",path:"/report/emp-balance-sheet",icon:FileSpreadsheet},
-            {label:"Interest Report",path:"/report/interest-report",icon:BarChart3},
-            {label:"Product Report",path:"/report/product-report",icon:Package},
-            {label:"Item Stock Report",path:"/report/item-stock-report",icon:Package},
-            {label:"Employee Distributor Details",path:"/report/emp-distributor-details",icon:MdPeople},
-            {label:"Super Cash Bill Report",path:"/report/supercash-bill-report",icon:MdReceiptLong},
-            {label:"P & L Report",path:"/report/psl-report",icon:MdAssessment},
-            {label:"Fright Report",path:"/report/fright-report",icon:MdLocalShipping},
-            {label:"Transport Fright Report",path:"/report/transport-fright-report",icon:MdDirectionsBus},
-            {label:"Item P & L Report",path:"/report/item-psl-report",icon:MdInventory},
-            {label:"Manufacturing Report",path:"/report/manufacturing-report",icon:MdFactory},
-            {label:"Stock Transfer Report",path:"/report/stock-transfer-report",icon:MdSwapHoriz},
-            {label:"Pending Collection Report",path:"/report/pending-collection-report",icon:MdPendingActions},
-            {label:"Emp. Performance Report",path:"/report/emp-performance-report",icon:MdTrendingUp},
-            // {label:"Digio KYC Report",path:"/report/emp-kyc-report",icon:MdTrendingUp},
-          ]
-      },
-      {
-        label:"Misc",key:"misc",icon:MdAttractions ,
-         children:[
-          {label:"Activate/Deactivate Voucher",path:"/misc/voucher-action",icon:FaMoneyBill  },      
-          {label:"Define Retailer",path:"/misc/create-retailer",icon:IoMdPersonAdd   },      
-          {label:"View Retailer",path:"/misc/view-retailers",icon:IoCreate  },      
-          {label:"Transaction Approval",path:"/misc/transaction-approval",icon:FaUserCheck  },  
-                  { label: "Employee Penalty", path: "/misc/emp-penalty", icon: FaCommentsDollar  },    
-         ]
-      },
-      {
-        label:"Print MGMT",key:"print_mgmt",icon:HiOutlinePrinter,
-        children:[
-          {label:"Shipping label printer",path:"/print/mgmt/shipping_lable_printer",icon:BsUpcScan},
-          {label:"TruthFull Label Print",path:"/print/mgmt/truthful_labelprint",icon:Ticket}
-        ]},
-        // {
-        //   label:"Settings",path:"/settings",icon:RiSettings3Line,
-        // },
+      label: "Inventory Master", key: "inventory", icon: MdInventory,
+      children: [
+        { label: "Create Stock Group", path: "/inventory/create-stock-group", icon: MdAddBox },
+        { label: "View Stock Group", path: "/inventory/view-stock-group", icon: MdViewList },
+        { label: "Create Stock Category", path: "/inventory/create-stock-category", icon: MdCategory },
+        { label: "View Stock Category", path: "/inventory/view-stock-category", icon: MdAddCircleOutline },
+        { label: "Create Stock Item", path: "/inventory/create-stock-item", icon: MdOutlineInventory2 },
+        { label: "View Stock Item", path: "/inventory/view-stock-item", icon: MdOutlineInventory2 },
+        { label: "Create Godown", path: "/inventory/create-godown", icon: FaWarehouse },
+        { label: "View Godown", path: "/inventory/view-godown-list", icon: FaListAlt },
+        { label: "Create Unit of Measure", path: "/inventory/create-unitOfMeasure", icon: RxComponent1 },
+        { label: "View Unit of Measure ", path: "/inventory/unit-list", icon: FaTable },
+        { label: "Material Manufacturing", path: "/inventory/material-manufacturing", icon: MdAddCircleOutline },
+        { label: "Stock Transfer", path: "/inventory/stock-transfer", icon: FaCity },
+      ]
+    },
+
+    {
+      label: "Order Vochor", key: "order-vochor", icon: FaFileInvoice,
+      children: [
+        { label: "Payment", path: "/order-vochor/payment", icon: FiMapPin },
+        { label: "Purchase", path: "/order-vochor/purchase", icon: BiPurchaseTagAlt },
+        { label: "Sales", path: "/order-voucher/create-sales", icon: FaShoppingCart },
+        { label: "Receipt", path: "/order-voucher/receipt-request", icon: FaReceipt },
+        { label: "Credit", path: "/order-vochor/credit", icon: BsCreditCard2Front },
+        { label: "Debit", path: "/order-vochor/debit", icon: FaMoneyBillWave },
+      ]
+    },
+    {
+      label: "Transaction Master", key: "transaction-master", icon: FaExchangeAlt,
+      children: [
+        { label: "Purchase", path: "/transaction-master/purchase", icon: BiSolidPurchaseTag },
+        { label: "Payment", path: "/transaction-master/payment", icon: MdPayment },
+        { label: "Sale", path: "/transaction-master/sale", icon: IoBarChart },
+        { label: "Receipt", path: "/transaction-master/receipt", icon: IoReceipt },
+        { label: "Credit Note", path: "/transaction-master/credit-note", icon: LuPanelRightOpen },
+        { label: "Debit Note", path: "/transaction-master/debit-note", icon: LuPanelRightClose },
+        { label: "Contra", path: "/transaction-master/contra", icon: BsBank },
+        { label: "Journal", path: "/transaction-master/journal", icon: BsJournalBookmarkFill },
+      ]
+    },
+
+    {
+      label: "Reports", key: "Reports", icon: BiSolidReport, path: "/report",
+      children: [
+        { label: "Attendance Report", path: "/report/emp-attendance-report", icon: CalendarCheck2 },
+        { label: "Employee Visit Report", path: "/report/emp-visit-report", icon: HiOutlineDocumentReport },
+        { label: " Employee Expense Report", path: "/report/get-emp-expense-report", icon: Receipt },
+        { label: "Daily Salary Report", path: "/report/emp-salary-report", icon: DollarSign },
+        { label: "Monthly Salary Report", path: "/report/emp-monthly-salary-report", icon: DollarSign },
+        { label: "Track Employee", path: "/report/track-employee", icon: FiMapPin },
+        { label: "Party Ledger Report", path: "/report/party-ledger-report", icon: BookText },
+        { label: "Party Transaction Report", path: "/report/party-transaction-report", icon: Handshake },
+        { label: "Scheduling & Alert Report", path: "/report/scheduling-alert-report", icon: BellRing },
+        { label: "Credit Days Reminder Report", path: "/report/credit-days-reminder-report", icon: Clock },
+        { label: "Employee Balance Sheet", path: "/report/emp-balance-sheet", icon: FileSpreadsheet },
+        { label: "Interest Report", path: "/report/interest-report", icon: BarChart3 },
+        { label: "Product Report", path: "/report/product-report", icon: Package },
+        { label: "Item Stock Report", path: "/report/item-stock-report", icon: Package },
+        { label: "Employee Distributor Details", path: "/report/emp-distributor-details", icon: MdPeople },
+        { label: "Super Cash Bill Report", path: "/report/supercash-bill-report", icon: MdReceiptLong },
+        { label: "P & L Report", path: "/report/psl-report", icon: MdAssessment },
+        { label: "Fright Report", path: "/report/fright-report", icon: MdLocalShipping },
+        { label: "Transport Fright Report", path: "/report/transport-fright-report", icon: MdDirectionsBus },
+        { label: "Item P & L Report", path: "/report/item-psl-report", icon: MdInventory },
+        { label: "Manufacturing Report", path: "/report/manufacturing-report", icon: MdFactory },
+        { label: "Stock Transfer Report", path: "/report/stock-transfer-report", icon: MdSwapHoriz },
+        { label: "Pending Collection Report", path: "/report/pending-collection-report", icon: MdPendingActions },
+        { label: "Emp. Performance Report", path: "/report/emp-performance-report", icon: MdTrendingUp },
+        // {label:"Digio KYC Report",path:"/report/emp-kyc-report",icon:MdTrendingUp},
+      ]
+    },
+    {
+      label: "Misc", key: "misc", icon: MdAttractions,
+      children: [
+             { label: "Activate/Deactivate Voucher", path: "/misc/voucher-action", icon: FaMoneyBill },
+             { label: "Define Retailer", path: "/misc/create-retailer", icon: IoMdPersonAdd },
+             { label: "View Retailer", path: "/misc/view-retailers", icon: IoCreate },
+             { label: "Transaction Approval", path: "/misc/transaction-approval", icon: FaUserCheck },
+             { label: "Transaction Documents", path: "/misc/transaction-documents", icon: IoDocumentTextSharp },
+             { label: "Crop", path: "/product-demo/crop/create-crop", icon: FiCrop },
+             { label: "Product Demo", path: "/product-demo/demo-results", icon: FaClipboardList,},
+             {label: "Assign Task", path: "/misc/assign-task-to-employee", icon: FaTasks}
+           ]
+    },
+    {
+      label: "Print MGMT", key: "print_mgmt", icon: HiOutlinePrinter,
+      children: [
+        { label: "Shipping label printer", path: "/print/mgmt/shipping_lable_printer", icon: BsUpcScan },
+        { label: "TruthFull Label Print", path: "/print/mgmt/truthful_labelprint", icon: Ticket }
+      ]
+    },
+    // {
+    //   label:"Settings",path:"/settings",icon:RiSettings3Line,
+    // },
   ];
 
   useEffect(() => {
@@ -524,7 +532,7 @@ const MobileTopbar = () => {
                       to={menu.path}
                       style={activeLinkStyle}
                       {...sidebarButtonStyle} fontWeight="700 !important"
-                      onClick={onClose}  fontSize="13px"
+                      onClick={onClose} fontSize="13px"
                     >
                       {menu.label}
                     </Button>
@@ -547,7 +555,7 @@ const MobileTopbar = () => {
                               : ChevronRightIcon
                           }
                         />
-                      } 
+                      }
                       onClick={() => toggleMenu(menu.key)}
                       {...sidebarButtonStyle} fontSize="13px" fontWeight="700 !important"
                       bg={parentActive ? "#d7d8db" : "transparent"}

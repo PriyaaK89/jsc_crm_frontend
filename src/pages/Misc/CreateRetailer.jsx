@@ -29,36 +29,19 @@ const CreateRetailer = () => {
 
   const toast = useToast();
 
-  /* =====================================================
-      STATES
-  ===================================================== */
-
   const [loading, setLoading] = useState(false);
-
   const [areas, setAreas] = useState([]);
-
   const [formData, setFormData] = useState({
-
     name: "",
-
     firm_name: "",
-
     contact_number: "",
-
     address: "",
-
     firm_address: "",
-
     area: "",
-
     district: "",
-
     state: "",
-
     city: "",
-
     pincode: "",
-
   });
 
   /* =====================================================
@@ -90,65 +73,24 @@ const CreateRetailer = () => {
     if (value.length === 6) {
 
       try {
+        const res = await API.get( `/getstatecity/${value}` );
 
-        // ==============================
-        // GET STATE / CITY / DISTRICT
-        // ==============================
+        const { state, district, city } = res.data.data;
 
-        const res = await API.get(
-          `/getstatecity/${value}`
-        );
+        setFormData((prev) => ({ ...prev, state, district, city, }));
 
-        const {
-          state,
-          district,
-          city
-        } = res.data.data;
-
-        setFormData((prev) => ({
-          ...prev,
-          state,
-          district,
-          city,
-        }));
-
-        // ==============================
-        // GET AREAS
-        // ==============================
-
-        const areaRes = await API.get(
-          `/areas?pincode=${value}`
-        );
-
+        const areaRes = await API.get( `/areas?pincode=${value}`);
         setAreas(areaRes?.data?.data || []);
-
       } catch (err) {
-
-        console.error(
-          "Pincode lookup failed",
-          err
-        );
-
+        console.error( "Pincode lookup failed", err );
       }
-
     }
-
   };
 
-  /* =====================================================
-      CREATE RETAILER
-  ===================================================== */
 
   const handleCreateRetailer = async () => {
-
     try {
-
-      // ==============================
-      // VALIDATIONS
-      // ==============================
-
       if (!formData?.name) {
-
         toast({
           title: "Validation Error",
           description: "Retailer name is required",
@@ -156,12 +98,10 @@ const CreateRetailer = () => {
           duration: 3000,
           isClosable: true,
         });
-
         return;
       }
 
       if (!formData?.contact_number) {
-
         toast({
           title: "Validation Error",
           description: "Contact number is required",
@@ -169,44 +109,24 @@ const CreateRetailer = () => {
           duration: 3000,
           isClosable: true,
         });
-
         return;
       }
 
       setLoading(true);
 
-      // ==============================
-      // API CALL
-      // ==============================
-
       const payload = {
-
         name: formData?.name,
-
         firm_name: formData?.firm_name,
-
         contact_number: formData?.contact_number,
-
         address: formData?.address,
-
         firm_address: formData?.firm_address,
-
         area: formData?.area,
-
         district: formData?.district,
-
         pincode: formData?.pincode,
 
       };
 
-      const response = await API.post(
-        API_ENDPOINTS.CREATE_RETAILER,
-        payload
-      );
-
-      // ==============================
-      // SUCCESS
-      // ==============================
+      const response = await API.post( API_ENDPOINTS.CREATE_RETAILER, payload );
 
       if (response?.data?.success) {
 
@@ -220,54 +140,34 @@ const CreateRetailer = () => {
           isClosable: true,
         });
 
-        // RESET FORM
-
         setFormData({
-
           name: "",
-
           firm_name: "",
-
           contact_number: "",
-
           address: "",
-
           firm_address: "",
-
           area: "",
-
           district: "",
-
           state: "",
-
           city: "",
-
           pincode: "",
-
         });
 
         setAreas([]);
-
       }
 
     } catch (error) {
-
       console.log(error);
-
       toast({
         title: "Error",
-        description:
-          error?.response?.data?.message ||
-          "Failed to create retailer",
+        description: error?.response?.data?.message || "Failed to create retailer",
         status: "error",
         duration: 3000,
         isClosable: true,
       });
 
     } finally {
-
       setLoading(false);
-
     }
 
   };
@@ -275,8 +175,6 @@ const CreateRetailer = () => {
   return (
 
     <Box>
-
-
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5} >
 
         {/* Retailer Name */}
@@ -334,143 +232,63 @@ const CreateRetailer = () => {
         {/* Pincode */}
 
         <FormControl>
+          <FormLabel> Pincode </FormLabel>
+          <Input maxLength={6} value={formData.pincode}
+            onChange={(e) => handlePincodeChange(e.target.value) }
+            placeholder="Enter pincode" />
+        </FormControl>
 
-          <FormLabel>
-            Pincode
-          </FormLabel>
+        <FormControl>
+          <FormLabel> State </FormLabel>
+          <Input value={formData.state} isReadOnly/>
+        </FormControl>
 
-          <Input
-            maxLength={6}
-            value={formData.pincode}
-            onChange={(e) =>
-              handlePincodeChange(e.target.value)
-            }
-            placeholder="Enter pincode"
-          />
+        <FormControl>
+          <FormLabel> District </FormLabel>
+          <Input value={formData.district} isReadOnly />
 
         </FormControl>
 
-        {/* State */}
-
         <FormControl>
-
-          <FormLabel>
-            State
-          </FormLabel>
-
-          <Input
-            value={formData.state}
-            isReadOnly
-          />
-
+          <FormLabel> City </FormLabel>
+          <Input value={formData.city} isReadOnly />
         </FormControl>
 
-        {/* District */}
-
         <FormControl>
-
-          <FormLabel>
-            District
-          </FormLabel>
-
-          <Input
-            value={formData.district}
-            isReadOnly
-          />
-
-        </FormControl>
-
-        {/* City */}
-
-        <FormControl>
-
-          <FormLabel>
-            City
-          </FormLabel>
-
-          <Input
-            value={formData.city}
-            isReadOnly
-          />
-
-        </FormControl>
-
-        {/* Area */}
-
-        <FormControl>
-
-          <FormLabel>
-            Area
-          </FormLabel>
+          <FormLabel> Area </FormLabel>
 
           <Select
             placeholder="Select area"
             name="area"
             value={formData.area}
-            onChange={handleChange}
-          >
+            onChange={handleChange} >
 
             {areas?.map((item, index) => (
-
-              <option
-                key={index}
-                value={item.officename}
-              >
-                {item.officename}
-              </option>
-
+              <option key={index} value={item.officename} > {item.officename} </option>
             ))}
 
           </Select>
-
         </FormControl>
-
       </SimpleGrid>
 
-      {/* =====================================================
-            ADDRESS
-      ===================================================== */}
-
       <FormControl mt={5}>
-
-        <FormLabel>
-          Address
-        </FormLabel>
-
-        <Textarea
-          name="address"
-          value={formData.address}
-          onChange={handleChange}
-          placeholder="Enter address"
-        />
-
+        <FormLabel> Address </FormLabel>
+        <Textarea name="address" value={formData.address} onChange={handleChange} placeholder="Enter address"/>
       </FormControl>
 
-      {/* =====================================================
-            FIRM ADDRESS
-      ===================================================== */}
 
       <FormControl mt={5}>
-
-        <FormLabel>
-          Firm Address
-        </FormLabel>
+        <FormLabel> Firm Address </FormLabel>
 
         <Textarea
           name="firm_address"
           value={formData.firm_address}
           onChange={handleChange}
-          placeholder="Enter firm address"
-        />
+          placeholder="Enter firm address" />
 
       </FormControl>
 
-      {/* =====================================================
-            BUTTON
-      ===================================================== */}
-
       <Box textAlign="center" mt={10}>
-
         <Button
            bg="#237086" fontWeight="500"
               fontSize="14px" color="white"
@@ -478,17 +296,11 @@ const CreateRetailer = () => {
           onClick={handleCreateRetailer}
           isLoading={loading}
           loadingText="Creating"
-          _hover={{
-            transform: "translateY(-2px)",
-            boxShadow: "md", bg: "#1B5A6B"
-          }}
-          transition="all 0.2s ease"
-        >
+          _hover={{ transform: "translateY(-2px)", boxShadow: "md", bg: "#1B5A6B" }}
+          transition="all 0.2s ease" >
           Create Retailer
         </Button>
-
       </Box>
-
     </Box>
 
   );

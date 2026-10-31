@@ -7,7 +7,7 @@ import {
   HStack,
   Spinner
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Skeleton, SkeletonCircle } from "@chakra-ui/react";
 import NotifictionSocket from "./NotifictionSocket";
 import API from "../../services/api";
@@ -15,8 +15,8 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 
 const NotofictionBarModel = ({ setUnreadCount }) => {
 
-  const [notifications, setNotifications] = useState([]);
-  const [allNotifications, setAllNotifications] = useState([]);
+  // items = notifications of the currently selected tab (comes from the API + live socket)
+  const [items, setItems] = useState([]);
   const [tab, setTab] = useState("unread");
 
   const [loading, setLoading] = useState(false);
@@ -24,9 +24,53 @@ const NotofictionBarModel = ({ setUnreadCount }) => {
   const [totalPages, setTotalPages] = useState(1);
   // const [activeId, setActiveId] = useState(null);
 
+  // refs so the socket handler (registered once) always sees the latest tab/page
+  const tabRef = useRef(tab);
+  const pageRef = useRef(page);
+  tabRef.current = tab;
+  pageRef.current = page;
+
+  // used to ignore out-of-date responses when the user switches tabs quickly
+  const requestIdRef = useRef(0);
+
+  //  API (list for the active tab)
+  const fetchNotifications = async (tabName = tab, pageNo = 1) => {
+    const requestId = ++requestIdRef.current;
+
+    try {
+      setLoading(true);
+
+      const params = { page: pageNo, limit: 10 };
+      // backend filter for unread tab
+      if (tabName === "unread") params.is_read = 0;
+
+      const res = await API.get(API_ENDPOINTS.Get_notification, { params });
+
+      // a newer request was started, ignore this response
+      if (requestId !== requestIdRef.current) return;
+
+      if (res.status === 200) {
+        setItems(res?.data?.data || []);
+        setPage(res?.data?.pagination?.page || 1);
+        setTotalPages(res?.data?.pagination?.total_pages || 1);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      if (requestId === requestIdRef.current) {
+        setLoading(false);
+      }
+    }
+  };
+
+  // load on mount and every time the tab changes
+  useEffect(() => {
+    fetchNotifications(tab, 1);
+  }, [tab]);
+
   //  SOCKET (Unread)
   useEffect(() => {
-    NotifictionSocket.on("locationStatusChanged", (data) => {
+    const handleLocationStatusChanged = (data) => {
       const newNotification = {
         id: data.id || Date.now(),
         name: data.name,
@@ -38,53 +82,33 @@ const NotofictionBarModel = ({ setUnreadCount }) => {
       console.log("MARK ID =>", data.id);
       console.log(data, "data")
 
-      setNotifications((prev) => [newNotification, ...prev]);
-    });
+      // bell count always goes up for a new unread notification
+      setUnreadCount((c) => c + 1);
+
+      // only show it live in the list when user is on first page
+      if (pageRef.current === 1) {
+        setItems((prev) =>
+          prev.some((n) => n.id === newNotification.id)
+            ? prev
+            : [newNotification, ...prev]
+        );
+      }
+    };
+
+    NotifictionSocket.on("locationStatusChanged", handleLocationStatusChanged);
 
     return () => {
-      NotifictionSocket.off("locationStatusChanged");
+      NotifictionSocket.off("locationStatusChanged", handleLocationStatusChanged);
     };
   }, []);
-  //  ----------------this for first user seen count on bell ico
-  useEffect(() => {
-    const count = [...notifications, ...allNotifications].filter(
-      (n) => n.is_read === 0
-    ).length;
 
-    setUnreadCount(count);
-  }, [notifications, allNotifications]);
-
-  //  API (All)
-  const fetchAllNotifications = async (pageNo = 1) => {
-    try {
-      setLoading(true);
-
-      const res = await API.get(API_ENDPOINTS.Get_notification, {
-        params: { page: pageNo, limit: 10 }
-      });
-
-      if (res.status === 200) {
-        setAllNotifications(res?.data?.data || []);
-        setPage(res?.data?.pagination?.page || 1);
-        setTotalPages(res?.data?.pagination?.total_pages || 1);
-      }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const mergedNotifications = Array.from(
-    new Map(
-      [...notifications, ...allNotifications].map(n => [n.id, n])
-    ).values()
-  );
+  //  ----------------unread count on bell icon now comes from the API (Topbar)
+  //  and is kept in sync below by mark / delete / socket actions
 
   const list =
     tab === "unread"
-      ? mergedNotifications.filter((n) => n.is_read === 0)
-      : [...mergedNotifications].sort((a, b) => a.is_read - b.is_read);
+      ? items.filter((n) => n.is_read === 0)
+      : [...items].sort((a, b) => a.is_read - b.is_read);
 
   //  const handleToggle = (id) => {
   //   setActiveId((prev) => (prev === id ? null : id));
@@ -93,32 +117,31 @@ const NotofictionBarModel = ({ setUnreadCount }) => {
   //---------------------mark as read -----------------------------------------------------
   //  MARK SINGLE
   const markAsRead = async (id) => {
-    //  instant ui upadet
-    setNotifications(prev =>
-      prev.map(n => n.id === id ? { ...n, is_read: 1 } : n)
-    );
+    const target = items.find((n) => n.id === id);
+    if (!target || target.is_read === 1) return;
 
-    setAllNotifications(prev =>
-      prev.map(n => n.id === id ? { ...n, is_read: 1 } : n)
+    //  instant ui upadet
+    setItems((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, is_read: 1 } : n))
     );
+    setUnreadCount((c) => Math.max(0, c - 1));
 
     try {
-      const res = await API.post(`${API_ENDPOINTS.Mark_single_notificaction}/${id}`, {
-        data: { id },
-      });
+      const res = await API.post(`${API_ENDPOINTS.Mark_single_notificaction}/${id}`);
 
       if (res.status === 200) {
-        setNotifications(prev =>
-          prev.map(n => n.id === id ? { ...n, is_read: 1 } : n)
-        );
-
-        setAllNotifications(prev =>
-          prev.map(n => n.id === id ? { ...n, is_read: 1 } : n)
+        setItems((prev) =>
+          prev.map((n) => (n.id === id ? { ...n, is_read: 1 } : n))
         );
       }
 
     } catch (err) {
       console.log("MARK ERROR =>", err.response || err);
+      // rollback
+      setItems((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, is_read: 0 } : n))
+      );
+      setUnreadCount((c) => c + 1);
     }
   };
 
@@ -129,13 +152,10 @@ const NotofictionBarModel = ({ setUnreadCount }) => {
     try {
       await API.patch(API_ENDPOINTS.Mark_all_asread_notifiction, {});
 
-      setNotifications((prev) =>
+      setItems((prev) =>
         prev.map((n) => ({ ...n, is_read: 1 }))
       );
-
-      setAllNotifications((prev) =>
-        prev.map((n) => ({ ...n, is_read: 1 }))
-      );
+      setUnreadCount(0);
     } catch (err) {
       console.log(err);
     }
@@ -143,13 +163,19 @@ const NotofictionBarModel = ({ setUnreadCount }) => {
   // -------------------------------------------delete single on -----------------------------
   //DELETE SINGLE
   const deleteNotification = async (id) => {
+    const target = items.find((n) => n.id === id);
+
     try {
       await API.delete(`${API_ENDPOINTS.Delete_single_one_notification}/${id}`, {
         data: { id },
       });
 
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-      setAllNotifications((prev) => prev.filter((n) => n.id !== id));
+      setItems((prev) => prev.filter((n) => n.id !== id));
+
+      // only reduce the bell count if the deleted one was unread
+      if (target && target.is_read === 0) {
+        setUnreadCount((c) => Math.max(0, c - 1));
+      }
     } catch (err) {
       console.log(err);
     }
@@ -160,8 +186,8 @@ const NotofictionBarModel = ({ setUnreadCount }) => {
     try {
       await API.delete(API_ENDPOINTS.Delete_all_notifiction);
 
-      setNotifications([]);
-      setAllNotifications([]);
+      setItems([]);
+      setUnreadCount(0);
     } catch (err) {
       console.log(err);
     }
@@ -210,10 +236,7 @@ const NotofictionBarModel = ({ setUnreadCount }) => {
               bg: tab === "all" ? "white" : "gray.700",
               color: tab === "all" ? "black" : "white"
             }}
-            onClick={() => {
-              setTab("all");
-              fetchAllNotifications(1);
-            }}
+            onClick={() => setTab("all")}
           >
             All
           </Button>
@@ -234,36 +257,34 @@ const NotofictionBarModel = ({ setUnreadCount }) => {
         </HStack>
       </Box>
 
-      {/* PAGINATION (ONLY FOR ALL TAB) */}
-      {tab === "all" && (
-        <Flex
-          justify="space-between"
-          align="center"
-          px={4}
-          py={2}
-          borderBottom="1px solid #ffffff"
+      {/* PAGINATION (for both tabs) */}
+      <Flex
+        justify="space-between"
+        align="center"
+        px={4}
+        py={2}
+        borderBottom="1px solid #ffffff"
+      >
+        <Button
+          size="xs"
+          isDisabled={page === 1}
+          onClick={() => fetchNotifications(tab, page - 1)}
         >
-          <Button
-            size="xs"
-            isDisabled={page === 1}
-            onClick={() => fetchAllNotifications(page - 1)}
-          >
-            Prev
-          </Button>
+          Prev
+        </Button>
 
-          <Text fontSize="xs">
-            Page {page} of {totalPages}
-          </Text>
+        <Text fontSize="xs">
+          Page {page} of {totalPages}
+        </Text>
 
-          <Button
-            size="xs"
-            isDisabled={page === totalPages}
-            onClick={() => fetchAllNotifications(page + 1)}
-          >
-            Next
-          </Button>
-        </Flex>
-      )}
+        <Button
+          size="xs"
+          isDisabled={page === totalPages}
+          onClick={() => fetchNotifications(tab, page + 1)}
+        >
+          Next
+        </Button>
+      </Flex>
 
       {/* BODY */}
       <Box maxH="400px" overflowY="auto">
@@ -280,7 +301,7 @@ const NotofictionBarModel = ({ setUnreadCount }) => {
         ) : (
           list.map((n, i) => (
             <Box
-              key={i}
+              key={n.id ?? i}
               borderBottom="1px solid #f1f1f1"
               _hover={{ bg: "gray.50" }}
             >

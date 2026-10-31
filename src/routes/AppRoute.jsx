@@ -130,7 +130,7 @@ import DemoResultsView from "../pages/ProductDemo/DemoResultsView";
 import ViewAllIndividualTargetsLayout from "../components/layout/BusinessDevelopment/ViewAllIndividualTragetslayout";
 import AssignTaskToEmployeeLayout from "../components/layout/MiscActions/AssignTaskToEmployeeLayout";
 import AssignAreaToEmployeeLayout from "../components/layout/MiscActions/AssignAreaLayout";
-
+import ChatMonitorLayout from "../components/layout/MiscActions/ChatMonitorLayout";
 
 function App() {
   return (
@@ -272,6 +272,7 @@ function App() {
         <Route path="/misc/emp-penalty" element={<PenaltyLayout />} />
         <Route path="/misc/assign-task-to-employee" element={<AssignTaskToEmployeeLayout/>}/>
         <Route path="/misc/assign-areas-to-employee" element={<AssignAreaToEmployeeLayout/>}/>
+        <Route path="/chat/monitor" element={<ChatMonitorLayout />} />
 
         <Route path="/transaction-master/purchase" element={<PurchaseTxnMasterLayout />} />
         <Route path="/transaction-master/payment" element={<PaymentTxnMasterLayout />} />

@@ -2,7 +2,7 @@ import { Box, VStack, Text, Button, Collapse, Icon, Image, useToast } from "@cha
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
-import { MdAssignmentInd, MdAttractions, MdCardTravel, MdOutlineAssignmentReturn, MdOutlineInventory2, MdOutlinePayments, MdOutlineTour, MdOutlineTrackChanges, MdPayment, MdTour, MdTravelExplore } from "react-icons/md";
+import { MdAssignmentInd, MdAttractions, MdCardTravel, MdChat, MdOutlineAssignmentReturn, MdOutlineInventory2, MdOutlinePayments, MdOutlineTour, MdOutlineTrackChanges, MdPayment, MdTour, MdTravelExplore } from "react-icons/md";
 import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
 import { FaArchive, FaCommentsDollar, FaExchangeAlt, FaListAlt, FaMoneyBill, FaRupeeSign, FaTable, FaTasks, FaUserAlt, FaUserCheck, FaUserTie, FaWarehouse } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
@@ -42,6 +42,8 @@ import { RxComponent1 } from "react-icons/rx";
 import { IoBarChart, IoCreate, IoDocumentTextSharp, IoReceipt } from "react-icons/io5";
 import { IoMdPersonAdd } from "react-icons/io";
 import { LuPanelRightClose, LuPanelRightOpen } from "react-icons/lu";
+import API from "../../services/api";
+import { API_ENDPOINTS } from "../../services/endpoints";
 
 
 const Newsidebar = () => {
@@ -73,6 +75,15 @@ const Newsidebar = () => {
     }, 1500)
 
   }
+
+      const [canViewChat, setCanViewChat] = useState(false);
+  useEffect(() => {
+    let off = false;
+    API.get(API_ENDPOINTS.chat_capabilities)
+      .then((r) => { if (!off) setCanViewChat(!!r?.data?.data?.can_view_all); })
+      .catch(() => {});
+    return () => { off = true; };
+  }, []);
 
   // ── UI: top-level, non-collapsible items (e.g. Dashboard) ──
   const labelBtnStyle = {
@@ -143,6 +154,7 @@ const Newsidebar = () => {
         { label: "Holiday Calendar", path: "/hr-mgmt/holiday-calendar", icon: FaKey },
         { label: "Calendar List", path: "/hr-mgmt/yearly-holiday-calendar-list", icon: FaKey },
         { label: "Employee Penalty", path: "/misc/emp-penalty", icon: FaCommentsDollar },
+        
       ],
     },
 
@@ -153,9 +165,11 @@ const Newsidebar = () => {
       children: [
         { label: "Create Team", path: "/business-development/create-team", icon: FaUserPlus, },
         { label: "Create Sub Team", path: "/business-development/create-sub-team", icon: HiUserGroup, },
-        { label: "Assign Team Target", path: "/business-development/assign-target", icon: MdAssignmentInd, },
-        { label: "Assign Visit Target", path: "/business-development/view-visit-target", icon: MdCardTravel, },
         { label: "View Teams", path: "/business-development/view-teams", icon: RiTeamFill, },
+        {label: "Assign Task", path: "/misc/assign-task-to-employee", icon: FaTasks},
+        {label: "Assign Area", path: "/misc/assign-areas-to-employee", icon: FaArchive},
+        { label: "Assign Visit Target", path: "/business-development/view-visit-target", icon: MdCardTravel, },
+        { label: "Assign Team Target", path: "/business-development/assign-target", icon: MdAssignmentInd, },
         { label: "View Assigned Targets", path: "/business-development/view-assigned-targets", icon: FiTarget, },
         { label: "View Individual Targets List", path: "/business-development/view-individual-target-list", icon: MdCardTravel, },
         { label: "View Employee Targets", path: "/business-development/view-employee-targets", icon: FaUserAlt, },
@@ -199,6 +213,7 @@ const Newsidebar = () => {
     {
       label: "Inventory Master", key: "inventory", icon: MdInventory,
       children: [
+          { label: "Crop", path: "/product-demo/crop/create-crop", icon: FiCrop },
         { label: "Create Stock Group", path: "/inventory/create-stock-group", icon: MdAddBox },
         { label: "View Stock Group", path: "/inventory/view-stock-group", icon: MdViewList },
         { label: "Create Stock Category", path: "/inventory/create-stock-category", icon: MdCategory },
@@ -277,10 +292,10 @@ const Newsidebar = () => {
         { label: "View Retailer", path: "/misc/view-retailers", icon: IoCreate },
         { label: "Transaction Approval", path: "/misc/transaction-approval", icon: FaUserCheck },
         { label: "Transaction Documents", path: "/misc/transaction-documents", icon: IoDocumentTextSharp },
-        { label: "Crop", path: "/product-demo/crop/create-crop", icon: FiCrop },
+      
         { label: "Product Demo", path: "/product-demo/demo-results", icon: FaClipboardList,},
-        {label: "Assign Task", path: "/misc/assign-task-to-employee", icon: FaTasks},
-        {label: "Assign Area", path: "/misc/assign-areas-to-employee", icon: FaArchive}
+       
+        ...(canViewChat ? [{ label: "Team Chat", path: "/chat/monitor", icon: MdChat }] : []),
       ]
     },
     {

@@ -63,6 +63,8 @@ const AddEmployee = () => {
     reporting_under: "",
     aadhar_no: "",
     pan_number: "",
+    alternate_contact_no: "",
+  bank_account_number: "",
   });
 
   const requiredFields = [
@@ -90,6 +92,7 @@ const AddEmployee = () => {
     "working_area",
     "approver_id",
     "reporting_under",
+    
   ];
 
   const [areas, setAreas] = useState([]);
@@ -98,6 +101,7 @@ const AddEmployee = () => {
     name: "",
     gender: "",
     contact_no: "",
+    alternate_contact_no: "",
     date_of_birth: "",
     email: "",
     address_line1: "",
@@ -110,6 +114,7 @@ const AddEmployee = () => {
     pincode: "",
     father_name: "",
     pan_number: "",
+    bank_account_number: "",
     aadhar_no: "",
     blood_group: "",
     department_id: "",
@@ -173,12 +178,26 @@ const AddEmployee = () => {
     const aadharError = validateAadhar(formData.aadhar_no);
     const panError = validatePan(formData.pan_number);
 
+    const alternateContactError =
+  formData.alternate_contact_no && !/^\d{10}$/.test(formData.alternate_contact_no)
+    ? "Alternative contact must be 10 digits"
+    : formData.alternate_contact_no && formData.alternate_contact_no === formData.contact_no
+    ? "Alternative contact must differ from contact no."
+    : "";
+
+const bankAccountError =
+  formData.bank_account_number && !/^\d{9,18}$/.test(formData.bank_account_number)
+    ? "Bank account number must be 9-18 digits"
+    : "";
+
     const newError = {
       ...requiredFieldErrors,
       email: emailError,
       contact_no: contactError,
       aadhar_no: aadharError,
       pan_number: panError,
+        alternate_contact_no: alternateContactError,
+  bank_account_number: bankAccountError,
     };
 
     setError(newError);
@@ -190,7 +209,7 @@ const AddEmployee = () => {
           newError.email ||
           newError.contact_no ||
           newError.aadhar_no ||
-          newError.pan_number ||
+          newError.pan_number || newError.alternate_contact_no || newError.bank_account_number ||
           newError.date_of_joining ||
           "Please fill all required fields",
         status: "error",
@@ -511,6 +530,24 @@ const AddEmployee = () => {
               <FormErrorMessage>{error.contact_no}</FormErrorMessage>
             </FormControl>
 
+            <FormControl isInvalid={error.alternate_contact_no}>
+  <FormLabel {...lableStyles}>Alternative Contact No.</FormLabel>
+  <Input
+    name="alternate_contact_no"
+    placeholder="Enter Alternative Contact No"
+    maxLength={10}
+    value={formData.alternate_contact_no}
+    onChange={(e) => {
+      const value = e.target.value.replace(/\D/g, "");
+      if (value.length <= 10) {
+        setFormData((prev) => ({ ...prev, alternate_contact_no: value }));
+        setError((prev) => ({ ...prev, alternate_contact_no: "" }));
+      }
+    }}
+  />
+  <FormErrorMessage>{error.alternate_contact_no}</FormErrorMessage>
+</FormControl>
+
             <FormControl isRequired isInvalid={error.date_of_birth}>
               <CustomDatePicker
                 label="Date of Birth"
@@ -713,6 +750,23 @@ const AddEmployee = () => {
               <FormErrorMessage>{error.aadhar_no}</FormErrorMessage>
 
             </FormControl>
+            <FormControl isInvalid={error.bank_account_number}>
+  <FormLabel {...lableStyles}>Bank Account No.</FormLabel>
+  <Input
+    name="bank_account_number"
+    placeholder="Bank Account No"
+    maxLength={18}
+    value={formData.bank_account_number}
+    onChange={(e) => {
+      const value = e.target.value.replace(/\D/g, "");
+      if (value.length <= 18) {
+        setFormData((prev) => ({ ...prev, bank_account_number: value }));
+        setError((prev) => ({ ...prev, bank_account_number: "" }));
+      }
+    }}
+  />
+  <FormErrorMessage>{error.bank_account_number}</FormErrorMessage>
+</FormControl>
             <FormControl >
               <FormLabel {...lableStyles}>Blood Group</FormLabel>
               <Select name="blood_group" placeholder="Select Blood Group" onChange={handleChange}>

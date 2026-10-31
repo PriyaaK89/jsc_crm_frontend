@@ -2,7 +2,7 @@ import {
   Flex, Text, Avatar, Spacer, Button, Box, Portal, Popover, PopoverTrigger, PopoverContent,
   PopoverArrow, PopoverBody, Divider, useToast, useDisclosure, Image
 } from "@chakra-ui/react";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
 import { BellIcon } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 
 import NotofictionBarModel from './NotofictionBarModel'
 import CustomeAvater from "./CustomeAvater";
+import API from "../../services/api";
+import { API_ENDPOINTS } from "../../services/endpoints";
 
 const Topbar = ({ profileImage }) => {
   const [full, setFull] = useState(false);
@@ -27,6 +29,27 @@ const Topbar = ({ profileImage }) => {
   console.log("profile imahge url", profileImage);
   // -----------------auth ------------
 
+  // ---------------- Unread count (from API) ----------------
+  const fetchUnreadCount = async () => {
+    try {
+      const res = await API.get(API_ENDPOINTS.getUnread_notification_count);
+      // adjust this line to match your API response shape
+      const count =
+        res?.data?.count ??
+        res?.data?.unread_count ??
+        res?.data?.data?.count ??
+        res?.data?.data?.unread_count ??
+        0;
+      setUnreadCount(Number(count) || 0);
+    } catch (err) {
+      console.log("UNREAD COUNT ERROR =>", err.response || err);
+    }
+  };
+
+  // load count as soon as the topbar mounts (before the dropdown is ever opened)
+  useEffect(() => {
+    fetchUnreadCount();
+  }, []);
 
   // ---------------- Full Screen ----------------
   const toggleFullScreen = () => {

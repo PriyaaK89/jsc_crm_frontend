@@ -23,6 +23,7 @@ const EditEmployee = () => {
         name: "",
         gender: "",
         contact_no: "",
+        alternate_contact_no: "",
         date_of_birth: "",
         address_line1: "",
         address_line2: "",
@@ -35,6 +36,7 @@ const EditEmployee = () => {
 
         father_name: "",
         pan_number: "",
+        bank_account_number: "",
         aadhar_no: "",
         blood_group: "",
 
@@ -45,8 +47,8 @@ const EditEmployee = () => {
         salary: "",
 
         week_off: "",
-        two_wheeler_travelling_allowance_per_km: "",
-        four_wheeler_travelling_allowance_per_km: "",
+        two_wheeler_allowance_per_km: "",
+        four_wheeler_allowance_per_km: "",
         avg_travel_km_per_day: "",
         city_allowance_per_km: "",
         daily_allowance_with_doc: "",
@@ -200,6 +202,17 @@ const EditEmployee = () => {
 
     /* ---------------- UPDATE API ---------------- */
     const handleUpdateEmpDetails = async () => {
+        const alt = formData.alternate_contact_no;
+        const bank = formData.bank_account_number;
+
+        if (alt && !/^\d{10}$/.test(alt)) {
+            toast({ title: "Alternative contact must be 10 digits", status: "error", duration: 3000 });
+            return;
+        }
+        if (bank && !/^\d{9,18}$/.test(bank)) {
+            toast({ title: "Bank account number must be 9-18 digits", status: "error", duration: 3000 });
+            return;
+        }
         try {
             setLoading(true);
 
@@ -219,8 +232,8 @@ const EditEmployee = () => {
                 visit_upto: formData.visit_upto,
                 weak_off: formData.week_off || "Sunday",
                 salary: Number(formData.salary),
-                two_wheeler_travelling_allowance_per_km: Number(formData.two_wheeler_travelling_allowance_per_km),
-                four_wheeler_travelling_allowance_per_km: Number(formData.four_wheeler_travelling_allowance_per_km),
+                two_wheeler_allowance_per_km: Number(formData.two_wheeler_allowance_per_km),
+                four_wheeler_allowance_per_km: Number(formData.four_wheeler_allowance_per_km),
                 avg_travel_km_per_day: Number(formData.avg_travel_km_per_day),
                 city_allowance_per_km: Number(formData.city_allowance_per_km),
                 daily_allowance_with_doc: Number(formData.daily_allowance_with_doc),
@@ -240,7 +253,7 @@ const EditEmployee = () => {
 
                     // Agar value null, undefined, empty string (""), ya NaN NAHI hai, 
                     // tabhi usko FormData me set karo.
-                    if (key === "contact_no") {
+                    if (key === "contact_no" || key === "alternate_contact_no" || key === "bank_account_number") {
                         formPayload.set(key, value ?? "");
                         return;
                     }
@@ -349,6 +362,20 @@ const EditEmployee = () => {
                         <FormLabel {...labelStyles}>Contact</FormLabel>
                         <Input name="contact_no" value={formData.contact_no} onChange={handleChange} />
                     </FormControl>
+                    <FormControl>
+                        <FormLabel {...labelStyles}>Alternative Contact</FormLabel>
+                        <Input
+                            name="alternate_contact_no"
+                            maxLength={10}
+                            value={formData.alternate_contact_no || ""}
+                            onChange={(e) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    alternate_contact_no: e.target.value.replace(/\D/g, ""),
+                                }))
+                            }
+                        />
+                    </FormControl>
 
                     <CustomDatePicker label="Date of Birth" name="date_of_birth" value={formData.date_of_birth} onChange=
                         {(date) => {
@@ -436,6 +463,21 @@ const EditEmployee = () => {
                     </FormControl>
 
                     <FormControl>
+                        <FormLabel {...labelStyles}>Bank Account No.</FormLabel>
+                        <Input
+                            name="bank_account_number"
+                            maxLength={18}
+                            value={formData.bank_account_number || ""}
+                            onChange={(e) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    bank_account_number: e.target.value.replace(/\D/g, ""),
+                                }))
+                            }
+                        />
+                    </FormControl>
+
+                    <FormControl>
                         <FormLabel {...labelStyles}>Aadhar Number</FormLabel>
                         <Input name="aadhar_no" value={formData.aadhar_no} onChange={handleChange} />
                     </FormControl>
@@ -496,11 +538,11 @@ const EditEmployee = () => {
 
                     <FormControl>
                         <FormLabel {...labelStyles}>Two wheeler Travelling Allowance Per K.M.</FormLabel>
-                        <Input name="two_wheeler_travelling_allowance_per_km" value={formData.two_wheeler_travelling_allowance_per_km} onChange={handleChange} />
+                        <Input name="two_wheeler_allowance_per_km" value={formData.two_wheeler_allowance_per_km} onChange={handleChange} />
                     </FormControl>
                     <FormControl>
                         <FormLabel {...labelStyles}> four wheelerTravelling Allowance Per K.M.</FormLabel>
-                        <Input name="four_wheeler_travelling_allowance_per_km" value={formData.four_wheeler_travelling_allowance_per_km} onChange={handleChange} />
+                        <Input name="four_wheeler_allowance_per_km" value={formData.four_wheeler_allowance_per_km} onChange={handleChange} />
                     </FormControl>
 
                     <FormControl>

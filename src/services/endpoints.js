@@ -19,6 +19,7 @@ export const API_ENDPOINTS = {
   upload_img: `upload-document`,
   // notifiction 
   Get_notification: `auth/get-notifications`,
+  getUnread_notification_count: "auth/get-unreadCount",
   Mark_single_notificaction: `auth/mark-notification-as-read`,
   Mark_all_asread_notifiction: `auth/mark-allAsRead`,
   Delete_all_notifiction: `auth/deleteAllNotifications`,
@@ -353,5 +354,14 @@ export const API_ENDPOINTS = {
   GEO_VILLAGES: "/geo/villages",
 
     EMPLOYEE_COLLECTION_AREAS: (id) => `/employee-collection-areas/${id}`,
+
+      // Team Chat (admin, read-only)
+  chat_capabilities: "chat/capabilities",
+  chat_admin_conversations: "chat/admin/conversations",
+  chat_admin_conversation: (id) => `chat/admin/conversations/${id}`,
+  chat_admin_messages: (id) => `chat/admin/conversations/${id}/messages`,
+  chat_contacts: "chat/contacts",
+  chat_groups: "chat/groups",
+  chat_group_icon: (id) => `chat/groups/${id}/icon`,
 };
 // 

@@ -34,6 +34,12 @@ const makeEmptyDemoItem = () => ({
   is_free_sample: 1, amount: 0,
 });
 
+// Field & farmer details are now stored per customer (demo_request_customers)
+const EMPTY_FIELD_DETAILS = {
+  village: "", district: "", land_area: "", land_unit: "",
+  soil_type: "", irrigation_type: "", sowing_date: "", expected_result_date: "",
+};
+
 // NOTE: adjust this to however your app actually stores/reads the logged-in user
 const getCurrentUserId = () => {
   try { return JSON.parse(localStorage.getItem("user"))?.id; } catch { return null; }
@@ -44,6 +50,18 @@ const isEmpty = (v) => v === null || v === undefined || v === "";
 const pretty = (v) => (isEmpty(v) ? null : String(v).replaceAll("_", " ").toLowerCase());
 const fmtDate = (v) => (v ? new Date(v).toLocaleDateString() : null);
 const withUnit = (val, unit) => (isEmpty(val) ? null : `${Number(val)} ${unit || ""}`.trim());
+
+// DATE columns can arrive as "YYYY-MM-DD" or as a full ISO timestamp.
+// Convert to the local calendar date so <input type="date"> never shows a day early.
+const toDateInput = (v) => {
+  if (!v) return "";
+  if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) return "";
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${mm}-${dd}`;
+};
 
 const growthDisplay = (g) => {
   if (g.input_type === "BOOLEAN") return g.field_value === "1" ? "Yes" : "No";
@@ -162,6 +180,7 @@ const ViewDemoRequestDetail = () => {
   const [form, setForm] = useState({});
   const [items, setItems] = useState([]);
   const [allocations, setAllocations] = useState({}); // demo_request_customers.id -> qty string
+  const [fieldDetails, setFieldDetails] = useState({}); // demo_request_customers.id -> field & farmer details
   const [farmImageFile, setFarmImageFile] = useState(null);
   const [consentDocFile, setConsentDocFile] = useState(null);
 
@@ -187,18 +206,11 @@ const ViewDemoRequestDetail = () => {
     const data = res?.data?.data;
     setDemo(data);
     setCanApprove(!!res?.data?.can_approve);
+    // demo-level fields only (field & farmer details now live on each customer)
     setForm({
       demo_type: data.demo_type || "",
       is_distributor_sponsored: !!data.is_distributor_sponsored,
-      village: data.village || "",
-      district: data.district || "",
-      land_area: data.land_area || "",
-      land_unit: data.land_unit || "",
-      soil_type: data.soil_type || "",
-      irrigation_type: data.irrigation_type || "",
-      sowing_date: data.sowing_date ? data.sowing_date.slice(0, 10) : "",
-      expected_result_date: data.expected_result_date ? data.expected_result_date.slice(0, 10) : "",
-      followup_reminder_date: data.followup_reminder_date ? data.followup_reminder_date.slice(0, 10) : "",
+      followup_reminder_date: toDateInput(data.followup_reminder_date),
       field_officer_id: data.field_officer_id || "",
       narration: data.narration || "",
     });
@@ -216,6 +228,23 @@ const ViewDemoRequestDetail = () => {
     );
     setAllocations(
       Object.fromEntries((data.customers || []).map((c) => [c.id, c.allocated_qty ?? ""]))
+    );
+    setFieldDetails(
+      Object.fromEntries(
+        (data.customers || []).map((c) => [
+          c.id,
+          {
+            village: c.village || "",
+            district: c.district || "",
+            land_area: c.land_area ?? "",
+            land_unit: c.land_unit || "",
+            soil_type: c.soil_type || "",
+            irrigation_type: c.irrigation_type || "",
+            sowing_date: toDateInput(c.sowing_date),
+            expected_result_date: toDateInput(c.expected_result_date),
+          },
+        ])
+      )
     );
   };
 
@@ -285,6 +314,21 @@ const ViewDemoRequestDetail = () => {
   );
   const overAllocated = allocatedTotal > productQty + 0.0001;
 
+  // ── per-customer field detail helpers ──
+  const setFD = (customerId, key, value) =>
+    setFieldDetails((p) => ({
+      ...p,
+      [customerId]: { ...(p[customerId] || EMPTY_FIELD_DETAILS), [key]: value },
+    }));
+
+  const copyDetailsFromFirst = (customerId) => {
+    const first = customers[0];
+    if (!first || first.id === customerId) return;
+    setFieldDetails((p) => ({
+      ...p,
+      [customerId]: { ...(p[first.id] || EMPTY_FIELD_DETAILS) },
+    }));
+  };
 
   // ── results grouped per customer ──
   const resultsByCustomer = useMemo(() => {
@@ -311,8 +355,34 @@ const ViewDemoRequestDetail = () => {
       if (key === "is_distributor_sponsored") { fd.append(key, value ? "1" : "0"); return; }
       fd.append(key, value ?? "");
     });
+
+    // backend expects a single `product` (one demo = one product)
     const validItems = items.filter((i) => i.stock_item_id && Number(i.qty) > 0);
-    fd.append("items", JSON.stringify(validItems));
+    if (validItems.length) {
+      const it = validItems[0];
+      fd.append("product", JSON.stringify({
+        stock_item_id: it.stock_item_id,
+        item_name: it.item_name,
+        qty: Number(it.qty),
+        unit: it.unit,
+        rate: Number(it.rate) || 0,
+        is_free_sample: it.is_free_sample === true || Number(it.is_free_sample) === 1 ? 1 : 0,
+      }));
+    }
+
+    // per-customer allocated qty + field & farmer details
+    if (customers.length) {
+      const allocationPayload = customers.map((c) => {
+        const q = allocations[c.id];
+        return {
+          id: c.id,
+          allocated_qty: q === "" || q === null || q === undefined ? null : Number(q),
+          field_details: fieldDetails[c.id] || EMPTY_FIELD_DETAILS,
+        };
+      });
+      fd.append("allocations", JSON.stringify(allocationPayload));
+    }
+
     if (farmImageFile) fd.append("farm_image", farmImageFile);
     if (consentDocFile) fd.append("consent_doc", consentDocFile);
     return fd;
@@ -329,7 +399,7 @@ const ViewDemoRequestDetail = () => {
     }
     setSaving(true);
     try {
-      // 1) demo details + item (so the new qty is in place)
+      // demo details + product + per-customer quantities and field details
       await API.put(API_ENDPOINTS.update_demo_request(id), buildFormData(), {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -426,7 +496,7 @@ const ViewDemoRequestDetail = () => {
         )}
       </Box>
 
-      {/* Demo Details */}
+      {/* Demo Details (demo-level only) */}
       <Box {...sectionStyle}>
         <Box {...sectionHeaderStyle}><Text fontWeight="500" fontSize="sm">Demo Details</Text></Box>
         <Grid templateColumns={{ base: "1fr", md: "repeat(3,1fr)" }} gap={4} p={4}>
@@ -450,56 +520,11 @@ const ViewDemoRequestDetail = () => {
             </Select>
           </GridItem>
           <GridItem>
-            <Text {...labelStyle}>Village</Text>
-            <Input {...(canEdit ? inputStyle : readonlyInputStyle)} isReadOnly={!canEdit}
-              value={form.village} onChange={(e) => setForm((p) => ({ ...p, village: e.target.value }))} />
-          </GridItem>
-          <GridItem>
-            <Text {...labelStyle}>District</Text>
-            <Input {...(canEdit ? inputStyle : readonlyInputStyle)} isReadOnly={!canEdit}
-              value={form.district} onChange={(e) => setForm((p) => ({ ...p, district: e.target.value }))} />
-          </GridItem>
-          <GridItem>
-            <Text {...labelStyle}>Land Area</Text>
-            <HStack>
-              <Input {...(canEdit ? inputStyle : readonlyInputStyle)} isReadOnly={!canEdit} type="number"
-                value={form.land_area} onChange={(e) => setForm((p) => ({ ...p, land_area: e.target.value }))} />
-              <Input {...(canEdit ? inputStyle : readonlyInputStyle)} isReadOnly={!canEdit} maxW="90px" placeholder="unit"
-                value={form.land_unit} onChange={(e) => setForm((p) => ({ ...p, land_unit: e.target.value }))} />
-            </HStack>
-          </GridItem>
-          <GridItem>
-            <Text {...labelStyle}>Soil Type</Text>
-            <Select {...(canEdit ? inputStyle : readonlyInputStyle)} isDisabled={!canEdit}
-              value={form.soil_type} onChange={(e) => setForm((p) => ({ ...p, soil_type: e.target.value }))}>
-              <option value="">-- Select --</option>
-              {SOIL_TYPES.map((s) => <option key={s} value={s}>{s.replaceAll("_", " ")}</option>)}
-            </Select>
-          </GridItem>
-          <GridItem>
-            <Text {...labelStyle}>Irrigation</Text>
-            <Select {...(canEdit ? inputStyle : readonlyInputStyle)} isDisabled={!canEdit}
-              value={form.irrigation_type} onChange={(e) => setForm((p) => ({ ...p, irrigation_type: e.target.value }))}>
-              <option value="">-- Select --</option>
-              {IRRIGATION.map((s) => <option key={s} value={s}>{s}</option>)}
-            </Select>
-          </GridItem>
-          <GridItem>
             <Flex align="center" gap={2} mt={6}>
               <Checkbox isChecked={form.is_distributor_sponsored} isDisabled={!canEdit} colorScheme="teal"
                 onChange={(e) => setForm((p) => ({ ...p, is_distributor_sponsored: e.target.checked }))} />
               <Text fontSize="12px" color="#494949">Distributor Sponsored</Text>
             </Flex>
-          </GridItem>
-          <GridItem>
-            <Text {...labelStyle}>Sowing Date</Text>
-            <Input {...(canEdit ? inputStyle : readonlyInputStyle)} isReadOnly={!canEdit} type="date"
-              value={form.sowing_date} onChange={(e) => setForm((p) => ({ ...p, sowing_date: e.target.value }))} />
-          </GridItem>
-          <GridItem>
-            <Text {...labelStyle}>Expected Result Date</Text>
-            <Input {...(canEdit ? inputStyle : readonlyInputStyle)} isReadOnly={!canEdit} type="date"
-              value={form.expected_result_date} onChange={(e) => setForm((p) => ({ ...p, expected_result_date: e.target.value }))} />
           </GridItem>
           <GridItem>
             <Text {...labelStyle}>Follow-up Reminder</Text>
@@ -633,6 +658,90 @@ const ViewDemoRequestDetail = () => {
             </Flex>
           </>
         )}
+      </Box>
+
+      {/* Field & Farmer Details — one block per customer */}
+      <Box {...sectionStyle}>
+        <Box {...sectionHeaderStyle}>
+          <HStack justifyContent="space-between">
+            <Text fontWeight="500" fontSize="sm">Field &amp; Farmer Details (Customer-wise)</Text>
+            <Text fontSize="11px">{customers.length} customer(s)</Text>
+          </HStack>
+        </Box>
+        <Box p={4}>
+          {customers.length === 0 ? (
+            <Text fontSize="12px" color="#888">No customers are mapped to this demo.</Text>
+          ) : (
+            customers.map((c, index) => {
+              const fd = fieldDetails[c.id] || EMPTY_FIELD_DETAILS;
+              const fieldStyle = canEdit ? inputStyle : readonlyInputStyle;
+              return (
+                <Box key={c.id} border="1px solid #e0e8e2" borderRadius="6px" p={3} mb={3} bg="#fbfdfb">
+                  <HStack justify="space-between" mb={3} flexWrap="wrap">
+                    <HStack flexWrap="wrap">
+                      <Text fontSize="13px" fontWeight="700" color="#237086">{c.party_name}</Text>
+                      <Badge colorScheme={PARTY_COLOR[c.party_type] || "gray"}>{c.party_type}</Badge>
+                      {c.parent_name && <Text fontSize="11px" color="#888">under {c.parent_name}</Text>}
+                    </HStack>
+                    {canEdit && index > 0 && (
+                      <Button size="xs" variant="outline" colorScheme="teal" onClick={() => copyDetailsFromFirst(c.id)}>
+                        Copy from first customer
+                      </Button>
+                    )}
+                  </HStack>
+
+                  <Grid templateColumns={{ base: "1fr", md: "repeat(4,1fr)" }} gap={4}>
+                    <GridItem>
+                      <Text {...labelStyle}>Village / Area</Text>
+                      <Input {...fieldStyle} isReadOnly={!canEdit}
+                        value={fd.village} onChange={(e) => setFD(c.id, "village", e.target.value)} />
+                    </GridItem>
+                    <GridItem>
+                      <Text {...labelStyle}>District</Text>
+                      <Input {...fieldStyle} isReadOnly={!canEdit}
+                        value={fd.district} onChange={(e) => setFD(c.id, "district", e.target.value)} />
+                    </GridItem>
+                    <GridItem>
+                      <Text {...labelStyle}>Land Area</Text>
+                      <HStack>
+                        <Input {...fieldStyle} isReadOnly={!canEdit} type="number" min={0} step="any"
+                          value={fd.land_area} onChange={(e) => setFD(c.id, "land_area", e.target.value)} />
+                        <Input {...fieldStyle} isReadOnly={!canEdit} maxW="90px" placeholder="unit"
+                          value={fd.land_unit} onChange={(e) => setFD(c.id, "land_unit", e.target.value)} />
+                      </HStack>
+                    </GridItem>
+                    <GridItem>
+                      <Text {...labelStyle}>Soil Type</Text>
+                      <Select {...fieldStyle} isDisabled={!canEdit}
+                        value={fd.soil_type} onChange={(e) => setFD(c.id, "soil_type", e.target.value)}>
+                        <option value="">-- Select --</option>
+                        {SOIL_TYPES.map((s) => <option key={s} value={s}>{s.replaceAll("_", " ")}</option>)}
+                      </Select>
+                    </GridItem>
+                    <GridItem>
+                      <Text {...labelStyle}>Irrigation</Text>
+                      <Select {...fieldStyle} isDisabled={!canEdit}
+                        value={fd.irrigation_type} onChange={(e) => setFD(c.id, "irrigation_type", e.target.value)}>
+                        <option value="">-- Select --</option>
+                        {IRRIGATION.map((s) => <option key={s} value={s}>{s}</option>)}
+                      </Select>
+                    </GridItem>
+                    <GridItem>
+                      <Text {...labelStyle}>Sowing Date</Text>
+                      <Input {...fieldStyle} isReadOnly={!canEdit} type="date"
+                        value={fd.sowing_date} onChange={(e) => setFD(c.id, "sowing_date", e.target.value)} />
+                    </GridItem>
+                    <GridItem>
+                      <Text {...labelStyle}>Expected Result Date</Text>
+                      <Input {...fieldStyle} isReadOnly={!canEdit} type="date"
+                        value={fd.expected_result_date} onChange={(e) => setFD(c.id, "expected_result_date", e.target.value)} />
+                    </GridItem>
+                  </Grid>
+                </Box>
+              );
+            })
+          )}
+        </Box>
       </Box>
 
       {/* Proofs */}

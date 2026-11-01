@@ -4,7 +4,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { HiUserGroup } from "react-icons/hi";
 import { MdAssignmentInd, MdAttractions, MdCardTravel, MdChat, MdOutlineAssignmentReturn, MdOutlineInventory2, MdOutlinePayments, MdOutlineTour, MdOutlineTrackChanges, MdPayment, MdTour, MdTravelExplore } from "react-icons/md";
 import { MdPeople, MdReceiptLong, MdAssessment, MdLocalShipping, MdDirectionsBus, MdFactory, MdSwapHoriz, MdPendingActions, MdTrendingUp } from "react-icons/md";
-import { FaArchive, FaCommentsDollar, FaExchangeAlt, FaListAlt, FaMoneyBill, FaRupeeSign, FaTable, FaTasks, FaUserAlt, FaUserCheck, FaUserTie, FaWarehouse } from 'react-icons/fa';
+import { FaArchive, FaCalendarAlt, FaCommentsDollar, FaExchangeAlt, FaListAlt, FaMoneyBill, FaRegCalendar, FaRupeeSign, FaTable, FaTasks, FaUserAlt, FaUserCheck, FaUserTie, FaWarehouse } from 'react-icons/fa';
 import { FaBullseye } from "react-icons/fa";
 import { MdCorporateFare, MdGroupAdd } from "react-icons/md";
 import { HiOfficeBuilding, HiOutlineDocumentReport } from "react-icons/hi";
@@ -151,8 +151,8 @@ const Newsidebar = () => {
         { label: "Employee Payment Hold", path: "/hr-mgmt/emp-payment-hold", icon: MdOutlinePayments },
         { label: "Upload Salary Slip", path: '/hr-mgmt/upload-emp-salary', icon: RiFileList3Line, },
         { label: "Change Password", path: "/hr-mgmt/change-password", icon: FaKey },
-        { label: "Holiday Calendar", path: "/hr-mgmt/holiday-calendar", icon: FaKey },
-        { label: "Calendar List", path: "/hr-mgmt/yearly-holiday-calendar-list", icon: FaKey },
+        { label: "Holiday Calendar", path: "/hr-mgmt/holiday-calendar", icon: FaRegCalendar },
+        { label: "Calendar List", path: "/hr-mgmt/yearly-holiday-calendar-list", icon: FaCalendarAlt },
         { label: "Employee Penalty", path: "/misc/emp-penalty", icon: FaCommentsDollar },
         
       ],

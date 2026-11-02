@@ -365,17 +365,7 @@ const CreateStockItem = () => {
             return;
         }
 
-        if (!formData.crop_id) {
-    toast({
-        title: "Required Field",
-        description: "Please select a crop.",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-        position: "top-right",
-    });
-    return;
-}
+    
 
         try {
             setLoading(true);

@@ -29,8 +29,10 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 import Pagination from "../../Pagination/Pagination";
 import DeleteStockGroupModel from "./DeleteStockGroupModel";
 import DeleteStockCategoryModel from "./DeleteStockCategoryModel";
+import { usePermissions } from "../../context/PermissionContext";
 
 const ViewStockCategory = () => {
+  const { can } = usePermissions();
   const [stockGroups, setStockGroups] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -214,7 +216,7 @@ const ViewStockCategory = () => {
 
                   <Td>
                     <Flex gap="8px">
-                      <Tooltip label="Edit Stock Category" hasArrow>
+                      {can("UPDATE_STOCK_CATEGORY") && (<Tooltip label="Edit Stock Category" hasArrow>
                         <IconButton
                           icon={<FiEdit2 />}
                           size="md"
@@ -226,9 +228,9 @@ const ViewStockCategory = () => {
                             navigate(`/inventory/view-stock-category/edit/${item.id}`)
                           }
                         />
-                      </Tooltip>
+                      </Tooltip>)}
 
-                      <Tooltip label="Delete Stock Category" hasArrow>
+                      {can("DELETE_STOCK_CATEGORY") && (<Tooltip label="Delete Stock Category" hasArrow>
                         <IconButton
                           icon={<FiTrash2 />}
                           size="md"
@@ -238,7 +240,7 @@ const ViewStockCategory = () => {
                           aria-label="Delete Stock Group"
                           onClick={() => handleDelete(item?.id)}
                         />
-                      </Tooltip>
+                      </Tooltip>)}
                     </Flex>
                   </Td>
                 </Tr>

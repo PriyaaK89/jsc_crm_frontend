@@ -323,11 +323,11 @@ const bankAccountError =
           isClosable: true,
         });
 
-        navigate("/upload-documents", {
+        navigate("/hr-mgmt/change-password", {
           state: {
             userId: response?.data?.id,
             email: response?.data?.email,
-            mustChangePassword: response?.data?.must_change_password,
+            onboarding: true,
           },
         });
       }
@@ -903,24 +903,19 @@ const bankAccountError =
               <FormErrorMessage>{error.city_allowance_per_km}</FormErrorMessage>
             </FormControl>
             <FormControl isRequired isInvalid={error.daily_allowance_with_doc}>
-              <FormLabel {...lableStyles}>Daily Allowance (with DOC)</FormLabel>
+              <FormLabel {...lableStyles}>Daily Allowance</FormLabel>
               <Input
                 name="daily_allowance_with_doc"
-                placeholder="Daily Allowance (with doc)"
+                placeholder="Daily Allowance "
                 onChange={handleChange}
               />
               <FormErrorMessage>{error.daily_allowance_with_doc}</FormErrorMessage>
             </FormControl>
-            <FormControl>
-              <FormLabel {...lableStyles}>
-                Daily Allowance (without DOC)
-              </FormLabel>
-              <Input
-                name="daily_allowance_without_doc"
-                placeholder="Daily Allowance (without doc)"
-                onChange={handleChange}
-              />
-            </FormControl>
+            {/* <FormControl>
+              <FormLabel {...lableStyles}> Daily Allowance (without DOC)</FormLabel>
+              <Input name="daily_allowance_without_doc"
+                placeholder="Daily Allowance (without doc)" onChange={handleChange} />
+            </FormControl> */}
             <FormControl isRequired isInvalid={error.hotel_allowance}>
               <FormLabel {...lableStyles}>Hotel Allowance</FormLabel>
               <Input

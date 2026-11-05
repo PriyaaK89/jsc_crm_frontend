@@ -556,14 +556,14 @@ const EditEmployee = () => {
                     </FormControl>
 
                     <FormControl>
-                        <FormLabel {...labelStyles}>Daily Allowance (with DOC)</FormLabel>
+                        <FormLabel {...labelStyles}>Daily Allowance</FormLabel>
                         <Input name="daily_allowance_with_doc" value={formData.daily_allowance_with_doc} onChange={handleChange} />
                     </FormControl>
 
-                    <FormControl>
+                    {/* <FormControl>
                         <FormLabel {...labelStyles}>Daily Allowance (without DOC)</FormLabel>
                         <Input name="daily_allowance_without_doc" value={formData.daily_allowance_without_doc} onChange={handleChange} />
-                    </FormControl>
+                    </FormControl> */}
 
                     <FormControl>
                         <FormLabel {...labelStyles}>Hotel Allowance</FormLabel>

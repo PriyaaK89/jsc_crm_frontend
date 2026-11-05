@@ -10,6 +10,7 @@ import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import DeleteLedgerModal from "../../../components/models/DeleteLedgerModal";
+import { usePermissions } from "../../../context/PermissionContext";
 
 function ViewLedger() {
 
@@ -19,6 +20,7 @@ function ViewLedger() {
   // ==============================
   // STATES
   // ==============================
+  const { can } = usePermissions();
   const [ledgerList, setLedgerList] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -266,7 +268,7 @@ function ViewLedger() {
                           {formatDate(item?.created_at)}
                         </Td>
                         <Td> <Flex gap="8px">
-                          <Tooltip label="Edit Ledger" hasArrow>
+                          {can("UPDATE_LEDGER") && (<Tooltip label="Edit Ledger" hasArrow>
                             <IconButton
                               icon={<FiEdit2 />}
                               size="md"
@@ -277,9 +279,9 @@ function ViewLedger() {
                               onClick={() =>
                                 navigate(`/accounting-master/edit-ledger/${item?.id}`)
                               } />
-                          </Tooltip>
+                          </Tooltip>)}
 
-                          <Tooltip label="Delete Ledger" hasArrow>
+                          {can("DELETE_LEDGER") && (<Tooltip label="Delete Ledger" hasArrow>
                             <IconButton
                               icon={<FiTrash2 />}
                               size="md"
@@ -289,7 +291,7 @@ function ViewLedger() {
                               aria-label="Delete Ledger"
                               onClick={() => handleDelete(item?.id)}
                             />
-                          </Tooltip>
+                          </Tooltip>)}
                         </Flex></Td>
 
                       </Tr>

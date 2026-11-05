@@ -42,9 +42,11 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import EditAssignTargetForm from "../../components/models/EditAssignTargetModal";
 import DeleteAssignTarget from "../../components/models/DeleteAssignTarget";
+import { usePermissions } from "../../context/PermissionContext";
 
 const ViewAssignedTargets = () => {
 
+  const { can } = usePermissions();
     const [targetList, setTargetList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
@@ -372,15 +374,15 @@ const ViewAssignedTargets = () => {
 
                                                 <Td textAlign="center">
                                                     <HStack spacing={2} justify="flex-start">
-                                                        <IconButton icon={<FiEdit2 />}
+                                                        {can("UPDATE_TARGET") && (<IconButton icon={<FiEdit2 />}
                                                             size="sm" colorScheme="blue" variant="outline"
                                                             aria-label="Edit Godown"
                                                             onClick={() => handleEditModal(item?.id)}
-                                                        />
+                                                        />)}
 
-                                                        <IconButton icon={<FiTrash2 />} size="sm" colorScheme="red" variant="outline" aria-label="Delete Godown"
+                                                        {can("DELETE_TARGET") && (<IconButton icon={<FiTrash2 />} size="sm" colorScheme="red" variant="outline" aria-label="Delete Godown"
                                                             onClick={() => handleDeleteModal(item?.id)}
-                                                        />
+                                                        />)}
 
                                                     </HStack>
                                                 </Td>

@@ -10,12 +10,14 @@ import { Link, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import DeleteTeamModel from "../../components/models/DeleteTeamModel";
+import { usePermissions } from "../../context/PermissionContext";
 
 const ViewTeams = () => {
 
   const toast = useToast();
   const navigate = useNavigate();
 
+  const { can } = usePermissions();
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -230,7 +232,7 @@ const ViewTeams = () => {
 
                             {/* EDIT */}
 
-                            <Tooltip
+                            {can("UPDATE_TEAM") && (<Tooltip
                               label="Edit Team"
                             >
 
@@ -245,15 +247,15 @@ const ViewTeams = () => {
                                 }
                               />
 
-                            </Tooltip>
+                            </Tooltip>)}
 
                             {/* DELETE */}
 
-                            <Tooltip label="Delete Team">
+                            {can("DELETE_TEAM") && (<Tooltip label="Delete Team">
                               <IconButton
                                 icon={<DeleteIcon />} colorScheme="red" size="sm"
                                 onClick={() => handleDeleteModel(item?.id)} />
-                            </Tooltip>
+                            </Tooltip>)}
                           </HStack>
 
                         </Td>
@@ -302,11 +304,8 @@ const ViewTeams = () => {
 
           <Button
             size="sm"
-            onClick={() =>
-              setPage((prev) => prev + 1)
-            }
-            isDisabled={page === totalPages}
-          >
+            onClick={() => setPage((prev) => prev + 1)}
+            isDisabled={page === totalPages} >
             Next
           </Button>
 
@@ -314,7 +313,6 @@ const ViewTeams = () => {
       </Flex>
 
       <DeleteTeamModel deleteModelIsOpen={deleteModelIsOpen} deleteModelOnClose={deleteModelOnClose} getTeams={getTeams} selectedId={selectedId} />
-
     </Box>
   );
 };

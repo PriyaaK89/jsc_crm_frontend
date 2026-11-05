@@ -39,8 +39,10 @@ import { ViewIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import { FiEdit2 } from "react-icons/fi";
 import { FiTrash2 } from "react-icons/fi";
+import { usePermissions } from "../../context/PermissionContext";
 
 const DistributorsList = () => {
+  const { can } = usePermissions();
   const [distributors, setDistributors] = useState([]);
   const [loading, setLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -483,7 +485,7 @@ const DistributorsList = () => {
 
                     <Td>
 
-                      <IconButton
+                      {can("UPDATE_DISTRIBUTOR") && (<IconButton
                         icon={<FiEdit2 />}
                         size="sm"
                         variant="ghost"
@@ -493,10 +495,10 @@ const DistributorsList = () => {
                         onClick={() => {
                           navigate(`/distributor/distributorlist/edit-distributor/${item?.id}`);
                         }}
-                      />
+                      />)}
                     </Td>
                     <Td>
-                      <IconButton
+                      {can("DELETE_DISTRIBUTOR") && (<IconButton
                         icon={<FiTrash2 />}
                         size="sm"
                         variant="ghost"
@@ -508,7 +510,7 @@ const DistributorsList = () => {
 
                         }}
 
-                      />
+                      />)}
                     </Td>
                   </Tr>
                 ))

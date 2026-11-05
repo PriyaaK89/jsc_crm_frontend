@@ -13,10 +13,12 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import EditEmpIndividualTargetModal from "../../components/models/EditEmpIndividualTarget";
 import DeleteEmployeeTarget from "../../components/models/DeleteEmpIndividualTarget";
+import { usePermissions } from "../../context/PermissionContext";
 
 const ViewEmployeeTargets = () => {
 
   // ================= STATES =================
+  const { can } = usePermissions();
   const [empTarget, setEmpTarget] = useState([]);
 
   const [loading, setLoading] = useState(false);
@@ -296,21 +298,21 @@ const ViewEmployeeTargets = () => {
 
                           <HStack justifyContent="center">
 
-                            <IconButton
+                            {can("UPDATE_TARGET") && (<IconButton
                               icon={<FiEdit2 />}
                               size="sm"
                               colorScheme="blue"
                               variant="ghost"
                               onClick={() => handleEdit(item?.id)}
-                            />
+                            />)}
 
-                            <IconButton
+                            {can("DELETE_TARGET") && (<IconButton
                               icon={<FiTrash2 />}
                               size="sm"
                               colorScheme="red"
                               variant="ghost"
                               onClick={() => handleDelete(item?.id)}
-                            />
+                            />)}
 
                           </HStack>
 

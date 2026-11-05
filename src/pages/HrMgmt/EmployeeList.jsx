@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { Link, useNavigate } from "react-router-dom";
@@ -33,7 +33,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { GoHomeFill } from "react-icons/go";
-import { FiEdit2, FiTrash2, FiSearch, FiFileText } from "react-icons/fi";
+import { FiEdit2, FiTrash2, FiSearch, FiFileText, FiShield } from "react-icons/fi";
 import { FaEye } from "react-icons/fa";
 import { CheckCircleIcon, CloseIcon, WarningIcon } from "@chakra-ui/icons";
 import sort_icon from "../../assets/sort.svg";
@@ -43,8 +43,12 @@ import UpdateEmpStatus from "../../utils/Emp/UpdateEmpStatus";
 import DeleteEmployeeModel from "./DeleteEmployee";
 import VerifyDocumentModel from "./models/VerifyDocuments";
 import Pagination from "../../Pagination/Pagination";
+import { usePermissions } from "../../context/PermissionContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const EmployeeList = () => {
+  const { can } = usePermissions();
+  const { auth } = useContext(AuthContext);
   const [empList, setEmpList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -411,15 +415,15 @@ const EmployeeList = () => {
 
                         <Td>
                           <Flex gap="10px" justify="center">
-                            <UpdateEmpStatus
+                            {can("UPDATE_USER") && (<UpdateEmpStatus
                               userId={emp?.id}
                               currentStatus={
                                 emp?.is_active === 1 ? "activate" : "deactivate"
                               }
                               onSuccess={fetchEmployeeList}
-                            />
+                            />)}
 
-                            <Tooltip label="Edit Employee" hasArrow>
+                            {can("UPDATE_USER") && (<Tooltip label="Edit Employee" hasArrow>
                               <IconButton
                                 icon={<FiEdit2 />}
                                 size="sm"
@@ -429,7 +433,7 @@ const EmployeeList = () => {
                                 aria-label="Edit"
                                 onClick={() => handleEdit(emp?.id)}
                               />
-                            </Tooltip>
+                            </Tooltip>)}
 
                             <Tooltip label="View Employee" hasArrow>
                               <IconButton
@@ -443,7 +447,19 @@ const EmployeeList = () => {
                               />
                             </Tooltip>
 
-                            <Tooltip label="Delete Employee" hasArrow>
+                            {can("MANAGE_USER_PERMISSIONS") && emp?.id !== auth?.user?.id && (<Tooltip label="Permissions" hasArrow>
+                              <IconButton
+                                icon={<FiShield />}
+                                size="sm"
+                                variant="ghost"
+                                color="blue.600"
+                                _hover={{ bg: "blue.50" }}
+                                aria-label="Permissions"
+                                onClick={() => navigate(`/hr-mgmt/assign-permissions/${emp?.id}`)}
+                              />
+                            </Tooltip>)}
+
+                            {can("DELETE_USER") && (<Tooltip label="Delete Employee" hasArrow>
                               <IconButton
                                 icon={<FiTrash2 />}
                                 size="sm"
@@ -453,13 +469,13 @@ const EmployeeList = () => {
                                 aria-label="Delete"
                                 onClick={() => handleDelete(emp?.id)}
                               />
-                            </Tooltip>
+                            </Tooltip>)}
                           </Flex>
                         </Td>
 
                         <Td>
                           <Flex gap="8px">
-                            <Tooltip label="Generate Offer Letter">
+                            {can("hr_letter_manage") && (<Tooltip label="Generate Offer Letter">
                               <Button
                                 size="xs"
                                 colorScheme="blue"
@@ -469,9 +485,9 @@ const EmployeeList = () => {
                               >
                                 Offer
                               </Button>
-                            </Tooltip>
+                            </Tooltip>)}
 
-                            <Tooltip label="Generate Joining Letter">
+                            {can("hr_letter_manage") && (<Tooltip label="Generate Joining Letter">
                               <Button
                                 size="xs"
                                 colorScheme="green"
@@ -481,7 +497,7 @@ const EmployeeList = () => {
                               >
                                 Joining
                               </Button>
-                            </Tooltip>
+                            </Tooltip>)}
 
                             {/* <Tooltip label="Generate Agreement">
                               <Button

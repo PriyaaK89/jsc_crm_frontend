@@ -7,11 +7,13 @@ import API from "../../../services/api";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import DeleteGroupModal from "../../../components/models/DeleteAccountGroupModal";
+import { usePermissions } from "../../../context/PermissionContext";
 
 const ViewGroup = () => {
 
   const toast = useToast();
   const navigate = useNavigate();
+  const { can } = usePermissions();
   const [accountsList, setAccountsList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -149,14 +151,14 @@ const ViewGroup = () => {
           View Group
         </Heading>
 
-        <Button
+        {can("CREATE_ACCOUNT_GROUP") && (<Button
           className="submit_btn"
           onClick={() =>
             navigate("/accounting-master/create-group")
           }
         >
           Create Group
-        </Button>
+        </Button>)}
 
       </Flex>
 
@@ -240,7 +242,7 @@ const ViewGroup = () => {
 
                   <Td>
                     <Flex gap="8px">
-                      <Tooltip label="Edit Group" hasArrow>
+                      {can("UPDATE_ACCOUNT_GROUP") && (<Tooltip label="Edit Group" hasArrow>
                         <IconButton
                           icon={<FiEdit2 />}
                           size="md"
@@ -251,9 +253,9 @@ const ViewGroup = () => {
                           onClick={() =>
                             navigate(`/accounting-master/edit-group/${group.id}`)
                           }/>
-                      </Tooltip>
+                      </Tooltip>)}
 
-                      <Tooltip label="Delete Group" hasArrow>
+                      {can("DELETE_ACCOUNT_GROUP") && (<Tooltip label="Delete Group" hasArrow>
                         <IconButton
                           icon={<FiTrash2 />}
                           size="md"
@@ -263,7 +265,7 @@ const ViewGroup = () => {
                           aria-label="Delete Group"
                           onClick={() => handleDelete(group?.id)}
                         />
-                      </Tooltip>
+                      </Tooltip>)}
                     </Flex>
 
                   </Td>

@@ -8,11 +8,13 @@ import { Link } from "react-router-dom";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import DeleteStockItemModal from "../../components/models/DeleteStockItemModal";
+import { usePermissions } from "../../context/PermissionContext";
 import Pagination from "../../Pagination/Pagination"; // adjust the path to wherever you place Pagination.jsx
 
 const StockItemList = () => {
 
     const toast = useToast();
+  const { can } = usePermissions();
     const [loading, setLoading] = useState(false);
     const [stockItems, setStockItems] = useState([]);
     const [search, setSearch] = useState("");
@@ -293,11 +295,11 @@ const StockItemList = () => {
 
                                             <HStack justify="center" spacing={2} >
 
-                                                <Link to={`/inventory/edit-stock-item/${item?.id}`} >
+                                                {can("UPDATE_STOCK_ITEM") && (<Link to={`/inventory/edit-stock-item/${item?.id}`} >
                                                     <IconButton icon={<FiEdit2 />} size="sm" colorScheme="blue" />
-                                                </Link>
+                                                </Link>)}
 
-                                                <IconButton icon={<FiTrash2 />} size="sm" colorScheme="red" onClick={() => handleDeleteModalOpen(item?.id)} />
+                                                {can("DELETE_STOCK_ITEM") && (<IconButton icon={<FiTrash2 />} size="sm" colorScheme="red" onClick={() => handleDeleteModalOpen(item?.id)} />)}
                                             </HStack>
                                         </Td>
                                     </Tr>

@@ -32,8 +32,10 @@ import { API_ENDPOINTS } from "../../../services/endpoints";
 import { useEffect, useState } from "react";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import DeleteVoucherModal from "../../../components/models/DeleteVoucherModal";
+import { usePermissions } from "../../../context/PermissionContext";
 
 const ViewLedger = () => {
+  const { can } = usePermissions();
   const [voucherList, setVoucherList] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -242,7 +244,7 @@ const ViewLedger = () => {
 
                   <Td>
                     <Flex gap="8px">
-                      <Tooltip label="Edit Group" hasArrow>
+                      {can("UPDATE_VOUCHER") && (<Tooltip label="Edit Group" hasArrow>
                         <IconButton
                           icon={<FiEdit2 />}
                           size="md"
@@ -253,9 +255,9 @@ const ViewLedger = () => {
                           onClick={() =>
                             navigate(`/accounting-master/edit-voucher/${item.id}`)
                           } />
-                      </Tooltip>
+                      </Tooltip>)}
 
-                      <Tooltip label="Delete Group" hasArrow>
+                      {can("DELETE_VOUCHER") && (<Tooltip label="Delete Group" hasArrow>
                         <IconButton
                           icon={<FiTrash2 />}
                           size="md"
@@ -265,7 +267,7 @@ const ViewLedger = () => {
                           aria-label="Delete Group"
                           onClick={() => handleDelete(item?.id)}
                         />
-                      </Tooltip>
+                      </Tooltip>)}
                     </Flex>
 
                   </Td>

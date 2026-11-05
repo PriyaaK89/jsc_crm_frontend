@@ -1,179 +1,119 @@
-import {
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-} from "recharts";
-import {
-  Box,
-  Text,
-  Flex,
-  Input,
-  FormControl,
-  FormLabel,
-  HStack,
-  VStack,
-  Divider,
-} from "@chakra-ui/react";
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
+import { Box, Flex, HStack, Input, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 
-const COLORS = [
-  "#3c6586", // Indigo
-  "#2ba056", // Green
-  "#F59E0B", // Yellow
-  "#EF4444", // Red
-  "#47a1ca", // Blue
-];
-
-//  Modern Tooltip
-const CustomTooltip = ({ active, payload }) => {
-  if (active && payload && payload.length) {
-    return (
-      <Box
-        bg="white"
-        p={3}
-        borderRadius="lg"
-        boxShadow="lg"
-        fontSize="12px"
-      >
-        <Text fontWeight="bold">{payload[0].name}</Text>
-        <Text color="gray.600">Count: {payload[0].value}</Text>
-      </Box>
-    );
-  }
-  return null;
+const pad = (n) => String(n).padStart(2, "0");
+// Local date (toISOString is UTC and shows yesterday early in the morning in India).
+const todayLocal = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 };
 
-export default function MyPieChart() {
-  const [date, setDate] = useState(
-    new Date().toISOString().split("T")[0]
+const SLICES = [
+  { key: "active_employees", name: "Active", color: "#16a34a" },
+  { key: "checked_in", name: "Checked in", color: "#2563eb" },
+  { key: "half_day", name: "Half day", color: "#f59e0b" },
+  { key: "absent_count", name: "Absent", color: "#ef4444" },
+  { key: "leave_count", name: "Leave", color: "#8b5cf6" },
+];
+
+const CustomTooltip = ({ active, payload }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <Box bg="white" p={2.5} borderRadius="8px" boxShadow="md" border="1px solid" borderColor="gray.100" fontSize="12px">
+      <Text fontWeight="700" color="gray.800">{payload[0].name}</Text>
+      <Text color="gray.600">Employees: {payload[0].value}</Text>
+    </Box>
   );
+};
 
-  const [chartData, setChartData] = useState([]);
+export default function AttendanceCard() {
+  const [date, setDate] = useState(todayLocal());
   const [summary, setSummary] = useState({});
-  const [totalEmp, setTotalEmp] = useState([]);
-
-  const fetchChartData = async () => {
-    try {
-      const res = await API.get(API_ENDPOINTS.emp_daily_summary, {
-        params: { date },
-      });
-
-      const s = res.data.summary;
-      setSummary(s);
-      console.log('summary', res.data.summary)
-      setTotalEmp(res?.data?.summary?.total_employees)
-      console.log("total",  res?.data?.summary?.total_employees)
-
-      const data = [
-        { name: "Active", value: s.active_employees },
-        { name: "Checked In", value: s.checked_in },
-        { name: "Half Day", value: s.half_day },
-        { name: "Absent", value: s.absent_count },
-        { name: "Leave", value: s.leave_count },
-      ];
-
-      setChartData(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (date) fetchChartData();
+    if (!date) return undefined;
+    let cancelled = false;
+    setLoading(true);
+
+    API.get(API_ENDPOINTS.emp_daily_summary, { params: { date } })
+      .then((res) => {
+        if (!cancelled) setSummary(res.data?.summary || {});
+      })
+      .catch((err) => {
+        console.error(err);
+        if (!cancelled) setSummary({});
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [date]);
 
-  //  total for center
-  const total = chartData.reduce((acc, item) => acc + item.value, 0);
+  const slices = SLICES.map((s) => ({ ...s, value: Number(summary[s.key]) || 0 }));
+  const hasData = slices.some((s) => s.value > 0);
+  const pieData = hasData ? slices.filter((s) => s.value > 0) : [{ name: "No data", value: 1, color: "#e5e7eb" }];
 
   return (
-    <Box bg="white" borderRadius="13px" boxShadow="0px 2px 6px #c6c6c6" w="100%" maxW="500px" mt={8} >
-      {/* Header */}
-      <Flex justify="space-between" align="flex-start" padding="14px 14px 8px" background="#e3eeeb" borderRadius="13px 13px 0px 0px">
-        <Text fontWeight="bold" fontSize="16px" color="#464748">
-          Employee Summary
-        </Text>
-
-        <FormControl maxW="160px" bg="white" borderRadius="12px">
-          <Input size="sm" type="date" value={date} onChange={(e) => setDate(e.target.value)} borderRadius="12px" />
-        </FormControl>
+    <Flex
+      direction="column"
+      h="100%"
+      bg="white"
+      borderRadius="12px"
+      border="1px solid"
+      borderColor="gray.100"
+      boxShadow="0 1px 3px rgba(0,0,0,0.06)"
+      overflow="hidden"
+    >
+      <Flex justify="space-between" align="center" gap={3} px={5} py={3.5} borderBottom="1px solid" borderColor="gray.100">
+        <Box minW={0}>
+          <Text fontSize="sm" fontWeight="700" color="gray.800">Employee attendance</Text>
+          <Text fontSize="xs" color="gray.500">Daily summary</Text>
+        </Box>
+        <Input size="sm" type="date" w="150px" borderRadius="8px" max={todayLocal()} value={date} onChange={(e) => e.target.value && setDate(e.target.value)} />
       </Flex>
 
-      {/* Chart */}
-      <Box position="relative" h="260px" >
+      <Box position="relative" h="190px" mt={2} opacity={loading ? 0.5 : 1} transition="opacity 0.2s">
         <ResponsiveContainer>
           <PieChart>
-            <Pie
-              data={chartData}
-              innerRadius={70}
-              outerRadius={95}
-              paddingAngle={4}
-              dataKey="value"
-            >
-              {chartData.map((entry, index) => (
-                <Cell
-                  key={index}
-                  fill={COLORS[index % COLORS.length]}
-                />
+            <Pie data={pieData} innerRadius={58} outerRadius={80} paddingAngle={hasData ? 3 : 0} dataKey="value" stroke="none">
+              {pieData.map((entry) => (
+                <Cell key={entry.name} fill={entry.color} />
               ))}
             </Pie>
-
-            <Tooltip content={<CustomTooltip />} />
+            {hasData && <Tooltip content={<CustomTooltip />} />}
           </PieChart>
         </ResponsiveContainer>
 
-        {/*  Center Content */}
-        <Flex
-          position="absolute"
-          top="50%"
-          left="50%"
-          transform="translate(-50%, -50%)"
-          direction="column"
-          align="center"
-        >
-          <Text fontSize="20px" fontWeight="bold">
-           {totalEmp}
+        <Flex position="absolute" top="50%" left="50%" transform="translate(-50%, -50%)" direction="column" align="center" pointerEvents="none">
+          <Text fontSize="22px" fontWeight="800" color="gray.800" lineHeight="1">
+            {summary.total_employees ?? 0}
           </Text>
-          <Text fontSize="12px" color="gray.500">
-            Total
-          </Text>
+          <Text fontSize="11px" color="gray.500" mt={1}>Total</Text>
         </Flex>
       </Box>
 
-      <Divider my={4} />
-
-      {/*  Legend (Custom Professional) */}
-      <Box p={5}>
-      <VStack align="stretch" spacing={2}>
-        {chartData.map((item, index) => (
-          <Flex key={index} justify="space-between" align="center">
-            <HStack>
-              <Box
-                w="10px"
-                h="10px"
-                borderRadius="full"
-                bg={COLORS[index % COLORS.length]}
-              />
-              <Text fontSize="11px">{item.name}</Text>
+      <VStack align="stretch" spacing={2} px={5} py={4} mt="auto">
+        {slices.map((s) => (
+          <Flex key={s.key} justify="space-between" align="center">
+            <HStack spacing={2}>
+              <Box w="8px" h="8px" borderRadius="full" bg={s.color} />
+              <Text fontSize="xs" color="gray.600">{s.name}</Text>
             </HStack>
-
-            <Text fontSize="11px" fontWeight="medium">
-              {item.value}
-            </Text>
+            <Text fontSize="xs" fontWeight="600" color="gray.800">{s.value}</Text>
           </Flex>
         ))}
+        <Flex justify="space-between" pt={2} borderTop="1px solid" borderColor="gray.100">
+          <Text fontSize="xs" color="gray.500">Completed day</Text>
+          <Text fontSize="xs" fontWeight="600" color="gray.800">{summary.completed_day || 0}</Text>
+        </Flex>
       </VStack>
-
-      {/* Extra Summary */}
-      <Box mt={4}>
-        <Text fontSize="12px" color="gray.600">
-          Completed Day: {summary.completed_day || 0}
-        </Text>
-      </Box>
-      </Box>
-    </Box>
+    </Flex>
   );
 }

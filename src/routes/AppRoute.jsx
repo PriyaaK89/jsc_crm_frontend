@@ -131,17 +131,25 @@ import ViewAllIndividualTargetsLayout from "../components/layout/BusinessDevelop
 import AssignTaskToEmployeeLayout from "../components/layout/MiscActions/AssignTaskToEmployeeLayout";
 import AssignAreaToEmployeeLayout from "../components/layout/MiscActions/AssignAreaLayout";
 import ChatMonitorLayout from "../components/layout/MiscActions/ChatMonitorLayout";
+import BeatLayout from "../components/layout/MiscActions/BeatHIstoryLayout";
+import AssignPermissionsLayout from "../components/layout/HRMaster/AssignPermissionsLayout";
+import PermissionGate from "../routes/PermissionGate";
+import PermissionManagementLayout from "../components/layout/HRMaster/PermissionManagementLayout";
+
 
 function App() {
   return (
     <Router>
       <ToastContainer />
+      <PermissionGate>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<UserLogin />} />
         <Route path="/dashboard" element={<DashboardLayout />} />
         <Route path="/hr-mgmt/add-employee" element={<AddEmpLayout />} />
         <Route path="/hr-mgmt/change-password" element={<ChangePasswordLayout />} />
+        <Route path="/hr-mgmt/assign-permissions/:userId" element={<AssignPermissionsLayout />} />
+        <Route path="/hr-mgmt/permission-management" element={<PermissionManagementLayout />} />
         <Route path="/hr-mgmt/dept/add-department" element={<DepartmentLayout />} />
         <Route path="/hr-mgmt/roles/add-job-role" element={<JobRoleLayout />} />
         <Route path="/hr-mgmt/view-employee-list" element={<EmployeeListLayout />} />
@@ -272,6 +280,7 @@ function App() {
         <Route path="/misc/emp-penalty" element={<PenaltyLayout />} />
         <Route path="/misc/assign-task-to-employee" element={<AssignTaskToEmployeeLayout/>}/>
         <Route path="/misc/assign-areas-to-employee" element={<AssignAreaToEmployeeLayout/>}/>
+        <Route path="/misc/beatPlan" element={<BeatLayout/>}/>
         <Route path="/chat/monitor" element={<ChatMonitorLayout />} />
 
         <Route path="/transaction-master/purchase" element={<PurchaseTxnMasterLayout />} />
@@ -306,6 +315,7 @@ function App() {
         />
 
       </Routes>
+      </PermissionGate>
     </Router>
   );
 }

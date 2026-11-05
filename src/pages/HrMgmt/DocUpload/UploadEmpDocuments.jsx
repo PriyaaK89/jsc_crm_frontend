@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Text, VStack, Divider, Button } from "@chakra-ui/react";
 import DocumentRow from "./DocumentRow";
 import { useLocation, useNavigate } from "react-router-dom";
+import { usePermissions } from "../../../context/PermissionContext";
 
 
 const DOCUMENTS = [
@@ -20,13 +21,22 @@ const UploadEmpDocuments = () => {
     const location = useLocation();
 const navigate = useNavigate();
 
-const { userId, email, mustChangePassword } = location.state || {};
+const { userId, email, mustChangePassword, onboarding } = location.state || {};
+const { can } = usePermissions();
 console.log(location.state , "location");
 
 console.log(typeof(mustChangePassword) ,"type of mustChangePassword");
 
 const handleNext = () => {
-  if (Number(mustChangePassword) === 1) {
+  if (onboarding) {
+    if (can("MANAGE_USER_PERMISSIONS")) {
+      navigate(`/hr-mgmt/assign-permissions/${userId}`, {
+        state: { onboarding: true },
+      });
+    } else {
+      navigate("/dashboard");
+    }
+  } else if (Number(mustChangePassword) === 1) {
     navigate("/hr-mgmt/change-password", {
       state: {
         userId,

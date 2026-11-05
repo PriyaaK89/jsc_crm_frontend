@@ -31,11 +31,13 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 import Pagination from "../../Pagination/Pagination";
 import { FiEdit2 } from "react-icons/fi";
 import EditRetailerModal from "./EditRetailerModal";
+import { usePermissions } from "../../context/PermissionContext";
 
 const ViewRetailerList = () => {
 
     const toast = useToast();
 
+  const { can } = usePermissions();
     const [retailer, setRetailer] = useState([]);
     const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState("");
@@ -141,7 +143,7 @@ const ViewRetailerList = () => {
                                                 <Td> {item?.district || "-"} </Td>
                                                 <Td> {item?.area || "-"} </Td>
                                                 <Td>
-                                                    <Tooltip label="Edit comapny" hasArrow>
+                                                    {can("UPDATE_RETAILER") && (<Tooltip label="Edit comapny" hasArrow>
                                                         <IconButton
                                                             icon={<FiEdit2 />}
                                                             size="sm"
@@ -152,7 +154,7 @@ const ViewRetailerList = () => {
                                                             onClick={() =>
                                                                 handleRetailerModalOpen(item?.id)
                                                             } />
-                                                    </Tooltip></Td>
+                                                    </Tooltip>)}</Td>
                                             </Tr>
                                         ))
 

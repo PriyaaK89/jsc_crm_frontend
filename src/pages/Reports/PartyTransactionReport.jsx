@@ -17,6 +17,7 @@ import SalesInvoice from "./Invoice/SalesInvoice";
 import PaymentInvoice from "./Invoice/PaymentInvoice";
 import PurchaseInvoice from "./Invoice/PurchaseInvoice";
 import { Link } from "react-router-dom";
+import { usePermissions } from "../../context/PermissionContext";
 
 const TRANSACTION_TYPES = [
   "PURCHASE",
@@ -32,6 +33,7 @@ const TRANSACTION_TYPES = [
 function PartyTransactionReport() {
   const { users } = useUsersapi();
 
+  const { can } = usePermissions();
   const [ledgers, setLedgers] = useState([]);
   const [bills, setBills] = useState([]);
 
@@ -433,9 +435,9 @@ function PartyTransactionReport() {
                           <Td isNumeric> {Number(row.bill_due_amount).toFixed(2)} </Td>
                           <Td>{row.entry_type}</Td>
                           <Td>
-                            <Button size="xs" colorScheme="red" onClick={() => handleDeleteClick(row)}>
+                            {can("DELETE_TRANSACTION") && (<Button size="xs" colorScheme="red" onClick={() => handleDeleteClick(row)}>
                               Delete
-                            </Button>
+                            </Button>)}
                           </Td>
                         </Tr>
                       ))}

@@ -39,6 +39,7 @@ const ChangePassword = () => {
 
   const userId = location?.state?.userId;
   const mail = location?.state?.email;
+  const onboarding = !!location?.state?.onboarding;
 
   // if gmail doesnot recive form probes
   //  const fetchEmployeeList = async () => {
@@ -111,7 +112,13 @@ const ChangePassword = () => {
           isClosable: true,
         });
         setTimeout(() => {
-          nav("/hr-mgmt/view-employee-list");
+          if (onboarding) {
+            nav("/upload-documents", {
+              state: { userId, email: mail, onboarding: true },
+            });
+          } else {
+            nav("/hr-mgmt/view-employee-list");
+          }
         }, 1500);
       }
     } catch (error) {

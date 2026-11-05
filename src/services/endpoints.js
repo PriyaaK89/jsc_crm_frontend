@@ -56,6 +56,14 @@ export const API_ENDPOINTS = {
   set_expense_allocation: `set-expense-allocation`,
   get_uploaded_exp: `admin-expense-summary`,
   emp_daily_summary: `daily-summary`,
+  // dashboard charts
+  dashboard_filters: `dashboard-analytics/filters`,
+  dashboard_orders: `dashboard-analytics/orders`,
+  dashboard_approvals: `dashboard-analytics/approvals`,
+  dashboard_visits: `dashboard-analytics/visits`,
+  dashboard_sales: `dashboard-analytics/sales`,
+  dashboard_collections: `dashboard-analytics/collections`,
+  dashboard_business: `dashboard-analytics/business`,
   get_distributors: `get-distributorsList`,
   distributor_onbording_form: `/create-distributor`,
   update_distributor: `update-distributor`,
@@ -363,5 +371,20 @@ export const API_ENDPOINTS = {
   chat_contacts: "chat/contacts",
   chat_groups: "chat/groups",
   chat_group_icon: (id) => `chat/groups/${id}/icon`,
+
+    // View beats, plans and history
+  beat_history_employees: `/beat-plan/beat-history/employees`,
+  beat_history_beats: `/beat-plan/beat-history/beats`,
+  beat_history_plan_day: `/beat-plan/beat-history/plan-day`,
+  beat_history_plans: `/beat-plan/beat-history/plans`,
+  beat_plans: `/beat-plan/plans`,
+  beat_change_history: `/beat-plan/change-requests/history`,
+
+  // Permissions
+  permissions_me: "permissions/me",
+  permissions_catalog: "permissions",
+  permissions_for_user: (id) => `permissions/users/${id}`,
+  permissions_admin_users: "permissions/super-admin/users",
+  permissions_admin_user: (id) => `permissions/super-admin/users/${id}`,
 };
 // 

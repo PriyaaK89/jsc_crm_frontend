@@ -6,6 +6,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
 import { BellIcon } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
+import { usePermissions } from "../../context/PermissionContext";
 import { FiLogOut } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
@@ -23,6 +24,9 @@ const Topbar = ({ profileImage }) => {
   const profile = auth?.user?.profile_image_url;
   console.log(profile, "profile from")
 
+  const { can } = usePermissions();
+  const canSeeNotifications = can("VIEW_NOTIFICATION");
+
   // Modal control
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -31,6 +35,7 @@ const Topbar = ({ profileImage }) => {
 
   // ---------------- Unread count (from API) ----------------
   const fetchUnreadCount = async () => {
+    if (!canSeeNotifications) return;
     try {
       const res = await API.get(API_ENDPOINTS.getUnread_notification_count);
       // adjust this line to match your API response shape
@@ -49,7 +54,7 @@ const Topbar = ({ profileImage }) => {
   // load count as soon as the topbar mounts (before the dropdown is ever opened)
   useEffect(() => {
     fetchUnreadCount();
-  }, []);
+  }, [canSeeNotifications]);
 
   // ---------------- Full Screen ----------------
   const toggleFullScreen = () => {
@@ -110,6 +115,7 @@ const Topbar = ({ profileImage }) => {
         </Button>
 
         {/*  Notification Bell */}
+        {canSeeNotifications && (
         <Box
           mr={6}
           position="relative"
@@ -154,6 +160,7 @@ const Topbar = ({ profileImage }) => {
           </Popover>
 
         </Box>
+        )}
 
         {/*  Profile */}
         <Popover placement="bottom-end">

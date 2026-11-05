@@ -12,8 +12,10 @@ import { FiEdit2 } from "react-icons/fi";
 import { FiTrash2 } from "react-icons/fi";
 import { FaEye } from "react-icons/fa";
 import DeleteCompanyModel from "./DeleteCompanyModel";
+import { usePermissions } from "../../../context/PermissionContext";
 
 const ComapnyList = () => {
+  const { can } = usePermissions();
     const [comapnyies, setComapnies] = useState([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
@@ -268,7 +270,7 @@ const ComapnyList = () => {
                                                         }
                                                     />
                                                 </Tooltip>
-                                                <Tooltip label="Edit comapny" hasArrow>
+                                                {can("UPDATE_COMPANY") && (<Tooltip label="Edit comapny" hasArrow>
                                                     <IconButton
                                                         icon={<FiEdit2 />}
                                                         size="sm"
@@ -280,8 +282,8 @@ const ComapnyList = () => {
                                                             navigate(`/company-master/comapny-list/edit/${item?.id}`)
                                                         }
                                                     />
-                                                </Tooltip>
-                                                <Tooltip label="Delete Comapny" hasArrow>
+                                                </Tooltip>)}
+                                                {can("DELETE_COMPANY") && (<Tooltip label="Delete Comapny" hasArrow>
                                                     <IconButton
                                                         icon={<FiTrash2 />}
                                                         size="sm"
@@ -291,7 +293,7 @@ const ComapnyList = () => {
                                                         aria-label="Delete"
                                                         onClick={() => handleDelete(item?.id)}
                                                     />
-                                                </Tooltip>
+                                                </Tooltip>)}
                                             </Flex>
                                         </Td>
                                     </Tr>

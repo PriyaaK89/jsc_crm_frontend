@@ -28,8 +28,10 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import Pagination from "../../Pagination/Pagination";
 import DeleteStockGroupModel from "./DeleteStockGroupModel";
+import { usePermissions } from "../../context/PermissionContext";
 
 const ViewStockGroup = () => {
+  const { can } = usePermissions();
   const [stockGroups, setStockGroups] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -235,7 +237,7 @@ const ViewStockGroup = () => {
                         />
                       </Tooltip> */}
 
-                      <Tooltip label="Edit Stock Group" hasArrow>
+                      {can("UPDATE_STOCK_GROUP") && (<Tooltip label="Edit Stock Group" hasArrow>
                         <IconButton
                           icon={<FiEdit2 />}
                           size="md"
@@ -247,9 +249,9 @@ const ViewStockGroup = () => {
                             navigate(`/inventory/view-stock-group/edit/${item.id}`)
                           }
                         />
-                      </Tooltip>
+                      </Tooltip>)}
 
-                      <Tooltip label="Delete Stock Group" hasArrow>
+                      {can("DELETE_STOCK_GROUP") && (<Tooltip label="Delete Stock Group" hasArrow>
                         <IconButton
                           icon={<FiTrash2 />}
                           size="md"
@@ -259,7 +261,7 @@ const ViewStockGroup = () => {
                           aria-label="Delete Stock Group"
                           onClick={() => handleDelete(item?.id)}
                         />
-                      </Tooltip>
+                      </Tooltip>)}
                     </Flex>
                   </Td>
                 </Tr>

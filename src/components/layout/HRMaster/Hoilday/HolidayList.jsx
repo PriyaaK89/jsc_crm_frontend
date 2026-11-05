@@ -3,8 +3,10 @@ import { Box, Text, HStack, VStack, IconButton } from "@chakra-ui/react";
 import { holidayTokens as t } from "../../../../theme/holidayTokens";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import DeleteHolidayModal from "./DeleteHolidayModal";
+import { usePermissions } from "../../../../context/PermissionContext";
 
 const HolidayList = ({ holidays, onEdit, onDelete }) => {
+  const { can } = usePermissions();
   const [pendingDelete, setPendingDelete] = useState(null); // holds the holiday object
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -74,17 +76,19 @@ const HolidayList = ({ holidays, onEdit, onDelete }) => {
               </HStack>
 
               <HStack spacing={0.5}>
-                <IconButton
-                  aria-label="Delete holiday"
-                  size="xs"
-                  variant="ghost"
-                  borderRadius="50%"
-                  color={t.terracotta}
-                  opacity={0.65}
-                  icon={<FiTrash2 size={15} />}
-                  _hover={{ opacity: 1, bg: t.terracottaLight }}
-                  onClick={() => setPendingDelete(h)}
-                />
+                {can("DELETE_HOLIDAY") && (
+                  <IconButton
+                    aria-label="Delete holiday"
+                    size="xs"
+                    variant="ghost"
+                    borderRadius="50%"
+                    color={t.terracotta}
+                    opacity={0.65}
+                    icon={<FiTrash2 size={15} />}
+                    _hover={{ opacity: 1, bg: t.terracottaLight }}
+                    onClick={() => setPendingDelete(h)}
+                  />
+                )}
               </HStack>
             </HStack>
           ))}

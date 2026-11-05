@@ -42,11 +42,13 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import DeleteGodownModel from "../../components/models/DeleteGodownModel";
+import { usePermissions } from "../../context/PermissionContext";
 
 const GodownList = () => {
 
   const toast = useToast();
 
+  const { can } = usePermissions();
   const [loading, setLoading] = useState(false);
   const [godownList, setGodownList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -324,16 +326,16 @@ const navigate = useNavigate();
 
   <HStack spacing={2} justify="flex-start">
 
-    <IconButton
+    {can("UPDATE_GODOWN") && (<IconButton
       icon={<FiEdit2 />}
       size="sm"
       colorScheme="blue"
       variant="outline"
       aria-label="Edit Godown"
      onClick={() => navigate( `/inventory/edit-godown/${item?.id}` ) }
-    />
+    />)}
 
-  {item?.godown_name !== "PRIMARY" && (
+  {can("DELETE_GODOWN") && item?.godown_name !== "PRIMARY" && (
   <IconButton
     icon={<FiTrash2 />}
     size="sm"

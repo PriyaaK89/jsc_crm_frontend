@@ -8,10 +8,12 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import EditUnitOfMeasureModal from "../../components/models/EditUnitofMeasureModal";
 import DeleteUnitOfMeasureModal from "../../components/models/DeleteUnitOfMeasureModal";
+import { usePermissions } from "../../context/PermissionContext";
 
 const UnitOfMeasureList = () => {
 
     const toast = useToast();
+  const { can } = usePermissions();
     const [unitList, setUnitList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState("");
@@ -216,15 +218,15 @@ const UnitOfMeasureList = () => {
                                             </Td>
                                             <Td textAlign="center">
                                                 <HStack spacing={2} justify="flex-start">
-                                                    <IconButton icon={<FiEdit2 />}
+                                                    {can("UPDATE_UNIT") && (<IconButton icon={<FiEdit2 />}
                                                         size="sm" colorScheme="blue" variant="outline"
                                                         aria-label="Edit Godown"
                                                      onClick={()=> handleEditModal(item?.id)}
-                                                    />
+                                                    />)}
 
-                                                    <IconButton icon={<FiTrash2 />} size="sm" colorScheme="red" variant="outline" aria-label="Delete Godown"
+                                                    {can("DELETE_UNIT") && (<IconButton icon={<FiTrash2 />} size="sm" colorScheme="red" variant="outline" aria-label="Delete Godown"
                                                     onClick={() => handleDeleteModal(item?.id)}
-                                                    />
+                                                    />)}
 
                                                 </HStack>
                                             </Td>

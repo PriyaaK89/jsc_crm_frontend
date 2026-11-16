@@ -125,6 +125,15 @@ import YearlyHolidayCalendarLayout from "../pages/HrMgmt/YearlyHolidayCalenderLi
 import ViewDemoRequestLayout from "../pages/ProductDemo/ViewDemoRequest";
 import CreateCropLayout from "../components/ProductDemo/Crop/CreateCropLayout";
 import DemoResultsLayout from "../components/ProductDemo/DemoResultsLayout";
+// Business Plan
+import BpDashboard from "../pages/BusinessPlan/BpDashboard";
+import BpPlanList from "../pages/BusinessPlan/BpPlanList";
+import BpPlanDetail from "../pages/BusinessPlan/BpPlanDetail";
+import BpAnalysis from "../pages/BusinessPlan/BpAnalysis";
+import BpReports from "../pages/BusinessPlan/BpReports";
+import BpSettings from "../pages/BusinessPlan/BpSettings";
+import BpTargetSheets from "../pages/BusinessPlan/BpTargetSheets";
+import BpTargetSheetView from "../pages/BusinessPlan/BpTargetSheetView";
 import DemoResultsList from "../pages/ProductDemo/DemoResultsList";
 import DemoResultsView from "../pages/ProductDemo/DemoResultsView";
 import ViewAllIndividualTargetsLayout from "../components/layout/BusinessDevelopment/ViewAllIndividualTragetslayout";
@@ -135,6 +144,7 @@ import BeatLayout from "../components/layout/MiscActions/BeatHIstoryLayout";
 import AssignPermissionsLayout from "../components/layout/HRMaster/AssignPermissionsLayout";
 import PermissionGate from "../routes/PermissionGate";
 import PermissionManagementLayout from "../components/layout/HRMaster/PermissionManagementLayout";
+import BusinessPlanLayout from "../components/layout/BusinessPlan/BusinessPlanLayout";
 
 
 function App() {
@@ -313,6 +323,17 @@ function App() {
             </DemoResultsLayout>
           }
         />
+
+        {/* Business Plan */}
+        <Route path="/business-plan" element={<Navigate to="/business-plan/dashboard" replace />} />
+        <Route path="/business-plan/dashboard" element={<BusinessPlanLayout crumbs={[{ label: "Dashboard" }]}><BpDashboard /></BusinessPlanLayout>} />
+        <Route path="/business-plan/plans" element={<BusinessPlanLayout crumbs={[{ label: "All Plans" }]}><BpPlanList /></BusinessPlanLayout>} />
+        <Route path="/business-plan/plans/:id" element={<BusinessPlanLayout crumbs={[{ label: "All Plans", to: "/business-plan/plans" }, { label: "Plan Detail" }]}><BpPlanDetail /></BusinessPlanLayout>} />
+        <Route path="/business-plan/analysis" element={<BusinessPlanLayout crumbs={[{ label: "Analysis" }]}><BpAnalysis /></BusinessPlanLayout>} />
+        <Route path="/business-plan/reports" element={<BusinessPlanLayout crumbs={[{ label: "Reports" }]}><BpReports /></BusinessPlanLayout>} />
+        <Route path="/business-plan/settings" element={<BusinessPlanLayout crumbs={[{ label: "Settings" }]}><BpSettings /></BusinessPlanLayout>} />
+        <Route path="/business-plan/target-sheets" element={<BusinessPlanLayout crumbs={[{ label: "Employee Target Sheets" }]}><BpTargetSheets /></BusinessPlanLayout>} />
+        <Route path="/business-plan/target-sheets/:id" element={<BusinessPlanLayout crumbs={[{ label: "Employee Target Sheets", to: "/business-plan/target-sheets" }, { label: "Sheet" }]}><BpTargetSheetView /></BusinessPlanLayout>} />
 
       </Routes>
       </PermissionGate>

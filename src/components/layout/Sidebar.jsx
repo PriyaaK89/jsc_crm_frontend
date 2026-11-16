@@ -92,6 +92,8 @@ import {
   MdPrint,
   MdQrCodeScanner,
   MdLabel,
+  MdInsights,
+  MdSettings,
 } from "react-icons/md";
 import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg'
 import { useState, useContext, useEffect, memo } from "react";
@@ -344,6 +346,17 @@ const Newsidebar = () => {
         { label: "Pending Collection Report", path: "/report/pending-collection-report", icon: MdPendingActions },
         { label: "Emp. Performance Report", path: "/report/emp-performance-report", icon: MdLeaderboard },
         // {label:"Digio KYC Report",path:"/report/emp-kyc-report",icon:MdTrendingUp},
+      ]
+    },
+    {
+      label: "Business Plan", key: "business-plan", icon: MdInsights,
+      children: [
+        { label: "Dashboard", path: "/business-plan/dashboard", icon: MdDashboard },
+        { label: "All Plans", path: "/business-plan/plans", icon: MdListAlt },
+        { label: "Plan Analysis", path: "/business-plan/analysis", icon: MdShowChart },
+        { label: "Reports", path: "/business-plan/reports", icon: MdAssessment },
+        { label: "Employee Target Sheets", path: "/business-plan/target-sheets", icon: MdAssignmentInd },
+        { label: "Settings", path: "/business-plan/settings", icon: MdSettings },
       ]
     },
     {

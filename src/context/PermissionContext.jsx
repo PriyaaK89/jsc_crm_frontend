@@ -56,7 +56,7 @@ export const PermissionProvider = ({ children }) => {
   // pick up changes made by an administrator
   useEffect(() => {
     window.addEventListener("focus", refreshPermissions);
-    const timer = setInterval(refreshPermissions, 60000);
+    const timer = setInterval(refreshPermissions, 400000);
     return () => {
       window.removeEventListener("focus", refreshPermissions);
       clearInterval(timer);

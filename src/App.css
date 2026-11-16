@@ -54,7 +54,7 @@ body,
     width: 95%;
     margin: auto;
     font-size: 21px;
-    color: #516b6b;
+    color: var(--crm-primary-deep);
     font-family: 'Poppins';
 }
 
@@ -184,7 +184,7 @@ body,
 }
 
 .chakra-modal__header {
-  line-height: 0 !important;
+  line-height: 1.4 !important;
 }
 
 .empsalaryreporttableres{
@@ -238,27 +238,27 @@ height: 50px !important;
   text-transform: capitalize;
 }
 .submit_btn:hover{
-  background: #1B5A6B !important;
+  background: var(--crm-primary-deep) !important;
 }
 
 .chakra-input{
-  border-color: #a7acad !important;
+  border-color: var(--crm-border) !important;
 }
 
 .chakra-select{
-    border-color: #a7acad !important;
+    border-color: var(--crm-border) !important;
 }
 
 .ledger_heading{
-  color: rgb(85, 85, 85) !important;
-  background: #eaecf4 !important;
+  color: var(--crm-text-2) !important;
+  background: var(--crm-surface-2) !important;
   padding: 3px 0px 3px 10px !important;
 /* color="gray.700" bg="gray.200" padding="3px 0px 3px 10px" */
 }
 
 .ledger_box{
-  background: #fbfbfb !important;
-  border: 1px solid #d5d5d5 !important;
+  background: var(--crm-surface) !important;
+  border: 1px solid var(--crm-border) !important;
   border-radius: 6px !important;
 }
 
@@ -324,4 +324,10 @@ height: 50px !important;
 .chakra-button{
   /* font-size: 14px !important; */
   font-weight: 500 !important;
+}
+
+.chakra-input:focus,
+.chakra-select:focus,
+.chakra-textarea:focus {
+  border-color: var(--crm-primary) !important;
 }

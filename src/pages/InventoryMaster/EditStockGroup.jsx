@@ -12,7 +12,8 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   HStack,
-  useToast
+  useToast,
+  Checkbox
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { GoHomeFill } from "react-icons/go";
@@ -35,6 +36,7 @@ const EditStockGroup = () => {
     add_quantity: "",
     gst_enabled: "",
     overdue_limit: 300,
+    hide_from_marketing: 0,
   });
 
   //  FETCH DATA (autofill)
@@ -53,6 +55,7 @@ const EditStockGroup = () => {
           add_quantity: String(data?.add_quantity ?? ""),
           gst_enabled: String(data?.gst_enabled ?? ""),
           overdue_limit: data?.overdue_limit || 300,
+          hide_from_marketing: Number(data?.hide_from_marketing) === 1 ? 1 : 0,
         });
       }
 
@@ -91,10 +94,11 @@ const EditStockGroup = () => {
         ...formData,
         parent_id: formData.parent_id || null,
         overdue_limit: formData.overdue_limit || 300,
+        hide_from_marketing: formData.hide_from_marketing ? 1 : 0,
       };
 
       const res = await API.put(
-        `${API_ENDPOINTS.update_stock_group}/${id}`,
+        `${API_ENDPOINTS.Update_stock_group}/${id}`,
         payload
       );
 
@@ -206,6 +210,18 @@ const EditStockGroup = () => {
                 onChange={handleChange}
               />
             </FormControl>
+
+            <Checkbox
+              isChecked={!!formData.hide_from_marketing}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  hide_from_marketing: e.target.checked ? 1 : 0,
+                }))
+              }
+            >
+              Hide from Marketing employees
+            </Checkbox>
 
           </SimpleGrid>
 

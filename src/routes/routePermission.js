@@ -12,6 +12,9 @@ const EMP = "VIEW_EMPLOYEE_REPORT";
 const TXN = ["CREATE_TRANSACTION", "VIEW_TRANSACTION"];
 const PRINT = ["VIEW_PRINT_MANAGEMENT"];
 const DEMO = ["VIEW_DEMO", "demo_approve"];
+// Business Plan pages: any logged-in user. The server scopes every record to the user,
+// his reporting team and the items he approves (admins: everything). Settings keeps its code.
+const BP = [];
 
 // Pages that do not need a login
 export const PUBLIC_PATHS = ["/", "/login", "/esign-success", "/esign-error"];
@@ -158,6 +161,16 @@ export const ROUTE_PERMISSIONS = [
   ["/misc/assign-areas-to-employee", [ADMIN_ONLY]],
   ["/misc/beatPlan", ["VIEW_BEAT_PLAN"]],
   ["/chat/monitor", ["chat_view_all"]],
+
+  ["/business-plan", BP],
+  ["/business-plan/dashboard", BP],
+  ["/business-plan/plans", BP],
+  ["/business-plan/plans/:id", BP],
+  ["/business-plan/analysis", BP],
+  ["/business-plan/reports", BP],
+  ["/business-plan/settings", ["MANAGE_BUSINESS_PLAN_SETTINGS"]],
+  ["/business-plan/target-sheets", BP],
+  ["/business-plan/target-sheets/:id", BP],
 
   ["/product-demo/view-demo-request/:id", []],
   ["/product-demo/crop/create-crop", ["crop_manage"]],

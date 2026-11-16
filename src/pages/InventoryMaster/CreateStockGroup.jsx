@@ -1,4 +1,4 @@
-import { Box, Text, FormControl, FormLabel, Input, Select, SimpleGrid, VStack, Button, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack, useToast} from "@chakra-ui/react";
+import { Box, Text, FormControl, FormLabel, Input, Select, SimpleGrid, VStack, Button, Breadcrumb, BreadcrumbItem, BreadcrumbLink, HStack, useToast, Checkbox } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { GoHomeFill } from "react-icons/go";
 import { Link } from "react-router-dom";
@@ -16,6 +16,7 @@ const CreateStockGroup = () => {
     add_quantity: "",
     gst_enabled: "",
     overdue_limit: 300,
+    hide_from_marketing: 0,
   });
 
   // handle change
@@ -24,7 +25,7 @@ const CreateStockGroup = () => {
 
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "parent_id" && value === "null" ? null : value,
+      [name]: value,
     }));
   };
 
@@ -36,11 +37,13 @@ const CreateStockGroup = () => {
     try {
       const payload = {
         ...formData,
+        parent_id: formData.parent_id === "null" ? null : formData.parent_id,
         overdue_limit: formData.overdue_limit || 300,
+        hide_from_marketing: formData.hide_from_marketing ? 1 : 0,
       };
 
       const response = await API.post(
-        API_ENDPOINTS.create_stock_group, 
+        API_ENDPOINTS.create_stock_group,
         payload
       );
 
@@ -58,6 +61,7 @@ const CreateStockGroup = () => {
           add_quantity: "",
           gst_enabled: "",
           overdue_limit: 300,
+          hide_from_marketing: 0,
         });
       }
 
@@ -76,27 +80,27 @@ const CreateStockGroup = () => {
 
   return (
     <Box bg="white" px={6} py={4}>
-      
+
       {/* Top */}
-        <HStack justifyContent="space-between">
-                <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
-                  <BreadcrumbItem>
-                    <BreadcrumbLink as={Link} to="/dashboard">
-                      <GoHomeFill color="#5570F1" />
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink as={Link} color="#8B8D97" fontSize="13px" isCurrentPage>
-                       Create Stock Group
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                </Breadcrumb>
-              </HStack>
+      <HStack justifyContent="space-between">
+        <Breadcrumb color="#8B8D97" padding="10px 0px 1rem 0px">
+          <BreadcrumbItem>
+            <BreadcrumbLink as={Link} to="/dashboard">
+              <GoHomeFill color="#5570F1" />
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbLink as={Link} color="#8B8D97" fontSize="13px" isCurrentPage>
+              Create Stock Group
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </Breadcrumb>
+      </HStack>
 
       {/* Form */}
       <Box as="form" onSubmit={handleSubmit}>
         <VStack spacing={4} align="stretch">
-          
+
           <Text fontSize="16px" fontWeight="500" color="#45464E">
             Create Stock Group
           </Text>
@@ -161,11 +165,23 @@ const CreateStockGroup = () => {
               />
             </FormControl>
 
+            <Checkbox
+              isChecked={!!formData.hide_from_marketing}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  hide_from_marketing: e.target.checked ? 1 : 0,
+                }))
+              }
+            >
+              Hide from Marketing employees
+            </Checkbox>
+
           </SimpleGrid>
 
           <Box textAlign="right">
             <Button className="submit_btn"
-              type="submit"
+              type="submit" bg='blue.700'
               isLoading={loading}
             >
               Create Stock Group

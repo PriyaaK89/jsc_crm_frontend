@@ -14,7 +14,7 @@ import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
 import CreateGroupModal from "./CreateGroupModal";
 
-const POLL_MS = 15000;
+const POLL_MS = 400000;
 const IMAGE_EXT = ["jpg", "jpeg", "png", "webp", "gif", "heic", "heif"];
 
 // ---------------------------------------------------------------- helpers

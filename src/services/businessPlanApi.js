@@ -55,10 +55,29 @@ export const bpApi = {
   addOption: (listKey, value) => API.post(`${BASE}/settings/options`, { list_key: listKey, value }).then((r) => r.data),
   updateOption: (id, body) => API.put(`${BASE}/settings/options/${id}`, body).then((r) => r.data),
   removeOption: (id) => API.delete(`${BASE}/settings/options/${id}`).then((r) => r.data),
+  // territories: everybody reads the selectable ones; managing needs Admin / Super Admin or
+  // MANAGE_BP_TERRITORIES + a state scope (the server checks every call)
   territories: (params) => API.get(`${BASE}/territories`, { params: clean(params) }).then(data),
+  territoryAccess: () => API.get(`${BASE}/territories/access`).then(data),
+  territoryOverlaps: (params) => API.get(`${BASE}/territories/overlaps`, { params: clean(params) }).then(data),
+  territory: withId("territory", (id) => API.get(`${BASE}/territories/${id}`).then(data)),
+  territoryVersions: withId("territory", (id) => API.get(`${BASE}/territories/${id}/versions`).then(data)),
+  createTerritory: (body) => API.post(`${BASE}/territories`, body).then((r) => r.data),
+  updateTerritory: withId("territory", (id, body) => API.put(`${BASE}/territories/${id}`, body).then((r) => r.data)),
+  setTerritoryStatus: withId("territory", (id, isActive, remark) =>
+    API.post(`${BASE}/territories/${id}/status`, { is_active: !!isActive, ...(remark ? { remark } : {}) }).then((r) => r.data)),
   saveTerritory: (id, body) =>
-    (id ? API.put(`${BASE}/territories/${id}`, body) : API.post(`${BASE}/territories`, body)).then((r) => r.data),
-  deleteTerritory: (id) => API.delete(`${BASE}/territories/${id}`).then((r) => r.data),
+    (toRecordId(id) ? API.put(`${BASE}/territories/${toRecordId(id)}`, body) : API.post(`${BASE}/territories`, body)).then((r) => r.data),
+  // territory managers (Admin / Super Admin only)
+  territoryManagers: () => API.get(`${BASE}/territory-managers`).then(data),
+  territoryManagerCandidates: (search) => API.get(`${BASE}/territory-managers/candidates`, { params: clean({ search }) }).then(data),
+  territoryManager: withId("user", (userId) => API.get(`${BASE}/territory-managers/${userId}`).then(data)),
+  setTerritoryPermission: withId("user", (userId, granted) =>
+    API.post(`${BASE}/territory-managers/${userId}/permission`, { granted: !!granted }).then((r) => r.data)),
+  grantTerritoryStates: withId("user", (userId, stateIds, remark) =>
+    API.post(`${BASE}/territory-managers/${userId}/states`, { state_ids: stateIds, ...(remark ? { remark } : {}) }).then((r) => r.data)),
+  revokeTerritoryState: withId("user", (userId, stateId) =>
+    API.post(`${BASE}/territory-managers/${userId}/states/${requireId(stateId, "state")}/revoke`).then((r) => r.data)),
 
   // lookups
   states: () => API.get(`${BASE}/lookups/states`).then(data),

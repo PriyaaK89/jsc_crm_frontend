@@ -15,6 +15,9 @@ const DEMO = ["VIEW_DEMO", "demo_approve"];
 // Business Plan pages: any logged-in user. The server scopes every record to the user,
 // his reporting team and the items he approves (admins: everything). Settings keeps its code.
 const BP = [];
+// Advance Booking pages: any logged-in user (field staff book for their parties; the server
+// scopes bookings to the user and his team). Office desks keep their codes.
+const ABS = [];
 
 // Pages that do not need a login
 export const PUBLIC_PATHS = ["/", "/login", "/esign-success", "/esign-error"];
@@ -171,6 +174,16 @@ export const ROUTE_PERMISSIONS = [
   ["/business-plan/settings", ["MANAGE_BUSINESS_PLAN_SETTINGS"]],
   ["/business-plan/target-sheets", BP],
   ["/business-plan/target-sheets/:id", BP],
+
+  ["/advance-booking", ABS],
+  ["/advance-booking/dashboard", ABS],
+  ["/advance-booking/bookings", ABS],
+  ["/advance-booking/bookings/:id", ABS],
+  ["/advance-booking/bookings/:id/print", ABS],
+  ["/advance-booking/allocation", ["ALLOCATE_ABS_STOCK", "VIEW_ALL_ABS"]],
+  ["/advance-booking/payments", ABS],
+  ["/advance-booking/dispatches", ["DISPATCH_ABS", "VIEW_ALL_ABS"]],
+  ["/advance-booking/settings", ["MANAGE_ABS_SETTINGS"]],
 
   ["/product-demo/view-demo-request/:id", []],
   ["/product-demo/crop/create-crop", ["crop_manage"]],

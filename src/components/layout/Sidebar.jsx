@@ -360,6 +360,17 @@ const Newsidebar = () => {
       ]
     },
     {
+      label: "Advance Booking", key: "advance-booking", icon: MdEventAvailable,
+      children: [
+        { label: "Dashboard", path: "/advance-booking/dashboard", icon: MdDashboard },
+        { label: "Bookings", path: "/advance-booking/bookings", icon: MdListAlt },
+        { label: "Advance Payments", path: "/advance-booking/payments", icon: MdPayments },
+        { label: "Stock Allocation", path: "/advance-booking/allocation", icon: MdInventory },
+        { label: "Dispatches", path: "/advance-booking/dispatches", icon: MdLocalShipping },
+        { label: "Settings", path: "/advance-booking/settings", icon: MdSettings },
+      ]
+    },
+    {
       label: "Misc", key: "misc", icon: MdApps,
       children: [
         { label: "Activate/Deactivate Voucher", path: "/misc/voucher-action", icon: MdToggleOn },

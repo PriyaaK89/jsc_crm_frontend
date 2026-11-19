@@ -134,6 +134,16 @@ import BpReports from "../pages/BusinessPlan/BpReports";
 import BpSettings from "../pages/BusinessPlan/BpSettings";
 import BpTargetSheets from "../pages/BusinessPlan/BpTargetSheets";
 import BpTargetSheetView from "../pages/BusinessPlan/BpTargetSheetView";
+// Advance Booking (ABS)
+
+import AbsDashboard from "../pages/AdvanceBooking/AbsDashboard";
+import AbsBookings from "../pages/AdvanceBooking/AbsBookings";
+import AbsBookingDetail from "../pages/AdvanceBooking/AbsBookingDetail";
+import AbsBookingPrint from "../pages/AdvanceBooking/AbsBookingPrint";
+import AbsAllocation from "../pages/AdvanceBooking/AbsAllocation";
+import AbsPayments from "../pages/AdvanceBooking/AbsPayments";
+import AbsDispatches from "../pages/AdvanceBooking/AbsDispatches";
+import AbsSettings from "../pages/AdvanceBooking/AbsSettings";
 import DemoResultsList from "../pages/ProductDemo/DemoResultsList";
 import DemoResultsView from "../pages/ProductDemo/DemoResultsView";
 import ViewAllIndividualTargetsLayout from "../components/layout/BusinessDevelopment/ViewAllIndividualTragetslayout";
@@ -145,6 +155,7 @@ import AssignPermissionsLayout from "../components/layout/HRMaster/AssignPermiss
 import PermissionGate from "../routes/PermissionGate";
 import PermissionManagementLayout from "../components/layout/HRMaster/PermissionManagementLayout";
 import BusinessPlanLayout from "../components/layout/BusinessPlan/BusinessPlanLayout";
+import AbsLayout from "../components/layout/AdvanceBooking/AbsLayout";
 
 
 function App() {
@@ -334,6 +345,17 @@ function App() {
         <Route path="/business-plan/settings" element={<BusinessPlanLayout crumbs={[{ label: "Settings" }]}><BpSettings /></BusinessPlanLayout>} />
         <Route path="/business-plan/target-sheets" element={<BusinessPlanLayout crumbs={[{ label: "Employee Target Sheets" }]}><BpTargetSheets /></BusinessPlanLayout>} />
         <Route path="/business-plan/target-sheets/:id" element={<BusinessPlanLayout crumbs={[{ label: "Employee Target Sheets", to: "/business-plan/target-sheets" }, { label: "Sheet" }]}><BpTargetSheetView /></BusinessPlanLayout>} />
+
+        {/* Advance Booking System */}
+        <Route path="/advance-booking" element={<Navigate to="/advance-booking/dashboard" replace />} />
+        <Route path="/advance-booking/dashboard" element={<AbsLayout crumbs={[{ label: "Dashboard" }]}><AbsDashboard /></AbsLayout>} />
+        <Route path="/advance-booking/bookings" element={<AbsLayout crumbs={[{ label: "Bookings" }]}><AbsBookings /></AbsLayout>} />
+        <Route path="/advance-booking/bookings/:id" element={<AbsLayout crumbs={[{ label: "Bookings", to: "/advance-booking/bookings" }, { label: "Booking" }]}><AbsBookingDetail /></AbsLayout>} />
+        <Route path="/advance-booking/bookings/:id/print" element={<AbsBookingPrint />} />
+        <Route path="/advance-booking/allocation" element={<AbsLayout crumbs={[{ label: "Stock Allocation" }]}><AbsAllocation /></AbsLayout>} />
+        <Route path="/advance-booking/payments" element={<AbsLayout crumbs={[{ label: "Advance Payments" }]}><AbsPayments /></AbsLayout>} />
+        <Route path="/advance-booking/dispatches" element={<AbsLayout crumbs={[{ label: "Dispatches" }]}><AbsDispatches /></AbsLayout>} />
+        <Route path="/advance-booking/settings" element={<AbsLayout crumbs={[{ label: "Settings" }]}><AbsSettings /></AbsLayout>} />
 
       </Routes>
       </PermissionGate>

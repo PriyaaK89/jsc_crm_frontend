@@ -215,6 +215,9 @@ const BpPlanDetail = () => {
   const approval = overview.approval || null;
   const nd = overview.new_distributor_acquisition || {};
   const nr = overview.new_retailer_development || {};
+  // territory: the saved snapshot for approved / closed / rejected plans and open revisions,
+  // otherwise the territory's latest version (GET /plans/:id -> territory)
+  const terr = overview.territory || plan.territory || null;
   const canEdit = !!actions.can_edit;
   const tabState = (key) => ({ data: tabData[key], err: tabError[key] });
 
@@ -390,6 +393,38 @@ const BpPlanDetail = () => {
                 ]}
               />
             </Card>
+            {terr && (
+              <Card
+                title="Territory"
+                right={
+                  <HStack spacing={1}>
+                    {terr.version_no ? <StatusBadge status="PLAN" label={`Version ${terr.version_no}`} /> : null}
+                    <StatusBadge
+                      status={terr.frozen ? "ACTIVE" : "SUBMITTED"}
+                      label={terr.frozen ? "Saved snapshot" : "Latest version"}
+                    />
+                  </HStack>
+                }
+              >
+                <Text fontWeight="700" fontSize="sm">
+                  {terr.name || "—"} <Text as="span" fontWeight="400" color="gray.500">· {terr.state_name || plan.state_name || "—"}</Text>
+                </Text>
+                <Text fontSize="xs" color="gray.500" mt={1} whiteSpace="normal">
+                  {(terr.district_names || []).length ? `Districts (${terr.district_names.length}): ${terr.district_names.join(", ")}` : "No districts recorded"}
+                </Text>
+                {terr.frozen ? (
+                  <Text fontSize="xs" color="gray.500" mt={2}>
+                    The territory as it was when this plan was approved{terr.captured_at ? ` (recorded ${fmtDateTime(terr.captured_at)})` : ""}.
+                    {terr.updated_since ? ` The territory has changed since (now version ${terr.latest_version_no}); this plan keeps its saved coverage.` : ""}
+                  </Text>
+                ) : (
+                  <Text fontSize="xs" color="gray.500" mt={2}>
+                    Draft / submitted / returned plans use the territory&apos;s latest version. It is frozen when the plan is approved.
+                    {terr.territory_is_active === false ? " This territory is now inactive; the plan keeps it." : ""}
+                  </Text>
+                )}
+              </Card>
+            )}
             <SimpleGrid columns={{ base: 2, md: 4 }} spacing={3} mb={4}>
               <Kpi label={`Season Sales Target (${tg.plan_months || "—"} mo)`} value={money(k.sales_target)} />
               <Kpi label="Sales Achieved" value={money(k.sales_achieved)} color="green.600" />

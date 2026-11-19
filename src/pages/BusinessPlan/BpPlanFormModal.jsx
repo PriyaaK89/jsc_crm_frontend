@@ -2,6 +2,10 @@
 // The plan's sales and collection targets are not typed here: they are calculated from the
 // distributor lines (season target = seasonal target, or annual target x plan months / 12).
 // ABS booking / advance targets appear only when the Advance Booking module is installed.
+// Territory: one territory of the selected state. Only active territories with at least one
+// district are offered (masters.territories); its districts are shown under the dropdown. It is
+// required when the state has such a territory (a plan saved earlier without one keeps working
+// while its state is unchanged). The server checks the same rules.
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -24,7 +28,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { bpApi, apiError } from "../../services/businessPlanApi";
-import { Loading, useBpToast, useMasters } from "./bpShared";
+import { Loading, refreshMasters, useBpToast, useMasters } from "./bpShared";
 
 const EMPTY = {
   name: "",
@@ -62,6 +66,13 @@ const BpPlanFormModal = ({ isOpen, onClose, plan, onSaved }) => {
   const absEnabled = !!masters?.abs_enabled;
   const inRevision = !!plan?.in_revision;
 
+  // the dropdown lists are cached for the session: refresh them each time the form opens, so a
+  // territory added in Settings → Territories after the page was loaded is offered here too
+  useEffect(() => {
+    if (!isOpen) return;
+    refreshMasters().catch(() => {});
+  }, [isOpen]);
+
   useEffect(() => {
     if (!isOpen) return;
     setErrors({});
@@ -92,12 +103,32 @@ const BpPlanFormModal = ({ isOpen, onClose, plan, onSaved }) => {
     setServerError("");
   };
 
+  // territories of the selected state: active ones with districts (masters), plus the plan's own
+  // territory when it was deactivated / emptied later (it may be kept, not newly chosen)
+  const stateChanged = !!plan && String(plan.state_id || "") !== String(form.state_id || "");
+  const offered = form.state_id
+    ? (masters?.territories || []).filter((t) => String(t.state_id) === String(form.state_id))
+    : [];
+  const ownTerritory =
+    plan && plan.territory_id && !stateChanged && !offered.some((t) => String(t.id) === String(plan.territory_id))
+      ? {
+          id: plan.territory_id,
+          name: `${plan.territory?.name || plan.territory_name || "Current territory"} (no longer offered — kept)`,
+          district_names: plan.territory?.district_names || plan.territory_district_names || [],
+        }
+      : null;
+  const territories = ownTerritory ? [...offered, ownTerritory] : offered;
+  const legacyWithout = !!plan && !plan.territory_id && !stateChanged;
+  const territoryRequired = offered.length > 0 && !legacyWithout;
+  const chosenTerritory = territories.find((t) => String(t.id) === String(form.territory_id));
+
   const validate = () => {
     const e = {};
     if (!form.name.trim()) e.name = "Plan name is required";
     ["financial_year", "season", "plan_type", "state_id", "assigned_user_id", "start_date", "end_date"].forEach((k) => {
       if (!form[k]) e[k] = "Required";
     });
+    if (territoryRequired && !form.territory_id) e.territory_id = "Select a territory for this state";
     if (form.start_date && form.end_date && form.start_date > form.end_date) e.end_date = "End date must be after start date";
     if (absEnabled) {
       const booking = form.abs_booking_target === "" ? 0 : Number(form.abs_booking_target);
@@ -144,18 +175,40 @@ const BpPlanFormModal = ({ isOpen, onClose, plan, onSaved }) => {
     }
   };
 
-  const territories = (masters?.territories || []).filter((t) => String(t.state_id) === String(form.state_id));
+  const stateName = (masters?.states || []).find((x) => String(x.id) === String(form.state_id))?.name || "this state";
+  const territoryHelper = !form.state_id
+    ? "Select a state first"
+    : chosenTerritory
+      ? (
+          <Text as="span" fontSize="xs" color="gray.500">
+            {(chosenTerritory.district_names || []).length
+              ? `Districts: ${chosenTerritory.district_names.join(", ")}`
+              : "No districts"}
+          </Text>
+        )
+      : offered.length
+        ? `${offered.length} territor${offered.length === 1 ? "y" : "ies"} in ${stateName}${territoryRequired ? "" : " (optional for this plan)"}`
+        : "No active territories available for this state. Please contact an authorized user to create one.";
   const months = monthCount(form.start_date, form.end_date);
   const field = (key, label, input, helper) => (
-    <FormControl isRequired={!["territory_id", "abs_booking_target", "abs_advance_target"].includes(key)} isInvalid={!!errors[key]}>
+    <FormControl
+      isRequired={key === "territory_id" ? territoryRequired : !["abs_booking_target", "abs_advance_target"].includes(key)}
+      isInvalid={!!errors[key]}
+    >
       <FormLabel fontSize="sm">{label}</FormLabel>
       {input}
       {helper ? <FormHelperText fontSize="xs">{helper}</FormHelperText> : null}
       <FormErrorMessage>{errors[key]}</FormErrorMessage>
     </FormControl>
   );
-  const select = (key, options, placeholder = "Select") => (
-    <Select size="sm" value={form[key]} onChange={set(key)} placeholder={placeholder} isDisabled={inRevision && IDENTITY.includes(key)}>
+  const select = (key, options, placeholder = "Select", disabled = false) => (
+    <Select
+      size="sm"
+      value={form[key]}
+      onChange={set(key)}
+      placeholder={placeholder}
+      isDisabled={disabled || (inRevision && IDENTITY.includes(key))}
+    >
       {options.map(([v, l]) => (
         <option key={v} value={v}>
           {l}
@@ -212,7 +265,18 @@ const BpPlanFormModal = ({ isOpen, onClose, plan, onSaved }) => {
                 {field(
                   "territory_id",
                   "Territory",
-                  select("territory_id", territories.map((t) => [t.id, t.name]), territories.length ? "Select (optional)" : "No territory for this state"),
+                  select(
+                    "territory_id",
+                    territories.map((t) => [t.id, t.name]),
+                    !form.state_id
+                      ? "Select a state first"
+                      : territories.length
+                        ? territoryRequired ? "Select territory" : "Select territory (optional)"
+                        : "No territory for this state",
+                    // enabled as soon as a state is chosen
+                    !form.state_id,
+                  ),
+                  territoryHelper,
                 )}
                 {field(
                   "assigned_user_id",

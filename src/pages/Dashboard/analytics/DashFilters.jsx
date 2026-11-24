@@ -8,6 +8,7 @@ const FIRST_YEAR = 2020;
 const FILTER_DELAY_MS = 300;
 
 export const getPresetRange = (preset, now = new Date()) => {
+    
   const today = toDate(now);
   const year = now.getFullYear();
   const month = now.getMonth();

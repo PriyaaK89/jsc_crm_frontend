@@ -3,7 +3,7 @@ import { Box, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/r
 import { usePermissions } from "../../../context/PermissionContext";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import useAnalytics from "./useAnalytics";
-import DashboardFilters, { useDashboardFilters } from "./DashboardFilters";
+
 import OverviewSection from "./OverviewSection";
 import AttendanceCard from "../PieChart";
 import {
@@ -15,6 +15,7 @@ import {
   SalesSection,
   VisitsSection,
 } from "./AnalyticsSections";
+import DashboardFilters, { useDashboardFilters } from "./DashFilters";
 
 const TABS = ["Overview", "Orders", "Visits", "Sales", "Collections", "Approvals", "Business"];
 const BUSINESS_TAB = TABS.indexOf("Business");

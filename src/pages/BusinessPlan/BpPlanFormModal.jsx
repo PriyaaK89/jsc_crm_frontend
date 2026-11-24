@@ -55,6 +55,15 @@ const monthCount = (from, to) => {
   return (ty - fy) * 12 + (tm - fm) + 1;
 };
 
+// "2026-27" -> { from: "2026-04-01", to: "2027-03-31" } (Indian financial year, April - March)
+const fyRange = (fy) => {
+  const m = /^(\d{4})-(\d{2})$/.exec(String(fy || ""));
+  if (!m) return null;
+  const y = Number(m[1]);
+  return { from: `${y}-04-01`, to: `${y + 1}-03-31` };
+};
+const showDate = (iso) => (iso ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}/${iso.slice(0, 4)}` : "");
+
 const BpPlanFormModal = ({ isOpen, onClose, plan, onSaved }) => {
   const { masters, loading } = useMasters();
   const notify = useBpToast();
@@ -130,6 +139,13 @@ const BpPlanFormModal = ({ isOpen, onClose, plan, onSaved }) => {
     });
     if (territoryRequired && !form.territory_id) e.territory_id = "Select a territory for this state";
     if (form.start_date && form.end_date && form.start_date > form.end_date) e.end_date = "End date must be after start date";
+    // same rule as the server: the period must touch the selected financial year (checked when
+    // the year or the dates change)
+    const fyr = fyRange(form.financial_year);
+    const changed = !plan || form.financial_year !== plan.financial_year || form.start_date !== plan.start_date || form.end_date !== plan.end_date;
+    if (fyr && changed && form.start_date && form.end_date && !e.end_date && (form.start_date > fyr.to || form.end_date < fyr.from)) {
+      e.start_date = `The plan period must fall at least partly within FY ${form.financial_year} (${showDate(fyr.from)} – ${showDate(fyr.to)})`;
+    }
     if (absEnabled) {
       const booking = form.abs_booking_target === "" ? 0 : Number(form.abs_booking_target);
       const advance = form.abs_advance_target === "" ? 0 : Number(form.abs_advance_target);
@@ -252,9 +268,16 @@ const BpPlanFormModal = ({ isOpen, onClose, plan, onSaved }) => {
                   <Input size="sm" value={form.name} onChange={set("name")} maxLength={200} placeholder="e.g. Jaipur Rural — Kharif 2026" />
                   <FormErrorMessage>{errors.name}</FormErrorMessage>
                 </FormControl>
-                {field("financial_year", "Financial Year", select("financial_year", masters.financial_years.map((v) => [v, v])))}
+                {field(
+                  "financial_year",
+                  "Financial Year",
+                  select("financial_year", (masters.financial_years || []).map((v) => [v, v])),
+                  fyRange(form.financial_year)
+                    ? `${showDate(fyRange(form.financial_year).from)} – ${showDate(fyRange(form.financial_year).to)}`
+                    : `Previous, current and next ${masters?.settings?.future_financial_years || 5} financial years (more in Settings)`,
+                )}
                 {field("season", "Season", select("season", masters.seasons.map((v) => [v, v])))}
-                {field("start_date", "Start Date", <Input size="sm" type="date" value={form.start_date} onChange={set("start_date")} />)}
+                {field("start_date", "Start Date", <Input size="sm" type="date" value={form.start_date} onChange={set("start_date")} />, "Any date; monthly targets follow the plan's own months")}
                 {field(
                   "end_date",
                   "End Date",

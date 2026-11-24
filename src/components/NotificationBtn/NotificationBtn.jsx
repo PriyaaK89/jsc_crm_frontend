@@ -5,6 +5,9 @@ import { API_ENDPOINTS } from "../../services/endpoints";
 import NotificationModal from "../models/transaction-flow/NotificationModal";
 import AlertTabModal from "../models/transaction-flow/AlertModal";
 import DemoNotificationModal from "../models/transaction-flow/DemoNotificationModal";
+import ModuleInboxModal from "../models/transaction-flow/ModuleInboxModal";
+import { usePermissions } from "../../context/PermissionContext";
+import { getRoutePermissions } from "../../routes/routePermission";
 
 // Central config: add a new module here and it "just works" everywhere
 const NOTIFICATION_MODULES = {
@@ -62,7 +65,11 @@ const NotificationBtn = () => {
   const [counts, setCounts] = useState({
     sales: 0, purchase: 0, payment: 0, receipt: 0,
     credit_note: 0, debit_note: 0, alert: 0,  demo: 0,
+    abs: 0, bp: 0,
   });
+  const { can } = usePermissions();
+  // ABS / Business Plan inbox (beat_notifications): "ABS" | "BP" | null
+  const [inboxCategory, setInboxCategory] = useState(null);
 
   // Single piece of state instead of one boolean per modal
   const [activeModal, setActiveModal] = useState(null); // e.g. "SALES" | "RECEIPT" | null
@@ -72,6 +79,7 @@ const NotificationBtn = () => {
   useEffect(() => {
     fetchCounts();
     fetchDemoCount();
+    fetchModuleCounts();
 
     // const refresh = () => fetchDemoCount();
     // const timer = setInterval(refresh, 60000);            // poll every minute
@@ -98,6 +106,17 @@ const NotificationBtn = () => {
     console.log(err);
   }
 };
+
+  // unread ABS / Business Plan notifications of the logged-in user (GET /beat-plan/notifications/unread-count)
+  const fetchModuleCounts = async () => {
+    try {
+      const res = await API.get(API_ENDPOINTS.beat_notifications_unread_count);
+      const by = res.data?.data?.by_category || {};
+      setCounts((prev) => ({ ...prev, abs: Number(by.ABS) || 0, bp: Number(by.BP) || 0 }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const fetchCounts = async () => {
     try {
@@ -137,6 +156,13 @@ const NotificationBtn = () => {
     { label: "Purchase Order", count: counts.purchase, moduleKey: "PURCHASE" },
     { label: "Alert", count: counts.alert },
     { label: "Demo Request", count: counts.demo },
+    // shown to users who can open the module, or who have an unread notification of it
+    ...(counts.abs > 0 || can(getRoutePermissions("/advance-booking/bookings") || [])
+      ? [{ label: "ABS", count: counts.abs, inbox: "ABS" }]
+      : []),
+    ...(counts.bp > 0 || can(getRoutePermissions("/business-plan/plans") || [])
+      ? [{ label: "Business Plan", count: counts.bp, inbox: "BP" }]
+      : []),
     { label: "E-Way Bill" },
     { label: "Whatsapp" },
   ];
@@ -175,6 +201,13 @@ const NotificationBtn = () => {
         onCountChange={fetchDemoCount}
       />
 
+      <ModuleInboxModal
+        isOpen={!!inboxCategory}
+        category={inboxCategory}
+        onClose={() => { setInboxCategory(null); fetchModuleCounts(); }}
+        onCountChange={fetchModuleCounts}
+      />
+
       {buttons.map((btn, i) => (
         <Box key={i} position="relative">
           <Button
@@ -192,6 +225,7 @@ const NotificationBtn = () => {
             fontSize={{ sm: "10px", base: "9px", md: "11px" }}
             onClick={() => {
               if (btn.moduleKey) { setActiveModal(btn.moduleKey); return; }
+              if (btn.inbox) { setInboxCategory(btn.inbox); return; }
               if (btn.label === "Alert") { setAlertModalOpen(true); }
                 if (btn.label === "Demo Request") { setDemoModalOpen(true); return; } 
               if (btn.label === "E-Way Bill") { window.open("https://ewaybillgst.gov.in/", "_blank"); }

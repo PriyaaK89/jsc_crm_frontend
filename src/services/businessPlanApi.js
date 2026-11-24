@@ -82,13 +82,16 @@ export const bpApi = {
   // lookups
   states: () => API.get(`${BASE}/lookups/states`).then(data),
   employees: (search) => API.get(`${BASE}/lookups/employees`, { params: clean({ search }) }).then(data),
-  distributors: (search, all = false) =>
-    API.get(`${BASE}/lookups/distributors`, { params: clean({ search, limit: 100, all: all ? 1 : undefined }) }).then(data),
+  // scope: { plan_id } or { employee_id } -> only the distributors assigned to the plan's employee
+  // or his reporting team (never the preparer's own); include_in_plan: 1 keeps the plan's lines
+  distributors: (search, all = false, scope = {}) =>
+    API.get(`${BASE}/lookups/distributors`, { params: clean({ search, limit: 100, all: all ? 1 : undefined, ...scope }) }).then(data),
   distributorProfile: (ledgerId, from, to) =>
     API.get(`${BASE}/lookups/distributors/${ledgerId}/profile`, { params: clean({ from, to }) }).then(data),
-  retailers: (search, distributorLedgerId) =>
+  // scope: { plan_id } or { employee_id } -> only the retailers created by the plan's employee
+  retailers: (search, distributorLedgerId, scope = {}) =>
     API.get(`${BASE}/lookups/retailers`, {
-      params: clean({ search, distributor_ledger_id: distributorLedgerId, limit: 100 }),
+      params: clean({ search, distributor_ledger_id: distributorLedgerId, limit: 100, ...scope }),
     }).then(data),
   retailerProfile: (id) => API.get(`${BASE}/lookups/retailers/${id}/profile`).then(data),
   products: (search) => API.get(`${BASE}/lookups/products`, { params: clean({ search, limit: 200 }) }).then(data),

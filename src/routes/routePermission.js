@@ -166,7 +166,7 @@ export const ROUTE_PERMISSIONS = [
   ["/chat/monitor", ["chat_view_all"]],
 
   ["/business-plan", BP],
-  ["/business-plan/dashboard", BP],
+  ["/business-plan/overview", BP],
   ["/business-plan/plans", BP],
   ["/business-plan/plans/:id", BP],
   ["/business-plan/analysis", BP],
@@ -176,7 +176,7 @@ export const ROUTE_PERMISSIONS = [
   ["/business-plan/target-sheets/:id", BP],
 
   ["/advance-booking", ABS],
-  ["/advance-booking/dashboard", ABS],
+  ["/advance-booking/overview", ABS],
   ["/advance-booking/bookings", ABS],
   ["/advance-booking/bookings/:id", ABS],
   ["/advance-booking/bookings/:id/print", ABS],

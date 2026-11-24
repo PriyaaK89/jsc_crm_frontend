@@ -78,14 +78,34 @@ export const ConfirmModal = ({ booking, isOpen, onClose, onDone }) => {
   const [lines, setLines] = useState({});
   const [due, setDue] = useState("");
   const [remark, setRemark] = useState("");
+  const [override, setOverride] = useState(false);
   const [busy, run] = useSubmit(onDone, onClose);
+  const a = booking.actions || {};
+  const toVerify = Number(a.advance_to_verify_before_confirm || 0);
   useEffect(() => {
-    if (isOpen) setLines(Object.fromEntries(booking.items.map((i) => [i.id, String(i.qty)])));
+    if (isOpen) {
+      setLines(Object.fromEntries(booking.items.map((i) => [i.id, String(i.qty)])));
+      setOverride(false);
+    }
   }, [isOpen, booking]);
   return (
     <Frame title={`Confirm order — ${booking.booking_no}`} isOpen={isOpen} onClose={onClose} busy={busy} yes="Confirm order" size="xl"
-      onSubmit={() => run(() => absApi.action(booking.id, "confirm", { items: Object.entries(lines).map(([id, q]) => ({ id: Number(id), confirmed_qty: q })), advance_due_date: due || undefined, remark }))}>
+            disabled={toVerify > 0 && !(override && remark.trim().length >= 3)}
+      onSubmit={() => run(() => absApi.action(booking.id, "confirm", { items: Object.entries(lines).map(([id, q]) => ({ id: Number(id), confirmed_qty: q })), advance_due_date: due || undefined, remark, override_advance: override || undefined }))}>
       <Text fontSize="sm" color="gray.600" mb={3}>Check the production / stock position. Enter less than booked for short supply.</Text>
+      {toVerify > 0 && (
+        <Alert status="warning" borderRadius="md" fontSize="sm" mb={3} alignItems="flex-start">
+          <AlertIcon />
+          <Box>
+            <Text>Accounts have not verified the minimum advance yet: {money(toVerify)} more must be verified (Receipt posted) before the order can be confirmed.</Text>
+            {a.can_override_advance && (
+              <Checkbox mt={2} size="sm" isChecked={override} onChange={(e) => setOverride(e.target.checked)}>
+                Confirm anyway (Admin) — the reason in the remark is required and is kept in the booking history
+              </Checkbox>
+            )}
+          </Box>
+        </Alert>
+      )}
       <Table size="sm" mb={3}>
         <Thead><Tr><Th>Variety</Th><Th isNumeric>Booked</Th><Th isNumeric>Confirm qty</Th></Tr></Thead>
         <Tbody>
@@ -99,8 +119,8 @@ export const ConfirmModal = ({ booking, isOpen, onClose, onDone }) => {
         </Tbody>
       </Table>
       <SimpleGrid columns={2} spacing={3}>
-        <F label="Advance due by" help="Blank = Settings (days after confirmation)"><Input size="sm" type="date" value={due} onChange={(e) => setDue(e.target.value)} /></F>
-        <F label="Remark"><Input size="sm" value={remark} onChange={(e) => setRemark(e.target.value)} placeholder="e.g. Maize production short" /></F>
+        <F label="Advance due by" help={a.advance_at_booking ? "Blank = today (advance is collected with the booking)" : "Blank = Settings (days after confirmation)"}><Input size="sm" type="date" value={due} onChange={(e) => setDue(e.target.value)} /></F>
+        <F label={override ? "Remark (reason — required)" : "Remark"}><Input size="sm" value={remark} onChange={(e) => setRemark(e.target.value)} placeholder="e.g. Maize production short" /></F>
       </SimpleGrid>
     </Frame>
   );
@@ -112,7 +132,9 @@ export const PaymentModal = ({ booking, masters, isOpen, onClose, onDone }) => {
   const [f, setF] = useState({});
   const [busy, run] = useSubmit(onDone, onClose);
   useEffect(() => {
-    if (isOpen) setF({ amount: booking.advance_shortfall > 0 ? String(booking.advance_shortfall) : "", payment_mode: "Cheque/DD", collected_on: todayIST(), post_now: false, account_ledger_id: "", receipt_date: todayIST() });
+    const toRecord = Number((booking.actions && booking.actions.advance_to_record_before_submit) || 0);
+    const suggest = booking.status === "DRAFT" || booking.status === "RETURNED" ? toRecord : booking.advance_shortfall;
+    if (isOpen) setF({ amount: suggest > 0 ? String(suggest) : "", payment_mode: "Cheque/DD", collected_on: todayIST(), post_now: false, account_ledger_id: "", receipt_date: todayIST() });
   }, [isOpen, booking]);
   const s = (k) => (e) => setF({ ...f, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value });
   return (

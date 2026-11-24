@@ -336,8 +336,8 @@ function App() {
         />
 
         {/* Business Plan */}
-        <Route path="/business-plan" element={<Navigate to="/business-plan/dashboard" replace />} />
-        <Route path="/business-plan/dashboard" element={<BusinessPlanLayout crumbs={[{ label: "Dashboard" }]}><BpDashboard /></BusinessPlanLayout>} />
+        <Route path="/business-plan" element={<Navigate to="/business-plan/overview" replace />} />
+        <Route path="/business-plan/overview" element={<BusinessPlanLayout crumbs={[{ label: "Dashboard" }]}><BpDashboard /></BusinessPlanLayout>} />
         <Route path="/business-plan/plans" element={<BusinessPlanLayout crumbs={[{ label: "All Plans" }]}><BpPlanList /></BusinessPlanLayout>} />
         <Route path="/business-plan/plans/:id" element={<BusinessPlanLayout crumbs={[{ label: "All Plans", to: "/business-plan/plans" }, { label: "Plan Detail" }]}><BpPlanDetail /></BusinessPlanLayout>} />
         <Route path="/business-plan/analysis" element={<BusinessPlanLayout crumbs={[{ label: "Analysis" }]}><BpAnalysis /></BusinessPlanLayout>} />
@@ -347,8 +347,8 @@ function App() {
         <Route path="/business-plan/target-sheets/:id" element={<BusinessPlanLayout crumbs={[{ label: "Employee Target Sheets", to: "/business-plan/target-sheets" }, { label: "Sheet" }]}><BpTargetSheetView /></BusinessPlanLayout>} />
 
         {/* Advance Booking System */}
-        <Route path="/advance-booking" element={<Navigate to="/advance-booking/dashboard" replace />} />
-        <Route path="/advance-booking/dashboard" element={<AbsLayout crumbs={[{ label: "Dashboard" }]}><AbsDashboard /></AbsLayout>} />
+        <Route path="/advance-booking" element={<Navigate to="/advance-booking/overview" replace />} />
+        <Route path="/advance-booking/overview" element={<AbsLayout crumbs={[{ label: "Dashboard" }]}><AbsDashboard /></AbsLayout>} />
         <Route path="/advance-booking/bookings" element={<AbsLayout crumbs={[{ label: "Bookings" }]}><AbsBookings /></AbsLayout>} />
         <Route path="/advance-booking/bookings/:id" element={<AbsLayout crumbs={[{ label: "Bookings", to: "/advance-booking/bookings" }, { label: "Booking" }]}><AbsBookingDetail /></AbsLayout>} />
         <Route path="/advance-booking/bookings/:id/print" element={<AbsBookingPrint />} />

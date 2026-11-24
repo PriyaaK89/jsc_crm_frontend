@@ -1,10 +1,32 @@
 // Editors used on the plan detail page.
 import React, { useEffect, useMemo, useState } from "react";
-import { Alert, AlertIcon, Box, Button, Flex, FormControl,
-  FormHelperText, FormLabel, IconButton, Input, InputGroup, 
-  InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent,
-  ModalFooter, ModalHeader, ModalOverlay, NumberInput,
-  NumberInputField, Select, SimpleGrid, Text, Textarea, } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertIcon,
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  IconButton,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  NumberInput,
+  NumberInputField,
+  Select,
+  SimpleGrid,
+  Text,
+  Textarea,
+} from "@chakra-ui/react";
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
 import { bpApi } from "../../services/businessPlanApi";
 import { InfoGrid, Loading, fmtDate, money, monthsBetween, useBpToast, useMasters } from "./bpShared";
@@ -37,7 +59,7 @@ const Frame = ({ isOpen, onClose, title, children, footer, size = "2xl" }) => (
 );
 
 // searchable select backed by an API lookup
-const LookupSelect = ({ label, placeholder, load, value, onChange, isRequired, labelOf = (o) => o.name, idOf = (o) => o.id }) => {
+const LookupSelect = ({ label, placeholder, load, value, onChange, isRequired, helper, labelOf = (o) => o.name, idOf = (o) => o.id }) => {
   const [search, setSearch] = useState("");
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -87,6 +109,10 @@ const LookupSelect = ({ label, placeholder, load, value, onChange, isRequired, l
           </option>
         ))}
       </Select>
+      {helper && <FormHelperText fontSize="xs">{helper}</FormHelperText>}
+      {!loading && !options.length && (
+        <FormHelperText fontSize="xs" color="orange.500">Nothing found.</FormHelperText>
+      )}
     </FormControl>
   );
 };
@@ -201,8 +227,9 @@ export const DistributorModal = ({ isOpen, onClose, plan, line, onSaved }) => {
         <LookupSelect
           label="Distributor"
           placeholder="Select distributor"
+          helper={`Only distributors assigned to ${plan.assigned_user_name || "the plan's employee"} or his reporting team are listed.`}
           isRequired
-          load={(q) => bpApi.distributors(q)}
+          load={(q) => bpApi.distributors(q, false, { plan_id: plan.id })}
           idOf={(o) => o.ledger_id}
           labelOf={(o) => `${o.name}${o.location || o.district ? ` — ${o.location || o.district}` : ""}`}
           value={ledger?.ledger_id}
@@ -272,13 +299,22 @@ export const DistributorModal = ({ isOpen, onClose, plan, line, onSaved }) => {
         </Flex>
       ))}
       <Flex gap={2} wrap="wrap" align="flex-end">
-        <Select size="sm" flex="2" minW="180px" placeholder="Add product" value={newItem.stock_item_id} onChange={(e) => setNewItem((n) => ({ ...n, stock_item_id: e.target.value }))}>
-          {available.map((p) => (
-            <option key={p.id} value={p.id}>{p.name}</option>
-          ))}
-        </Select>
-        <Input size="sm" flex="1" minW="90px" type="number" placeholder="Units" value={newItem.planned_qty} onChange={(e) => setNewItem((n) => ({ ...n, planned_qty: e.target.value }))} />
-        <Input size="sm" flex="1" minW="110px" type="number" placeholder="Value ₹ (optional)" value={newItem.planned_value} onChange={(e) => setNewItem((n) => ({ ...n, planned_value: e.target.value }))} />
+        <FormControl flex="2" minW="180px">
+          <FormLabel fontSize="xs" mb={1}>Product</FormLabel>
+          <Select size="sm" placeholder="Add product" value={newItem.stock_item_id} onChange={(e) => setNewItem((n) => ({ ...n, stock_item_id: e.target.value }))}>
+            {available.map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl flex="1" minW="90px">
+          <FormLabel fontSize="xs" mb={1}>Planned Units</FormLabel>
+          <Input size="sm" type="number" placeholder="Units" value={newItem.planned_qty} onChange={(e) => setNewItem((n) => ({ ...n, planned_qty: e.target.value }))} />
+        </FormControl>
+        <FormControl flex="1" minW="110px">
+          <FormLabel fontSize="xs" mb={1}>Planned Value (₹)</FormLabel>
+          <Input size="sm" type="number" placeholder="Value ₹ (optional)" value={newItem.planned_value} onChange={(e) => setNewItem((n) => ({ ...n, planned_value: e.target.value }))} />
+        </FormControl>
         <Button size="sm" onClick={addItem}>Add</Button>
       </Flex>
       {!override && plannedValue > annual && annual > 0 && (
@@ -312,8 +348,9 @@ export const RetailerModal = ({ isOpen, onClose, plan, line, canEdit, onSaved })
       visit_frequency: line?.visit_frequency || "WEEKLY",
       reported_actual: line?.reported_actual ?? "",
     });
-    bpApi.distributors("").then((d) => setDists(d || [])).catch(() => setDists([]));
-  }, [isOpen, line]);
+    // the plan employee's (and his team's) distributors, including the ones already in the plan
+    bpApi.distributors("", false, { plan_id: plan.id, include_in_plan: 1 }).then((d) => setDists(d || [])).catch(() => setDists([]));
+  }, [isOpen, line, plan.id]);
 
   useEffect(() => {
     if (!isOpen || !retailer?.id) return;
@@ -380,8 +417,9 @@ export const RetailerModal = ({ isOpen, onClose, plan, line, canEdit, onSaved })
         <LookupSelect
           label="Retailer"
           placeholder="Select retailer"
+          helper={`Only retailers created by ${plan.assigned_user_name || "the plan's employee"} are listed.`}
           isRequired
-          load={(q) => bpApi.retailers(q)}
+          load={(q) => bpApi.retailers(q, undefined, { plan_id: plan.id })}
           labelOf={(o) => `${o.name}${o.area ? ` — ${o.area}` : ""}`}
           value={retailer?.id}
           onChange={(o) => setRetailer(o)}
@@ -532,6 +570,13 @@ export const ProductModal = ({ isOpen, onClose, plan, line, onSaved }) => {
         Allocated {allocated} of {target || 0}
         {override ? " · override allowed in Settings" : ""}
       </Text>
+      {alloc.length > 0 && (
+        <Flex gap={2} mb={1}>
+          <Text flex="1" fontSize="xs" fontWeight="700" color="gray.600">State</Text>
+          <Text w="140px" fontSize="xs" fontWeight="700" color="gray.600">Allocated Qty</Text>
+          <Box w="24px" />
+        </Flex>
+      )}
       {alloc.map((a, idx) => (
         <Flex key={a.state_id} gap={2} align="center" mb={2}>
           <Text flex="1" fontSize="sm" fontWeight="600">{a.state_name || states.find((s) => s.id === a.state_id)?.name}</Text>
@@ -546,12 +591,15 @@ export const ProductModal = ({ isOpen, onClose, plan, line, onSaved }) => {
           <IconButton size="xs" aria-label="Remove state" icon={<CloseIcon />} onClick={() => setAlloc((l) => l.filter((_, j) => j !== idx))} />
         </Flex>
       ))}
-      <Flex gap={2}>
-        <Select size="sm" placeholder="+ Add state" value={newState} onChange={(e) => setNewState(e.target.value)}>
-          {remaining.map((s) => (
-            <option key={s.id} value={s.id}>{s.name}</option>
-          ))}
-        </Select>
+      <Flex gap={2} align="flex-end">
+        <FormControl>
+          <FormLabel fontSize="xs" mb={1}>Add State</FormLabel>
+          <Select size="sm" placeholder="+ Add state" value={newState} onChange={(e) => setNewState(e.target.value)}>
+            {remaining.map((s) => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
+          </Select>
+        </FormControl>
         <Button
           size="sm"
           isDisabled={!newState}

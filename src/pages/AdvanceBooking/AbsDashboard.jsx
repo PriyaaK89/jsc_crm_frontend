@@ -1,9 +1,9 @@
 // Advance Booking → Dashboard: one season at a glance + shortcuts to the work queues.
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Flex, Progress, Text } from "@chakra-ui/react";
+import { Box, Flex, Progress, Text, Tooltip } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { absApi, apiError } from "../../services/absApi";
-import { DataTable, ErrorBox, Loading, PageTitle, SeasonSelect, Tile, TileGrid, money, qty, useAbsMasters } from "./absShared";
+import { AbsBadge, DataTable, ErrorBox, Loading, PageTitle, SeasonSelect, Tile, TileGrid, fmtDate, money, qty, useAbsMasters } from "./absShared";
 
 const AbsDashboard = () => {
   const navigate = useNavigate();
@@ -11,6 +11,8 @@ const AbsDashboard = () => {
   const [seasonId, setSeasonId] = useState("");
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+  const [plan, setPlan] = useState(null);
+  const [pending, setPending] = useState(null);
 
   const load = useCallback(async () => {
     setError(null);
@@ -26,6 +28,18 @@ const AbsDashboard = () => {
   useEffect(() => {
     load();
   }, [load]);
+
+  // production plan (per product) and money to collect — separate reports, loaded after the season is known
+  const sid = data && data.season ? data.season.id : null;
+  useEffect(() => {
+    if (!sid) return;
+    let alive = true;
+    setPlan(null);
+    setPending(null);
+    absApi.report("plan", sid).then((r) => alive && setPlan(r.rows)).catch(() => alive && setPlan([]));
+    absApi.report("pending_payments", sid).then((r) => alive && setPending(r.rows)).catch(() => alive && setPending([]));
+    return () => { alive = false; };
+  }, [sid]);
 
   if (mErr) return <ErrorBox message={mErr} />;
   if (error) return <ErrorBox message={error} onRetry={load} />;
@@ -61,14 +75,69 @@ const AbsDashboard = () => {
       </TileGrid>
 
       <Box border="1px solid" borderColor="gray.100" borderRadius="12px" p={4} mb={4}>
-        <Text fontWeight="800" fontSize="sm" mb={1}>Demand vs production plan (by variety)</Text>
-        <Text fontSize="xs" color="gray.500" mb={3}>Supply = confirmed quantity less short-closed. Gap = production plan − supply (negative = more booked than planned).</Text>
+        <Text fontWeight="800" fontSize="sm" mb={1}>Production plan vs booked (by product)</Text>
+        <Text fontSize="xs" color="gray.500" mb={3}>Booked = submitted and later bookings less cancelled / short-supplied quantity. Bookings cannot go above the plan.</Text>
+        {!plan ? <Loading /> : (
+          <DataTable
+            rows={plan}
+            rowKey={(r) => r.stock_item_id}
+            emptyText="No product in the price list of this season."
+            columns={[
+              { key: "item_name", label: "Product", render: (r) => <Box><Text fontWeight="700">{r.item_name}</Text><Text fontSize="xs" color="gray.500">{r.crop_name || "no crop"}{r.unit ? ` · ${r.unit}` : ""}{r.is_active ? "" : " · off"}</Text></Box> },
+              { key: "production_qty", label: "Plan", numeric: true, render: (r) => (r.production_qty === null ? "no plan" : qty(r.production_qty)) },
+              { key: "held_qty", label: "Booked", numeric: true, render: (r) => qty(r.held_qty) },
+              { key: "available_qty", label: "Available", numeric: true, render: (r) => (r.available_qty === null ? "—" : qty(r.available_qty)) },
+              {
+                key: "booked_pct",
+                label: "Used",
+                render: (r) => (r.booked_pct === null ? "—" : (
+                  <Tooltip label={`${r.booked_pct}% of the plan booked`} hasArrow>
+                    <Box minW="110px"><Progress size="sm" value={Math.min(r.booked_pct, 100)} colorScheme={r.booked_pct >= 100 ? "red" : r.booked_pct >= 80 ? "orange" : "teal"} borderRadius="full" /></Box>
+                  </Tooltip>
+                )),
+              },
+              { key: "confirmed_qty", label: "Confirmed", numeric: true, render: (r) => qty(r.confirmed_qty) },
+              { key: "allocated_qty", label: "Allocated", numeric: true, render: (r) => qty(r.allocated_qty) },
+              { key: "dispatched_qty", label: "Dispatched", numeric: true, render: (r) => qty(r.dispatched_qty) },
+              { key: "delivered_qty", label: "Delivered", numeric: true, render: (r) => qty(r.delivered_qty) },
+            ]}
+          />
+        )}
+      </Box>
+
+      <Box border="1px solid" borderColor="gray.100" borderRadius="12px" p={4} mb={4}>
+        <Text fontWeight="800" fontSize="sm" mb={1}>Money to collect</Text>
+        <Text fontSize="xs" color="gray.500" mb={3}>Bookings with the minimum advance short, payments waiting for verification, or invoices more than the advance adjusted.</Text>
+        {!pending ? <Loading /> : (
+          <DataTable
+            rows={pending}
+            rowKey={(r) => r.id}
+            onRowClick={(r) => navigate(`/advance-booking/bookings/${r.id}`)}
+            emptyText="Nothing to collect."
+            columns={[
+              { key: "booking_no", label: "Booking", render: (r) => <Box><Text fontWeight="700">{r.booking_no}</Text><Text fontSize="xs" color="gray.500">{r.booked_by_name || ""}</Text></Box> },
+              { key: "party_name", label: "Party", render: (r) => <Box><Text>{r.party_name}</Text><Text fontSize="xs" color="gray.500">{r.location || ""}</Text></Box> },
+              { key: "status", label: "Status", render: (r) => <AbsBadge status={r.status} /> },
+              { key: "advance_required", label: "Min advance", numeric: true, render: (r) => money(r.advance_required) },
+              { key: "advance_received", label: "Verified", numeric: true, render: (r) => money(r.advance_received) },
+              { key: "pending_verification", label: "To verify", numeric: true, render: (r) => (r.pending_verification ? money(r.pending_verification) : "—") },
+              { key: "advance_shortfall", label: "Advance short", numeric: true, render: (r) => (r.advance_shortfall ? <Text color={r.overdue_days ? "red.500" : "orange.500"} fontWeight="700">{money(r.advance_shortfall)}</Text> : "—") },
+              { key: "advance_due_date", label: "Due", render: (r) => (r.advance_due_date ? `${fmtDate(r.advance_due_date)}${r.overdue_days ? ` (${r.overdue_days} d late)` : ""}` : "—") },
+              { key: "invoice_balance", label: "Invoice balance", numeric: true, render: (r) => (r.invoice_balance ? money(r.invoice_balance) : "—") },
+            ]}
+          />
+        )}
+      </Box>
+
+      <Box border="1px solid" borderColor="gray.100" borderRadius="12px" p={4} mb={4}>
+        <Text fontWeight="800" fontSize="sm" mb={1}>Demand by product</Text>
+        <Text fontSize="xs" color="gray.500" mb={3}>Supply = confirmed quantity less short-closed. Gap = production plan − supply.</Text>
         <DataTable
           rows={data.varieties}
           rowKey={(r) => r.stock_item_id}
           emptyText="No bookings yet."
           columns={[
-            { key: "item_name", label: "Variety", render: (r) => <Box><Text fontWeight="700">{r.item_name}</Text><Text fontSize="xs" color="gray.500">{r.crop_name || ""}</Text></Box> },
+            { key: "item_name", label: "Product", render: (r) => <Box><Text fontWeight="700">{r.item_name}</Text><Text fontSize="xs" color="gray.500">{r.crop_name || ""}</Text></Box> },
             { key: "bookings", label: "Bookings", numeric: true },
             { key: "booked_qty", label: "Booked", numeric: true, render: (r) => `${qty(r.booked_qty)} ${r.unit || ""}` },
             { key: "production_qty", label: "Production plan", numeric: true, render: (r) => (r.production_qty === null ? "—" : qty(r.production_qty)) },

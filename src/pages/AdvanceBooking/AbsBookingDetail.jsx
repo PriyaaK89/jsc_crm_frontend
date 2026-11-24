@@ -152,6 +152,12 @@ const AbsBookingDetail = () => {
       </Flex>
       {b.return_remark && ["RETURNED", "REJECTED"].includes(b.status) && <Alert status="warning" borderRadius="10px" mb={4} fontSize="sm"><AlertIcon />{b.status === "RETURNED" ? "Returned" : "Rejected"}: {b.return_remark}</Alert>}
       {b.cancel_reason && <Alert status="error" borderRadius="10px" mb={4} fontSize="sm"><AlertIcon />Cancelled: {b.cancel_reason}</Alert>}
+      {a.advance_to_record_before_submit > 0 && (
+        <Alert status="warning" borderRadius="10px" mb={4} fontSize="sm"><AlertIcon />Collect the minimum advance before submitting: record {money(a.advance_to_record_before_submit)} more (minimum {money(b.advance_required)}).</Alert>
+      )}
+      {a.advance_to_verify_before_confirm > 0 && (
+        <Alert status="info" borderRadius="10px" mb={4} fontSize="sm"><AlertIcon />Waiting for accounts: {money(a.advance_to_verify_before_confirm)} of the minimum advance is not verified yet (Payments → Verify). The order can be confirmed after verification.</Alert>
+      )}
       {b.advance_overdue && <Alert status="error" borderRadius="10px" mb={4} fontSize="sm"><AlertIcon />Advance overdue since {fmtDate(b.advance_due_date)} — {money(b.advance_shortfall)} still to collect.</Alert>}
 
       <TileGrid>

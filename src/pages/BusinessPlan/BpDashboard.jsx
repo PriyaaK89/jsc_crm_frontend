@@ -1,4 +1,4 @@
-// Business Plan → Dashboard (GET /business-plan/dashboard)
+// Business Plan → Dashboard (GET /business-plan/overview)
 import React, { useCallback, useEffect, useState } from "react";
 import { Alert, AlertIcon, Box, Button, Flex, HStack, SimpleGrid, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";

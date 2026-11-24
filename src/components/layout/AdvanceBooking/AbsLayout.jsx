@@ -31,7 +31,7 @@ const AbsLayout = ({ crumbs = [], children }) => (
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbItem>
-              <BreadcrumbLink as={Link} to="/advance-booking/dashboard" fontSize="13px">
+              <BreadcrumbLink as={Link} to="/advance-booking/overview" fontSize="13px">
                 Advance Booking
               </BreadcrumbLink>
             </BreadcrumbItem>

@@ -487,7 +487,7 @@ const EditStockItem = () => {
                   )}
                   {crops?.map((item) => (
                     <option key={item.id} value={item.id}>
-                      {item.crop_name}
+                      {item.crop_name}{item.seasons && item.seasons.length ? ` — ${item.seasons.join(", ")}` : ""}
                     </option>
                   ))}
                 </Select>

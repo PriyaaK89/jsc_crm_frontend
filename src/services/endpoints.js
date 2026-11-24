@@ -380,6 +380,12 @@ export const API_ENDPOINTS = {
   beat_plans: `/beat-plan/plans`,
   beat_change_history: `/beat-plan/change-requests/history`,
 
+  // in-app bell (beat_notifications): ?category=ABS | BP | BEAT (Advance Booking / Business Plan / beat plan)
+  beat_notifications: `/beat-plan/notifications`,
+  beat_notifications_unread_count: `/beat-plan/notifications/unread-count`,
+  beat_notifications_read_all: `/beat-plan/notifications/read-all`,
+  beat_notification_read: (id) => `/beat-plan/notifications/${id}/read`,
+
   // Permissions
   permissions_me: "permissions/me",
   permissions_catalog: "permissions",

@@ -27,10 +27,14 @@ export const absApi = {
   saveSeason: (id, b) => (id ? API.put(`${BASE}/seasons/${id}`, b) : API.post(`${BASE}/seasons`, b)).then(body),
   seasonStatus: withId("season", (id, status) => API.post(`${BASE}/seasons/${id}/status`, { status }).then(body)),
   saveSeasonProducts: withId("season", (id, products) => API.put(`${BASE}/seasons/${id}/products`, { products }).then(body)),
+  deleteSeasonProduct: withId("season", (id, stockItemId) => API.delete(`${BASE}/seasons/${id}/products/${stockItemId}`).then(body)),
+  // price list: crops of the season's crop season → stock items of the chosen crop
+  seasonCrops: withId("season", (id) => API.get(`${BASE}/seasons/${id}/crops`).then(data)),
+  seasonCropProducts: withId("season", (id, cropId, search) => API.get(`${BASE}/seasons/${id}/crop-products`, { params: clean({ crop_id: cropId, search }) }).then(data)),
+  seasonChecklist: withId("season", (id) => API.get(`${BASE}/seasons/${id}/checklist`).then(data)),
+  seasonAvailability: withId("season", (id) => API.get(`${BASE}/seasons/${id}/availability`).then(data)),
   saveScheme: withId("season", (seasonId, schemeId, b) => (schemeId ? API.put(`${BASE}/seasons/${seasonId}/schemes/${schemeId}`, b) : API.post(`${BASE}/seasons/${seasonId}/schemes`, b)).then(body)),
   deleteScheme: withId("season", (seasonId, schemeId) => API.delete(`${BASE}/seasons/${seasonId}/schemes/${schemeId}`).then(body)),
-  // existing stock item list (for the booking price list)
-  stockItems: (search) => API.get(`/get-stock-items`, { params: { search, page: 1, limit: 30 } }).then((r) => r.data?.data || []),
 
   dashboard: (season_id) => API.get(`${BASE}/dashboard`, { params: clean({ season_id }) }).then(data),
   report: (kind, season_id) => API.get(`${BASE}/reports/${kind}`, { params: clean({ season_id }) }).then(data),

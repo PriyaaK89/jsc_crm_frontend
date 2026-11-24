@@ -83,6 +83,7 @@ const GeneralSettings = () => {
   const [thresholds, setThresholds] = useState({});
   const [lockDate, setLockDate] = useState("");
   const [finalRoles, setFinalRoles] = useState("");
+  const [futureFys, setFutureFys] = useState("5");
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
@@ -93,6 +94,7 @@ const GeneralSettings = () => {
       setThresholds(s.thresholds || {});
       setLockDate(s.lock_date || "");
       setFinalRoles(s.final_approver_roles || "");
+      setFutureFys(String(s.future_financial_years || 5));
     } catch (err) {
       setError(apiError(err, "Could not load settings"));
     }
@@ -198,6 +200,26 @@ const GeneralSettings = () => {
             Enforce “child ≤ parent” (state allocation ≤ product target, seasonal ≤ annual, product planning ≤ distributor target)
           </FormLabel>
         </FormControl>
+      </Block>
+
+      <Block title="Financial Year Dropdown">
+        <Text fontSize="sm" mb={2}>
+          The Financial Year list is generated: the previous year, the current year and this many future years are always offered
+          (plus any year added under Financial Years below; a year switched off there is not offered).
+        </Text>
+        <HStack maxW="420px">
+          <Input size="sm" type="number" min={1} max={20} value={futureFys} onChange={(e) => setFutureFys(e.target.value)} />
+          <Button
+            size="sm"
+            colorScheme="teal"
+            isLoading={saving}
+            isDisabled={!/^\d+$/.test(futureFys) || Number(futureFys) < 1 || Number(futureFys) > 20}
+            onClick={() => save({ future_financial_years: Number(futureFys) }, "Financial years updated")}
+          >
+            Save
+          </Button>
+        </HStack>
+        <Text fontSize="xs" color="gray.500" mt={2}>1 to 20 future financial years. Default 5.</Text>
       </Block>
 
       <Block title="Business Plan Lock Date">

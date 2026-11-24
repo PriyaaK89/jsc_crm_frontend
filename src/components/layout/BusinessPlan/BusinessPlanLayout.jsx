@@ -38,7 +38,7 @@ const BusinessPlanLayout = ({ crumbs = [], children }) => (
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbItem>
-              <BreadcrumbLink as={Link} to="/business-plan/dashboard" fontSize="13px">
+              <BreadcrumbLink as={Link} to="/business-plan/overview" fontSize="13px">
                 Business Plan
               </BreadcrumbLink>
             </BreadcrumbItem>

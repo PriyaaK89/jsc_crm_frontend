@@ -48,6 +48,10 @@ export const BOOKING_STATUS = {
   CONSUMED: ["green", "Dispatched"],
   RELEASED: ["gray", "Released"],
   OPEN: ["green", "Open"],
+  // booking seasons (display_status)
+  SCHEDULED: ["purple", "Scheduled"],
+  BOOKING_OVER: ["orange", "Booking Period Over"],
+  COMPLETED: ["gray", "Completed"],
 };
 
 export const AbsBadge = ({ status, label }) => {
@@ -84,7 +88,7 @@ export const SeasonSelect = ({ seasons = [], value, onChange, allowAll = false, 
     {allowAll && <option value="">All seasons</option>}
     {seasons.map((s) => (
       <option key={s.id} value={s.id}>
-        {s.name} {s.status !== "OPEN" ? `(${s.status.toLowerCase()})` : ""}
+        {s.name} {(s.display_status || s.status) !== "OPEN" ? `(${String(s.display_status || s.status).replace(/_/g, " ").toLowerCase()})` : ""}
       </option>
     ))}
   </Select>

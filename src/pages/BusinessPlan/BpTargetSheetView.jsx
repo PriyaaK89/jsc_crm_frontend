@@ -99,7 +99,11 @@ const PlanTargets = ({ targets, values }) => {
   const kpis = targets.kpis || {};
   const months = (targets.months || []).map((m) => m.label);
   const dev = targets.development || {};
-  const third = (x) => Math.round((Number(x) || 0) / 3 * 100) / 100;
+  // partial quarter: a month outside every approved plan has no target (shown as "—")
+  const inPlan = (i) => !Array.isArray(targets.month_in_plan) || !!targets.month_in_plan[i];
+  const active = [0, 1, 2].filter(inPlan).length || 3;
+  const devCells = (arr, quarterTotal) =>
+    Array.isArray(arr) ? arr : [0, 1, 2].map((i) => (inPlan(i) ? Math.round(((Number(quarterTotal) || 0) / active) * 100) / 100 : 0));
   const rows = [
     { key: "sales", label: "Sales Target", cells: kpis.sales || [], money: true },
     { key: "coll", label: "Collection Target", cells: kpis.collection || [], money: true },
@@ -109,11 +113,14 @@ const PlanTargets = ({ targets, values }) => {
           { key: "absA", label: "ABS Advance Target (inside collection)", cells: kpis.abs_advance || [], money: true },
         ]
       : []),
-    { key: "nd", label: "New Active Distributors", cells: [1, 2, 3].map(() => third(dev.quarter_new_distributor_target)) },
-    { key: "nr", label: "New Retailers", cells: [1, 2, 3].map(() => third(dev.quarter_new_retailer_target)) },
+    { key: "nd", label: "New Active Distributors", cells: devCells(kpis.new_distributors, dev.quarter_new_distributor_target) },
+    { key: "nr", label: "New Retailers", cells: devCells(kpis.new_retailers, dev.quarter_new_retailer_target) },
     ...COMMITMENTS.map(([k, l]) => ({ key: k, label: `${l} (employee commitment)`, cells: [1, 2, 3].map((m) => values[`kpi.${k}.m${m}`] || "—"), commitment: true })),
   ];
   const fmt = (r, v) => (r.money ? money(v) : r.commitment ? v : qty(v));
+  const cell = (r, i) => (!inPlan(i) && !r.commitment ? "—" : fmt(r, r.cells[i]));
+  const outside = [0, 1, 2].filter((i) => !inPlan(i)).map((i) => months[i]).filter(Boolean);
+  const cov = targets.coverage;
   const total = (r) => (r.commitment ? r.cells.reduce((s, x) => s + n(x), 0) : r.cells.reduce((s, x) => s + (Number(x) || 0), 0));
   return (
     <>
@@ -142,11 +149,23 @@ const PlanTargets = ({ targets, values }) => {
                 rowKey={(r) => r.key}
                 columns={[
                   { key: "label", label: "KPI" },
-                  ...[0, 1, 2].map((i) => ({ key: `m${i}`, label: months[i] ? `${MONTH_KEYS[i]} (${months[i]})` : MONTH_KEYS[i], numeric: true, render: (r) => fmt(r, r.cells[i]) })),
+                  ...[0, 1, 2].map((i) => ({
+                    key: `m${i}`,
+                    label: `${months[i] ? `${MONTH_KEYS[i]} (${months[i]})` : MONTH_KEYS[i]}${inPlan(i) ? "" : " — not in plan"}`,
+                    numeric: true,
+                    render: (r) => cell(r, i),
+                  })),
                   { key: "total", label: "Quarter", numeric: true, render: (r) => fmt(r, total(r)) },
                 ]}
               />
             </Box>
+            {cov && !cov.full_quarter && (
+              <Alert status="info" borderRadius="10px" fontSize="sm" mt={3}>
+                <AlertIcon />
+                The approved plans cover {fmtDate(cov.from)} – {fmtDate(cov.to)} of this quarter.
+                {outside.length ? ` ${outside.join(", ")} ${outside.length === 1 ? "is" : "are"} outside the plan period: no target and no commitment needed.` : ""}
+              </Alert>
+            )}
             <Text fontSize="xs" color="gray.500" mt={2}>
               Targets are read from the approved Business Plan and cannot be typed on the sheet. A disagreement is raised as a target
               revision request; the targets change only when the plan revision is approved.
@@ -215,7 +234,7 @@ const Review = ({ review }) => {
         columns={[
           { key: "label", label: "Month" },
           { key: "kpi_label", label: "KPI" },
-          { key: "target", label: "Target", numeric: true, render: (r) => (r.target === null ? "—" : r.unit === "money" ? money(r.target) : qty(r.target)) },
+          { key: "target", label: "Target", numeric: true, render: (r) => (r.target === null ? (r.in_plan === false ? "Not in plan" : "—") : r.unit === "money" ? money(r.target) : qty(r.target)) },
           { key: "actual", label: "Actual", numeric: true, render: (r) => (r.unit === "money" ? money(r.actual) : qty(r.actual)) },
           { key: "achievement_percent", label: "Achv", render: (r) => <Text as="span" color={r.gap ? "red.500" : undefined}>{pct(r.achievement_percent)}</Text> },
           { key: "reason", label: "Reason / Corrective Action", wrap: true, render: (r) => (r.reason ? `${r.reason}: ${r.action_required || ""}` : r.gap ? "Not given yet" : "—") },
@@ -578,7 +597,16 @@ const BpTargetSheetView = () => {
 
       {SECTIONS.slice(legacy ? 2 : 3).map(([title, fields]) => (
         <Section key={title} title={title}>
-          <InfoGrid items={fields.map(([k, l]) => [l, k === "totalSales" ? money(sheet.total_sales) : v[k] || "—"])} />
+          <InfoGrid
+            items={fields.map(([k, l]) => [
+              l,
+              k === "totalSales"
+                ? money(sheet.total_sales)
+                : (k === "mgrDate" && v.mgrName) || (k === "apprDate" && v.apprName)
+                  ? v[k] || "Awaiting approval"
+                  : v[k] || "—",
+            ])}
+          />
           {title.startsWith("12") && (
             <>
               <Text fontSize="sm" mt={3} color={sheet.acknowledged ? "green.600" : "red.500"} fontWeight="700">
@@ -589,9 +617,9 @@ const BpTargetSheetView = () => {
                   : "Acknowledgement not given"}
               </Text>
               <Text fontSize="xs" color="gray.500" mt={2}>
-                Reporting Manager Name / Date are stamped by the system when the reporting manager (level 1) approves.
-                Authorized Company Approver / Date are stamped at the final approval (RSM, or Admin / Super Admin).
-                They cannot be typed by the employee and are cleared when a returned sheet is resubmitted.
+                Reporting Manager Name and Authorized Company Approver are filled automatically from the employee's reporting
+                line (reporting manager → RSM; Admin / Super Admin when nobody is above). The dates are stamped when they approve;
+                if somebody else approves (e.g. an Admin), that person's name is stamped instead. Nobody types these fields.
               </Text>
             </>
           )}

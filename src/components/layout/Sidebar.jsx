@@ -94,6 +94,8 @@ import {
   MdLabel,
   MdInsights,
   MdSettings,
+  MdLightbulbOutline,
+  MdFactCheck,
 } from "react-icons/md";
 import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg'
 import { useState, useContext, useEffect, memo } from "react";
@@ -351,7 +353,7 @@ const Newsidebar = () => {
     {
       label: "Business Plan", key: "business-plan", icon: MdInsights,
       children: [
-        { label: "Dashboard", path: "/business-plan/dashboard", icon: MdDashboard },
+        { label: "Overview", path: "/business-plan/overview", icon: MdLightbulbOutline },
         { label: "All Plans", path: "/business-plan/plans", icon: MdListAlt },
         { label: "Plan Analysis", path: "/business-plan/analysis", icon: MdShowChart },
         { label: "Reports", path: "/business-plan/reports", icon: MdAssessment },
@@ -362,7 +364,7 @@ const Newsidebar = () => {
     {
       label: "Advance Booking", key: "advance-booking", icon: MdEventAvailable,
       children: [
-        { label: "Dashboard", path: "/advance-booking/dashboard", icon: MdDashboard },
+        { label: "Booking Overview", path: "/advance-booking/overview", icon: MdFactCheck },
         { label: "Bookings", path: "/advance-booking/bookings", icon: MdListAlt },
         { label: "Advance Payments", path: "/advance-booking/payments", icon: MdPayments },
         { label: "Stock Allocation", path: "/advance-booking/allocation", icon: MdInventory },

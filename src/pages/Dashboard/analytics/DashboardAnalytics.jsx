@@ -3,7 +3,8 @@ import { Box, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/r
 import { usePermissions } from "../../../context/PermissionContext";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import useAnalytics from "./useAnalytics";
-import DashboardFilters, { useDashboardFilters } from "./DashboardFilters";
+import {DashboardFilters} from "./DashboardFilters";
+
 import OverviewSection from "./OverviewSection";
 import AttendanceCard from "../PieChart";
 import {

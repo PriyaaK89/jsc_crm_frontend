@@ -3,8 +3,7 @@ import { Box, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/r
 import { usePermissions } from "../../../context/PermissionContext";
 import { API_ENDPOINTS } from "../../../services/endpoints";
 import useAnalytics from "./useAnalytics";
-import {DashboardFilters} from "./DashboardFilters";
-
+import DashboardFilters, { useDashboardFilters } from "./DashboardFilters";
 import OverviewSection from "./OverviewSection";
 import AttendanceCard from "../PieChart";
 import {
@@ -43,7 +42,7 @@ const AnalyticsBody = ({ isAdmin }) => {
   return (
     <Box mt={6} minW={0}>
       <Text fontSize="lg" fontWeight="800" color="gray.800">
-        Business dashboard
+        Business Dashboard
       </Text>
       <Text fontSize="xs" color="gray.500" mb={3}>
         {viewName} · {range.from} to {range.to}

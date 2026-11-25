@@ -130,9 +130,15 @@ import {
   MdPrint,
   MdQrCodeScanner,
   MdLabel,
+  MdInsights,
+  MdSettings,
+  MdLightbulbOutline,
+  MdFactCheck,
 } from "react-icons/md";
 
 import { FiLogOut } from "react-icons/fi";
+import { FaRoute } from "react-icons/fa";
+import { BsPass } from "react-icons/bs";
 
 import logo from "../../assets/images/jamidaralogo_adminpannel.jpeg";
 import API from "../../services/api";
@@ -147,7 +153,6 @@ const MobileTopbar = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [openMenu, setOpenMenu] = useState(null);
   const onOpen = () => setIsDrawerOpen(true);
   const onClose = () => setIsDrawerOpen(false);
 
@@ -160,10 +165,6 @@ const MobileTopbar = () => {
       .catch(() => {});
     return () => { off = true; };
   }, []);
-
-  const toggleMenu = (key) => {
-    setOpenMenu(openMenu === key ? null : key);
-  };
 
   const logout = () => {
     logoutUser();
@@ -226,7 +227,7 @@ const MobileTopbar = () => {
         { label: "Employee Payment Hold", path: "/hr-mgmt/emp-payment-hold", icon: MdPauseCircleOutline },
         { label: "Upload Salary Slip", path: '/hr-mgmt/upload-emp-salary', icon: MdDescription, },
         { label: "Change Password", path: "/hr-mgmt/change-password", icon: MdLockOutline },
-        { label: "Permission Management", path: "/hr-mgmt/permission-management", icon: MdLockOutline },
+        { label: "Permission Management", path: "/hr-mgmt/permission-management", icon: BsPass },
         { label: "Holiday Calendar", path: "/hr-mgmt/holiday-calendar", icon: MdEvent },
         { label: "Calendar List", path: "/hr-mgmt/yearly-holiday-calendar-list", icon: MdEventNote },
         { label: "Employee Penalty", path: "/misc/emp-penalty", icon: MdGavel },
@@ -361,6 +362,28 @@ const MobileTopbar = () => {
       ]
     },
     {
+      label: "Business Plan", key: "business-plan", icon: MdInsights,
+      children: [
+        { label: "Overview", path: "/business-plan/overview", icon: MdLightbulbOutline },
+        { label: "All Plans", path: "/business-plan/plans", icon: MdListAlt },
+        { label: "Plan Analysis", path: "/business-plan/analysis", icon: MdShowChart },
+        { label: "Reports", path: "/business-plan/reports", icon: MdAssessment },
+        { label: "Employee Target Sheets", path: "/business-plan/target-sheets", icon: MdAssignmentInd },
+        { label: "Settings", path: "/business-plan/settings", icon: MdSettings },
+      ]
+    },
+    {
+      label: "Advance Booking", key: "advance-booking", icon: MdEventAvailable,
+      children: [
+        { label: "Booking Overview", path: "/advance-booking/overview", icon: MdFactCheck },
+        { label: "Bookings", path: "/advance-booking/bookings", icon: MdListAlt },
+        { label: "Advance Payments", path: "/advance-booking/payments", icon: MdPayments },
+        { label: "Stock Allocation", path: "/advance-booking/allocation", icon: MdInventory },
+        { label: "Dispatches", path: "/advance-booking/dispatches", icon: MdLocalShipping },
+        { label: "Settings", path: "/advance-booking/settings", icon: MdSettings },
+      ]
+    },
+    {
       label: "Misc", key: "misc", icon: MdApps,
       children: [
         { label: "Activate/Deactivate Voucher", path: "/misc/voucher-action", icon: MdToggleOn },
@@ -369,6 +392,7 @@ const MobileTopbar = () => {
         { label: "Transaction Approval", path: "/misc/transaction-approval", icon: MdTaskAlt },
         { label: "Transaction Documents", path: "/misc/transaction-documents", icon: MdFolder },
         { label: "Product Demo", path: "/product-demo/demo-results", icon: MdPlayCircleOutline, },
+        { label: "Beat Plan", path: "/misc/beatPlan", icon: FaRoute, },
         ...(canViewChat ? [{ label: "Team Chat", path: "/chat/monitor", icon: MdChat }] : []),
       ]
     },
@@ -384,22 +408,34 @@ const MobileTopbar = () => {
     // },
   ], can);
 
+  // Derive the active parent directly from the menu's own child paths.
+  // This can never drift out of sync with the menu definition.
+  const findActiveParentKey = (pathname) => {
+    const activeParent = menuSection.find(
+      (menu) =>
+        menu.children &&
+        menu.children.some((child) => pathname.startsWith(child.path))
+    );
+    return activeParent ? activeParent.key : null;
+  };
+
+  // Lazy initializer: the correct section is already open on first render.
+  const [openMenu, setOpenMenu] = useState(() =>
+    findActiveParentKey(location.pathname)
+  );
+
+  const toggleMenu = (key) => {
+    setOpenMenu((prev) => (prev === key ? null : key));
+  };
+
   useEffect(() => {
-    const path = location.pathname;
-
-    const menuMap = {
-      "/hr-mgmt": "users",
-      "/accounting-master": "accounting-master",
-      "/business-development": "business",
-      "/report": "reports",
-    };
-
-    for (const route in menuMap) {
-      if (path.startsWith(route)) {
-        setOpenMenu(menuMap[route]);
-        break;
-      }
+    const activeKey = findActiveParentKey(location.pathname);
+    // If nothing matches (e.g. Dashboard), leave openMenu as-is so a
+    // manually opened section doesn't get force-closed.
+    if (activeKey) {
+      setOpenMenu(activeKey);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   return (

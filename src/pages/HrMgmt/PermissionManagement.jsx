@@ -123,6 +123,8 @@ const PermissionManagement = () => {
 
   const summary = data?.summary || {};
   const editing = openUser?.mode === "edit" && !detail?.is_admin;
+  // Marketing department: permissions the user has automatically (shown locked, never saved)
+  const autoIds = new Set(detail?.is_admin ? [] : detail?.auto_permission_ids || []);
 
   return (
     <Box bg="gray.50" mt={{ base: 2, md: 5 }} px={{ base: 3, md: 6 }} py={5} borderRadius="xl" boxShadow="md">
@@ -224,9 +226,16 @@ const PermissionManagement = () => {
                       {u.is_admin ? (
                         <Badge colorScheme="purple">Full access</Badge>
                       ) : (
-                        <Badge colorScheme={u.granted_count ? "blue" : "gray"}>
-                          {u.granted_count} of {summary.total_permissions}
-                        </Badge>
+                        <HStack spacing={1}>
+                          <Badge colorScheme={u.granted_count ? "blue" : "gray"}>
+                            {u.granted_count} of {summary.total_permissions}
+                          </Badge>
+                          {u.is_marketing && (
+                            <Badge colorScheme="green" variant="subtle" textTransform="none">
+                              Marketing · {u.auto_count} auto
+                            </Badge>
+                          )}
+                        </HStack>
                       )}
                     </Td>
                     <Td>
@@ -267,15 +276,26 @@ const PermissionManagement = () => {
                     {[detail.user?.job_role, detail.user?.department].filter(Boolean).join(" · ") || detail.user?.role}
                   </Text>
                 </Box>
-                <Badge colorScheme="blue" ml={2}>{selected.size} selected</Badge>
+                <Badge colorScheme="blue" ml={2}>
+                  {selected.size} selected{autoIds.size > 0 ? ` + ${autoIds.size} automatic` : ""}
+                </Badge>
               </HStack>
             ) : "Loading..."}
           </DrawerHeader>
           <DrawerBody py={4}>
+            {detail && autoIds.size > 0 && (
+              <Box bg="green.50" border="1px solid" borderColor="green.200" borderRadius="lg" px={4} py={3} mb={4}>
+          <Text fontSize="sm" fontWeight="700" color="green.800">Marketing department</Text>
+          <Text fontSize="sm" color="green.800">
+            {autoIds.size} Marketing APK permissions are automatic for this user (ticked and locked below).
+            Approvals, settings and other office work still need to be assigned.
+          </Text>
+        </Box>
+            )}
             {!detail ? (
               <Flex justify="center" py={12}><Spinner /></Flex>
             ) : editing ? (
-              <PermissionEditor modules={detail.modules} selected={selected} onChange={setSelected} />
+              <PermissionEditor modules={detail.modules} selected={selected} onChange={setSelected} autoIds={autoIds} />
             ) : (
               <>
                 {detail.is_admin && (
@@ -286,6 +306,7 @@ const PermissionManagement = () => {
                 <PermissionSummary
                   modules={detail.modules}
                   selected={selected}
+                  autoIds={autoIds}
                   emptyText="This user has no permissions assigned."
                 />
               </>

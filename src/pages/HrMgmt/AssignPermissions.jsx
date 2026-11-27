@@ -44,6 +44,8 @@ const AssignPermissions = () => {
   const onboarding = !!location?.state?.onboarding;
   const [modules, setModules] = useState([]);
   const [selected, setSelected] = useState(new Set());
+  // Marketing department: permissions the employee has automatically (never saved as assigned)
+  const [autoIds, setAutoIds] = useState(new Set());
   const [isAdminUser, setIsAdminUser] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -59,6 +61,7 @@ const AssignPermissions = () => {
         const data = res?.data?.data;
         setModules(data?.modules || []);
         setSelected(new Set(data?.permission_ids || []));
+        setAutoIds(new Set(data?.auto_permission_ids || []));
         setIsAdminUser(!!data?.is_admin);
       })
       .catch((error) => {
@@ -123,16 +126,26 @@ const AssignPermissions = () => {
           </Text>
         </Box>
         <Badge colorScheme="blue" px={3} py={1} borderRadius="full">
-          {selected.size} selected
+          {selected.size} selected{autoIds.size > 0 ? ` + ${autoIds.size} automatic` : ""}
         </Badge>
       </Flex>
+
+      {!isAdminUser && autoIds.size > 0 && (
+        <Box bg="green.50" border="1px solid" borderColor="green.200" borderRadius="lg" px={4} py={3} mb={4}>
+          <Text fontSize="sm" fontWeight="700" color="green.800">Marketing department</Text>
+          <Text fontSize="sm" color="green.800">
+            {autoIds.size} Marketing APK permissions are automatic for this employee (ticked and locked below).
+            Approvals, settings and other office work still need to be assigned.
+          </Text>
+        </Box>
+      )}
 
       {isAdminUser ? (
         <Text color="gray.600" mb={4}>
           Admin and Super Admin users already have full access.
         </Text>
       ) : (
-        <PermissionEditor modules={modules} selected={selected} onChange={setSelected} />
+        <PermissionEditor modules={modules} selected={selected} onChange={setSelected} autoIds={autoIds} />
       )}
 
       <Flex justify="flex-end" gap={3} mt={6}>
@@ -200,6 +213,7 @@ const AssignPermissions = () => {
             <PermissionSummary
               modules={modules}
               selected={selected}
+              autoIds={autoIds}
               emptyText="No permissions are selected. This user will only have the access every logged-in employee has."
             />
           </ModalBody>

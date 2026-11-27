@@ -65,10 +65,10 @@ const NotificationBtn = () => {
   const [counts, setCounts] = useState({
     sales: 0, purchase: 0, payment: 0, receipt: 0,
     credit_note: 0, debit_note: 0, alert: 0,  demo: 0,
-    abs: 0, bp: 0,
+    abs: 0, bp: 0, adr: 0,
   });
-  const { can } = usePermissions();
-  // ABS / Business Plan inbox (beat_notifications): "ABS" | "BP" | null
+  const { can, adr } = usePermissions();
+  // ABS / Business Plan / Additional Discount inbox (beat_notifications): "ABS" | "BP" | "ADR" | null
   const [inboxCategory, setInboxCategory] = useState(null);
 
   // Single piece of state instead of one boolean per modal
@@ -112,7 +112,7 @@ const NotificationBtn = () => {
     try {
       const res = await API.get(API_ENDPOINTS.beat_notifications_unread_count);
       const by = res.data?.data?.by_category || {};
-      setCounts((prev) => ({ ...prev, abs: Number(by.ABS) || 0, bp: Number(by.BP) || 0 }));
+      setCounts((prev) => ({ ...prev, abs: Number(by.ABS) || 0, bp: Number(by.BP) || 0, adr: Number(by.ADR) || 0 }));
     } catch (err) {
       console.log(err);
     }
@@ -162,6 +162,10 @@ const NotificationBtn = () => {
       : []),
     ...(counts.bp > 0 || can(getRoutePermissions("/business-plan/plans") || [])
       ? [{ label: "Business Plan", count: counts.bp, inbox: "BP" }]
+      : []),
+    // Additional Discount: an RSM has no permission code, so /additional-discount/me decides
+    ...(counts.adr > 0 || adr?.can_open_module
+      ? [{ label: "Additional Discount", count: counts.adr, inbox: "ADR" }]
       : []),
     { label: "E-Way Bill" },
     { label: "Whatsapp" },

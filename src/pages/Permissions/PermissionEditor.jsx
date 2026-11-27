@@ -52,6 +52,7 @@ const ACTIONS = [
 ];
 
 const MODULE_ICONS = [
+  [/marketing.?apk/, MdStorefront],
   [/notification/, MdNotificationsNone],
   [/job.?role/, MdWorkOutline],
   [/user/, MdPeople],
@@ -88,9 +89,22 @@ const moduleIcon = (value) => {
   return match ? match[1] : MdMenuBook;
 };
 
-const ModuleCard = ({ module, selected, toggle, readOnly }) => {
+const EMPTY_SET = new Set();
+
+// Shown ticked and locked: the user has it automatically (Marketing department).
+const AutoBadge = () => (
+  <Badge colorScheme="green" variant="subtle" fontSize="9px" borderRadius="full" px={1.5} ml={1} textTransform="none">
+    Auto · Marketing
+  </Badge>
+);
+
+const ModuleCard = ({ module, selected, toggle, readOnly, autoIds = EMPTY_SET }) => {
   const ids = module.permissions.map((p) => p.id);
-  const count = ids.filter((id) => selected.has(id)).length;
+  const has = (id) => selected.has(id) || autoIds.has(id);
+  const count = ids.filter(has).length;
+  const autoCount = ids.filter((id) => autoIds.has(id)).length;
+  // switches / action boxes only ever change the permissions that are not automatic
+  const editable = (list) => list.filter((id) => !autoIds.has(id));
   const specials = module.permissions.filter((p) => p.action === "special");
   const actions = ACTIONS.map((a) => ({
     ...a,
@@ -118,14 +132,15 @@ const ModuleCard = ({ module, selected, toggle, readOnly }) => {
           </Text>
           <Text fontSize="xs" color="gray.500">
             {count} of {ids.length} selected
+            {autoCount > 0 && ` · ${autoCount} automatic`}
           </Text>
         </Box>
-        {!readOnly && (
+        {!readOnly && editable(ids).length > 0 && (
           <Switch
             aria-label={`Select all ${moduleLabel(module.module)} permissions`}
             colorScheme="blue"
             isChecked={count === ids.length}
-            onChange={(e) => toggle(ids, e.target.checked)}
+            onChange={(e) => toggle(editable(ids), e.target.checked)}
           />
         )}
       </Flex>
@@ -135,7 +150,8 @@ const ModuleCard = ({ module, selected, toggle, readOnly }) => {
       {actions.length > 0 && (
         <SimpleGrid columns={{ base: 2, sm: 4 }} spacing={2} mt={3}>
           {actions.map((a) => {
-            const on = a.permissions.every((p) => selected.has(p.id));
+            const on = a.permissions.every((p) => has(p.id));
+            const locked = a.permissions.every((p) => autoIds.has(p.id));
             return (
               <Box
                 key={a.key}
@@ -155,13 +171,15 @@ const ModuleCard = ({ module, selected, toggle, readOnly }) => {
                 <Text fontSize="xs" fontWeight="600" color={on ? `${a.color}.700` : "gray.600"}>
                   {a.label}
                 </Text>
+                {locked && <AutoBadge />}
                 <Checkbox
                   size="sm"
                   colorScheme={a.color}
                   aria-label={`${a.label} ${moduleLabel(module.module)}`}
                   isChecked={on}
                   isReadOnly={readOnly}
-                  onChange={(e) => toggle(a.permissions.map((p) => p.id), e.target.checked)}
+                  isDisabled={locked}
+                  onChange={(e) => toggle(editable(a.permissions.map((p) => p.id)), e.target.checked)}
                 />
               </Box>
             );
@@ -178,12 +196,14 @@ const ModuleCard = ({ module, selected, toggle, readOnly }) => {
             <Box key={p.id} py={0.5}>
               <Checkbox
                 size="sm"
-                colorScheme="purple"
-                isChecked={selected.has(p.id)}
+                colorScheme={autoIds.has(p.id) ? "green" : "purple"}
+                isChecked={has(p.id)}
                 isReadOnly={readOnly}
+                isDisabled={autoIds.has(p.id)}
                 onChange={(e) => toggle([p.id], e.target.checked)}
               >
                 <Text as="span" fontSize="sm">{p.name}</Text>
+                {autoIds.has(p.id) && <AutoBadge />}
               </Checkbox>
             </Box>
           ))}
@@ -193,7 +213,9 @@ const ModuleCard = ({ module, selected, toggle, readOnly }) => {
   );
 };
 
-const PermissionEditor = ({ modules, selected, onChange, readOnly = false }) => {
+// autoIds (optional): permissions the user has automatically (Marketing department).
+// They show ticked and locked, and are never added to `selected` (what is saved).
+const PermissionEditor = ({ modules, selected, onChange, readOnly = false, autoIds = EMPTY_SET }) => {
   const [search, setSearch] = useState("");
 
   const visible = useMemo(() => {
@@ -233,17 +255,17 @@ const PermissionEditor = ({ modules, selected, onChange, readOnly = false }) => 
 
       <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing={4}>
         {visible.map((m) => (
-          <ModuleCard key={m.module} module={m} selected={selected} toggle={toggle} readOnly={readOnly} />
+          <ModuleCard key={m.module} module={m} selected={selected} toggle={toggle} readOnly={readOnly} autoIds={autoIds} />
         ))}
       </SimpleGrid>
     </Box>
   );
 };
 
-// the selected permissions, grouped by module
-export const PermissionSummary = ({ modules, selected, emptyText }) => {
+// the selected permissions, grouped by module (automatic ones marked, when autoIds is given)
+export const PermissionSummary = ({ modules, selected, emptyText, autoIds = EMPTY_SET }) => {
   const chosen = modules
-    .map((m) => ({ module: m.module, items: m.permissions.filter((p) => selected.has(p.id)) }))
+    .map((m) => ({ module: m.module, items: m.permissions.filter((p) => selected.has(p.id) || autoIds.has(p.id)) }))
     .filter((m) => m.items.length);
 
   if (!chosen.length) return <Text color="gray.600">{emptyText}</Text>;
@@ -257,8 +279,17 @@ export const PermissionSummary = ({ modules, selected, emptyText }) => {
       </Flex>
       <Flex wrap="wrap" gap={1.5}>
         {m.items.map((p) => (
-          <Badge key={p.id} colorScheme="blue" variant="subtle" textTransform="none" px={2} py={0.5} borderRadius="md">
+          <Badge
+            key={p.id}
+            colorScheme={autoIds.has(p.id) && !selected.has(p.id) ? "green" : "blue"}
+            variant="subtle"
+            textTransform="none"
+            px={2}
+            py={0.5}
+            borderRadius="md"
+          >
             {p.name}
+            {autoIds.has(p.id) && !selected.has(p.id) ? " · auto" : ""}
           </Badge>
         ))}
       </Flex>

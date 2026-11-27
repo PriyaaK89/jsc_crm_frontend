@@ -1367,7 +1367,14 @@ const handleSkipWhatsapp = () => {
                 bg={index % 2 === 0 ? "white" : "#f7faf8"}
                 _hover={{ bg: "#edf5ef" }}
               >
-                <Td {...tdStyle}><Input {...readonlyInputStyle} value={item.item_name} readOnly minW="160px" /></Td>
+                <Td {...tdStyle}>
+                  <Input {...readonlyInputStyle} value={item.item_name} readOnly minW="160px" />
+                  {item.adr_request_item_id ? (
+                    <Text fontSize="10px" color="teal.600" mt={1} whiteSpace="normal">
+                      Additional discount {item.adr_request_no || ""}: ₹{Number(item.adr_discount_per_unit || 0).toFixed(2)}/unit on ₹{Number(item.adr_gross_rate || 0).toFixed(2)} (checked again by the server)
+                    </Text>
+                  ) : null}
+                </Td>
                 <Td {...tdStyle}>
                   <Input
                     {...readonlyInputStyle}
@@ -1430,7 +1437,7 @@ const handleSkipWhatsapp = () => {
                   <Input {...inputStyle} type="number" value={item.billed_qty ?? 0} onChange={(e) => handleItemChange(index, "billed_qty", e.target.value)} textAlign="right" />
                 </Td>
                 <Td {...tdStyle}>
-                  <Input {...inputStyle} type="number" value={item.rate ?? 0} onChange={(e) => handleItemChange(index, "rate", e.target.value)} textAlign="right" />
+                  <Input {...inputStyle} type="number" value={item.rate ?? 0} onChange={(e) => handleItemChange(index, "rate", e.target.value)} textAlign="right" isReadOnly={!!item.adr_request_item_id} title={item.adr_request_item_id ? "Net rate after the approved additional discount (set by the server)" : undefined} />
                 </Td>
                 <Td {...tdStyle}><Input {...readonlyInputStyle} value={item.unit_name} readOnly textAlign="center" /></Td>
                 <Td {...tdStyle}><Input {...readonlyInputStyle} value={item.amount ?? 0} readOnly textAlign="right" /></Td>

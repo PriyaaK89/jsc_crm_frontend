@@ -9,6 +9,7 @@ import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import AdrLinePicker from "../../components/AdditionalDiscount/AdrLinePicker";
 import useUsersapi from "../../Apis/GetUsersapi";
 import {
   fetchNextVoucherNo, fetchGodownList, fetchLedgerDropdown, fetchAssignedLedgerDropdown,
@@ -154,7 +155,9 @@ const SalesCreate = () => {
   // IGST and CGST/SGST are mutually exclusive — never added together.
   const recalculateItem = (item) => {
     const qty = Number(item.billed_qty) || 0;
-    const rate = Number(item.rate) || 0;
+    // Additional discount: item.rate stays the normal price; the line is shown at the net rate
+    // (the server checks the approval and re-prices the order on submit)
+    const rate = Math.max((Number(item.rate) || 0) - (item.adr_request_item_id ? Number(item.adr_discount_per_unit) || 0 : 0), 0);
     const amount = round2(qty * rate);
 
     const igstP = Number(item.igst_percent) || 0;
@@ -393,7 +396,8 @@ const SalesCreate = () => {
         const rate = isSupercash
           ? (item.supercash_price || item.sale_rate || 0)
           : (item.sale_rate || 0);
-        return recalculateItem({ ...item, rate });
+        // super-cash sales never use additional discount
+        return recalculateItem({ ...item, rate, ...(isSupercash ? { adr_request_item_id: undefined, adr_discount_per_unit: undefined } : {}) });
       })
     );
   }, [isSupercash]);
@@ -426,7 +430,11 @@ const SalesCreate = () => {
               Party A/c Name <Text as="span" color="red.500">*</Text>
             </Text>
             <Select {...inputStyle} value={formData.partyLedgerId}
-              onChange={e => setFormData(prev => ({ ...prev, partyLedgerId: e.target.value }))}>
+              onChange={e => {
+                setFormData(prev => ({ ...prev, partyLedgerId: e.target.value }));
+                // an additional discount belongs to one party: remove it when the party changes
+                setItems(prev => prev.map(it => (it.adr_request_item_id ? recalculateItem({ ...it, adr_request_item_id: undefined, adr_discount_per_unit: undefined }) : it)));
+              }}>
               <option value="">-- Select Party --</option>
               {ledgerList.map(l => (
                 <option key={l.id} value={l.id}>{l.ledger_name || l.name}</option>
@@ -593,6 +601,19 @@ const SalesCreate = () => {
                         <option key={s.id} value={s.id}>{s.name || s.item_name}</option>
                       ))}
                     </Select>
+                    <AdrLinePicker
+                      partyId={formData.partyLedgerId}
+                      stockItemId={item.stock_item_id}
+                      value={item.adr_request_item_id || ""}
+                      disabled={isSupercash}
+                      onChange={(adrId, line) =>
+                        setItems(prev => {
+                          const u = [...prev];
+                          u[index] = recalculateItem({ ...u[index], adr_request_item_id: adrId || undefined, adr_discount_per_unit: line ? line.discount_per_unit : undefined });
+                          return u;
+                        })
+                      }
+                    />
                   </Td>
 
                   {/* Billed Qty */}

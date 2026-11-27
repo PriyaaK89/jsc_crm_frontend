@@ -6,6 +6,10 @@ export const SUPER_ADMIN_ONLY = "__super_admin_only__";
 // set from /permissions/me: TASK_ASSIGN_ANY, or a manager who has a team
 export const TASK_ASSIGNER = "__task_assigner__";
 
+// set from /additional-discount/me: the user is the RSM of somebody's reporting line
+// (an RSM acts on the RSM stage without any permission code — Additional Discount decision 5)
+export const ADR_RSM = "__adr_rsm__";
+
 const FIN = "VIEW_FINANCIAL_REPORT";
 const INV = "VIEW_INVENTORY_REPORT";
 const EMP = "VIEW_EMPLOYEE_REPORT";
@@ -18,6 +22,21 @@ const BP = [];
 // Advance Booking pages: any logged-in user (field staff book for their parties; the server
 // scopes bookings to the user and his team). Office desks keep their codes.
 const ABS = [];
+// Additional Discount: the server scopes every record (own / team / RSM / final approver / all)
+const ADR_CODES = {
+  VIEW: "VIEW_ADDITIONAL_DISCOUNT",
+  CREATE: "CREATE_ADDITIONAL_DISCOUNT",
+  EDIT: "EDIT_ADDITIONAL_DISCOUNT",
+  CANCEL: "CANCEL_ADDITIONAL_DISCOUNT",
+  RSM_QUEUE: "RSM_APPROVE_ADDITIONAL_DISCOUNT",
+  FINAL: "FINAL_APPROVE_ADDITIONAL_DISCOUNT",
+  VIEW_ALL: "VIEW_ALL_ADDITIONAL_DISCOUNT",
+  VIEW_TEAM: "VIEW_TEAM_ADDITIONAL_DISCOUNT",
+  REPORTS: "VIEW_ADDITIONAL_DISCOUNT_REPORTS",
+  SETTINGS: "MANAGE_ADDITIONAL_DISCOUNT_SETTINGS",
+};
+const ADR_ANY = [...Object.values(ADR_CODES), ADR_RSM];
+const ADR_OWN = [ADR_CODES.VIEW, ADR_CODES.CREATE, ADR_CODES.EDIT];
 
 // Pages that do not need a login
 export const PUBLIC_PATHS = ["/", "/login", "/esign-success", "/esign-error"];
@@ -110,10 +129,12 @@ export const ROUTE_PERMISSIONS = [
 
   ["/order-vochor/payment", ["CREATE_TRANSACTION"]],
   ["/order-vochor/purchase", ["CREATE_TRANSACTION"]],
-  ["/order-vochor/credit", ["CREATE_TRANSACTION"]],
+  // same rule as the backend: the office permission, or the matching Marketing APK
+  // permission (automatic for the Marketing department, assigned for everyone else)
+  ["/order-vochor/credit", ["CREATE_TRANSACTION", "APK_CREDIT_NOTE"]],
   ["/order-vochor/debit", ["CREATE_TRANSACTION"]],
-  ["/order-voucher/create-sales", ["CREATE_TRANSACTION"]],
-  ["/order-voucher/receipt-request", ["CREATE_TRANSACTION"]],
+  ["/order-voucher/create-sales", ["CREATE_TRANSACTION", "APK_SALES_ORDER"]],
+  ["/order-voucher/receipt-request", ["CREATE_TRANSACTION", "APK_RECEIPT"]],
   ["/order-voucher/sales/:approvalId", []],
   ["/order-voucher/receipt/:approvalId", []],
   ["/order-voucher/credit-note/:approvalId", []],
@@ -166,17 +187,20 @@ export const ROUTE_PERMISSIONS = [
   ["/chat/monitor", ["chat_view_all"]],
 
   ["/business-plan", BP],
-  ["/business-plan/overview", BP],
+  ["/business-plan/dashboard", BP],
   ["/business-plan/plans", BP],
   ["/business-plan/plans/:id", BP],
   ["/business-plan/analysis", BP],
   ["/business-plan/reports", BP],
-  ["/business-plan/settings", ["MANAGE_BUSINESS_PLAN_SETTINGS"]],
+  // Settings: the general settings (MANAGE_BUSINESS_PLAN_SETTINGS) or Settings -> Territories
+  // (MANAGE_BP_TERRITORIES; Admin / Super Admin have every code). The page shows only the parts the
+  // user may use, and the server checks every call.
+  ["/business-plan/settings", ["MANAGE_BUSINESS_PLAN_SETTINGS", "MANAGE_BP_TERRITORIES"]],
   ["/business-plan/target-sheets", BP],
   ["/business-plan/target-sheets/:id", BP],
 
   ["/advance-booking", ABS],
-  ["/advance-booking/overview", ABS],
+  ["/advance-booking/dashboard", ABS],
   ["/advance-booking/bookings", ABS],
   ["/advance-booking/bookings/:id", ABS],
   ["/advance-booking/bookings/:id/print", ABS],
@@ -184,6 +208,27 @@ export const ROUTE_PERMISSIONS = [
   ["/advance-booking/payments", ABS],
   ["/advance-booking/dispatches", ["DISPATCH_ABS", "VIEW_ALL_ABS"]],
   ["/advance-booking/settings", ["MANAGE_ABS_SETTINGS"]],
+
+  ["/additional-discount", ADR_ANY],
+  ["/additional-discount/dashboard", ADR_ANY],
+  ["/additional-discount/requests/new", [ADR_CODES.CREATE]],
+  ["/additional-discount/requests", ADR_ANY],
+  ["/additional-discount/requests/:id", ADR_ANY],
+  ["/additional-discount/requests/:id/edit", [ADR_CODES.CREATE, ADR_CODES.EDIT]],
+  ["/additional-discount/requests/:id/rsm-approval", [ADR_RSM, ADR_CODES.RSM_QUEUE, ADR_CODES.FINAL]],
+  ["/additional-discount/requests/:id/final-approval", [ADR_CODES.FINAL]],
+  ["/additional-discount/my-requests", ADR_OWN],
+  ["/additional-discount/pending-rsm", [ADR_RSM, ADR_CODES.RSM_QUEUE, ADR_CODES.FINAL, ADR_CODES.VIEW_ALL]],
+  ["/additional-discount/pending-final", [ADR_CODES.FINAL, ADR_CODES.VIEW_ALL]],
+  ["/additional-discount/approved", ADR_ANY],
+  ["/additional-discount/rejected", ADR_ANY],
+  ["/additional-discount/expired", ADR_ANY],
+  ["/additional-discount/clarifications", ADR_ANY],
+  ["/additional-discount/party-history", ADR_ANY],
+  ["/additional-discount/utilization", ADR_ANY],
+  ["/additional-discount/reports", [ADR_CODES.REPORTS]],
+  ["/additional-discount/approval-matrix", ADR_ANY],
+  ["/additional-discount/settings", [ADR_CODES.SETTINGS]],
 
   ["/product-demo/view-demo-request/:id", []],
   ["/product-demo/crop/create-crop", ["crop_manage"]],

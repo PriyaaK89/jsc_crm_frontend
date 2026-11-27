@@ -135,7 +135,7 @@ import BpSettings from "../pages/BusinessPlan/BpSettings";
 import BpTargetSheets from "../pages/BusinessPlan/BpTargetSheets";
 import BpTargetSheetView from "../pages/BusinessPlan/BpTargetSheetView";
 // Advance Booking (ABS)
-
+import AbsLayout from "../components/layout/AdvanceBooking/AbsLayout";
 import AbsDashboard from "../pages/AdvanceBooking/AbsDashboard";
 import AbsBookings from "../pages/AdvanceBooking/AbsBookings";
 import AbsBookingDetail from "../pages/AdvanceBooking/AbsBookingDetail";
@@ -144,6 +144,17 @@ import AbsAllocation from "../pages/AdvanceBooking/AbsAllocation";
 import AbsPayments from "../pages/AdvanceBooking/AbsPayments";
 import AbsDispatches from "../pages/AdvanceBooking/AbsDispatches";
 import AbsSettings from "../pages/AdvanceBooking/AbsSettings";
+import AdrLayout from "../components/AdditionalDiscount/AdrLayout";
+import AdrDashboard from "../pages/AdditionalDiscount/AdrDashboard";
+import AdrRequestList from "../pages/AdditionalDiscount/AdrRequestList";
+import AdrRequestForm from "../pages/AdditionalDiscount/AdrRequestForm";
+import AdrRequestDetail from "../pages/AdditionalDiscount/AdrRequestDetail";
+import AdrDecision from "../pages/AdditionalDiscount/AdrDecision";
+import AdrPartyHistory from "../pages/AdditionalDiscount/AdrPartyHistory";
+import AdrUtilization from "../pages/AdditionalDiscount/AdrUtilization";
+import AdrReports from "../pages/AdditionalDiscount/AdrReports";
+import AdrApprovalMatrix from "../pages/AdditionalDiscount/AdrApprovalMatrix";
+import AdrSettings from "../pages/AdditionalDiscount/AdrSettings";
 import DemoResultsList from "../pages/ProductDemo/DemoResultsList";
 import DemoResultsView from "../pages/ProductDemo/DemoResultsView";
 import ViewAllIndividualTargetsLayout from "../components/layout/BusinessDevelopment/ViewAllIndividualTragetslayout";
@@ -155,7 +166,6 @@ import AssignPermissionsLayout from "../components/layout/HRMaster/AssignPermiss
 import PermissionGate from "../routes/PermissionGate";
 import PermissionManagementLayout from "../components/layout/HRMaster/PermissionManagementLayout";
 import BusinessPlanLayout from "../components/layout/BusinessPlan/BusinessPlanLayout";
-import AbsLayout from "../components/layout/AdvanceBooking/AbsLayout";
 
 
 function App() {
@@ -336,8 +346,8 @@ function App() {
         />
 
         {/* Business Plan */}
-        <Route path="/business-plan" element={<Navigate to="/business-plan/overview" replace />} />
-        <Route path="/business-plan/overview" element={<BusinessPlanLayout crumbs={[{ label: "Dashboard" }]}><BpDashboard /></BusinessPlanLayout>} />
+        <Route path="/business-plan" element={<Navigate to="/business-plan/dashboard" replace />} />
+        <Route path="/business-plan/dashboard" element={<BusinessPlanLayout crumbs={[{ label: "Dashboard" }]}><BpDashboard /></BusinessPlanLayout>} />
         <Route path="/business-plan/plans" element={<BusinessPlanLayout crumbs={[{ label: "All Plans" }]}><BpPlanList /></BusinessPlanLayout>} />
         <Route path="/business-plan/plans/:id" element={<BusinessPlanLayout crumbs={[{ label: "All Plans", to: "/business-plan/plans" }, { label: "Plan Detail" }]}><BpPlanDetail /></BusinessPlanLayout>} />
         <Route path="/business-plan/analysis" element={<BusinessPlanLayout crumbs={[{ label: "Analysis" }]}><BpAnalysis /></BusinessPlanLayout>} />
@@ -347,8 +357,8 @@ function App() {
         <Route path="/business-plan/target-sheets/:id" element={<BusinessPlanLayout crumbs={[{ label: "Employee Target Sheets", to: "/business-plan/target-sheets" }, { label: "Sheet" }]}><BpTargetSheetView /></BusinessPlanLayout>} />
 
         {/* Advance Booking System */}
-        <Route path="/advance-booking" element={<Navigate to="/advance-booking/overview" replace />} />
-        <Route path="/advance-booking/overview" element={<AbsLayout crumbs={[{ label: "Dashboard" }]}><AbsDashboard /></AbsLayout>} />
+        <Route path="/advance-booking" element={<Navigate to="/advance-booking/dashboard" replace />} />
+        <Route path="/advance-booking/dashboard" element={<AbsLayout crumbs={[{ label: "Dashboard" }]}><AbsDashboard /></AbsLayout>} />
         <Route path="/advance-booking/bookings" element={<AbsLayout crumbs={[{ label: "Bookings" }]}><AbsBookings /></AbsLayout>} />
         <Route path="/advance-booking/bookings/:id" element={<AbsLayout crumbs={[{ label: "Bookings", to: "/advance-booking/bookings" }, { label: "Booking" }]}><AbsBookingDetail /></AbsLayout>} />
         <Route path="/advance-booking/bookings/:id/print" element={<AbsBookingPrint />} />
@@ -356,6 +366,28 @@ function App() {
         <Route path="/advance-booking/payments" element={<AbsLayout crumbs={[{ label: "Advance Payments" }]}><AbsPayments /></AbsLayout>} />
         <Route path="/advance-booking/dispatches" element={<AbsLayout crumbs={[{ label: "Dispatches" }]}><AbsDispatches /></AbsLayout>} />
         <Route path="/advance-booking/settings" element={<AbsLayout crumbs={[{ label: "Settings" }]}><AbsSettings /></AbsLayout>} />
+
+        {/* Additional Discount */}
+        <Route path="/additional-discount" element={<Navigate to="/additional-discount/dashboard" replace />} />
+        <Route path="/additional-discount/dashboard" element={<AdrLayout crumbs={[{ label: "Dashboard" }]}><AdrDashboard /></AdrLayout>} />
+        <Route path="/additional-discount/requests/new" element={<AdrLayout crumbs={[{ label: "New Request" }]}><AdrRequestForm /></AdrLayout>} />
+        <Route path="/additional-discount/requests" element={<AdrLayout crumbs={[{ label: "All Requests" }]}><AdrRequestList view="all" /></AdrLayout>} />
+        <Route path="/additional-discount/requests/:id" element={<AdrLayout crumbs={[{ label: "All Requests", to: "/additional-discount/requests" }, { label: "Request Detail" }]}><AdrRequestDetail /></AdrLayout>} />
+        <Route path="/additional-discount/requests/:id/edit" element={<AdrLayout crumbs={[{ label: "My Requests", to: "/additional-discount/my-requests" }, { label: "Edit Request" }]}><AdrRequestForm /></AdrLayout>} />
+        <Route path="/additional-discount/requests/:id/rsm-approval" element={<AdrLayout crumbs={[{ label: "Pending RSM Approvals", to: "/additional-discount/pending-rsm" }, { label: "RSM Approval" }]}><AdrDecision mode="rsm" /></AdrLayout>} />
+        <Route path="/additional-discount/requests/:id/final-approval" element={<AdrLayout crumbs={[{ label: "Pending Final Approvals", to: "/additional-discount/pending-final" }, { label: "Final Approval" }]}><AdrDecision mode="final" /></AdrLayout>} />
+        <Route path="/additional-discount/my-requests" element={<AdrLayout crumbs={[{ label: "My Requests" }]}><AdrRequestList view="mine" /></AdrLayout>} />
+        <Route path="/additional-discount/pending-rsm" element={<AdrLayout crumbs={[{ label: "Pending RSM Approvals" }]}><AdrRequestList view="pending_rsm" /></AdrLayout>} />
+        <Route path="/additional-discount/pending-final" element={<AdrLayout crumbs={[{ label: "Pending Final Approvals" }]}><AdrRequestList view="pending_final" /></AdrLayout>} />
+        <Route path="/additional-discount/approved" element={<AdrLayout crumbs={[{ label: "Approved" }]}><AdrRequestList view="approved" /></AdrLayout>} />
+        <Route path="/additional-discount/rejected" element={<AdrLayout crumbs={[{ label: "Rejected" }]}><AdrRequestList view="rejected" /></AdrLayout>} />
+        <Route path="/additional-discount/expired" element={<AdrLayout crumbs={[{ label: "Expired" }]}><AdrRequestList view="expired" /></AdrLayout>} />
+        <Route path="/additional-discount/clarifications" element={<AdrLayout crumbs={[{ label: "Clarifications" }]}><AdrRequestList view="clarification" /></AdrLayout>} />
+        <Route path="/additional-discount/party-history" element={<AdrLayout crumbs={[{ label: "Party Discount History" }]}><AdrPartyHistory /></AdrLayout>} />
+        <Route path="/additional-discount/utilization" element={<AdrLayout crumbs={[{ label: "Utilization" }]}><AdrUtilization /></AdrLayout>} />
+        <Route path="/additional-discount/reports" element={<AdrLayout crumbs={[{ label: "Reports" }]}><AdrReports /></AdrLayout>} />
+        <Route path="/additional-discount/approval-matrix" element={<AdrLayout crumbs={[{ label: "Approval Matrix" }]}><AdrApprovalMatrix /></AdrLayout>} />
+        <Route path="/additional-discount/settings" element={<AdrLayout crumbs={[{ label: "Settings" }]}><AdrSettings /></AdrLayout>} />
 
       </Routes>
       </PermissionGate>

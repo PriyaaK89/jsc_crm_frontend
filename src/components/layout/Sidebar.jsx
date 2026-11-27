@@ -96,6 +96,16 @@ import {
   MdSettings,
   MdLightbulbOutline,
   MdFactCheck,
+  MdLocalOffer,
+  MdAddCircleOutline,
+  MdPerson,
+  MdHourglassEmpty,
+  MdCheckCircle,
+  MdCancel,
+  MdTimerOff,
+  MdQuestionAnswer,
+  MdHistory,
+  MdDataUsage,
 } from "react-icons/md";
 import logo from '../../assets/images/jamidaralogo_adminpannel.jpeg'
 import { useState, useContext, useEffect, memo } from "react";
@@ -113,7 +123,11 @@ import { BsPass } from "react-icons/bs";
 const Newsidebar = () => {
   const location = useLocation();
   const { auth, logoutUser } = useContext(AuthContext);
-  const { can } = usePermissions();
+
+   const { can, adr } = usePermissions();
+  // Additional Discount menu badges (counts from /additional-discount/me)
+  const adrQueue = adr?.queue || {};
+
   const role = auth?.user?.role;
 
   // const [openMenu, setOpenMenu] = useState(null);
@@ -370,6 +384,27 @@ const Newsidebar = () => {
         { label: "Stock Allocation", path: "/advance-booking/allocation", icon: MdInventory },
         { label: "Dispatches", path: "/advance-booking/dispatches", icon: MdLocalShipping },
         { label: "Settings", path: "/advance-booking/settings", icon: MdSettings },
+      ]
+    },
+    {
+      label: "Additional Discount", key: "additional-discount", icon: MdLocalOffer,
+      badge: (adrQueue.pending_rsm_for_me || 0) + (adrQueue.pending_final_for_me || 0) + (adrQueue.clarification_for_me || 0),
+      children: [
+        { label: "Overview", path: "/additional-discount/dashboard", icon: MdDashboard },
+        { label: "New Request", path: "/additional-discount/requests/new", icon: MdAddCircleOutline },
+        { label: "My Requests", path: "/additional-discount/my-requests", icon: MdPerson },
+        { label: "All Requests", path: "/additional-discount/requests", icon: MdListAlt },
+        { label: "Pending RSM Approvals", path: "/additional-discount/pending-rsm", icon: MdHourglassEmpty, badge: adrQueue.pending_rsm_for_me },
+        { label: "Pending Final Approvals", path: "/additional-discount/pending-final", icon: MdPendingActions, badge: adrQueue.pending_final_for_me },
+        { label: "Approved", path: "/additional-discount/approved", icon: MdCheckCircle },
+        { label: "Rejected", path: "/additional-discount/rejected", icon: MdCancel },
+        { label: "Expired", path: "/additional-discount/expired", icon: MdTimerOff },
+        { label: "Clarifications", path: "/additional-discount/clarifications", icon: MdQuestionAnswer, badge: adrQueue.clarification_for_me },
+        { label: "Party Discount History", path: "/additional-discount/party-history", icon: MdHistory },
+        { label: "Utilization", path: "/additional-discount/utilization", icon: MdDataUsage },
+        { label: "Reports", path: "/additional-discount/reports", icon: MdAssessment },
+        { label: "Approval Matrix", path: "/additional-discount/approval-matrix", icon: MdAccountTree },
+        { label: "Settings", path: "/additional-discount/settings", icon: MdSettings },
       ]
     },
     {

@@ -9,6 +9,7 @@ import useUsersapi from "../../Apis/GetUsersapi";
 import { fetchStockItemDropdown, fetchGodownList, fetchNextVoucherNo, fetchBatches, fetchStockItemDetailsByID, fetchLedgerDetailsByID, } from "../../Apis/commanApi";
 import API from "../../services/api";
 import { API_ENDPOINTS } from "../../services/endpoints";
+import AdrLinePicker from "../../components/AdditionalDiscount/AdrLinePicker";
 import { Link } from "react-router-dom";
 
 // ─── Styles (matching Purchase) ───────────────────────────────────────────────
@@ -96,7 +97,9 @@ const emptyExtraLedger = () => ({
 // ─── Compute item amounts ─────────────────────────────────────────────────────
 const computeItemAmounts = (item) => {
     const qty = Number(item.billed_qty || 0);
-    const rate = Number(item.rate || 0);
+    // Additional discount: item.rate stays the normal price; the line is shown at the net rate
+    // (the server checks the approval and re-prices the voucher when it is saved)
+    const rate = Math.max(Number(item.rate || 0) - (item.adr_request_item_id ? Number(item.adr_discount_per_unit || 0) : 0), 0);
     const amount = qty * rate;
 
     const igst_percent = Number(item.igst_percent || 0);
@@ -361,6 +364,16 @@ const SalesTransaction = () => {
     // ─── Customer select → fetch info + open supercash modal ─────────────────
     const handleCustomerSelect = async (ledgerId) => {
         setCustomerLedgerId(ledgerId);
+        // an additional discount belongs to one party: remove it when the party changes
+        if (items.some((it) => it.adr_request_item_id)) {
+            const cleared = items.map((it) => {
+                if (!it.adr_request_item_id) return it;
+                const u = { ...it, adr_request_item_id: undefined, adr_discount_per_unit: undefined };
+                return { ...u, ...computeItemAmounts(u) };
+            });
+            setItems(cleared);
+            recalcTotals(cleared, extraLedgers);
+        }
         if (!ledgerId) {
             setCustomerInfo({
                 current_balance: "",
@@ -398,7 +411,8 @@ const SalesTransaction = () => {
                     if (!item.stock_item_id) return item;
                     const useRate =
                         item.supercash_price > 0 ? item.supercash_price : item.rate;
-                    const updated = { ...item, rate: useRate };
+                    // super-cash sales never use additional discount
+                    const updated = { ...item, rate: useRate, adr_request_item_id: undefined, adr_discount_per_unit: undefined };
                     return { ...updated, ...computeItemAmounts(updated) };
                 })
             );
@@ -730,6 +744,7 @@ const SalesTransaction = () => {
                         available_qty: it.available_qty,
                         billed_qty: it.billed_qty,
                         rate: it.rate,
+                        adr_request_item_id: it.adr_request_item_id || undefined,
                         supercash_price: it.supercash_price || 0,
                         unit_id: it.unit_id,
                         alt_unit_id: it.alt_unit_id,
@@ -1462,6 +1477,19 @@ const SalesTransaction = () => {
                                                 </option>
                                             ))}
                                         </Select>
+                                        <AdrLinePicker
+                                            partyId={customerLedgerId}
+                                            stockItemId={item.stock_item_id}
+                                            value={item.adr_request_item_id || ""}
+                                            disabled={isSuperCashSale}
+                                            onChange={(adrId, line) => {
+                                                const updated = [...items];
+                                                updated[index] = { ...updated[index], adr_request_item_id: adrId || undefined, adr_discount_per_unit: line ? line.discount_per_unit : undefined };
+                                                updated[index] = { ...updated[index], ...computeItemAmounts(updated[index]) };
+                                                setItems(updated);
+                                                recalcTotals(updated, extraLedgers);
+                                            }}
+                                        />
                                     </Td>
 
                                     {/* Total Qty */}

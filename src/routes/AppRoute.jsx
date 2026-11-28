@@ -45,7 +45,6 @@ import ESignSuccess from "../components/redirection-pages/esign-success";
 import ESignError from "../components/redirection-pages/esign-error";
 import EmpAttendanceLayout from "../components/layout/Reports/EmpAttendaneLayout";
 import ViewDistributorLayout from "../components/layout/Reports/ViewDistributorLayout";
-
 import SchedulingAlertsReportLayout from "../components/layout/Reports/Scheduling&AlertReportLayout";
 import PartyTransactionReportLayout from '../components/layout/Reports/PartyTransactionReportLayout';
 import GetEmployeeExpenseReportLayout from '../components/layout/Reports/GetEmployeeExpenseReportLayout';
@@ -134,7 +133,6 @@ import BpReports from "../pages/BusinessPlan/BpReports";
 import BpSettings from "../pages/BusinessPlan/BpSettings";
 import BpTargetSheets from "../pages/BusinessPlan/BpTargetSheets";
 import BpTargetSheetView from "../pages/BusinessPlan/BpTargetSheetView";
-// Advance Booking (ABS)
 import AbsLayout from "../components/layout/AdvanceBooking/AbsLayout";
 import AbsDashboard from "../pages/AdvanceBooking/AbsDashboard";
 import AbsBookings from "../pages/AdvanceBooking/AbsBookings";

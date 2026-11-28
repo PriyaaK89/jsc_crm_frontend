@@ -71,8 +71,8 @@ const AdrRequestDetail = () => {
   const navigate = useNavigate();
   const notify = useAdrToast();
   const { refresh } = useAdrMe();
-  const { confirm, dialog: confirmDialog } = useConfirm();
-  const { ask, dialog: askDialog } = useCommentPrompt();
+  const [confirm, confirmDialog] = useConfirm();
+  const [ask, askDialog] = useCommentPrompt();
   const fileRef = useRef();
   const [replyOpen, setReplyOpen] = useState(false);
   const [busy, setBusy] = useState(false);

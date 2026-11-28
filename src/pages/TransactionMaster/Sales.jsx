@@ -94,12 +94,20 @@ const emptyExtraLedger = () => ({
     operation: "PLUS",
 });
 
+// ─── Net rate (normal rate minus additional discount) ─────────────────────────
+// item.rate always stays the normal price; this is only used for display and amounts
+const getNetRate = (item) => {
+    const discount = item.adr_request_item_id ? Number(item.adr_discount_per_unit || 0) : 0;
+    const net = Math.max(Number(item.rate || 0) - discount, 0);
+    return Math.round(net * 10000) / 10000; // avoids values like 90.00000000001
+};
+
 // ─── Compute item amounts ─────────────────────────────────────────────────────
 const computeItemAmounts = (item) => {
     const qty = Number(item.billed_qty || 0);
     // Additional discount: item.rate stays the normal price; the line is shown at the net rate
     // (the server checks the approval and re-prices the voucher when it is saved)
-    const rate = Math.max(Number(item.rate || 0) - (item.adr_request_item_id ? Number(item.adr_discount_per_unit || 0) : 0), 0);
+    const rate = getNetRate(item);
     const amount = qty * rate;
 
     const igst_percent = Number(item.igst_percent || 0);
@@ -403,20 +411,29 @@ const SalesTransaction = () => {
     const handleSuperCashConfirm = (confirmed) => {
         setIsSuperCashSale(confirmed);
         closeSuperCash();
-        // If confirmed, refetch rates for already-selected items
-        if (confirmed) {
-            onFinalModalOpen();
-            setItems((prev) =>
-                prev.map((item) => {
-                    if (!item.stock_item_id) return item;
-                    const useRate =
-                        item.supercash_price > 0 ? item.supercash_price : item.rate;
-                    // super-cash sales never use additional discount
-                    const updated = { ...item, rate: useRate, adr_request_item_id: undefined, adr_discount_per_unit: undefined };
-                    return { ...updated, ...computeItemAmounts(updated) };
-                })
-            );
-        }
+        if (confirmed) onFinalModalOpen();
+
+        const updatedItems = items.map((item) => {
+            if (!item.stock_item_id) return item;
+            let updated;
+            if (confirmed) {
+                // super-cash sales never use additional discount
+                updated = { ...item, adr_request_item_id: undefined, adr_discount_per_unit: undefined };
+                if (item.supercash_price > 0) {
+                    // remember the earlier rate (only once) so it can be restored later
+                    updated.rate_before_supercash = item.rate_before_supercash ?? item.rate;
+                    updated.rate = item.supercash_price;
+                }
+            } else {
+                // not a super-cash sale: put back the earlier rate on rows that were switched
+                if (item.rate_before_supercash === undefined) return item;
+                updated = { ...item, rate: item.rate_before_supercash, rate_before_supercash: undefined };
+            }
+            return { ...updated, ...computeItemAmounts(updated) };
+        });
+        setItems(updatedItems);
+        // keep the bottom totals in step with the new rates
+        recalcTotals(updatedItems, extraLedgers);
     };
 
     // ─── Stock item select → auto-fill ───────────────────────────────────────
@@ -510,6 +527,8 @@ const SalesTransaction = () => {
                 stock_item_id: stockItemId,
                 total_qty: details.available_qty || 0,
                 rate: usedRate,
+                // regular price to restore if this sale stops being super-cash
+                rate_before_supercash: isSuperCashSale && supercashRate > 0 ? regularRate : undefined,
                 supercash_price: supercashRate,
                 unit_id: details.unit_id || "",
                 unit_name: details.unit_name || "",
@@ -1553,18 +1572,27 @@ const SalesTransaction = () => {
                                         <Input
                                             {...inputStyle}
                                             type="number"
-                                            value={item.rate}
+                                            value={item.adr_request_item_id ? getNetRate(item) : item.rate}
                                             onChange={(e) =>
                                                 handleItemChange(index, "rate", e.target.value)
                                             }
+                                            // discounted rate is read only, so the discount is never subtracted twice
+                                            isReadOnly={!!item.adr_request_item_id}
                                             textAlign="right"
                                             minW="60px"
                                             bg={
-                                                isSuperCashSale && item.supercash_price > 0
-                                                    ? "#fffde7"
-                                                    : "white"
+                                                item.adr_request_item_id
+                                                    ? "#e6f4ea"
+                                                    : isSuperCashSale && item.supercash_price > 0
+                                                        ? "#fffde7"
+                                                        : "white"
                                             }
                                         />
+                                        {item.adr_request_item_id && (
+                                            <Text fontSize="10px" color="green.700" textAlign="right" whiteSpace="nowrap">
+                                                ₹{Number(item.rate || 0).toFixed(2)} − ₹{Number(item.adr_discount_per_unit || 0).toFixed(2)}
+                                            </Text>
+                                        )}
                                     </Td>
 
                                     {/* Unit */}
@@ -1945,10 +1973,8 @@ const SalesTransaction = () => {
             {/* ══ SuperCash Modal ══ */}
             <Modal
                 isOpen={isSuperCashOpen}
-                onClose={() => {
-                    setIsSuperCashSale(false);
-                    closeSuperCash();
-                }}
+                // closing the popup (Esc / outside click) means the same as CANCEL
+                onClose={() => handleSuperCashConfirm(false)}
                 isCentered
                 size="sm">
                 <ModalOverlay bg="blackAlpha.500" />

@@ -65,7 +65,7 @@ const AdrDecision = ({ mode }) => {
   const navigate = useNavigate();
   const notify = useAdrToast();
   const { refresh } = useAdrMe();
-  const { confirm, dialog } = useConfirm();
+  const [confirm, dialog] = useConfirm();
   const { data, loading, error, reload } = useLoad(() => adrApi.detail(id), [id]);
   const [remarks, setRemarks] = useState("");
   const [lines, setLines] = useState({});

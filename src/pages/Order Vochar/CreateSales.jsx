@@ -18,6 +18,14 @@ import {
 
 const round2 = (n) => Math.round((Number(n || 0) + Number.EPSILON) * 100) / 100;
 
+// item.rate always stays the normal price; this is the rate after the additional discount
+// (used only for display and amounts)
+const getNetRate = (item) => {
+  const discount = item.adr_request_item_id ? Number(item.adr_discount_per_unit) || 0 : 0;
+  const net = Math.max((Number(item.rate) || 0) - discount, 0);
+  return Math.round(net * 10000) / 10000; // avoids values like 90.00000000001
+};
+
 // ── Design tokens ──
 const sectionStyle = { bg: "white", border: "1px solid #d0d7de", borderRadius: "6px", p: 0, mb: 3, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" };
 const sectionHeaderStyle = { bg: "#4f9190", color: "white", px: 4, py: 2, borderTopRadius: "md" };
@@ -157,7 +165,7 @@ const SalesCreate = () => {
     const qty = Number(item.billed_qty) || 0;
     // Additional discount: item.rate stays the normal price; the line is shown at the net rate
     // (the server checks the approval and re-prices the order on submit)
-    const rate = Math.max((Number(item.rate) || 0) - (item.adr_request_item_id ? Number(item.adr_discount_per_unit) || 0 : 0), 0);
+    const rate = getNetRate(item);
     const amount = round2(qty * rate);
 
     const igstP = Number(item.igst_percent) || 0;
@@ -625,9 +633,18 @@ const SalesCreate = () => {
 
                   {/* Rate */}
                   <Td {...tdStyle}>
-                    <Input {...inputStyle} type="number" min={0} value={item.rate}
+                    <Input {...inputStyle} type="number" min={0}
+                      value={item.adr_request_item_id ? getNetRate(item) : item.rate}
                       onChange={e => handleItemChange(index, "rate", e.target.value)}
+                      // discounted rate is read only, so the discount is never subtracted twice
+                      isReadOnly={!!item.adr_request_item_id}
+                      bg={item.adr_request_item_id ? "#e6f4ea" : "white"}
                       textAlign="right" isDisabled={!item.stock_item_id} />
+                    {item.adr_request_item_id && (
+                      <Text fontSize="10px" color="green.700" textAlign="right" whiteSpace="nowrap">
+                        ₹{Number(item.rate || 0).toFixed(2)} − ₹{Number(item.adr_discount_per_unit || 0).toFixed(2)}
+                      </Text>
+                    )}
                   </Td>
 
                   {/* Unit */}

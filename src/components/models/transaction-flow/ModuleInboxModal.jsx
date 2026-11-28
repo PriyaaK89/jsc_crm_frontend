@@ -1,7 +1,7 @@
-// ABS (Advance Booking) and Business Plan notifications of the dashboard bell.
+// ABS (Advance Booking), Business Plan and Additional Discount notifications of the dashboard bell.
 // Both modules write to beat_notifications (the table the APK bell reads); this modal lists the
 // logged-in user's own rows of one category through the existing endpoint
-//   GET   /beat-plan/notifications?category=ABS|BP&page&limit
+//   GET   /beat-plan/notifications?category=ABS|BP|ADR&page&limit
 //   PATCH /beat-plan/notifications/:id/read
 //   PATCH /beat-plan/notifications/read-all?category=
 // The server returns only the caller's notifications (user_id), so nobody sees another
@@ -43,13 +43,24 @@ export const INBOX_CATEGORIES = {
     },
     actionTypes: ["BP_SHEET_SUBMITTED", "BP_PLAN_SUBMITTED", "BP_SHEET_REVISION_REQUESTED"],
   },
+  ADR: {
+    title: "Additional Discount Notifications",
+    empty: "No additional discount notifications",
+    emptyHint: "Discount requests to approve, decisions, clarifications and expiry notices appear here.",
+    gradient: "linear(to-r, orange.600, orange.400)",
+    accent: "orange",
+    // ref_id = request id; the detail page shows the decision buttons the server allows
+    route: (n) => (n.ref_id ? `/additional-discount/requests/${n.ref_id}` : "/additional-discount/dashboard"),
+    // the ones that ask the reader to act (adrConstants.ACTION_NOTIFY)
+    actionTypes: ["ADR_SUBMITTED", "ADR_FINAL_PENDING", "ADR_CLARIFICATION_REPLIED", "ADR_CLARIFICATION"],
+  },
 };
 
 const PAGE_SIZE = 30;
 
 const typeLabel = (type) =>
   String(type || "")
-    .replace(/^(ABS|BP)_/, "")
+    .replace(/^(ABS|BP|ADR)_/, "")
     .replaceAll("_", " ")
     .toLowerCase();
 
